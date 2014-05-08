@@ -48,7 +48,6 @@ You can watch a demo of it [here](https://vimeo.com/89982937) ( mute the sound i
 Known bugs
 ----------
 
-+ Avatars : untill [ticket #5380](https://buddypress.trac.wordpress.org/ticket/5380) is not resolved, you'll need to use the [5380.01.patch](https://buddypress.trac.wordpress.org/attachment/ticket/5380/5380.01.diff) attached to the ticket to make the avatar feature behave the right way.
 + BP Media Uploader : the "BackBone" Uploader is using the Attachment model instead of the bpAttachment model, this is the reason why i temporarly disabled an Attachment to be edited from the Attachment Details view just after an upload.
 
 
