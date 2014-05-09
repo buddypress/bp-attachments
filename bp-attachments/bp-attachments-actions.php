@@ -47,7 +47,7 @@ function bp_attachment_load_backbone_tmpl() {
 						<div class="dimensions">{{ data.width }} &times; {{ data.height }}</div>
 					<# } #>
 
-					<# if ( data.can.save && data.can.show ) { #>
+					<# if ( data.can.save ) { #>
 						<a class="edit-bp-attachment" href="{{ data.editLink }}"><?php _e( 'Edit Options', 'bp-attachments' ); ?></a>
 					<# } #>
 				<# } #>
@@ -56,7 +56,7 @@ function bp_attachment_load_backbone_tmpl() {
 					<div class="file-length"><?php _e( 'Length:' ); ?> {{ data.fileLength }}</div>
 				<# } #>
 
-				<# if ( ! data.uploading && data.can.remove && data.can.show ) { #>
+				<# if ( ! data.uploading && data.can.remove ) { #>
 					<?php if ( MEDIA_TRASH ): ?>
 						<a class="trash-attachment" href="#"><?php _e( 'Trash' ); ?></a>
 					<?php else: ?>
@@ -72,7 +72,7 @@ function bp_attachment_load_backbone_tmpl() {
 			</div>
 		</div>
 
-		<# var maybeReadOnly = ( data.can.save && data.can.show ) || ( data.allowLocalEdits && data.can.show ) ? '' : 'readonly'; #>
+		<# var maybeReadOnly = data.can.save || data.allowLocalEdits ? '' : 'readonly'; #>
 			<label class="setting" data-setting="title">
 				<span><?php _e('Title'); ?></span>
 				<input type="text" value="{{ data.title }}" {{ maybeReadOnly }} />

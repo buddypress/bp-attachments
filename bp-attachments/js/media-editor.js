@@ -38,21 +38,6 @@ var bp = bp || {};
 	bpAttachment = media.model.Attachment = bp.media.model.Attachment = wp.media.model.Attachment.extend({
 
 		/**
-		 * I still have a problem to solve here!
-		 *
-		 * using isbp to check if the bpAttachment model
-		 * is in use. The uploader is still using the WP
-		 * Attachment model, causing the update WP Attachment
-		 * ajax update function to be used instead of the BP
-		 * Attachment one. Till i find the fix, once a file
-		 * is uploaded, i put the fields in readonly mode.
-		 */
-		defaults : {
-            id: 0,
-			isbp: true,
-        },
-
-		/**
 		 * Triggered when attachment details change
 		 * Overrides Backbone.Model.sync
 		 *
@@ -81,7 +66,6 @@ var bp = bp || {};
 
 			// Overload the `update` request so properties can be saved.
 			} else if ( 'update' === method ) {
-				console.log( this.get('nonces'));
 				// If we do not have the necessary nonce, fail immeditately.
 				if ( ! this.get('nonces') || ! this.get('nonces').update ) {
 					return $.Deferred().rejectWith( this ).promise();
@@ -178,6 +162,22 @@ var bp = bp || {};
 			return bpAttachments.all.push( attachment || { id: id } );
 		})
 	});
+
+	/**
+	 * Override media.model.Attachment.create function
+	 * so that the uploader is using bpAttachment model
+	 */
+	wp.media.model.Attachment.create = function( attrs ) {
+		return bpAttachments.all.push( attrs );
+	};
+
+	/**
+	 * Override media.model.Attachment.get function
+	 * so that the uploader is using bpAttachment model
+	 */
+	wp.media.model.Attachment.get = _.memoize( function( id, attachment ) {
+		return bpAttachments.all.push( attachment || { id: id } );
+	} );
 
 	/**
 	 * bp.media.model.bpAttachments
@@ -743,11 +743,6 @@ var bp = bp || {};
 				options.can.remove = !! options.nonces['delete'];
 				options.can.save = !! options.nonces.update;
 			}
-
-			if ( ! _.isUndefined( options.isbp )  )
-				options.can.show = true;
-			else
-				options.can.show = false;
 
 			if ( this.controller.state().get('allowLocalEdits') ) {
 				options.allowLocalEdits = true;

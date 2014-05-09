@@ -45,11 +45,6 @@ BP Attachments uses a specific post type `bp_attachment` to organize the files u
 You can watch a demo of it [here](https://vimeo.com/89982937) ( mute the sound if have difficulties understanding my "franglish" ;) )  
 
 
-Known bugs
-----------
-
-+ BP Media Uploader : the "BackBone" Uploader is using the Attachment model instead of the bpAttachment model, this is the reason why i temporarly disabled an Attachment to be edited from the Attachment Details view just after an upload.
-
 
 Todos & improvements
 --------------------
