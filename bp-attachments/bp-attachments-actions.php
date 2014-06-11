@@ -136,9 +136,11 @@ function bp_attachments_catch_upload() {
 
 	if ( ! empty( $_POST['bp_attachment_upload'] ) ) {
 
-		check_admin_referer( 'bp_attachments_upload' );
+		var_dump( $_POST );
 
-		$redirect = bp_get_root_domain() . $_POST['_wp_http_referer'];
+		check_admin_referer( 'bp_attachments_upload', 'bp_attachments_upload_nonce' );
+
+		$redirect = $_POST['_wp_http_referer'];
 
 		$file_name = 'bp_attachment_file';
 
@@ -152,8 +154,11 @@ function bp_attachments_catch_upload() {
 			if ( ! empty( $_POST['item_id'] ) )
 				$args['item_id'] = absint( $_POST['item_id'] );
 
-			if ( ! empty( $_POST['item_type'] ) )
+			if ( ! empty( $_POST['item_type'] ) ) {
 				$args['item_type'] = $_POST['item_type'];
+			} else {
+				$args['item_type'] = 'attachment';
+			}
 
 			if ( ! empty( $_POST['component'] ) )
 				$args['component'] = $_POST['component'];
@@ -178,12 +183,36 @@ function bp_attachments_catch_upload() {
 				bp_core_redirect( $redirect );
 			}
 
-			$attachment_id = bp_attachments_handle_upload( $args );
+			// Dealing with an Avatar
+			if ( 'avatar' == $args['item_type'] ) {
+				$avatar = bp_attachments_handle_avatar_upload( $_FILES['bp_attachment_file'], $args['component'], $args['item_id'], true );
+
+				if ( ! is_wp_error( $avatar ) ) {
+					$object = ( 'xprofile' == $args['component'] ) ? 'user' : 'group';
+					$crop = bp_core_avatar_handle_crop( array(
+						'object'        => $object,
+						'avatar_dir'    => ( 'user' == $object ) ? 'avatars' : 'group-avatars',
+						'item_id'       => $args['item_id'],
+						'original_file' => $avatar,
+					) );
+
+					if ( ! empty( $crop ) ) {
+						$attachment_id = $crop;
+					} else {
+						$attachment_id = new WP_Error( 'crop_error', sprintf( __( 'There was an error saving the %s avatar, please try uploading again.', 'bp-attachments' ), $object ) );
+					}
+				} else {
+					$attachment_id = $avatar;
+				}
+			// Dealing with an Attachment
+			} else {
+				$attachment_id = bp_attachments_handle_upload( $args );
+			}
 
 			if ( is_wp_error( $attachment_id ) ) {
 				bp_core_add_message( sprintf( __( 'Error: %s', 'bp-attachments' ), $attachment_id->get_error_message() ), 'error' );
 			} else {
-				bp_core_add_message( __( 'Attachment successfully uploaded', 'bp-attachments' ) );
+				bp_core_add_message( sprintf( __( '%s successfully uploaded', 'bp-attachments' ), ucfirst( $args['item_type'] ) ) );
 			}
 
 			bp_core_redirect( $redirect );

@@ -104,6 +104,7 @@ function bp_attachments_map_meta_caps( $caps = array(), $cap = '', $user_id = 0,
 				if ( ! empty( $args[0]->component ) && ! empty( $args[0]->item_id ) ){
 					switch( $args[0]->component ) {
 						case 'groups':
+						case 'group' :
 							if( groups_is_user_admin( $user_id, $args[0]->item_id ) )
 								$caps = array( 'read' );
 							break;

@@ -113,7 +113,10 @@ class BP_Attachments_Upload {
 		// components are terms, an attachment can be attached to more than one component
 		if ( ! empty( $this->component ) ) {
 			$term = get_term_by( 'slug', $this->component, 'bp_component' );
-			$attachment_data['tax_input'] = array( 'bp_component' => array( $term->term_id ) );
+			
+			if ( ! empty( $term ) ) {
+				$attachment_data['tax_input'] = array( 'bp_component' => array( $term->term_id ) );
+			}
 		}
 
 		$this->attachment_id = media_handle_upload( $this->file_id, 0, $attachment_data, array( 'action' => $this->action ) );
@@ -333,7 +336,7 @@ class BP_Attachments_Browser {
 		<form action="" method="post" id="attachment-upload-form" class="standard-form" enctype="multipart/form-data">
 			<p id="attachment-upload">
 				<input type="file" name="<?php echo esc_attr( $settings['file_data_name'] );?>" id="file" />
-				<input type="submit" name="bp_attachment_upload" id="upload" value="<?php esc_attr_e( 'Upload Attachment', 'bp-attachments' ); ?>" />
+				<input type="submit" name="bp_attachment_upload" id="upload" value="<?php esc_attr_e( 'Upload', 'bp-attachments' ); ?>" />
 
 				<?php if ( 'avatar' == $settings['item_type'] ) :?>
 					<input type="hidden" name="item_type" id="item-type" value="<?php echo esc_attr( $settings['item_type'] );?>" />
@@ -352,7 +355,7 @@ class BP_Attachments_Browser {
 				<?php endif ;?>
 				<input type="hidden" name="action" id="action" value="<?php echo esc_attr( $settings['action'] );?>" />
 				<input type="hidden" name="file_data" id="file-data" value="<?php echo esc_attr( $settings['file_data_name'] );?>" />
-				<?php wp_nonce_field( 'bp_attachments_upload' ); ?>
+				<?php wp_nonce_field( 'bp_attachments_upload', 'bp_attachments_upload_nonce' ); ?>
 			</p>
 		</form>
 		<?php

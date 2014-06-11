@@ -208,7 +208,7 @@ function bp_attachments_members_change_avatar_content() {
 		        if ( bp_get_user_has_avatar() ) {
 		            echo bp_core_fetch_avatar( array( 'item_id' => bp_displayed_user_id(), 'object' => 'user', 'type' => 'full' ) );
 		            ?>
-		            <p><a href="#" id="remove-xprofile-avatar"><?php esc_html_e( 'Remove Avatar', 'bp-attachments' ); ?></a></p>
+		            <p><a href="<?php bp_avatar_delete_link(); ?>" id="remove-xprofile-avatar"><?php esc_html_e( 'Remove Avatar', 'bp-attachments' ); ?></a></p>
 		            <?php
 		        }
 		        ?>
@@ -226,6 +226,7 @@ function bp_attachments_members_change_avatar_content() {
             'btn_class'       => 'attachments-new-avatar'
         ) );
 
+        do_action( 'bp_attachments_uploader_fallback' );
         ?>
 
         </div>

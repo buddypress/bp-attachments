@@ -232,10 +232,12 @@ class BP_Attachments_Group extends BP_Group_Extension {
         <?php
         // Displays the current avatar and a link to delete it.
         if ( bp_get_group_has_avatar( $item->id ) ) {
+            $fallback_link = is_admin() ? '#' : bp_get_group_avatar_delete_link();
             echo bp_core_fetch_avatar( array( 'item_id' => $item->id, 'object' => 'group', 'type' => 'full' ) );
-            ?>
-            <p><a href="#" id="remove-groups-avatar"><?php esc_html_e( 'Remove Avatar', 'bp-attachments' ); ?></a></p>
-            <?php
+
+            if ( ! bp_is_group_create() ) : ?>
+            <p><a href="<?php echo esc_url( $fallback_link );?>" id="remove-groups-avatar"><?php esc_html_e( 'Remove Avatar', 'bp-attachments' ); ?></a></p>
+            <?php endif;
         }
         ?>
         </div>
@@ -250,6 +252,11 @@ class BP_Attachments_Group extends BP_Group_Extension {
             'action'          => 'bp_attachments_upload_avatar',
             'btn_class'       => 'attachments-new-avatar'
         ) );
+
+        // Provide a js fallback on edit/create screens
+        if ( ! is_admin() ) {
+            do_action( 'bp_attachments_uploader_fallback' );
+        }
     }
 
     /**

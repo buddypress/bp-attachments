@@ -424,7 +424,7 @@ function bp_attachments_prepare_avatar_for_js( $attachment = null ) {
  * 
  * @since BP Attachments (1.0.0)
  */
-function bp_attachments_handle_avatar_upload( $uploaded_file, $component, $item_id ) {
+function bp_attachments_handle_avatar_upload( $uploaded_file, $component, $item_id, $no_js = false ) {
 	$bp = buddypress();
 
 	$file = array(
@@ -543,7 +543,11 @@ function bp_attachments_handle_avatar_upload( $uploaded_file, $component, $item_
 	$bp->attachments->image->url = bp_core_avatar_url() . $bp->attachments->image->dir;
 	$bp->attachments->image->src = apply_filters( 'bp_get_avatar_to_crop_src', str_replace( WP_CONTENT_DIR, '', $bp->attachments->image->dir ) );
 
-	return bp_attachments_prepare_avatar_for_js( $bp->attachments->image );
+	if ( empty( $no_js ) ) {
+		return bp_attachments_prepare_avatar_for_js( $bp->attachments->image );
+	} else {
+		return $bp->attachments->image->src;
+	}
 }
 
 /**

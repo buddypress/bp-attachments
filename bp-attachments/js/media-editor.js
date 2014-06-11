@@ -1176,6 +1176,14 @@ var bp = bp || {};
 
 			if ( 'avatar' == bp.media.params.item_type ) {
 				// Avatar
+				if ( $( '#attachment-upload-form' ).length ) {
+					$( '#attachment-upload-form' ).remove();
+				}
+
+				if ( $( '#create-group-form p#attachment-upload' ).length ) {
+					$( '#create-group-form p#attachment-upload' ).remove();
+				}
+
 				if ( ! $( '#remove-' + bp.media.params.item_component + '-avatar' ).length ) {
 					$( bp.media.settings.button_id ).show();
 				}
