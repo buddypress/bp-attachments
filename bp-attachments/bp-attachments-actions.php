@@ -136,8 +136,6 @@ function bp_attachments_catch_upload() {
 
 	if ( ! empty( $_POST['bp_attachment_upload'] ) ) {
 
-		var_dump( $_POST );
-
 		check_admin_referer( 'bp_attachments_upload', 'bp_attachments_upload_nonce' );
 
 		$redirect = $_POST['_wp_http_referer'];
