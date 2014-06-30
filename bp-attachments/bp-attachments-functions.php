@@ -394,6 +394,20 @@ function bp_attachments_prepare_attachment_for_js( $attachment ) {
 }
 
 /**
+ * Check avatar uploads settings
+ *
+ * @since BP Attachments (1.0.0)
+ */
+function bp_attachments_avatar_is_enabled() {
+	$bp = buddypress();
+
+	if ( ! (int) $bp->site_options['bp-disable-avatar-uploads'] && $bp->avatar->show_avatars ) {
+		return true;
+	}
+	return false;
+}
+
+/**
  * Prepare an avatar to be displayed in the BP Media Editor
  * 
  * @since BP Attachments (1.0.0)

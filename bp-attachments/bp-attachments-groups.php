@@ -28,6 +28,7 @@ class BP_Attachments_Group extends BP_Group_Extension {
      */
     public function __construct() {
 
+        $this->avatar_enabled = bp_attachments_avatar_is_enabled();
     	$this->setup_actions();
 
         $attachments_count = array( 'total' => 0 );
@@ -50,7 +51,7 @@ class BP_Attachments_Group extends BP_Group_Extension {
             'screens'           => array(
                 'create' => array(
                     'position' => 20,
-                    'enabled'  => true,
+                    'enabled'  => $this->avatar_enabled,
                     'name'     => __( 'Avatar', 'bp-attachments' ),
                 ),
                  'admin' => array(
@@ -117,16 +118,19 @@ class BP_Attachments_Group extends BP_Group_Extension {
 		add_action( 'groups_group_settings_edited',                 array( $this, 'group_settings_save' ), 10, 1 );
         add_action( 'groups_create_group_step_save_group-settings', array( $this, 'group_settings_save' )        );
 
-        // Allow an avatar to be edited from Group Admin Screen
-        if ( is_admin() )
-            add_action( 'bp_groups_admin_meta_boxes', array( $this, 'group_avatar' ) );
+        if ( $this->avatar_enabled )  {
+            // Allow an avatar to be edited from Group Admin Screen
+            if ( is_admin() ) {
+                add_action( 'bp_groups_admin_meta_boxes', array( $this, 'group_avatar' ) );
+            }
 
-        // Override the change avatar settings for group in front end
-        add_filter( 'bp_get_template_part', array( $this, 'filter_change_avatar_template'), 10, 2 );
-        add_action( 'bp_template_content',  array( $this, 'edit_group_avatar'          )        );
+            // Override the change avatar settings for group in front end
+            add_filter( 'bp_get_template_part', array( $this, 'filter_change_avatar_template'), 10, 2 );
+            add_action( 'bp_template_content',  array( $this, 'edit_group_avatar'          )        );
 
-        // override the group creation avatar step
-        add_action( 'bp_actions', array( $this, 'remove_avatar_step' ), 1 );
+            // override the group creation avatar step
+            add_action( 'bp_actions', array( $this, 'remove_avatar_step' ), 1 );
+        }
 
         // Add group specific item to attach the attach to
         add_filter( "bp_attachments_edit_attached_to_{$bp->groups->id}", array( $this, 'attach_group' ), 10, 2 );

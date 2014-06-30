@@ -196,7 +196,7 @@ function bp_attachments_members_change_avatar_content() {
 
 	do_action( 'bp_before_profile_avatar_upload_content' );
 
-	if ( !(int)bp_get_option( 'bp-disable-avatar-uploads' ) ) : ?>
+	if ( bp_attachments_avatar_is_enabled() ) : ?>
 
 		<p><?php _e( 'Your avatar will be used on your profile and throughout the site. If there is a <a href="http://gravatar.com">Gravatar</a> associated with your account email we will use that, or you can upload an image from your computer.', 'bp-attachments' ); ?></p>
 
