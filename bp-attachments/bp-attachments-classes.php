@@ -200,7 +200,7 @@ class BP_Attachments_Upload {
 	 * @since BP Attachments (1.0.0)
 	 */
 	public function attachment_data( $data = array(), $object = array() ) {
-		if( 'bp_attachment' == $object['post_type'] ) {
+		if( 'buddypress' == $object['context'] ) {
 			$post_name = sanitize_title( $object['post_title'] );
 			$post_name = wp_unique_post_slug( $post_name, 0, $data['post_status'], 'bp_attachment', $data['post_parent'] );
 			$data = array_merge( $data, array(
