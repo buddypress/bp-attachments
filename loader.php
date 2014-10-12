@@ -55,7 +55,7 @@ class BP_Attachments_Loader {
 
 	/**
 	 * Initialize the plugin
-	 * 
+	 *
 	 * @package BP Attachments
 	 * @since 1.0.0
 	 */
@@ -84,7 +84,7 @@ class BP_Attachments_Loader {
 
 	/**
 	 * Sets some globals for the plugin
-	 * 
+	 *
 	 * @package BP Attachments
 	 * @since 1.0.0
 	 */
@@ -113,7 +113,7 @@ class BP_Attachments_Loader {
 
 	/**
 	 * Checks BuddyPress version
-	 * 
+	 *
 	 * @package BP Attachments
 	 * @since 1.0.0
 	 */
@@ -127,7 +127,7 @@ class BP_Attachments_Loader {
 
 	/**
 	 * Checks if current blog is the one where BuddyPress is activated
-	 * 
+	 *
 	 * @package BP Attachments
 	 * @since 1.0.0
 	 */
@@ -138,13 +138,13 @@ class BP_Attachments_Loader {
 
 		if ( get_current_blog_id() != bp_get_root_blog_id() )
 			return false;
-		
+
 		return true;
 	}
 
 	/**
 	 * Checks if current blog is the one where BuddyPress is activated
-	 * 
+	 *
 	 * @package BP Attachments
 	 * @since 1.0.0
 	 */
@@ -162,10 +162,10 @@ class BP_Attachments_Loader {
 
 		$check = array( buddypress()->basename, $this->basename );
 		$network_active = array_diff( $check, array_keys( $network_plugins ) );
-		
+
 		if ( count( $network_active ) == 1 )
 			$config['network_status'] = false;
-		
+
 		$config['network_active'] = isset( $network_plugins[ $this->basename ] );
 
 		return $config;
@@ -173,7 +173,7 @@ class BP_Attachments_Loader {
 
 	/**
 	 * Includes the needed file
-	 * 
+	 *
 	 * @package BP Attachments
 	 * @since 1.0.0
 	 */
@@ -184,7 +184,7 @@ class BP_Attachments_Loader {
 
 	/**
 	 * Sets the key hooks to add an action or a filter to
-	 * 
+	 *
 	 * @package BP Attachments
 	 * @since 1.0.0
 	 */
@@ -207,7 +207,7 @@ class BP_Attachments_Loader {
 
 	/**
 	 * Display a message to admin in case config is not as expected
-	 * 
+	 *
 	 * @package BP Attachments
 	 * @since 1.0.0
 	 */
@@ -239,7 +239,7 @@ class BP_Attachments_Loader {
 
 	/**
 	 * Append Attachments to optional components list
-	 * 
+	 *
 	 * @package BP Attachments
 	 * @since 1.0.0
 	 */
@@ -250,7 +250,7 @@ class BP_Attachments_Loader {
 
 	/**
 	 * Include Attachments in components settings
-	 * 
+	 *
 	 * @package BP Attachments
 	 * @since 1.0.0
 	 */
@@ -272,7 +272,7 @@ class BP_Attachments_Loader {
 	 *
 	 * @package BP Attachments
 	 * @since 1.0.0
-	 * 
+	 *
 	 * @uses get_locale() to get the language of WordPress config
 	 * @uses load_texdomain() to load the translation if any is available for the language
 	 */
@@ -291,13 +291,13 @@ class BP_Attachments_Loader {
 		// Look in local /wp-content/plugins/buddyplug/languages/ folder
 		load_textdomain( $this->domain, $mofile_local );
 	}
-	
+
 }
 
 // Let's start !
 function bp_attachments_loader() {
 	return BP_Attachments_Loader::start();
 }
-add_action( 'bp_loaded', 'bp_attachments_loader', 1 );
+add_action( 'bp_loaded', 'bp_attachments_loader', 0 );
 
 endif;
