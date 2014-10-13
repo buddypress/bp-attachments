@@ -384,15 +384,15 @@ class BP_Attachments_Browser {
 		add_filter( 'plupload_default_settings', array( __CLASS__, 'plupload_settings' ), 10, 1 );
 		add_filter( 'plupload_default_params',   array( __CLASS__, 'plupload_params' ), 10, 1 );
 
-		// time to enqueue scripts
-		wp_enqueue_media( $args );
-		wp_enqueue_script( 'bp-media-editor', bp_attachments_loader()->plugin_js . 'media-editor.js', array( 'media-editor' ), bp_attachments_loader()->version, true );
-		
 		// jcrop in case of avatar
 		if ( 'avatar' == self::$settings['item_type'] ) {
 			wp_enqueue_style( 'jcrop' );
 			wp_enqueue_script( 'jcrop', array( 'jquery' ) );
 		}
+
+		// time to enqueue scripts
+		wp_enqueue_media( $args );
+		wp_enqueue_script( 'bp-media-editor', bp_attachments_loader()->plugin_js . 'media-editor.js', array( 'media-editor' ), bp_attachments_loader()->version, true );
 	}
 
 	/**

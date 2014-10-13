@@ -103,13 +103,7 @@ function bp_attachment_load_backbone_tmpl() {
 		</h3>
 		<div class="attachment-info">
 			<div class="avatar-thumb" style="width:<?php echo bp_core_avatar_full_width();?>px;height:<?php echo bp_core_avatar_full_height();?>px;overflow:hidden">
-				<# if ( data.uploading ) { #>
-					<div class="media-progress-bar"><div></div></div>
-				<# } else if ( 'image' === data.type ) { #>
-					<img src="{{ data.size.url }}" draggable="false" id="avatar-crop-preview" />
-				<# } else { #>
-					<img src="{{ data.icon }}" class="icon" draggable="false" />
-				<# } #>
+				<img draggable="false" id="avatar-crop-preview" />
 			</div>
 		</div>
 	</script>

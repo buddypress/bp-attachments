@@ -586,7 +586,7 @@ var bp = bp || {};
 
 			wp.media.view.Attachment.prototype.render.apply( this, arguments );
 
-			if( ! _.isUndefined( selection.single() ) ) {
+			if( ! _.isUndefined( selection.single() ) && ! selection.single()._changing ) {
 				var tocrop = this.$el.find( 'img' );
 				var ratio = 1;
 
@@ -617,16 +617,19 @@ var bp = bp || {};
 
 		updateCoords: function( args ) {
 			var selection = media.frame().state().get( 'selection' ).single();
-			selection.set( {
-				'x': args.x,
-				'y': args.y,
-				'w': args.w,
-				'h': args.h
-			} );
+			
+			// Need to find a better way
+			selection.attributes.x = args.x;
+			selection.attributes.y = args.y;
+			selection.attributes.w = args.w;
+			selection.attributes.h = args.h;
 		},
 
 		showPreview: function( coords ) {
 			var selection = media.frame().state().get( 'selection' ).single();
+
+			// For some reason, the Avatar Detail view is not rendered
+			$( '#avatar-crop-preview' ).prop( 'src', selection.get( 'url') );
 
 			if ( parseInt(coords.w) > 0 ) {
 				var fw = bp.media.settings.full_w;
@@ -639,7 +642,7 @@ var bp = bp || {};
 					height: Math.round(ry * selection.get('height') )+ 'px',
 					marginLeft: '-' + Math.round(rx * coords.x) + 'px',
 					marginTop: '-' + Math.round(ry * coords.y) + 'px'
-				});
+				} );
 			}
 		},
 	} );
@@ -701,6 +704,12 @@ var bp = bp || {};
 			// Update the save status.
 			this.updateSave();
 
+			/**
+			 *
+			 * ! this is not rendered ?
+			 *
+			 * 
+			 */
 			this.views.render();
 
 			return this;
