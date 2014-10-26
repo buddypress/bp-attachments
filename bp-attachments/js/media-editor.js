@@ -4,11 +4,12 @@ var bp = bp || {};
  * BP Media Editor !
  */
 ( function( $ ) {
-	var media;
+	var BPmedia;
 
-	bp.media = media = {};
-	bp.l10n = wp.media.view.l10n;
-	bp.media.settings = wp.media.view.settings.bp_attachments;
+	bp.media = BPmedia = {};
+
+	// map bp.media to wp.media
+	bp.media = wp.media;
 
 	bp.media.params = {
 		item_id:        _wpPluploadSettings.defaults.multipart_params.item_id,
@@ -20,11 +21,11 @@ var bp = bp || {};
 		callback_id:    _wpPluploadSettings.defaults.multipart_params.callback_id,
 	};
 
-	_.extend( media, { model: {}, view: {}, controller: {}, frames: {} } );
+	_.extend( BPmedia, { model: {}, view: {}, controller: {}, frames: {} } );
 
 	// Models
-	wp.media.attachment = function( id ) {
-		return bpAttachment.get( id );
+	bp.media.attachment = function( id ) {
+		return BPattachment.get( id );
 	};
 
 	/**
@@ -35,7 +36,7 @@ var bp = bp || {};
 	 * @constructor
 	 * @augments Backbone.Model
 	 */
-	bpAttachment = media.model.Attachment = bp.media.model.Attachment = wp.media.model.Attachment.extend({
+	BPattachment = BPmedia.model.Attachment = bp.media.model.Attachment.extend({
 
 		/**
 		 * Triggered when attachment details change
@@ -62,7 +63,7 @@ var bp = bp || {};
 					action: 'get_bp_attachment',
 					id: this.id
 				});
-				return wp.media.ajax( options );
+				return bp.media.ajax( options );
 
 			// Overload the `update` request so properties can be saved.
 			} else if ( 'update' === method ) {
@@ -79,7 +80,7 @@ var bp = bp || {};
 					action:  'update_bp_attachment',
 					id:      this.id,
 					nonce:   this.get('nonces').update,
-					post_id: wp.media.model.settings.post.id
+					post_id: bp.media.model.settings.post.id
 				});
 
 				// Record the values of the changed attributes.
@@ -91,7 +92,7 @@ var bp = bp || {};
 					}, this );
 				}
 
-				return wp.media.ajax( options );
+				return bp.media.ajax( options );
 
 			// Overload the `delete` request so attachments can be removed.
 			// This will permanently delete an attachment.
@@ -109,7 +110,7 @@ var bp = bp || {};
 					_wpnonce: this.get('nonces')['delete']
 				});
 
-				return wp.media.ajax( options ).done( function() {
+				return bp.media.ajax( options ).done( function() {
 					this.destroyed = true;
 				}).fail( function() {
 					this.destroyed = false;
@@ -120,7 +121,7 @@ var bp = bp || {};
 				/**
 				 * Call `sync` directly on Backbone.Model
 				 */
-				return wp.media.model.Attachment.prototype.sync.apply( this, arguments );
+				return bp.media.model.Attachment.prototype.sync.apply( this, arguments );
 			}
 		},
 		/**
@@ -148,7 +149,7 @@ var bp = bp || {};
 		 * @returns {wp.media.model.Attachment}
 		 */
 		create: function( attrs ) {
-			return bpAttachments.all.push( attrs );
+			return BPattachments.all.push( attrs );
 		},
 		/**
 		 * Retrieve a model, or add it to the end of the static 'all' collection before returning it.
@@ -159,39 +160,39 @@ var bp = bp || {};
 		 * @returns {wp.media.model.Attachment}
 		 */
 		get: _.memoize( function( id, attachment ) {
-			return bpAttachments.all.push( attachment || { id: id } );
+			return BPattachments.all.push( attachment || { id: id } );
 		})
 	});
 
 	/**
 	 * Override media.model.Attachment.create function
-	 * so that the uploader is using bpAttachment model
+	 * so that the uploader is using BPattachment model
 	 */
-	wp.media.model.Attachment.create = function( attrs ) {
-		return bpAttachments.all.push( attrs );
+	bp.media.model.Attachment.create = function( attrs ) {
+		return BPattachments.all.push( attrs );
 	};
 
 	/**
 	 * Override media.model.Attachment.get function
-	 * so that the uploader is using bpAttachment model
+	 * so that the uploader is using BPattachment model
 	 */
-	wp.media.model.Attachment.get = _.memoize( function( id, attachment ) {
-		return bpAttachments.all.push( attachment || { id: id } );
+	bp.media.model.Attachment.get = _.memoize( function( id, attachment ) {
+		return BPattachments.all.push( attachment || { id: id } );
 	} );
 
 	/**
-	 * bp.media.model.bpAttachments
+	 * bp.media.model.BPattachments
 	 *
 	 * it's an adapted copy of WordPress Attachments Collection
-	 * 
+	 *
 	 * @constructor
 	 * @augments Backbone.Collection
 	 */
-	bpAttachments = bp.media.model.bpAttachments = wp.media.model.Attachments.extend({
+	BPattachments = bp.media.model.Attachments.extend({
 		/**
 		 * @type {wp.media.model.Attachment}
 		 */
-		model: bpAttachment,
+		model: BPattachment,
 		/**
 		 * @param {Array} [models=[]] Array of models used to populate the collection.
 		 * @param {Object} [options={}]
@@ -199,7 +200,7 @@ var bp = bp || {};
 		initialize: function( models, options ) {
 			options = options || {};
 
-			wp.media.model.Attachments.prototype.initialize.apply( this, arguments );
+			bp.media.model.Attachments.prototype.initialize.apply( this, arguments );
 		},
 
 		/**
@@ -226,7 +227,7 @@ var bp = bp || {};
 					id = attrs.id;
 				}
 
-				attachment = bpAttachment.get( id );
+				attachment = BPattachment.get( id );
 				newAttributes = attachment.parse( attrs, xhr );
 
 				if ( ! _.isEqual( attachment.attributes, newAttributes ) ) {
@@ -236,14 +237,14 @@ var bp = bp || {};
 				return attachment;
 			});
 		},
-		
+
 	});
 
 	/**
 	 * @static
-	 * @member {bp.media.model.bpAttachments}
+	 * @member {bp.media.model.BPattachments}
 	 */
-	bpAttachments.all = new bpAttachments();
+	BPattachments.all = new BPattachments();
 
 	/**
 	 * bp.media.model.Avatar
@@ -270,13 +271,13 @@ var bp = bp || {};
 	 * @constructor
 	 * @augments Backbone.Model
 	 */
-	Query = media.model.Query = bp.media.model.Query = bpAttachments.extend({
+	BPquery = BPmedia.model.Query = bp.media.model.Query = BPattachments.extend({
 
 		initialize: function( models, options ) {
 			var allowed;
 
 			options = options || {};
-			bpAttachments.prototype.initialize.apply( this, arguments );
+			BPattachments.prototype.initialize.apply( this, arguments );
 
 			this.args     = options.args;
 			this._hasMore = true;
@@ -357,7 +358,7 @@ var bp = bp || {};
 		sync: function( method, model, options ) {
 			var args, fallback;
 
-			// Overload the read method so bpAttachment.fetch() functions correctly.
+			// Overload the read method so BPattachment.fetch() functions correctly.
 			if ( 'read' === method ) {
 				options = options || {};
 				options.context = this;
@@ -368,7 +369,7 @@ var bp = bp || {};
 
 				options.data = _.extend( options.data || {}, {
 					action:  'query_bp_attachments',
-					post_id: wp.media.model.settings.post.id
+					post_id: bp.media.model.settings.post.id
 				});
 
 				// Clone the args so manipulation is non-destructive.
@@ -380,14 +381,14 @@ var bp = bp || {};
 				}
 
 				options.data.query = args;
-				return wp.media.ajax( options );
+				return bp.media.ajax( options );
 
 			// Otherwise, fall back to Backbone.sync()
 			} else {
 				/**
-				 * Call bp.media.model.bpAttachments.sync or Backbone.sync
+				 * Call bp.media.model.BPattachments.sync or Backbone.sync
 				 */
-				fallback = bpAttachments.prototype.sync ? bpAttachments.prototype : Backbone;
+				fallback = BPattachments.prototype.sync ? BPattachments.prototype : Backbone;
 				return fallback.sync.apply( this, arguments );
 			}
 		}
@@ -453,8 +454,8 @@ var bp = bp || {};
 			 */
 			return function( props, options ) {
 				var args     = {},
-					orderby  = Query.orderby,
-					defaults = Query.defaultProps,
+					orderby  = BPquery.orderby,
+					defaults = BPquery.defaultProps,
 					query;
 
 				// Remove the `query` property. This isn't linked to a query,
@@ -482,11 +483,11 @@ var bp = bp || {};
 						return;
 					}
 
-					args[ Query.propmap[ prop ] || prop ] = value;
+					args[ BPquery.propmap[ prop ] || prop ] = value;
 				});
 
 				// Fill any other default query args.
-				_.defaults( args, Query.defaultArgs );
+				_.defaults( args, BPquery.defaultArgs );
 
 				// `props.orderby` does not always map directly to `args.orderby`.
 				// Substitute exceptions specified in orderby.keymap.
@@ -499,7 +500,7 @@ var bp = bp || {};
 
 				// Otherwise, create a new query and add it to the cache.
 				if ( ! query ) {
-					query = new Query( [], _.extend( options || {}, {
+					query = new BPquery( [], _.extend( options || {}, {
 						props: props,
 						args:  args
 					} ) );
@@ -513,12 +514,12 @@ var bp = bp || {};
 	});
 
 	bp.media.query = function( props ) {
-		return new bpAttachments( null, {
+		return new BPattachments( null, {
 			props: _.extend( _.defaults( props || {}, { orderby: 'date' } ), { query: true } )
 		});
 	};
 
-	bp.media.controller.bpLibrary = wp.media.controller.Library.extend({
+	bp.media.controller.bpLibrary = bp.media.controller.Library.extend({
 		defaults: {
 			id:         'bp_library',
 			multiple:   false,
@@ -528,10 +529,10 @@ var bp = bp || {};
 			content:    'bp_upload',
 			router:     'bp_browse',
 			menu:       'default',
-			searchable: true,
+			searchable: false,
 			filterable: false,
-			sortable:   true,
-			title:      bp.l10n.bp_attachments.title,
+			sortable:   false,
+			title:      bp.media.view.l10n.bp_attachments.title,
 
 			// Uses a user setting to override the content mode.
 			contentUserSetting: false,
@@ -551,14 +552,14 @@ var bp = bp || {};
 				this.set( 'library', bp.media.query( type ) );
 			}
 
-			wp.media.controller.Library.prototype.initialize.apply( this, arguments );
+			bp.media.controller.Library.prototype.initialize.apply( this, arguments );
 		},
 
 		uploading: function( attachment ) {
 			var content = this.frame.content,
 				mode = 'bpbrowse';
 
-			if ( 'avatar' == bp.media.params.item_type ) 
+			if ( 'avatar' == bp.media.params.item_type )
 				mode = 'crop';
 
 			if ( 'bp_upload' === content.mode() ) {
@@ -570,31 +571,30 @@ var bp = bp || {};
 
 	});
 
-	media.view.Avatar = bp.media.view.Avatar = wp.media.view.Attachment.extend( {
+	BPmedia.view.Avatar = bp.media.view.Avatar = bp.media.view.Attachment.extend( {
 		tagName:   'li',
 		className: 'avatar',
-		template:  wp.media.template('avatar'),
+		template:  bp.media.template('avatar'),
 
 		initialize: function() {
 			var selection = this.options.selection;
 
-			wp.media.view.Attachment.prototype.initialize.apply( this, arguments );
+			bp.media.view.Attachment.prototype.initialize.apply( this, arguments );
 		},
 
 		render: function() {
 			var selection = this.options.selection;
 
-			wp.media.view.Attachment.prototype.render.apply( this, arguments );
+			bp.media.view.Attachment.prototype.render.apply( this, arguments );
 
 			if( ! _.isUndefined( selection.single() ) && ! selection.single()._changing ) {
 				var tocrop = this.$el.find( 'img' );
 				var ratio = 1;
 
-				if ( ! _.isUndefined( bp.media.settings.full_h ) && ! _.isUndefined( bp.media.settings.full_w ) && bp.media.settings.full_h != bp.media.settings.full_w ) {
-					ratio = bp.media.settings.full_h / bp.media.settings.full_w;
+				if ( ! _.isUndefined( bp.media.view.settings.bp_attachments.full_h ) && ! _.isUndefined( bp.media.view.settings.bp_attachments.full_w ) && bp.media.view.settings.bp_attachments.full_h != bp.media.view.settings.bp_attachments.full_w ) {
+					ratio = bp.media.view.settings.bp_attachments.full_h / bp.media.view.settings.bp_attachments.full_w;
 				}
 
-				
 				crop_left   = Math.round( selection.single().get('width' ) / 4 );
 				crop_top    = Math.round( selection.single().get('height' ) / 4 );
 				crop_right  = selection.single().get('width' ) - crop_left;
@@ -607,7 +607,7 @@ var bp = bp || {};
 					aspectRatio: ratio,
 	        		setSelect: [ crop_left, crop_top, crop_right, crop_bottom ]
 				});
-				
+
 				this.updateCoords({x: crop_left, y: crop_top, w: crop_right, h: crop_bottom});
 
 			}
@@ -616,8 +616,8 @@ var bp = bp || {};
 		},
 
 		updateCoords: function( args ) {
-			var selection = media.frame().state().get( 'selection' ).single();
-			
+			var selection = BPmedia.frame().state().get( 'selection' ).single();
+
 			// Need to find a better way
 			selection.attributes.x = args.x;
 			selection.attributes.y = args.y;
@@ -626,18 +626,19 @@ var bp = bp || {};
 		},
 
 		showPreview: function( coords ) {
-			var selection = media.frame().state().get( 'selection' ).single();
+			var selection = BPmedia.frame().state().get( 'selection' ).single();
 
 			// For some reason, the Avatar Detail view is not rendered
 			$( '#avatar-crop-preview' ).prop( 'src', selection.get( 'url') );
 
 			if ( parseInt(coords.w) > 0 ) {
-				var fw = bp.media.settings.full_w;
-				var fh = bp.media.settings.full_h;
+				var fw = bp.media.view.settings.bp_attachments.full_w;
+				var fh = bp.media.view.settings.bp_attachments.full_h;
 				var rx = fw / coords.w;
 				var ry = fh / coords.h;
 
-				$( '#avatar-crop-preview' ).css({
+				$( '#avatar-crop-preview' ).css( {
+					maxWidth:'none',
 					width: Math.round(rx *  selection.get('width') )+ 'px',
 					height: Math.round(ry * selection.get('height') )+ 'px',
 					marginLeft: '-' + Math.round(rx * coords.x) + 'px',
@@ -647,11 +648,11 @@ var bp = bp || {};
 		},
 	} );
 
-	bp.media.view.AvatarDetails = wp.media.view.Attachment.Details.extend({
+	bp.media.view.AvatarDetails = bp.media.view.Attachment.Details.extend({
 
 		tagName:   'div',
 		className: 'attachment-details',
-		template:  wp.media.template('bp-avatar-details'),
+		template:  bp.media.template('bp-avatar-details'),
 
 		render: function() {
 			var options = _.defaults( this.model.toJSON(), {
@@ -708,7 +709,7 @@ var bp = bp || {};
 			 *
 			 * ! this is not rendered ?
 			 *
-			 * 
+			 *
 			 */
 			this.views.render();
 
@@ -716,11 +717,11 @@ var bp = bp || {};
 		},
 	});
 
-	bp.media.view.AttachmentsDetails = wp.media.view.Attachment.Details.extend({
+	bp.media.view.AttachmentsDetails = bp.media.view.Attachment.Details.extend({
 
 		tagName:   'div',
 		className: 'attachment-details',
-		template:  wp.media.template('bp-attachment-details'),
+		template:  bp.media.template('bp-attachment-details'),
 
 		render: function() {
 			var options = _.defaults( this.model.toJSON(), {
@@ -780,8 +781,16 @@ var bp = bp || {};
 
 	});
 
-	media.view.AttachmentsBrowser = bp.media.view.AttachmentsBrowser = wp.media.view.AttachmentsBrowser.extend({
-		
+	BPmedia.view.AttachmentsBrowser = bp.media.view.BPattachmentsBrowser = bp.media.view.AttachmentsBrowser.extend({
+
+		createToolbar: function () {
+			bp.media.view.AttachmentsBrowser.prototype.createToolbar.apply( this, arguments );
+
+			// Remove the date field and label
+			this.toolbar.unset( 'dateFilterLabel' );
+			this.toolbar.unset( 'dateFilter' );
+		},
+
 		createSingle: function() {
 			var sidebar = this.sidebar,
 				single = this.options.selection.single();
@@ -793,7 +802,7 @@ var bp = bp || {};
 			}) );
 
 			if ( this.options.display ) {
-				sidebar.set( 'display', new wp.media.view.Settings.AttachmentDisplay({
+				sidebar.set( 'display', new bp.media.view.Settings.AttachmentDisplay({
 					controller:   this.controller,
 					model:        this.model.display( single ),
 					attachment:   single,
@@ -804,7 +813,7 @@ var bp = bp || {};
 		},
 	});
 
-	media.view.AvatarCroper = bp.media.view.AvatarCroper = wp.media.view.AttachmentsBrowser.extend( {
+	BPmedia.view.AvatarCroper = bp.media.view.AvatarCroper = bp.media.view.AttachmentsBrowser.extend( {
 		tagName:   'div',
 		className: 'attachments-browser',
 
@@ -830,6 +839,14 @@ var bp = bp || {};
 			$( '.upload-ui a.button-hero' ).html( 'Select an image' );
 		},
 
+		createToolbar: function () {
+			bp.media.view.AttachmentsBrowser.prototype.createToolbar.apply( this, arguments );
+
+			// Remove the date field and label
+			this.toolbar.unset( 'dateFilterLabel' );
+			this.toolbar.unset( 'dateFilter' );
+		},
+
 		updateContent: function() {
 			var view = this;
 
@@ -849,7 +866,7 @@ var bp = bp || {};
 		createAttachments: function() {
 			this.removeContent();
 
-			this.attachments = new wp.media.view.Attachments({
+			this.attachments = new bp.media.view.Attachments({
 				controller: this.controller,
 				collection: this.collection,
 				selection:  this.options.selection,
@@ -875,14 +892,14 @@ var bp = bp || {};
 		createSidebar: function() {
 			var options = this.options,
 				selection = options.selection,
-				sidebar = this.sidebar = new wp.media.view.Sidebar({
+				sidebar = this.sidebar = new bp.media.view.Sidebar({
 					controller: this.controller
 				});
 
 			this.views.add( sidebar );
 
 			if ( this.controller.uploader ) {
-				sidebar.set( 'uploads', new wp.media.view.UploaderStatus({
+				sidebar.set( 'uploads', new bp.media.view.UploaderStatus({
 					controller: this.controller,
 					priority:   40
 				}) );
@@ -908,9 +925,9 @@ var bp = bp || {};
 		},
 	} );
 
-	bp.media.UploaderInline = wp.media.view.UploaderInline.extend( {
+	bp.media.UploaderInline = bp.media.view.UploaderInline.extend( {
 		initialize:function() {
-			wp.media.view.UploaderInline.prototype.initialize.apply( this, arguments );
+			bp.media.view.UploaderInline.prototype.initialize.apply( this, arguments );
 
 			if ( 'avatar' == bp.media.params.item_type ) {
 				this.on( 'ready', this.customizeUploader, this );
@@ -923,18 +940,18 @@ var bp = bp || {};
 		}
 	} );
 
-	bp.media.view.ToolbarSelect = wp.media.view.Toolbar.Select.extend({
+	bp.media.view.ToolbarSelect = bp.media.view.Toolbar.Select.extend({
 		initialize: function() {
 			var options = this.options;
 			/**
 			 * call 'initialize' directly on the parent class
 			 */
-			wp.media.view.Toolbar.Select.prototype.initialize.apply( this, arguments );
+			bp.media.view.Toolbar.Select.prototype.initialize.apply( this, arguments );
 		},
 
 		refresh: function() {
-			var library = media.bpAttachmentsBrowser._frame.state().get( 'library' ),
-			    selection = media.bpAttachmentsBrowser._frame.state().get('selection');
+			var library = BPmedia.BPattachmentsBrowser._frame.state().get( 'library' ),
+			    selection = BPmedia.BPattachmentsBrowser._frame.state().get('selection');
 
 			if ( -1 == bp.media.params.callback.indexOf( 'http://' ) ) {
 				if ( selection.length > 0 ) {
@@ -953,14 +970,14 @@ var bp = bp || {};
 		},
 	});
 
-	media.bpAttachmentsBrowser = _.extend( media, {
+	BPmedia.BPattachmentsBrowser = _.extend( BPmedia, {
 		frame: function() {
 			if ( this._frame )
 				return this._frame;
 
 			var states = [new bp.media.controller.bpLibrary()];
 
-			this._frame = wp.media( {
+			this._frame = bp.media( {
 				className: 'media-frame no-sidebar',
 				states: states,
 				state: 'bp_library'
@@ -989,7 +1006,7 @@ var bp = bp || {};
 				// one file at a time !
 				if( _wpPluploadSettings.defaults.multi_selection == false && files.length > 1 ) {
 					var default_error = pluploadL10n.default_error;
-					pluploadL10n.default_error = bp.l10n.bp_attachments.files_error;
+					pluploadL10n.default_error = bp.media.view.l10n.bp_attachments.files_error;
 
 					for ( i in files ) {
 						this.trigger( 'Error', {
@@ -1004,7 +1021,7 @@ var bp = bp || {};
 		},
 
 		createRouter:function( router ) {
-			router.view = new wp.media.view.Router({
+			router.view = new bp.media.view.Router({
 				controller: this._frame
 			});
 		},
@@ -1014,27 +1031,27 @@ var bp = bp || {};
 			if ( 'avatar' == bp.media.params.item_type ) {
 				view.set({
 					bp_upload: {
-						text:     bp.l10n.bp_attachments.uploadtab,
+						text:     bp.media.view.l10n.bp_attachments.uploadtab,
 						priority: 20
 					},
 					crop: {
-						text:     bp.l10n.bp_attachments.croptab,
+						text:     bp.media.view.l10n.bp_attachments.croptab,
 						priority: 40
 					}
 				});
 			} else {
 				view.set({
 					bp_upload: {
-						text:     bp.l10n.bp_attachments.uploadtab,
+						text:     bp.media.view.l10n.bp_attachments.uploadtab,
 						priority: 20
 					},
 					bpbrowse: {
-						text:     bp.l10n.bp_attachments.managetab,
+						text:     bp.media.view.l10n.bp_attachments.managetab,
 						priority: 40
 					}
 				});
 			}
-			
+
 		},
 
 		bpBrowseContent:function( content ) {
@@ -1043,7 +1060,7 @@ var bp = bp || {};
 			this._frame.$el.removeClass('hide-toolbar');
 
 			// Browse our library of attachments.
-			content.view = new media.view.AttachmentsBrowser({
+			content.view = new BPmedia.view.AttachmentsBrowser({
 				controller: this._frame,
 				collection: state.get('library'),
 				selection:  state.get('selection'),
@@ -1064,7 +1081,7 @@ var bp = bp || {};
 			this._frame.$el.removeClass('hide-toolbar');
 
 			// Browse our library of attachments.
-			content.view = new media.view.AvatarCroper({
+			content.view = new BPmedia.view.AvatarCroper({
 				controller: this._frame,
 				collection: state.get('library'),
 				selection:  state.get('selection'),
@@ -1079,7 +1096,7 @@ var bp = bp || {};
 			options.controller = this._frame;
 
 			if ( 'avatar' == bp.media.params.item_type ) {
-				toolbar.view = new wp.media.view.Toolbar.Select( options );
+				toolbar.view = new bp.media.view.Toolbar.Select( options );
 			}
 
 			if ( ! _.isUndefined( bp.media.params.callback ) && bp.media.params.callback ) {
@@ -1107,6 +1124,9 @@ var bp = bp || {};
 				"bottom": "10%",
 				"left":   "15%"
 		    });
+
+			// Hide screen reader text
+		    $( 'a.media-modal-close .screen-reader-text' ).hide();
 		},
 
 		close: function() {
@@ -1114,30 +1134,30 @@ var bp = bp || {};
 		},
 
 		select: function() {
-			var settings = wp.media.view.settings,
+			var settings = bp.media.view.settings.bp_attachments,
 				selection = this.get( 'selection' ).single();
 
 			$( '.added' ).remove();
-			media.set( selection );
+			BPmedia.set( selection );
 		},
 
 		set: function( attachment ) {
 			if ( 'avatar' == bp.media.params.item_type ) {
-				wp.media.post( 'bp_attachments_set_avatar', {
+				bp.media.post( 'bp_attachments_set_avatar', {
 					json:          true,
-					object:        bp.media.settings.object,
+					object:        bp.media.view.settings.bp_attachments.object,
 					component:     bp.media.params.item_component,
-					avatar_dir:    bp.media.settings.avatar_dir,
-					item_id:       bp.media.settings.item_id,
+					avatar_dir:    bp.media.view.settings.bp_attachments.avatar_dir,
+					item_id:       bp.media.view.settings.bp_attachments.item_id,
 					original_file: attachment.get( 'src' ),
 					crop_w:        attachment.get( 'w' ),
 					crop_h:        attachment.get( 'h' ),
 					crop_x:        attachment.get( 'x' ),
-					crop_y:        attachment.get( 'y' ), 
+					crop_y:        attachment.get( 'y' ),
 					nonce:         bp.media.params.nonce
 				}).done( function( html ) {
 					$( '#' + bp.media.params.item_component + '-avatar', '#bp_' + bp.media.params.item_component + '_avatar' ).html( html );
-					$( bp.media.settings.button_id ).hide();
+					$( bp.media.view.settings.bp_attachments.button_id ).hide();
 				});
 				// reseting the frame
 				this._frame.reset();
@@ -1146,12 +1166,12 @@ var bp = bp || {};
 			} else {
 
 				if ( -1 == bp.media.params.callback.indexOf( 'http://' ) ) {
-					wp.media.post( bp.media.params.callback, {
+					bp.media.post( bp.media.params.callback, {
 						json:          true,
 						id:            attachment.get('id'),
-						object:        bp.media.settings.object,
+						object:        bp.media.view.settings.bp_attachments.object,
 						component:     bp.media.params.item_component,
-						item_id:       bp.media.settings.item_id,
+						item_id:       bp.media.view.settings.bp_attachments.item_id,
 						nonce:         bp.media.params.nonce
 					}).done( function( html ) {
 						$( bp.media.params.callback_id ).html( html );
@@ -1163,19 +1183,19 @@ var bp = bp || {};
 		},
 
 		deleteAvatar: function() {
-			wp.media.post( 'bp_attachments_delete_avatar', {
+			bp.media.post( 'bp_attachments_delete_avatar', {
 				json:          true,
-				object:        bp.media.settings.object,
-				avatar_dir:    bp.media.settings.avatar_dir,
+				object:        bp.media.view.settings.bp_attachments.object,
+				avatar_dir:    bp.media.view.settings.bp_attachments.avatar_dir,
 				component:     bp.media.params.item_component,
-				item_id:       bp.media.settings.item_id,
+				item_id:       bp.media.view.settings.bp_attachments.item_id,
 				nonce:         bp.media.params.nonce
 			}).done( function( result ) {
 
 				if ( 1 == result ) {
 					$( '#' + bp.media.params.item_component + '-avatar img' ).remove();
 					$( '#' + bp.media.params.item_component + '-avatar p' ).remove();
-					$( bp.media.settings.button_id ).show();
+					$( bp.media.view.settings.bp_attachments.button_id ).show();
 				}
 
 			});
@@ -1194,33 +1214,33 @@ var bp = bp || {};
 				}
 
 				if ( ! $( '#remove-' + bp.media.params.item_component + '-avatar' ).length ) {
-					$( bp.media.settings.button_id ).show();
+					$( bp.media.view.settings.bp_attachments.button_id ).show();
 				}
 				$( '#' + bp.media.params.item_component + '-avatar' ).on( 'click', 'a', function(e) {
 					e.preventDefault();
 
-					media.bpAttachmentsBrowser.deleteAvatar();
+					BPmedia.BPattachmentsBrowser.deleteAvatar();
 				});
 			} else {
 				if ( $( '#attachment-upload-form' ).length ) {
 					$( '#attachment-upload-form' ).remove();
-					$( bp.media.settings.button_id ).show();
+					$( bp.media.view.settings.bp_attachments.button_id ).show();
 				}
 			}
 
-			$( bp.media.settings.button_id ).on( 'click', 'a', function( e ) {
+			$( bp.media.view.settings.bp_attachments.button_id ).on( 'click', 'a', function( e ) {
 				e.preventDefault();
 
-				media.bpAttachmentsBrowser.frame().open();
+				BPmedia.BPattachmentsBrowser.frame().open();
 			});
 		}
 	} );
-	
+
 	// For BP Attachments & Avatars
-	$( media.bpAttachmentsBrowser.init );
+	$( BPmedia.BPattachmentsBrowser.init );
 
 
-	bp.media.view.ToolbarPreview = wp.media.view.Toolbar.extend( {
+	bp.media.view.ToolbarPreview = bp.media.view.Toolbar.extend( {
 		initialize: function() {
 			_this = this;
 
@@ -1232,7 +1252,7 @@ var bp = bp || {};
 				    next : {
 				        id       : 'bp-next',
 				        style    : 'primary',
-				        text     : bp.l10n.bp_attachments.nextCaption,
+				        text     : bp.media.view.l10n.bp_attachments.nextCaption,
 				        priority : 80,
 				        click    : function() {
 				        	this.controller.state().nextPage();
@@ -1241,7 +1261,7 @@ var bp = bp || {};
 				    prev : {
 				        id       : 'bp-prev',
 				        style    : 'primary',
-				        text     : bp.l10n.bp_attachments.prevCaption,
+				        text     : bp.media.view.l10n.bp_attachments.prevCaption,
 				        priority : 60,
 				        click    : function() {
 				        	this.controller.state().prevPage();
@@ -1250,7 +1270,7 @@ var bp = bp || {};
 				}
 			});
 
-			wp.media.view.Toolbar.prototype.initialize.apply( this, arguments );
+			bp.media.view.Toolbar.prototype.initialize.apply( this, arguments );
 
 			this.controller.state().selected.on( 'change', this.refresh, this );
 
@@ -1274,10 +1294,10 @@ var bp = bp || {};
 
 		},
 	} );
-	
-	bp.media.view.PreviewImage = wp.media.View.extend( {
+
+	bp.media.view.PreviewImage = bp.media.View.extend( {
 		className: 'bp-preview',
-		template:  wp.media.template( 'bp-preview' ),
+		template:  bp.media.template( 'bp-preview' ),
 
 		render:function() {
 
@@ -1300,7 +1320,7 @@ var bp = bp || {};
 	} );
 
 
-	media.controller.PreviewImage = wp.media.controller.State.extend( {
+	BPmedia.controller.PreviewImage = bp.media.controller.PreviewImage = bp.media.controller.State.extend( {
 		defaults: {
 			id:       'preview',
 			menu:     'default',
@@ -1356,8 +1376,8 @@ var bp = bp || {};
 	});
 
 
-	media.attachmentsPreview = {
-		
+	BPmedia.attachmentsPreview = {
+
 		defaults : {
             img: '',
         },
@@ -1367,13 +1387,13 @@ var bp = bp || {};
 				return this._frame;
 
 			states = [
-					new media.controller.PreviewImage( {
-						title: bp.l10n.bp_attachments.diapoTitle,
+					new BPmedia.controller.PreviewImage( {
+						title: bp.media.view.l10n.bp_attachments.diapoTitle,
 						id:    'preview',
 					} ),
 			];
 
-			this._frame = wp.media( {
+			this._frame = bp.media( {
 				className: 'media-frame no-sidebar',
 				states: states,
 				state: 'preview',
@@ -1395,7 +1415,9 @@ var bp = bp || {};
 		},
 
 		open: function() {
-			media.attachmentsPreview.frame().states.get('preview').selected.set( {id:'_sel', photo: media.attachmentsPreview.defaults.img });
+			// Hide screen reader text
+			$( 'a.media-modal-close .screen-reader-text' ).hide();
+			BPmedia.attachmentsPreview.frame().states.get('preview').selected.set( {id:'_sel', photo: BPmedia.attachmentsPreview.defaults.img });
 		},
 
 		init: function() {
@@ -1408,13 +1430,13 @@ var bp = bp || {};
 				if ( _.isUndefined( image ) )
 					image = $( e.target ).parent().data( 'attachment' );
 
-				media.attachmentsPreview.defaults.img = image;
+				BPmedia.attachmentsPreview.defaults.img = image;
 
-				media.attachmentsPreview.frame().open();
+				BPmedia.attachmentsPreview.frame().open();
 			} );
 		}
 	};
 
-	$( media.attachmentsPreview.init );
+	$( BPmedia.attachmentsPreview.init );
 
 } )( jQuery );
