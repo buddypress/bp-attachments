@@ -50,7 +50,7 @@ class BP_Attachments_User_Screens {
 			} else {
 				bp_core_add_message( __( 'Attachment could not be deleted.', 'bp-attachments' ), 'error' );
 			}
-			
+
 			bp_core_redirect( $redirect );
 		}
 
@@ -145,11 +145,7 @@ class BP_Attachments_User_Screens {
 	 */
 	public function user_content() {
 		do_action( 'bp_attachments_uploader_fallback' );
-		?>
-		<div class="item-list-tabs no-ajax" id="subnav" role="navigation">
-			<ul><?php bp_get_options_nav(); ?></ul>
-		</div>
-		<?php
+
 		bp_attachments_template_loop( buddypress()->attachments->current_component );
 	}
 
@@ -216,7 +212,7 @@ function bp_attachments_members_change_avatar_content() {
 
         <?php
         // Displays the button to Change the avatar.
-        bp_attachments_browser( 'bp-avatar-upload', array( 
+        bp_attachments_browser( 'bp-avatar-upload', array(
             'item_id'         => bp_displayed_user_id(),
             'component'       => 'xprofile',
             'item_type'       => 'avatar',
@@ -249,7 +245,7 @@ add_action( 'bp_template_content', 'bp_attachments_members_change_avatar_content
 function bp_attachments_members_change_avatar_title() {
 	if ( ! bp_is_user_change_avatar() )
 		return;
-	
+
 	esc_html_e( 'Change Avatar', 'bp-attachments' );
 }
 add_action( 'bp_template_title', 'bp_attachments_members_change_avatar_title' );
