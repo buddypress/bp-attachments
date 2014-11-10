@@ -16,10 +16,10 @@ if ( class_exists( 'BP_Group_Extension' ) ) :
  * @package BP Attachments
  * @since 1.0.0
  */
-class BP_Attachments_Group extends BP_Group_Extension {        
+class BP_Attachments_Group extends BP_Group_Extension {
     /**
      * construct method to add some settings and hooks
-     * 
+     *
      * @package BP Attachments
      * @subpackage Groups
      * @since 1.0.0
@@ -34,7 +34,7 @@ class BP_Attachments_Group extends BP_Group_Extension {
         $attachments_count = array( 'total' => 0 );
 
         if ( bp_is_group() && $this->use_attachments() ) {
-            $attachments_count = BP_Attachments::count( array( 
+            $attachments_count = BP_Attachments::count( array(
                 'item_id'   => bp_get_current_group_id(),
                 'term_slug' => buddypress()->groups->id
             ) );
@@ -65,12 +65,12 @@ class BP_Attachments_Group extends BP_Group_Extension {
         );
 
         parent::init( $args );
-            
+
     }
 
     /**
      * Add an avatar to the new group.
-     * 
+     *
      * @package BP Attachments
      * @subpackage Groups
      * @since 1.0.0
@@ -82,7 +82,7 @@ class BP_Attachments_Group extends BP_Group_Extension {
     /**
      * @todo disable javascript and see how to deal with
      * it.
-     * 
+     *
      * @package BP Attachments
      * @subpackage Groups
      * @since 1.0.0
@@ -91,7 +91,7 @@ class BP_Attachments_Group extends BP_Group_Extension {
 
     /**
      * Unused Methods
-     * 
+     *
      * @package BP Attachments
      * @subpackage Groups
      * @since 1.0.0
@@ -102,9 +102,9 @@ class BP_Attachments_Group extends BP_Group_Extension {
 
     /**
      * Set up key actions
-     * 
+     *
      * Some may not be in the Group Extension class..
-     * 
+     *
      * @package BP Attachments
      * @subpackage Groups
      * @since 1.0.0
@@ -145,7 +145,7 @@ class BP_Attachments_Group extends BP_Group_Extension {
 
     /**
      * Displays the attchments setting in Group Admin & settings screens
-     * 
+     *
      * @package BP Attachments
      * @subpackage Groups
      * @since 1.0.0
@@ -176,10 +176,10 @@ class BP_Attachments_Group extends BP_Group_Extension {
 
     /**
      * Save the setting
-     * 
+     *
      * Eventually remove linked attachments
      * in case the attachment feature has been disabled.
-     * 
+     *
      * @package BP Attachments
      * @subpackage Groups
      * @since 1.0.0
@@ -205,25 +205,25 @@ class BP_Attachments_Group extends BP_Group_Extension {
 
     /**
      * Add a metabox to edit the Group Avatar
-     * 
+     *
      * @package BP Attachments
      * @subpackage Groups
      * @since 1.0.0
      */
     public function group_avatar() {
-        add_meta_box( 
-            'bp_groups_avatar', 
-            _x( 'Avatar', 'group admin edit screen', 'bp-attachments' ), 
-            array( &$this, 'group_avatar_metabox' ), 
-            get_current_screen()->id, 
-            'side', 
-            'low' 
+        add_meta_box(
+            'bp_groups_avatar',
+            _x( 'Avatar', 'group admin edit screen', 'bp-attachments' ),
+            array( &$this, 'group_avatar_metabox' ),
+            get_current_screen()->id,
+            'side',
+            'low'
         );
     }
 
     /**
      * Displays the metabox to edit the Group Avatar
-     * 
+     *
      * @package BP Attachments
      * @subpackage Groups
      * @since 1.0.0
@@ -247,7 +247,7 @@ class BP_Attachments_Group extends BP_Group_Extension {
         </div>
         <?php
         // Displays the button to Change the avatar.
-        bp_attachments_browser( 'bp-avatar-upload', array( 
+        bp_attachments_browser( 'bp-avatar-upload', array(
             'item_id'         => $item->id,
             'component'       => 'groups',
             'item_type'       => 'avatar',
@@ -265,7 +265,7 @@ class BP_Attachments_Group extends BP_Group_Extension {
 
     /**
      * Replace the group avatar template to use group/single/plugins one
-     * 
+     *
      * @package BP Attachments
      * @subpackage Groups
      * @since 1.0.0
@@ -282,7 +282,7 @@ class BP_Attachments_Group extends BP_Group_Extension {
 
     /**
      * Are we on a screen to add/edit group avatar ?
-     * 
+     *
      * @package BP Attachments
      * @subpackage Groups
      * @since 1.0.0
@@ -303,7 +303,7 @@ class BP_Attachments_Group extends BP_Group_Extension {
 
     /**
      * Displays the content to change avatar in group/single/plugins
-     * 
+     *
      * @package BP Attachments
      * @subpackage Groups
      * @since 1.0.0
@@ -316,7 +316,7 @@ class BP_Attachments_Group extends BP_Group_Extension {
         }
 
         $group = groups_get_current_group(); ?>
-        
+
         <?php if ( 'edit_screen' ==  $group_avatar_screen ) :?>
             <div class="item-list-tabs no-ajax" id="subnav" role="navigation">
                 <ul>
@@ -331,7 +331,7 @@ class BP_Attachments_Group extends BP_Group_Extension {
         <p><?php _e("Upload an image to use as an avatar for this group. The image will be shown on the main group page, and in search results.", 'bp-attachments' ); ?></p>
 
         <div id="bp_groups_avatar">
-        
+
             <?php $this->group_avatar_metabox( $group ); ?>
 
         </div>
@@ -341,9 +341,9 @@ class BP_Attachments_Group extends BP_Group_Extension {
 
     /**
      * Add a metabox to Group Admin Screen
-     * 
+     *
      * As it's not possible to hook into the settings meta box..
-     * 
+     *
      * @package BP Attachments
      * @subpackage Groups
      * @since 1.0.0
@@ -354,9 +354,9 @@ class BP_Attachments_Group extends BP_Group_Extension {
 
     /**
      * Save the setting in Group Admin screen
-     * 
+     *
      * As it's not possible to hook into the settings meta box..
-     * 
+     *
      * @package BP Attachments
      * @subpackage Groups
      * @since 1.0.0
@@ -367,18 +367,18 @@ class BP_Attachments_Group extends BP_Group_Extension {
 
     /**
      * Displays the Attachments content of the group
-     * 
+     *
      * @package BP Attachments
      * @subpackage Groups
      * @since 1.0.0
      *
      * @return string html output
      */
-    public function display() {
+    public function display( $group_id = null ) {
 
         ?>
-        <h3><?php 
-        	bp_attachments_browser( 'bp-attachments-upload', array( 
+        <h3><?php
+        	bp_attachments_browser( 'bp-attachments-upload', array(
 				'item_id'         => bp_get_current_group_id(),
 				'component'       => 'groups',
 				'item_type'       => 'attachment',
@@ -395,7 +395,7 @@ class BP_Attachments_Group extends BP_Group_Extension {
 
     /**
      * Does this Group is using attachments ?
-     * 
+     *
      * @package BP Attachments
      * @subpackage Groups
      * @since 1.0.0
@@ -409,7 +409,7 @@ class BP_Attachments_Group extends BP_Group_Extension {
 
     /**
      * Let user change the groups linked in user's attachement edit screen
-     * 
+     *
      * @package BP Attachments
      * @subpackage Groups
      * @since 1.0.0
@@ -428,7 +428,7 @@ class BP_Attachments_Group extends BP_Group_Extension {
             $item_ids = ! empty( $attachment->item_ids->{$bp->groups->id} ) ? $attachment->item_ids->{$bp->groups->id} : array();
 
             $output .= '<ul>';
-            
+
             foreach ( $user_groups['groups'] as $group ) {
                 if ( ! $this->use_attachments( $group->id ) )
                     continue;
@@ -447,7 +447,7 @@ class BP_Attachments_Group extends BP_Group_Extension {
 
     /**
      * Let group admins remove an attachment from their group
-     * 
+     *
      * @package BP Attachments
      * @subpackage Groups
      * @since 1.0.0
@@ -476,12 +476,12 @@ class BP_Attachments_Group extends BP_Group_Extension {
             // Filter and return the HTML button
             echo apply_filters( 'bp_attachments_get_the_group_actions', $remove );
         }
-        
+
     }
 
     /**
      * Remove an attachment from a group
-     * 
+     *
      * @package BP Attachments
      * @subpackage Groups
      * @since 1.0.0
@@ -504,8 +504,8 @@ class BP_Attachments_Group extends BP_Group_Extension {
             if ( empty( $attachment_id ) )
                 bp_core_redirect( $redirect );
 
-            $cap_args = array( 
-                'component'     => $bp->groups->id, 
+            $cap_args = array(
+                'component'     => $bp->groups->id,
                 'item_id'       => $group->id
             );
 
@@ -523,7 +523,7 @@ class BP_Attachments_Group extends BP_Group_Extension {
 
     /**
      * Remove the group avatar creation step
-     * 
+     *
      * @package BP Attachments
      * @subpackage Groups
      * @since 1.0.0
@@ -534,21 +534,21 @@ class BP_Attachments_Group extends BP_Group_Extension {
         // BP Attachments will handle this !
         unset( $bp->groups->group_creation_steps['group-avatar'] );
     }
-    
+
 
     /**
      * Loads the BP Attachments navigation if group admin activated it
-     * 
+     *
      * @package BP Attachments
      * @subpackage Groups
      * @since 1.0.0
      */
     function enable_nav_item() {
         $group_id = bp_get_current_group_id();
-        
+
         if( empty( $group_id ) )
             return false;
-        
+
         if ( $this->use_attachments( $group_id ) )
             return true;
         else
@@ -560,11 +560,11 @@ class BP_Attachments_Group extends BP_Group_Extension {
  * Waits for bp_init hook before loading the group extension
  *
  * Let's make sure the group id is defined before loading our stuff
- * 
+ *
  * @package BP Attachments
  * @subpackage Groups
  * @since 1.0.0
- * 
+ *
  * @uses bp_register_group_extension() to register the group extension
  */
 function bp_attachments_register_group_extension() {
