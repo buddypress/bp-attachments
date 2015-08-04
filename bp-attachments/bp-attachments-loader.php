@@ -104,7 +104,7 @@ class BP_Attachments_Component extends BP_Component {
 		 * Maybe this should be done earlier like direclty bailing at start method
 		 * Using post types for BP Attachment, might be a trouble if a child blog
 		 * wants to use this component.. (switch_to_blog() ?)
-		 */ 
+		 */
 		if ( get_current_blog_id() == bp_get_root_blog_id() ) {
 			// register bp_attachments post type
 			add_action( 'bp_init', array( $this, 'register_post_types' ) );
@@ -127,7 +127,7 @@ class BP_Attachments_Component extends BP_Component {
 	 */
 	public function register_upload_dir() {
 		$upload_data = bp_attachments_set_upload_dir();
-		
+
 		if( ! empty( $upload_data ) && is_array( $upload_data ) ) {
 			foreach ( $upload_data as $key => $data ) {
 				// adding the uploads dir and url to Attachments component global.
@@ -138,7 +138,7 @@ class BP_Attachments_Component extends BP_Component {
 
 	/**
 	 * Force the group component to support attachment
-	 * 
+	 *
 	 * This should be done in Groups Component loader..
 	 *
 	 * @since BP Attachments (1.0.0)
@@ -276,7 +276,7 @@ class BP_Attachments_Component extends BP_Component {
 			'not_found'          => _x( 'No Attachments Found',          'bp-attachments not found',          'bp-attachments' ),
 			'not_found_in_trash' => _x( 'No Attachments Found in Trash', 'bp-attachments not found in trash', 'bp-attachments' )
 		);
-		
+
 		$bp_attachments_args = array(
 			'label'	            => _x( 'Attachments',                    'bp-attachments label',              'bp-attachments' ),
 			'labels'            => $bp_attachments_labels,
@@ -322,6 +322,7 @@ class BP_Attachments_Component extends BP_Component {
 			'labels'                => $labels,
 			'show_ui'               => true,
 			'show_admin_column'     => true,
+			'show_in_nav_menus'     => false,
 			'query_var'             => false,
 			'rewrite'               => false,
 			'capabilities'          => bp_attachments_get_component_caps(),
