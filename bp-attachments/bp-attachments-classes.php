@@ -281,7 +281,7 @@ class BP_Attachments_Browser {
 		if ( ! empty( $set['component'] ) && ! empty( $set['item_id'] ) )
 			$args = wp_array_slice_assoc( $set, array( 'component', 'item_id' ) );
 
-		if ( bp_attachments_current_user_can( 'publish_bp_attachments', $args ) ) {
+		if ( bp_attachments_loggedin_user_can( 'publish_bp_attachments', $args ) ) {
 			// Need some extra attribute to the wrapper
 			add_filter( 'bp_button_attachments_create-' . $set['component'] . '-' . $set['item_type'], array( __CLASS__, 'btn_extra_attribute' ), 10, 4 );
 

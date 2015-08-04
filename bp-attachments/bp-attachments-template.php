@@ -684,12 +684,12 @@ add_action( 'bp_attachments_members_actions', 'bp_attachments_the_user_actions' 
 		
 		$edit = $delete = false;
 
-		if ( bp_attachments_current_user_can( 'edit_bp_attachment', $attachment_id ) ) {
+		if ( bp_attachments_loggedin_user_can( 'edit_bp_attachment', $attachment_id ) ) {
 			$edit_link = bp_attachments_get_edit_link( $attachment_id, $user_id );
 			$edit = '<a href="'. esc_url( $edit_link ) .'" class="button edit-attachment bp-primary-action" id="edit-attachment-'. $attachment_id .' ">' . _x( 'Edit', 'attachments edit link', 'bp-attachments' ) . '</a>';
 		}
 
-		if ( bp_attachments_current_user_can( 'delete_bp_attachment', $attachment_id ) ) {
+		if ( bp_attachments_loggedin_user_can( 'delete_bp_attachment', $attachment_id ) ) {
 			$delete_link = bp_attachments_get_delete_link( $attachment_id, $user_id );
 			$delete_link = wp_nonce_url( $delete_link, 'bp_attachments_delete' );
 			$delete = '<a href="'. esc_url( $delete_link ) .'" class="button delete-attachment bp-primary-action" id="delete-attachment-'. $attachment_id .' ">' . _x( 'Delete', 'attachments delete link', 'bp-attachments' ) . '</a>';

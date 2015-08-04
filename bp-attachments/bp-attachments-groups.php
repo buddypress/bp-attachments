@@ -50,9 +50,7 @@ class BP_Attachments_Group extends BP_Group_Extension {
             'enable_nav_item'   => $this->enable_nav_item(),
             'screens'           => array(
                 'create' => array(
-                    'position' => 20,
-                    'enabled'  => $this->avatar_enabled,
-                    'name'     => __( 'Avatar', 'bp-attachments' ),
+                    'enabled'  => false,
                 ),
                  'admin' => array(
                     'metabox_context'  => 'side',
@@ -75,9 +73,7 @@ class BP_Attachments_Group extends BP_Group_Extension {
      * @subpackage Groups
      * @since 1.0.0
      */
-    public function create_screen( $group_id = null ) {
-        $this->edit_group_avatar();
-    }
+    public function create_screen( $group_id = null ) {}
 
     /**
      * @todo disable javascript and see how to deal with
@@ -117,20 +113,6 @@ class BP_Attachments_Group extends BP_Group_Extension {
         add_action( 'bp_after_group_settings_creation_step',        array( $this, 'group_settings')              );
 		add_action( 'groups_group_settings_edited',                 array( $this, 'group_settings_save' ), 10, 1 );
         add_action( 'groups_create_group_step_save_group-settings', array( $this, 'group_settings_save' )        );
-
-        if ( $this->avatar_enabled )  {
-            // Allow an avatar to be edited from Group Admin Screen
-            if ( is_admin() ) {
-                add_action( 'bp_groups_admin_meta_boxes', array( $this, 'group_avatar' ) );
-            }
-
-            // Override the change avatar settings for group in front end
-            add_filter( 'bp_get_template_part', array( $this, 'filter_change_avatar_template'), 10, 2 );
-            add_action( 'bp_template_content',  array( $this, 'edit_group_avatar'          )        );
-
-            // override the group creation avatar step
-            add_action( 'bp_actions', array( $this, 'remove_avatar_step' ), 1 );
-        }
 
         // Add group specific item to attach the attach to
         add_filter( "bp_attachments_edit_attached_to_{$bp->groups->id}", array( $this, 'attach_group' ), 10, 2 );
@@ -202,142 +184,6 @@ class BP_Attachments_Group extends BP_Group_Extension {
             delete_metadata( 'post', null, "_bp_{$bp->groups->id}_id", $group_id, true );
 		}
 	}
-
-    /**
-     * Add a metabox to edit the Group Avatar
-     *
-     * @package BP Attachments
-     * @subpackage Groups
-     * @since 1.0.0
-     */
-    public function group_avatar() {
-        add_meta_box(
-            'bp_groups_avatar',
-            _x( 'Avatar', 'group admin edit screen', 'bp-attachments' ),
-            array( &$this, 'group_avatar_metabox' ),
-            get_current_screen()->id,
-            'side',
-            'low'
-        );
-    }
-
-    /**
-     * Displays the metabox to edit the Group Avatar
-     *
-     * @package BP Attachments
-     * @subpackage Groups
-     * @since 1.0.0
-     */
-    public function group_avatar_metabox( $item = null ) {
-        if ( empty( $item ) )
-            return;
-        ?>
-        <div id="groups-avatar">
-        <?php
-        // Displays the current avatar and a link to delete it.
-        if ( bp_get_group_has_avatar( $item->id ) ) {
-            $fallback_link = is_admin() ? '#' : bp_get_group_avatar_delete_link();
-            echo bp_core_fetch_avatar( array( 'item_id' => $item->id, 'object' => 'group', 'type' => 'full' ) );
-
-            if ( ! bp_is_group_create() ) : ?>
-            <p><a href="<?php echo esc_url( $fallback_link );?>" id="remove-groups-avatar"><?php esc_html_e( 'Remove Avatar', 'bp-attachments' ); ?></a></p>
-            <?php endif;
-        }
-        ?>
-        </div>
-        <?php
-        // Displays the button to Change the avatar.
-        bp_attachments_browser( 'bp-avatar-upload', array(
-            'item_id'         => $item->id,
-            'component'       => 'groups',
-            'item_type'       => 'avatar',
-            'btn_caption'     => __( 'Edit Avatar', 'bp-attachments' ),
-            'multi_selection' => false,
-            'action'          => 'bp_attachments_upload_avatar',
-            'btn_class'       => 'attachments-new-avatar'
-        ) );
-
-        // Provide a js fallback on edit/create screens
-        if ( ! is_admin() ) {
-            do_action( 'bp_attachments_uploader_fallback' );
-        }
-    }
-
-    /**
-     * Replace the group avatar template to use group/single/plugins one
-     *
-     * @package BP Attachments
-     * @subpackage Groups
-     * @since 1.0.0
-     */
-    public function filter_change_avatar_template( $templates = array(), $slug = '' ) {
-        if( ! bp_is_group_admin_page() || ! bp_is_group_admin_screen( 'group-avatar' ) )
-            return $templates;
-
-        if( 'groups/single/admin' == $slug )
-            $templates = array_merge( array( 'groups/single/plugins.php' ), $templates );
-
-        return $templates;
-    }
-
-    /**
-     * Are we on a screen to add/edit group avatar ?
-     *
-     * @package BP Attachments
-     * @subpackage Groups
-     * @since 1.0.0
-     */
-    public function is_group_avatar_screen() {
-        $retval = false;
-
-        if ( bp_is_group_admin_page() && bp_is_group_admin_screen( 'group-avatar' ) ) {
-            $retval = 'edit_screen';
-        }
-
-        if ( bp_is_group_create() ) {
-            $retval = 'create_screen';
-        }
-
-        return $retval;
-    }
-
-    /**
-     * Displays the content to change avatar in group/single/plugins
-     *
-     * @package BP Attachments
-     * @subpackage Groups
-     * @since 1.0.0
-     */
-    public function edit_group_avatar() {
-        $group_avatar_screen = $this->is_group_avatar_screen();
-
-        if( empty( $group_avatar_screen ) ) {
-            return;
-        }
-
-        $group = groups_get_current_group(); ?>
-
-        <?php if ( 'edit_screen' ==  $group_avatar_screen ) :?>
-            <div class="item-list-tabs no-ajax" id="subnav" role="navigation">
-                <ul>
-                    <?php bp_group_admin_tabs(); ?>
-                </ul>
-            </div><!-- .item-list-tabs -->
-
-            <?php do_action( 'bp_before_group_admin_content' );
-
-        endif ;?>
-
-        <p><?php _e("Upload an image to use as an avatar for this group. The image will be shown on the main group page, and in search results.", 'bp-attachments' ); ?></p>
-
-        <div id="bp_groups_avatar">
-
-            <?php $this->group_avatar_metabox( $group ); ?>
-
-        </div>
-
-        <?php
-    }
 
     /**
      * Add a metabox to Group Admin Screen
@@ -467,7 +313,7 @@ class BP_Attachments_Group extends BP_Group_Extension {
             $group = groups_get_current_group();
 
             $url = trailingslashit( bp_get_group_permalink( $group ) . buddypress()->attachments->slug );
-            if ( bp_attachments_current_user_can( 'edit_bp_attachments', array( 'component' => buddypress()->groups->id, 'item_id' => $group->id,'attachment_id' => $attachment_id ) ) ) {
+            if ( bp_attachments_loggedin_user_can( 'edit_bp_attachments', array( 'component' => buddypress()->groups->id, 'item_id' => $group->id,'attachment_id' => $attachment_id ) ) ) {
                 $remove_link = add_query_arg( array( 'attachment' => $attachment_id, 'action' => 'remove' ), $url );
                 $remove_link = wp_nonce_url( $remove_link, 'bp_attachments_remove' );
                 $remove = '<a href="'. esc_url( $remove_link ) .'" class="button remove-attachment bp-primary-action" id="remove-attachment-'. $attachment_id .' ">' . _x( 'Remove', 'attachments remove link', 'bp-attachments' ) . '</a>';
@@ -510,7 +356,7 @@ class BP_Attachments_Group extends BP_Group_Extension {
             );
 
             // capability check
-            if ( ! bp_attachments_current_user_can( 'edit_bp_attachments', $cap_args ) ) {
+            if ( ! bp_attachments_loggedin_user_can( 'edit_bp_attachments', $cap_args ) ) {
                 bp_core_add_message( __( 'Error: you are not allowed to remove this attachment.', 'bp-attachments' ), 'error' );
                 bp_core_redirect( $redirect );
             } else {
@@ -519,20 +365,6 @@ class BP_Attachments_Group extends BP_Group_Extension {
                 bp_core_redirect( $redirect );
             }
         }
-    }
-
-    /**
-     * Remove the group avatar creation step
-     *
-     * @package BP Attachments
-     * @subpackage Groups
-     * @since 1.0.0
-     */
-    public function remove_avatar_step() {
-        $bp = buddypress();
-
-        // BP Attachments will handle this !
-        unset( $bp->groups->group_creation_steps['group-avatar'] );
     }
 
 

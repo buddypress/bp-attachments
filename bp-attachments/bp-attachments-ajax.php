@@ -80,7 +80,7 @@ function bp_attachments_upload() {
 	}
 
 	// capability check
-	if ( ! bp_attachments_current_user_can( 'publish_bp_attachments', $cap_args ) )
+	if ( ! bp_attachments_loggedin_user_can( 'publish_bp_attachments', $cap_args ) )
 		wp_die();
 
 	$attachment_id = bp_attachments_handle_upload( $r );
@@ -122,7 +122,7 @@ function bp_attachments_ajax_delete_attachment( $action ) {
 
 	check_ajax_referer( "{$action}_$id" );
 
-	if ( ! bp_attachments_current_user_can( 'delete_bp_attachment', $id ) )
+	if ( ! bp_attachments_loggedin_user_can( 'delete_bp_attachment', $id ) )
 		wp_die( -1 );
 
 	if ( bp_attachments_delete_attachment( $id ) )
@@ -146,7 +146,7 @@ function bp_attachments_ajax_update_attachment() {
 
 	check_ajax_referer( 'update_bp_attachment_' . $id, 'nonce' );
 
-	if ( ! bp_attachments_current_user_can( 'edit_bp_attachment', $id ) )
+	if ( ! bp_attachments_loggedin_user_can( 'edit_bp_attachment', $id ) )
 		wp_send_json_error();
 
 	$changes = $_REQUEST['changes'];
@@ -194,7 +194,7 @@ function bp_attachments_upload_avatar(){
 	}
 
 	// capability check
-	if ( ! bp_attachments_current_user_can( 'edit_bp_attachments', $cap_args ) )
+	if ( ! bp_attachments_loggedin_user_can( 'edit_bp_attachments', $cap_args ) )
 		wp_die();
 
 	// If the context is avatar, make sure the uploaded file is an image.
@@ -268,7 +268,7 @@ function bp_attachments_set_avatar() {
 	}
 
 	// capability check
-	if ( ! bp_attachments_current_user_can( 'edit_bp_attachments', $cap_args ) )
+	if ( ! bp_attachments_loggedin_user_can( 'edit_bp_attachments', $cap_args ) )
 		wp_die();
 
 	// Handle crop
@@ -320,7 +320,7 @@ function bp_attachments_delete_avatar() {
 	}
 
 	// capability check
-	if ( ! bp_attachments_current_user_can( 'edit_bp_attachments', $cap_args ) )
+	if ( ! bp_attachments_loggedin_user_can( 'edit_bp_attachments', $cap_args ) )
 		wp_die();
 
 	if ( bp_core_delete_existing_avatar( array( 'item_id' => $item_id, 'object' => $object ) ) ) {
