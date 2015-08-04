@@ -150,31 +150,8 @@ function bp_attachments_catch_upload() {
 				bp_core_redirect( $redirect );
 			}
 
-			// Dealing with an Avatar
-			if ( 'avatar' == $args['item_type'] ) {
-				$avatar = bp_attachments_handle_avatar_upload( $_FILES['bp_attachment_file'], $args['component'], $args['item_id'], true );
-
-				if ( ! is_wp_error( $avatar ) ) {
-					$object = ( 'xprofile' == $args['component'] ) ? 'user' : 'group';
-					$crop = bp_core_avatar_handle_crop( array(
-						'object'        => $object,
-						'avatar_dir'    => ( 'user' == $object ) ? 'avatars' : 'group-avatars',
-						'item_id'       => $args['item_id'],
-						'original_file' => $avatar,
-					) );
-
-					if ( ! empty( $crop ) ) {
-						$attachment_id = $crop;
-					} else {
-						$attachment_id = new WP_Error( 'crop_error', sprintf( __( 'There was an error saving the %s avatar, please try uploading again.', 'bp-attachments' ), $object ) );
-					}
-				} else {
-					$attachment_id = $avatar;
-				}
-			// Dealing with an Attachment
-			} else {
-				$attachment_id = bp_attachments_handle_upload( $args );
-			}
+			// Save the attachment
+			$attachment_id = bp_attachments_handle_upload( $args );
 
 			if ( is_wp_error( $attachment_id ) ) {
 				bp_core_add_message( sprintf( __( 'Error: %s', 'bp-attachments' ), $attachment_id->get_error_message() ), 'error' );

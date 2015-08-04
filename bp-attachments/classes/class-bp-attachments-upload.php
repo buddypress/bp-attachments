@@ -64,7 +64,7 @@ class BP_Attachments_Upload {
 		$r = bp_parse_args( $args,  array(
 			'item_id'         => 0,                       // what is the item id ?
 			'component'       => '',                      // what is the component groups/members/messages ?
-			'item_type'       => 'attachment',            // attachment / avatar
+			'item_type'       => 'attachment',            // attachment
 			'action'          => 'bp_attachments_upload', // are specific strings needed ?
 			'file_id'         => 'bp_attachment_file',    // the name of the $_FILE to upload
 		), 'attachments_uploader_args' );
