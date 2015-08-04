@@ -247,23 +247,6 @@ var bp = bp || {};
 	BPattachments.all = new BPattachments();
 
 	/**
-	 * bp.media.model.Avatar
-	 *
-	 * @constructor
-	 * @augments Backbone.Model
-	 */
-	Avatar = bp.media.model.Avatar = Backbone.Model.extend( {
-		defaults : {
-            id: 0,
-			title: '',
-			component: '',
-			filename: '',
-			url:'',
-			path:'',
-        },
-	} );
-
-	/**
 	 * bp.media.model.Query
 	 *
 	 * It's an adpated copy of WordPress Query
@@ -341,7 +324,7 @@ var bp = bp || {};
 				return this._more;
 			}
 
-			if ( ! this.hasMore() || 'avatar' == this.args.item_type ) {
+			if ( ! this.hasMore() ) {
 				return $.Deferred().resolveWith( this ).promise();
 			}
 
@@ -362,10 +345,6 @@ var bp = bp || {};
 			if ( 'read' === method ) {
 				options = options || {};
 				options.context = this;
-
-				if ( 'avatar' == this.args.item_type ) {
-					return false;
-				}
 
 				options.data = _.extend( options.data || {}, {
 					action:  'query_bp_attachments',
@@ -542,11 +521,7 @@ var bp = bp || {};
 		},
 
 		initialize: function() {
-			type = '';
-
-			if ( 'avatar' == bp.media.params.item_type ) {
-				type = { type: 'image' };
-			}
+			var type = '';
 
 			if ( ! this.get('library') ) {
 				this.set( 'library', bp.media.query( type ) );
@@ -559,9 +534,6 @@ var bp = bp || {};
 			var content = this.frame.content,
 				mode = 'bpbrowse';
 
-			if ( 'avatar' == bp.media.params.item_type )
-				mode = 'crop';
-
 			if ( 'bp_upload' === content.mode() ) {
 				this.frame.content.mode( mode );
 			}
@@ -569,155 +541,9 @@ var bp = bp || {};
 			this.get('selection').add( attachment );
 		},
 
-	});
-
-	BPmedia.view.Avatar = bp.media.view.Avatar = bp.media.view.Attachment.extend( {
-		tagName:   'li',
-		className: 'avatar',
-		template:  bp.media.template('avatar'),
-
-		initialize: function() {
-			var selection = this.options.selection;
-
-			bp.media.view.Attachment.prototype.initialize.apply( this, arguments );
-		},
-
-		render: function() {
-			var selection = this.options.selection;
-
-			bp.media.view.Attachment.prototype.render.apply( this, arguments );
-
-			if( ! _.isUndefined( selection.single() ) && ! selection.single()._changing ) {
-				var tocrop = this.$el.find( 'img' );
-				var ratio = 1;
-
-				if ( ! _.isUndefined( bp.media.view.settings.bp_attachments.full_h ) && ! _.isUndefined( bp.media.view.settings.bp_attachments.full_w ) && bp.media.view.settings.bp_attachments.full_h != bp.media.view.settings.bp_attachments.full_w ) {
-					ratio = bp.media.view.settings.bp_attachments.full_h / bp.media.view.settings.bp_attachments.full_w;
-				}
-
-				crop_left   = Math.round( selection.single().get('width' ) / 4 );
-				crop_top    = Math.round( selection.single().get('height' ) / 4 );
-				crop_right  = selection.single().get('width' ) - crop_left;
-				crop_bottom = selection.single().get('height' ) - crop_top;
-
-				tocrop.Jcrop({
-					onChange: this.showPreview,
-					onSelect: this.showPreview,
-					onSelect: this.updateCoords,
-					aspectRatio: ratio,
-	        		setSelect: [ crop_left, crop_top, crop_right, crop_bottom ]
-				});
-
-				this.updateCoords({x: crop_left, y: crop_top, w: crop_right, h: crop_bottom});
-
-			}
-
-			return this;
-		},
-
-		updateCoords: function( args ) {
-			var selection = BPmedia.frame().state().get( 'selection' ).single();
-
-			// Need to find a better way
-			selection.attributes.x = args.x;
-			selection.attributes.y = args.y;
-			selection.attributes.w = args.w;
-			selection.attributes.h = args.h;
-		},
-
-		showPreview: function( coords ) {
-			var selection = BPmedia.frame().state().get( 'selection' ).single();
-
-			// For some reason, the Avatar Detail view is not rendered
-			$( '#avatar-crop-preview' ).prop( 'src', selection.get( 'url') );
-
-			if ( parseInt(coords.w) > 0 ) {
-				var fw = bp.media.view.settings.bp_attachments.full_w;
-				var fh = bp.media.view.settings.bp_attachments.full_h;
-				var rx = fw / coords.w;
-				var ry = fh / coords.h;
-
-				$( '#avatar-crop-preview' ).css( {
-					maxWidth:'none',
-					width: Math.round(rx *  selection.get('width') )+ 'px',
-					height: Math.round(ry * selection.get('height') )+ 'px',
-					marginLeft: '-' + Math.round(rx * coords.x) + 'px',
-					marginTop: '-' + Math.round(ry * coords.y) + 'px'
-				} );
-			}
-		},
 	} );
 
-	bp.media.view.AvatarDetails = bp.media.view.Attachment.Details.extend({
-
-		tagName:   'div',
-		className: 'attachment-details',
-		template:  bp.media.template('bp-avatar-details'),
-
-		render: function() {
-			var options = _.defaults( this.model.toJSON(), {
-					orientation:   'landscape',
-					uploading:     false,
-					type:          '',
-					subtype:       '',
-					icon:          '',
-					filename:      '',
-					caption:       '',
-					title:         '',
-					dateFormatted: '',
-					width:         '',
-					height:        '',
-					compat:        false,
-					alt:           '',
-					description:   ''
-				});
-
-			options.buttons  = this.buttons;
-			options.describe = this.controller.state().get('describe');
-
-			if ( 'image' === options.type ) {
-				options.size = this.imageSize();
-			}
-
-			options.can = {};
-			if ( options.nonces ) {
-				options.can.remove = !! options.nonces['delete'];
-				options.can.save = !! options.nonces.update;
-			}
-
-			if ( this.controller.state().get('allowLocalEdits') ) {
-				options.allowLocalEdits = true;
-			}
-
-			this.views.detach();
-			this.$el.html( this.template( options ) );
-
-			this.$el.toggleClass( 'uploading', options.uploading );
-			if ( options.uploading ) {
-				this.$bar = this.$('.media-progress-bar div');
-			} else {
-				delete this.$bar;
-			}
-
-			// Check if the model is selected.
-			this.updateSelect();
-
-			// Update the save status.
-			this.updateSave();
-
-			/**
-			 *
-			 * ! this is not rendered ?
-			 *
-			 *
-			 */
-			this.views.render();
-
-			return this;
-		},
-	});
-
-	bp.media.view.AttachmentsDetails = bp.media.view.Attachment.Details.extend({
+	bp.media.view.AttachmentsDetails = bp.media.view.Attachment.Details.extend( {
 
 		tagName:   'div',
 		className: 'attachment-details',
@@ -779,9 +605,9 @@ var bp = bp || {};
 			return this;
 		},
 
-	});
+	} );
 
-	BPmedia.view.AttachmentsBrowser = bp.media.view.BPattachmentsBrowser = bp.media.view.AttachmentsBrowser.extend({
+	BPmedia.view.AttachmentsBrowser = bp.media.view.BPattachmentsBrowser = bp.media.view.AttachmentsBrowser.extend( {
 
 		createToolbar: function () {
 			bp.media.view.AttachmentsBrowser.prototype.createToolbar.apply( this, arguments );
@@ -799,7 +625,7 @@ var bp = bp || {};
 				controller: this.controller,
 				model:      single,
 				priority:   80
-			}) );
+			} ) );
 
 			if ( this.options.display ) {
 				sidebar.set( 'display', new bp.media.view.Settings.AttachmentDisplay({
@@ -811,133 +637,12 @@ var bp = bp || {};
 				}) );
 			}
 		},
-	});
-
-	BPmedia.view.AvatarCroper = bp.media.view.AvatarCroper = bp.media.view.AttachmentsBrowser.extend( {
-		tagName:   'div',
-		className: 'attachments-browser',
-
-		initialize: function() {
-			_.defaults( this.options, {
-				filters: false,
-				search:  false,
-				display: false,
-
-				AttachmentView: bp.media.view.Avatar
-			});
-
-			this.createToolbar();
-			this.updateContent();
-			this.createSidebar();
-
-			this.collection.on( 'add remove reset', this.updateContent, this );
-			this.on( 'ready', this.customizeUploader, this );
-		},
-
-		customizeUploader:function(){
-			$( '.upload-ui h3.upload-instructions' ).html( 'Drop your avatar anywhere to upload' );
-			$( '.upload-ui a.button-hero' ).html( 'Select an image' );
-		},
-
-		createToolbar: function () {
-			bp.media.view.AttachmentsBrowser.prototype.createToolbar.apply( this, arguments );
-
-			// Remove the date field and label
-			this.toolbar.unset( 'dateFilterLabel' );
-			this.toolbar.unset( 'dateFilter' );
-		},
-
-		updateContent: function() {
-			var view = this;
-
-			if( ! this.attachments ) {
-				this.createAttachments();
-			}
-
-			if ( ! this.collection.length ) {
-				this.collection.more().done( function() {
-					if ( ! view.collection.length ) {
-						view.createUploader();
-					}
-				});
-			}
-		},
-
-		createAttachments: function() {
-			this.removeContent();
-
-			this.attachments = new bp.media.view.Attachments({
-				controller: this.controller,
-				collection: this.collection,
-				selection:  this.options.selection,
-				model:      this.model,
-				sortable:   this.options.sortable,
-
-				// The single `Attachment` view to be used in the `Attachments` view.
-				AttachmentView: this.options.AttachmentView
-			});
-
-			this.views.add( this.attachments );
-		},
-
-		removeContent: function() {
-			_.each(['attachments','uploader'], function( key ) {
-				if ( this[ key ] ) {
-					this[ key ].remove();
-					delete this[ key ];
-				}
-			}, this );
-		},
-
-		createSidebar: function() {
-			var options = this.options,
-				selection = options.selection,
-				sidebar = this.sidebar = new bp.media.view.Sidebar({
-					controller: this.controller
-				});
-
-			this.views.add( sidebar );
-
-			if ( this.controller.uploader ) {
-				sidebar.set( 'uploads', new bp.media.view.UploaderStatus({
-					controller: this.controller,
-					priority:   40
-				}) );
-			}
-
-			selection.on( 'selection:single', this.createSingle, this );
-			selection.on( 'selection:unsingle', this.disposeSingle, this );
-
-			if ( selection.single() ) {
-				this.createSingle();
-			}
-		},
-
-		createSingle: function() {
-			var sidebar = this.sidebar,
-				single = this.options.selection.single();
-
-			sidebar.set( 'details', new bp.media.view.AvatarDetails({
-				controller: this.controller,
-				model:      single,
-				priority:   80
-			}) );
-		},
 	} );
 
 	bp.media.UploaderInline = bp.media.view.UploaderInline.extend( {
 		initialize:function() {
 			bp.media.view.UploaderInline.prototype.initialize.apply( this, arguments );
-
-			if ( 'avatar' == bp.media.params.item_type ) {
-				this.on( 'ready', this.customizeUploader, this );
-			}
 		},
-
-		customizeUploader:function(){
-			$( '.upload-ui h3.upload-instructions' ).html( 'Drop your avatar anywhere to upload' );
-			$( '.upload-ui a.button-hero' ).html( 'Select an image' );
-		}
 	} );
 
 	bp.media.view.ToolbarSelect = bp.media.view.Toolbar.Select.extend({
@@ -988,7 +693,6 @@ var bp = bp || {};
 			this._frame.on( 'router:create:bp_browse', this.createRouter, this  );
 			this._frame.on( 'router:render:bp_browse', this.bpBrowse, this );
 			this._frame.on( 'content:create:bpbrowse', this.bpBrowseContent, this );
-			this._frame.on( 'content:create:crop', this.cropAvatar, this );
 			this._frame.on( 'content:render:bp_upload', this.uploadContent, this );
 			this._frame.on( 'toolbar:create:bp_select', this.createSelectToolbar, this );
 
@@ -1027,31 +731,16 @@ var bp = bp || {};
 		},
 
 		bpBrowse:function( view ) {
-
-			if ( 'avatar' == bp.media.params.item_type ) {
-				view.set({
-					bp_upload: {
-						text:     bp.media.view.l10n.bp_attachments.uploadtab,
-						priority: 20
-					},
-					crop: {
-						text:     bp.media.view.l10n.bp_attachments.croptab,
-						priority: 40
-					}
-				});
-			} else {
-				view.set({
-					bp_upload: {
-						text:     bp.media.view.l10n.bp_attachments.uploadtab,
-						priority: 20
-					},
-					bpbrowse: {
-						text:     bp.media.view.l10n.bp_attachments.managetab,
-						priority: 40
-					}
-				});
-			}
-
+			view.set( {
+				bp_upload: {
+					text:     bp.media.view.l10n.bp_attachments.uploadtab,
+					priority: 20
+				},
+				bpbrowse: {
+					text:     bp.media.view.l10n.bp_attachments.managetab,
+					priority: 40
+				}
+			} );
 		},
 
 		bpBrowseContent:function( content ) {
@@ -1075,29 +764,9 @@ var bp = bp || {};
 			});
 		},
 
-		cropAvatar: function( content ) {
-			var state = this._frame.state();
-
-			this._frame.$el.removeClass('hide-toolbar');
-
-			// Browse our library of attachments.
-			content.view = new BPmedia.view.AvatarCroper({
-				controller: this._frame,
-				collection: state.get('library'),
-				selection:  state.get('selection'),
-				model:      state,
-				display:    state.get('displaySettings'),
-				dragInfo:   state.get('dragInfo')
-			});
-		},
-
 		createSelectToolbar: function( toolbar, options ) {
 			options = options || this._frame.options.button || {};
 			options.controller = this._frame;
-
-			if ( 'avatar' == bp.media.params.item_type ) {
-				toolbar.view = new bp.media.view.Toolbar.Select( options );
-			}
 
 			if ( ! _.isUndefined( bp.media.params.callback ) && bp.media.params.callback ) {
 				toolbar.view = new bp.media.view.ToolbarSelect( options );
@@ -1105,16 +774,10 @@ var bp = bp || {};
 		},
 
 		uploadContent: function() {
-
-			if ( 'avatar' == bp.media.params.item_type ) {
-				this._frame.reset();
-				this._frame.state().get('library').reset();
-			}
-
 			this._frame.$el.removeClass('hide-toolbar');
-			this._frame.content.set( new bp.media.UploaderInline({
+			this._frame.content.set( new bp.media.UploaderInline( {
 				controller: this._frame
-			}) );
+			} ) );
 		},
 
 		open: function() {
@@ -1142,90 +805,27 @@ var bp = bp || {};
 		},
 
 		set: function( attachment ) {
-			if ( 'avatar' == bp.media.params.item_type ) {
-				bp.media.post( 'bp_attachments_set_avatar', {
+			if ( -1 == bp.media.params.callback.indexOf( 'http://' ) ) {
+				bp.media.post( bp.media.params.callback, {
 					json:          true,
+					id:            attachment.get('id'),
 					object:        bp.media.view.settings.bp_attachments.object,
 					component:     bp.media.params.item_component,
-					avatar_dir:    bp.media.view.settings.bp_attachments.avatar_dir,
 					item_id:       bp.media.view.settings.bp_attachments.item_id,
-					original_file: attachment.get( 'src' ),
-					crop_w:        attachment.get( 'w' ),
-					crop_h:        attachment.get( 'h' ),
-					crop_x:        attachment.get( 'x' ),
-					crop_y:        attachment.get( 'y' ),
 					nonce:         bp.media.params.nonce
 				}).done( function( html ) {
-					$( '#' + bp.media.params.item_component + '-avatar', '#bp_' + bp.media.params.item_component + '_avatar' ).html( html );
-					$( bp.media.view.settings.bp_attachments.button_id ).hide();
+					$( bp.media.params.callback_id ).html( html );
 				});
-				// reseting the frame
-				this._frame.reset();
-				this._frame.state().get('library').reset();
-
 			} else {
-
-				if ( -1 == bp.media.params.callback.indexOf( 'http://' ) ) {
-					bp.media.post( bp.media.params.callback, {
-						json:          true,
-						id:            attachment.get('id'),
-						object:        bp.media.view.settings.bp_attachments.object,
-						component:     bp.media.params.item_component,
-						item_id:       bp.media.view.settings.bp_attachments.item_id,
-						nonce:         bp.media.params.nonce
-					}).done( function( html ) {
-						$( bp.media.params.callback_id ).html( html );
-					});
-				} else {
-					window.location.href = bp.media.params.callback;
-				}
+				window.location.href = bp.media.params.callback;
 			}
-		},
-
-		deleteAvatar: function() {
-			bp.media.post( 'bp_attachments_delete_avatar', {
-				json:          true,
-				object:        bp.media.view.settings.bp_attachments.object,
-				avatar_dir:    bp.media.view.settings.bp_attachments.avatar_dir,
-				component:     bp.media.params.item_component,
-				item_id:       bp.media.view.settings.bp_attachments.item_id,
-				nonce:         bp.media.params.nonce
-			}).done( function( result ) {
-
-				if ( 1 == result ) {
-					$( '#' + bp.media.params.item_component + '-avatar img' ).remove();
-					$( '#' + bp.media.params.item_component + '-avatar p' ).remove();
-					$( bp.media.view.settings.bp_attachments.button_id ).show();
-				}
-
-			});
 		},
 
 		init: function() {
 
-			if ( 'avatar' == bp.media.params.item_type ) {
-				// Avatar
-				if ( $( '#attachment-upload-form' ).length ) {
-					$( '#attachment-upload-form' ).remove();
-				}
-
-				if ( $( '#create-group-form p#attachment-upload' ).length ) {
-					$( '#create-group-form p#attachment-upload' ).remove();
-				}
-
-				if ( ! $( '#remove-' + bp.media.params.item_component + '-avatar' ).length ) {
-					$( bp.media.view.settings.bp_attachments.button_id ).show();
-				}
-				$( '#' + bp.media.params.item_component + '-avatar' ).on( 'click', 'a', function(e) {
-					e.preventDefault();
-
-					BPmedia.BPattachmentsBrowser.deleteAvatar();
-				});
-			} else {
-				if ( $( '#attachment-upload-form' ).length ) {
-					$( '#attachment-upload-form' ).remove();
-					$( bp.media.view.settings.bp_attachments.button_id ).show();
-				}
+			if ( $( '#attachment-upload-form' ).length ) {
+				$( '#attachment-upload-form' ).remove();
+				$( bp.media.view.settings.bp_attachments.button_id ).show();
 			}
 
 			$( bp.media.view.settings.bp_attachments.button_id ).on( 'click', 'a', function( e ) {
@@ -1236,7 +836,7 @@ var bp = bp || {};
 		}
 	} );
 
-	// For BP Attachments & Avatars
+	// For BP Attachments
 	$( BPmedia.BPattachmentsBrowser.init );
 
 
