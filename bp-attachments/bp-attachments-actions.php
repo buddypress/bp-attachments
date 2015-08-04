@@ -170,7 +170,7 @@ function bp_attachments_catch_upload() {
 			}
 
 			// capability check
-			if ( ! bp_attachments_current_user_can( 'publish_bp_attachments', $cap_args ) ) {
+			if ( ! bp_attachments_loggedin_user_can( 'publish_bp_attachments', $cap_args ) ) {
 				bp_core_add_message( __( 'Error: you are not allowed to create this attachment.', 'bp-attachments' ), 'error' );
 				bp_core_redirect( $redirect );
 			}

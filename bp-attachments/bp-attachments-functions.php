@@ -13,7 +13,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
  * Get a single attachment
  *
  * @since BP Attachments (1.0.0)
- * 
+ *
  * @param  integer $attachment_id
  * @return BP_Attachments
  */
@@ -30,14 +30,14 @@ function bp_attachments_get_attachment( $attachment_id = 0 ) {
  * Get a single attachment
  *
  * @since BP Attachments (1.0.0)
- * 
+ *
  * @param  array $args
  * @return array of BP_Attachments
  */
 function bp_attachments_get_attachments( $args = array() ) {
 
 	$defaults = array(
-		'item_ids'        => array(), // one or more item ids regarding the component (eg group_ids, message_ids ) 
+		'item_ids'        => array(), // one or more item ids regarding the component (eg group_ids, message_ids )
 		'component'	      => false,   // groups / messages / blogs / xprofile...
 		'show_private'    => false,   // wether to include private attachment
 		'user_id'	      => false,   // the author id of the attachment
@@ -45,7 +45,7 @@ function bp_attachments_get_attachments( $args = array() ) {
 		'page'		      => 1,
 		'search'          => false,
 		'exclude'		  => false,   // comma separated list or array of attachment ids.
-		'orderby' 		  => 'ID', 
+		'orderby' 		  => 'ID',
 		'order'           => 'DESC',
 	);
 
@@ -55,7 +55,7 @@ function bp_attachments_get_attachments( $args = array() ) {
 
 	if ( empty( $attachments ) ) {
 		$attachments = BP_Attachments::get( array(
-			'item_ids'        => (array) $r['item_ids'], 
+			'item_ids'        => (array) $r['item_ids'],
 			'component'	      => $r['component'],
 			'show_private'    => (bool) $r['show_private'],
 			'user_id'	      => $r['user_id'],
@@ -63,7 +63,7 @@ function bp_attachments_get_attachments( $args = array() ) {
 			'page'		      => $r['page'],
 			'search'          => $r['search'],
 			'exclude'		  => $r['exclude'],
-			'orderby' 		  => $r['orderby'], 
+			'orderby' 		  => $r['orderby'],
 			'order'           => $r['order'],
 		) );
 
@@ -77,7 +77,7 @@ function bp_attachments_get_attachments( $args = array() ) {
  * Upload attachment
  *
  * @since BP Attachments (1.0.0)
- * 
+ *
  * @param  array $args
  * @return int the id of the created attachment
  */
@@ -100,17 +100,17 @@ function bp_attachments_handle_upload( $args = array() ) {
  * Delete attachment
  *
  * @since BP Attachments (1.0.0)
- * 
+ *
  * @param  int the id of the attachment
  * @return mixed false/title of the deleted attachment
  */
 function bp_attachments_delete_attachment( $attachment_id = 0 ) {
 	if ( empty( $attachment_id ) )
 		return false;
-	
-	if ( ! bp_attachments_current_user_can( 'delete_bp_attachment', $attachment_id ) )
+
+	if ( ! bp_attachments_loggedin_user_can( 'delete_bp_attachment', $attachment_id ) )
 			return false;
-		
+
 	$deleted = BP_Attachments::delete( $attachment_id );
 
 	if ( ! empty( $deleted->post_title ) )
@@ -123,7 +123,7 @@ function bp_attachments_delete_attachment( $attachment_id = 0 ) {
  * Delete attachment
  *
  * @since BP Attachments (1.0.0)
- * 
+ *
  * @param  array $args
  * @return mixed false/title of the updated attachment
  */
@@ -143,7 +143,7 @@ function bp_attachments_update_attachment( $args = array() ) {
 	if ( empty( $id ) )
 		return false;
 
-	if ( ! bp_attachments_current_user_can( 'edit_bp_attachment', $id ) )
+	if ( ! bp_attachments_loggedin_user_can( 'edit_bp_attachment', $id ) )
 			return false;
 
 	$attachment = new BP_Attachments( $id );
@@ -178,7 +178,7 @@ function bp_attachments_update_attachment( $args = array() ) {
 					} else {
 						$to_delete = array_diff( $prev_item_ids->{$term}, $component[ $term ] );
 						$to_add    = array_diff( $component[ $term ], $prev_item_ids->{$term} );
-						
+
 						if ( ! empty( $to_delete ) ){
 							// Delete item ids
 							foreach ( $to_delete as $item_id )
@@ -262,7 +262,7 @@ function bp_attachments_get_attachment_url( $post_id = 0 ) {
  * Prepare an attachment to be displayed in the BP Media Editor
  *
  * this is an adapted copy of wp_prepare_attachment_for_js()
- * 
+ *
  * @since BP Attachments (1.0.0)
  */
 function bp_attachments_prepare_attachment_for_js( $attachment ) {
@@ -409,7 +409,7 @@ function bp_attachments_avatar_is_enabled() {
 
 /**
  * Prepare an avatar to be displayed in the BP Media Editor
- * 
+ *
  * @since BP Attachments (1.0.0)
  */
 function bp_attachments_prepare_avatar_for_js( $attachment = null ) {
@@ -435,7 +435,7 @@ function bp_attachments_prepare_avatar_for_js( $attachment = null ) {
  * Handle an avatar Upload
  *
  * This is an adapted version of bp_core_avatar_handle_upload()
- * 
+ *
  * @since BP Attachments (1.0.0)
  */
 function bp_attachments_handle_avatar_upload( $uploaded_file, $component, $item_id, $no_js = false ) {
@@ -566,17 +566,17 @@ function bp_attachments_handle_avatar_upload( $uploaded_file, $component, $item_
 
 /**
  * Register and create the upload directories
- * 
+ *
  * @since BP Attachments (1.0.0)
  */
 function bp_attachments_set_upload_dir() {
 	$upload_datas = wp_upload_dir();
-	
+
 	$bp_attachments_upload_dir = $upload_datas["basedir"] .'/bp-attachments';
 	$bp_attachments_upload_url = $upload_datas["baseurl"] .'/bp-attachments';
 
-	$bp_attachments_upload_data = array( 
-		'basedir'    => $bp_attachments_upload_dir, 
+	$bp_attachments_upload_data = array(
+		'basedir'    => $bp_attachments_upload_dir,
 		'baseurl'    => $bp_attachments_upload_url,
 		'publicdir'  => $bp_attachments_upload_dir . '/public',
 		'publicurl'  => $bp_attachments_upload_url . '/public',
@@ -588,7 +588,7 @@ function bp_attachments_set_upload_dir() {
 	if( ! file_exists( $bp_attachments_upload_dir ) ) {
 		// Create main bp-attachments dir
 		@wp_mkdir_p( $bp_attachments_upload_dir );
-		
+
 		if( ! file_exists( $bp_attachments_upload_data['publicdir'] ) ) {
 			// Create public attachments dir
 			@wp_mkdir_p( $bp_attachments_upload_data['publicdir'] );
@@ -600,30 +600,30 @@ function bp_attachments_set_upload_dir() {
 
 			/**
 			 * Create an .htaccess file to prevent files to be reached.
-			 * 
+			 *
 			 * @todo use BP Docs way to secure downloads !
 			 */
 			if( ! file_exists( $bp_attachments_upload_data['privatedir'] .'/.htaccess' ) ) {
 
 				if ( ! function_exists( 'insert_with_markers' ) )
 					require_once( ABSPATH . '/wp-admin/includes/misc.php' );
-			
+
 				// Defining the rule, we need to make it unreachable and use php to reach it
 				$rules = array( 'Order Allow,Deny','Deny from all' );
-			
+
 				// creating the .htaccess file
 				insert_with_markers( $bp_attachments_upload_data['privatedir'] .'/.htaccess', 'BuddyPress Attachments', $rules );
 			}
 		}
 	}
-	
+
 	//finally returns upload_data
 	return $bp_attachments_upload_data;
 }
 
 /**
  * bp_attachment post type caps
- * 
+ *
  * @since BP Attachments (1.0.0)
  */
 function bp_attachments_get_attachment_caps() {
@@ -639,7 +639,7 @@ function bp_attachments_get_attachment_caps() {
 
 /**
  * bp_component taxonomy caps
- * 
+ *
  * @since BP Attachments (1.0.0)
  */
 function bp_attachments_get_component_caps() {
@@ -653,7 +653,7 @@ function bp_attachments_get_component_caps() {
 
 /**
  * Specific function to check a user's capability
- * 
+ *
  * @since BP Attachments (1.0.0)
  *
  * @uses BP_Attachments_Can to create the argument to check upon
@@ -662,7 +662,7 @@ function bp_attachments_get_component_caps() {
  * - single item id
  * - attachment id
  */
-function bp_attachments_current_user_can( $capability = '', $args = false ) {
+function bp_attachments_loggedin_user_can( $capability = '', $args = false ) {
 	if ( ! empty( $args ) && is_array( $args ) )
 		$args = new BP_Attachments_Can( $args );
 
@@ -671,12 +671,12 @@ function bp_attachments_current_user_can( $capability = '', $args = false ) {
 
 	$retval = call_user_func_array( 'current_user_can_for_blog', $args );
 
-	return (bool) apply_filters( 'bp_attachments_current_user_can', $retval, $args );
+	return (bool) apply_filters( 'bp_attachments_loggedin_user_can', $retval, $args );
 }
 
 /**
  * Build the edit link of an attachement
- * 
+ *
  * @since BP Attachments (1.0.0)
  */
 function bp_attachments_get_edit_link( $attachment_id = 0, $user_id = 0 ) {
@@ -694,7 +694,7 @@ function bp_attachments_get_edit_link( $attachment_id = 0, $user_id = 0 ) {
 
 /**
  * Build the delete link of an attachement
- * 
+ *
  * @since BP Attachments (1.0.0)
  */
 function bp_attachments_get_delete_link( $attachment_id = 0, $user_id = 0 ) {

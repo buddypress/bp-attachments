@@ -17,12 +17,12 @@ if ( !defined( 'ABSPATH' ) ) exit;
  * @since BP Attachments (1.0.0)
  *
  * @todo really need to check this !
- * 
- * @param  array   $caps    
- * @param  string  $cap     
- * @param  integer $user_id 
- * @param  array   $args    
- * @return array   $caps           
+ *
+ * @param  array   $caps
+ * @param  string  $cap
+ * @param  integer $user_id
+ * @param  array   $args
+ * @return array   $caps
  */
 function bp_attachments_map_meta_caps( $caps = array(), $cap = '', $user_id = 0, $args = array() ) {
 
@@ -57,7 +57,7 @@ function bp_attachments_map_meta_caps( $caps = array(), $cap = '', $user_id = 0,
 
 				}
 			}
-			
+
 
 			break;
 
@@ -235,7 +235,7 @@ function bp_attachments_map_meta_caps( $caps = array(), $cap = '', $user_id = 0,
  * Custom filter for WordPress image_downsize
  *
  * @since BP Attachments (1.0.0)
- * 
+ *
  * @see bp_attachments_get_thumbnail() template function
  */
 function bp_attachments_image_downsize( $output = '', $id = 0, $size = 'medium' ) {
@@ -275,24 +275,3 @@ function bp_attachments_image_downsize( $output = '', $id = 0, $size = 'medium' 
 	}
 	return false;
 }
-
-/**
- * Override the change-avatar user template
- *
- * @since BP Attachments (1.0.0)
- * 
- * @param  array  $templates
- * @param  string $slug
- * @return array  $templates
- */
-function bp_attachments_member_avatar_template( $templates = array(), $slug = '' ) {
-
-	if ( ! bp_is_user_change_avatar() )
-		return $templates;
-
-	if ( 'members/single/profile/change-avatar' == $slug )
-		$templates = array_merge( array( 'members/single/plugins.php' ), $templates );
-	
-	return $templates;
-}
-add_filter( 'bp_get_template_part', 'bp_attachments_member_avatar_template', 10, 2 );
