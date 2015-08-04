@@ -14,7 +14,6 @@ defined( 'ABSPATH' ) || exit;
  *
  * This class is used to create the
  * "BP Media Editor" for attachments
- * or Avatars
  *
  * @since BP Attachments (1.0.0)
  */
@@ -31,15 +30,15 @@ class BP_Attachments_Browser {
 	 */
 	public static function set( $browser_id, $settings ) {
 		$set = bp_parse_args( $settings,  array(
-			'item_id'         => 0,                                     // what is the item id ?
-			'component'       => 'members',                             // what is the component groups/xprofile/members/messages ?
-			'item_type'       => 'avatar',                              // avatar / image custom..
+			'item_id'         => 0,                                            // what is the item id ?
+			'component'       => 'members',                                    // what is the component groups/xprofile/members/messages ?
+			'item_type'       => 'attachment',                                 // attachment / image custom..
 			'post_id'         => 0,
-			'btn_caption'     => __( 'Edit Avatar', 'bp-attachments' ), // the button caption
-			'btn_class'       => 'bp_avatar',                           // the button class
-			'file_data_name'  => 'bp_attachment_file',                  // the name of the $_FILE to upload
-			'multi_selection' => false,                                 // allow multiple file upload ?
-			'action'          => 'bp_attachments_upload',               // the ajax action to deal with the file
+			'btn_caption'     => __( 'Manage attachments', 'bp-attachments' ), // the button caption
+			'btn_class'       => 'attachments-editor',                         // the button class
+			'file_data_name'  => 'bp_attachment_file',                         // the name of the $_FILE to upload
+			'multi_selection' => false,                                        // allow multiple file upload ?
+			'action'          => 'bp_attachments_upload',                      // the ajax action to deal with the file
 			'callback'        => false,
 			'callback_id'     => false,
 		), 'attachments_browser_args' );
@@ -117,10 +116,6 @@ class BP_Attachments_Browser {
 				<input type="file" name="<?php echo esc_attr( $settings['file_data_name'] );?>" id="file" />
 				<input type="submit" name="bp_attachment_upload" id="upload" value="<?php esc_attr_e( 'Upload', 'bp-attachments' ); ?>" />
 
-				<?php if ( 'avatar' == $settings['item_type'] ) :?>
-					<input type="hidden" name="item_type" id="item-type" value="<?php echo esc_attr( $settings['item_type'] );?>" />
-				<?php endif ;?>
-
 				<?php if ( ! empty( $settings['component'] ) ) :?>
 					<input type="hidden" name="component" id="component" value="<?php echo esc_attr( $settings['component'] );?>" />
 				<?php endif ;?>
@@ -163,12 +158,6 @@ class BP_Attachments_Browser {
 		add_filter( 'plupload_default_settings', array( __CLASS__, 'plupload_settings' ), 10, 1 );
 		add_filter( 'plupload_default_params',   array( __CLASS__, 'plupload_params' ), 10, 1 );
 
-		// jcrop in case of avatar
-		if ( 'avatar' == self::$settings['item_type'] ) {
-			wp_enqueue_style( 'jcrop' );
-			wp_enqueue_script( 'jcrop', array( 'jquery' ) );
-		}
-
 		// time to enqueue scripts
 		wp_enqueue_media( $args );
 		wp_enqueue_script( 'bp-media-editor', bp_attachments_loader()->plugin_js . 'media-editor.js', array( 'media-editor' ), bp_attachments_loader()->version, true );
@@ -181,15 +170,6 @@ class BP_Attachments_Browser {
 	 */
 	public static function media_view_strings( $strings ) {
 		$bp_attachments_strings = array( 'bp_attachments' => array() );
-
-		if ( 'avatar' == self::$settings['item_type'] ) {
-			$title = 'groups' == self::$settings['component'] ? __( 'Group Avatar', 'bp-attachments' ) : __( 'Avatar', 'bp-attachments' );
-			$bp_attachments_strings = array( 'bp_attachments' => array(
-				'title'     => $title,
-				'uploadtab' => __( 'Upload Avatar', 'bp-attachments' ),
-				'croptab'   => __( 'Crop Avatar', 'bp-attachments' ),
-			) );
-		}
 
 		if ( 'attachment' == self::$settings['item_type'] ) {
 			$title = 'groups' == self::$settings['component'] ? __( 'Group Attachments', 'bp-attachments' ) : __( 'Attachments', 'bp-attachments' );
@@ -231,18 +211,6 @@ class BP_Attachments_Browser {
 			'item_type' => $component,
 			'button_id' => self::$settings['bp_attachments_button_id'],
 		);
-
-		if ( 'avatar' == self::$settings['item_type'] ) {
-			$settings['bp_attachments'] = array_merge(
-				$settings['bp_attachments'],
-				array(
-					'full_h'     => bp_core_avatar_full_height(),
-					'full_w'     => bp_core_avatar_full_width(),
-					'object'     => 'groups' == $component ? 'group' : 'user',
-					'avatar_dir' => 'groups' == $component ? 'group-avatars' : 'avatars',
-				)
-			);
-		}
 
 		return $settings;
 	}
