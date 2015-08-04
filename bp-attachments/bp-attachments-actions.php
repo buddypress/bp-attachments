@@ -14,7 +14,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 
 /**
  * Add the specific templates needed by BP Media Editor
- * 
+ *
  * @since BP Attachments (1.0.0)
  */
 function bp_attachment_load_backbone_tmpl() {
@@ -83,31 +83,6 @@ function bp_attachment_load_backbone_tmpl() {
 			</label>
 	</script>
 
-	<script type="text/html" id="tmpl-avatar">
-		<div class="avatar-preview">
-			<# if ( data.uploading ) { #>
-				<div class="media-progress-bar"><div></div></div>
-			<# } else { #>
-			<div class="resized">
-				<div class="centered">
-					<img src="{{ data.size.url }}" draggable="false" id="avatar-to-crop" />
-				</div>
-			</div>
-			<# } #>
-		</div>
-	</script>
-
-	<script type="text/html" id="tmpl-bp-avatar-details">
-		<h3>
-			<?php _e('Avatar preview', 'bp-attachments'); ?>
-		</h3>
-		<div class="attachment-info">
-			<div class="avatar-thumb" style="width:<?php echo bp_core_avatar_full_width();?>px;height:<?php echo bp_core_avatar_full_height();?>px;overflow:hidden">
-				<img draggable="false" id="avatar-crop-preview" />
-			</div>
-		</div>
-	</script>
-
 	<script type="text/html" id="tmpl-bp-preview">
 		<# if ( data.id ) { #>
 			<div class="centered">
@@ -123,7 +98,7 @@ add_action( 'print_media_templates', 'bp_attachment_load_backbone_tmpl' );
 
 /**
  * Handle uploads if no-js
- * 
+ *
  * @since BP Attachments (1.0.0)
  */
 function bp_attachments_catch_upload() {
@@ -138,7 +113,7 @@ function bp_attachments_catch_upload() {
 
 		if ( ! empty( $_POST['file_data'] ) )
 			$file_name = $_POST['file_data'];
-		
+
 		if ( ! empty( $_FILES[ $file_name ] ) ) {
 
 			$args = array();
