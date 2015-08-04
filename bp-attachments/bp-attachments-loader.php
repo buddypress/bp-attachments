@@ -116,8 +116,34 @@ class BP_Attachments_Component extends BP_Component {
 
 		add_action( 'bp_screens', array( $this, 'setup_current_term' ), 10 );
 
+		add_action( 'bp_enqueue_scripts', array( $this, 'register_scripts' ), 10, 1 );
+
 		// Capabilities
 		add_filter( 'map_meta_cap', 'bp_attachments_map_meta_caps', 10, 4 );
+	}
+
+	/**
+	 * Register scripts for the BP Attachements API
+	 *
+	 * @since BP Attachments (1.1.0)
+	 */
+	public function register_scripts() {
+		// Register the style
+		wp_register_style(
+			'bp-attachments',
+			bp_attachments_loader()->plugin_css . 'bp-attachments.css',
+			array( 'dashicons' ),
+			bp_attachments_loader()->version
+		);
+
+		// Register the script
+		wp_register_script(
+			'bp-attachments',
+			bp_attachments_loader()->plugin_js . 'bp-attachments.js',
+			array(),
+			bp_attachments_loader()->version,
+			true
+		);
 	}
 
 	/**
@@ -174,7 +200,7 @@ class BP_Attachments_Component extends BP_Component {
 			'name'                => sprintf( __( 'Attachments <span class="%s">%s</span>', 'bp-attachments' ), esc_attr( $class ), number_format_i18n( $this->attachments_count['total'] ) ),
 			'slug'                => $this->slug,
 			'position'            => 80,
-			'screen_function'     => 'bp_attachments_screen_my_attachments',
+			'screen_function'     => array( 'BP_Attachments_User_Screens', 'legacy_screens' ),
 			'default_subnav_slug' => 'my-attachments',
 			'item_css_id'         => $this->id
 		);
@@ -201,8 +227,18 @@ class BP_Attachments_Component extends BP_Component {
 			'slug'            => 'my-attachments',
 			'parent_url'      => $this->attachments_link,
 			'parent_slug'     => $this->slug,
-			'screen_function' => 'bp_attachments_screen_my_attachments',
+			'screen_function' => array( 'BP_Attachments_User_Screens', 'legacy_screens' ),
 			'position'        => 10
+		);
+
+		$sub_nav[] = array(
+			'name'            => __( 'Add new', 'bp-attachments' ),
+			'slug'            => 'new-attachment',
+			'parent_url'      => $this->attachments_link,
+			'parent_slug'     => $this->slug,
+			'screen_function' => array( 'BP_Attachments_User_Screens', 'new_screens' ),
+			'position'        => 20,
+			'user_has_access' => bp_is_my_profile(),
 		);
 
 		parent::setup_nav( $main_nav, $sub_nav );
@@ -343,7 +379,7 @@ class BP_Attachments_Component extends BP_Component {
 	public function term_nav() {
 		$this->component_terms = get_terms( 'bp_component', array( 'hide_empty' => 1, 'fields' => 'all' ) );
 
-		$position = 10;
+		$position = 20;
 
 		foreach( $this->component_terms as $component ) {
 			$position += 10;
@@ -359,7 +395,7 @@ class BP_Attachments_Component extends BP_Component {
 				'slug' 		      => $component->slug,
 				'parent_slug'     => $this->slug,
 				'parent_url' 	  => $this->attachments_link,
-				'screen_function' => 'bp_attachments_screen_my_attachments',
+				'screen_function' => array( 'BP_Attachments_User_Screens', 'legacy_screens' ),
 				'position' 	      => $position,
 			) );
 

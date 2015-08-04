@@ -100,6 +100,7 @@ class BP_Attachments_Loader {
 		$this->includes_dir           = trailingslashit( $this->plugin_dir . 'bp-attachments' );
 		$this->includes_url           = trailingslashit( $this->plugin_url . 'bp-attachments' );
 		$this->plugin_js              = trailingslashit( $this->includes_url . 'js' );
+		$this->plugin_css             = trailingslashit( $this->includes_url . 'css' );
 
 		/** Component specific globals ********************************************/
 		$this->component_id           = 'attachments';

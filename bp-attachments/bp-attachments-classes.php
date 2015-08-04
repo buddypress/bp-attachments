@@ -15,3 +15,4 @@ require dirname( __FILE__ ) . '/classes/class-bp-attachments-upload.php';
 require dirname( __FILE__ ) . '/classes/class-bp-attachments-browser.php';
 require dirname( __FILE__ ) . '/classes/class-bp-attachments.php';
 require dirname( __FILE__ ) . '/classes/class-bp-attachments-can.php';
+require dirname( __FILE__ ) . '/classes/class-bp-attachments-attachment.php';

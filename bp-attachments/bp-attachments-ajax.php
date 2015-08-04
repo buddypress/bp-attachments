@@ -165,3 +165,65 @@ function bp_attachments_ajax_update_attachment() {
 	wp_send_json_success();
 }
 add_action( 'wp_ajax_update_bp_attachment', 'bp_attachments_ajax_update_attachment' );
+
+/**
+ * Ajax upload an avatar.
+ *
+ * @since BuddyPress (2.3.0)
+ *
+ * @return  string|null A json object containing success data if the upload succeeded
+ *                      error message otherwise.
+ */
+function bp_attachments_attachment_upload() {
+	// Bail if not a POST action
+	if ( 'POST' !== strtoupper( $_SERVER['REQUEST_METHOD'] ) ) {
+		wp_die();
+	}
+
+	/**
+	 * Sending the json response will be different if
+	 * the current Plupload runtime is html4
+	 */
+	$is_html4 = false;
+	if ( ! empty( $_POST['html4' ] ) ) {
+		$is_html4 = true;
+	}
+
+	// Check the nonce
+	check_admin_referer( 'bp-uploader' );
+
+	// Init the BuddyPress parameters
+	$bp_params = array();
+
+	// We need it to carry on
+	if ( ! empty( $_POST['bp_params' ] ) ) {
+		$bp_params = $_POST['bp_params' ];
+	} else {
+		bp_attachments_json_response( false, $is_html4 );
+	}
+
+	// Check params
+	if ( empty( $bp_params['object'] ) || empty( $bp_params['user_id'] ) ) {
+		bp_attachments_json_response( false, $is_html4 );
+	}
+
+	// Capability check
+	if ( ! bp_current_user_can( 'upload_files' ) ) {
+		bp_attachments_json_response( false, $is_html4 );
+	}
+
+	$attachment_object = new BP_Attachments_Attachment();
+	$response = $attachment_object->insert_attachment( $_FILES, array( 'post_author' => $bp_params['user_id'] ) );
+
+	// Error while trying to upload the file
+	if ( is_wp_error( $response ) ) {
+		bp_attachments_json_response( false, $is_html4, array(
+			'type'    => 'upload_error',
+			'message' => $response->get_error_message(),
+		) );
+	}
+
+	// Finally return the attachment to the editor
+	bp_attachments_json_response( true, $is_html4, $response );
+}
+add_action( 'wp_ajax_bp_attachments_attachment_upload', 'bp_attachments_attachment_upload' );

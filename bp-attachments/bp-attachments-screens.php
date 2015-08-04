@@ -26,8 +26,14 @@ class BP_Attachments_User_Screens {
 	 *
 	 * @since BP Attachments (1.0.0)
 	 */
-	public function __construct() {
+	public function __construct( $title = '', $content = '' ) {
 		bp_core_load_template( apply_filters( 'bp_attachments_user_screens', 'members/single/plugins' ) );
+
+		if ( ! empty( $title ) && ! empty( $content) ) {
+			$this->title = $title;
+			$this->content = $content;
+		}
+
 		$this->query_string();
 		$this->setup_actions();
 	}
@@ -102,12 +108,27 @@ class BP_Attachments_User_Screens {
 	 *
 	 * @since BP Attachments (1.0.0)
 	 */
-	public static function register_screens() {
+	public static function legacy_screens() {
 
 		$bp = buddypress();
 
 		if( empty( $bp->attachments->user_screens ) ) {
 			$bp->attachments->user_screens = new self;
+		}
+
+		return $bp->attachments->user_screens;
+	}
+
+	/**
+	 * Register the screen class.
+	 *
+	 * @since BP Attachments (1.0.0)
+	 */
+	public static function new_screens() {
+		$bp = buddypress();
+
+		if ( empty( $bp->attachments->user_screens ) ) {
+			$bp->attachments->user_screens = new self( 'new_user_title', 'new_user_content' );
 		}
 
 		return $bp->attachments->user_screens;
@@ -150,6 +171,35 @@ class BP_Attachments_User_Screens {
 	}
 
 	/**
+	 * Displays the button to launch the BP Media Editor
+	 *
+	 * @since BP Attachments (1.1.0)
+	 */
+	public function new_user_title() {
+		printf( __( 'Testing the BuddyPress Attachments API', 'bp-attachments' ) );
+	}
+
+	/**
+	 * Displays the component loop
+	 *
+	 * @since BP Attachments (1.1.0)
+	 */
+	public function new_user_content() {
+		// Enqueue BuddyPress attachments scripts
+		bp_attachments_enqueue_scripts( 'BP_Attachments_Attachment' );
+		?>
+		<div id="bp-attachments">
+			<?php /* Markup for the uploader */ ?>
+				<div class="bp-attachments-uploader"></div>
+				<div class="bp-attachments-uploader-status"></div>
+
+			<?php bp_attachments_get_template_part( 'uploader' );
+			/* Markup for the uploader */ ?>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Displays the name of the file being edited
 	 *
 	 * @since BP Attachments (1.0.0)
@@ -167,16 +217,4 @@ class BP_Attachments_User_Screens {
 		bp_attachments_template_single();
 	}
 
-}
-
-/**
- * The User's screen function!
- *
- * @since BP Attachments (1.0.0)
- * @see BP_Attachments_Component::setup_nav()
- *
- * @uses BP_Attachments_User_Screens
- */
-function bp_attachments_screen_my_attachments() {
-	return BP_Attachments_User_Screens::register_screens();
 }
