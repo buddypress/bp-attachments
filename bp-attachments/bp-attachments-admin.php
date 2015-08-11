@@ -83,6 +83,7 @@ class BP_Attachments_Admin {
 
 		// Add menu item to all users menu
 		add_action( bp_core_admin_hook(),                     array( $this, 'admin_menus'  ),  5    );
+		add_action( 'bp_admin_init',                          array( $this, 'activate' )            );
 
 
 		/** Filters ***************************************************/
@@ -92,7 +93,7 @@ class BP_Attachments_Admin {
 
 	/**
 	 * Register "bp_component" terms.
-	 * 
+	 *
 	 * Depending on the components activated, creates
 	 * a term for the component that supports attachments
 	 * For example purpose, we're forcing the groups
@@ -107,7 +108,7 @@ class BP_Attachments_Admin {
 
 		// get existing terms
 		$terms = get_terms( 'bp_component', array( 'hide_empty' => 0, 'fields' => 'id=>slug' ) );
-		
+
 		// get active components
 		$active_components = $bp->active_components;
 
@@ -125,12 +126,12 @@ class BP_Attachments_Admin {
 			/**
 			 * component who whish to use attachments should
 			 * set their can_attachments global to true
-			 */ 
+			 */
 			if ( empty( $bp->{$component}->can_attachments ) )
 				continue;
 
 			$component = ( 'xprofile' == $component ) ? 'profile' : $component;
-			
+
 			if ( isset( $bp_menu_items[ $component ]->post_title ) ) {
 				$name = $bp_menu_items[ $component ]->post_title;
 			} else {
@@ -167,7 +168,7 @@ class BP_Attachments_Admin {
 
 	/**
 	 * One css rule in Admin...
-	 * 
+	 *
 	 * Only loaded if on BuddyPress components settings
 	 *
 	 * @access public
@@ -179,8 +180,8 @@ class BP_Attachments_Admin {
 		/*<![CDATA[*/
 
 			/* Dashicon for BP Attachements */
-			.settings_page_bp-components tr.attachments td.plugin-title span:before {
-				content: "\f128";
+			.settings_page_bp-components tr.attachments input[type='checkbox'] {
+				display:none;
 			}
 
 		/*]]>*/
@@ -209,7 +210,7 @@ class BP_Attachments_Admin {
 		if ( bp_core_do_network_admin() ) {
 			$this->attachment_screen_id .= '-network';
 		}
-		
+
 		add_action( "load-{$this->attachment_screen_id}", array( $this, 'attachments_admin_load' ) );
 	}
 
@@ -242,14 +243,23 @@ class BP_Attachments_Admin {
 		?>
 		<div class="wrap"  id="attachments-admin">
 			<?php screen_icon( 'media' ); ?>
-			<h2>
+			<h1>
 				<?php esc_html_e( 'Attachments', 'bp-attachments' );?>
-			</h2>
+			</h1>
 
 			<div>Soon..</div>
 
 		</div><!-- .wrap -->
 		<?php
+	}
+
+	public function activate() {
+		$active = buddypress()->active_components;
+
+		if ( empty( $active['attachments'] ) ) {
+			$active['attachments'] = 1;
+			bp_update_option( 'bp-active-components', $active );
+		}
 	}
 }
 endif; // class_exists check

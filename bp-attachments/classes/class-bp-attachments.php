@@ -298,10 +298,17 @@ class BP_Attachments {
 		$file = get_attached_file( $attachment_id );
 
 		$intermediate_sizes = array();
+
+		add_image_size( 'bp_attachments_avatar', bp_core_avatar_full_width(), bp_core_avatar_full_height(), true );
+		add_filter( 'intermediate_image_sizes_advanced', 'bp_attachments_restrict_image_sizes', 10, 1 );
+
 		foreach ( get_intermediate_image_sizes() as $size ) {
 			if ( $intermediate = image_get_intermediate_size( $attachment_id, $size ) )
 				$intermediate_sizes[] = $intermediate;
 		}
+
+		remove_image_size( 'bp_attachments_avatar' );
+		remove_filter( 'intermediate_image_sizes_advanced', 'bp_attachments_restrict_image_sizes', 10, 1 );
 
 		if ( is_multisite() )
 			delete_transient( 'dirsize_cache' );

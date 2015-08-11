@@ -23,14 +23,99 @@ class BP_Attachments_Attachment extends BP_Attachment {
 	 */
 	public function __construct() {
 		parent::__construct( array(
-			'action'     => 'bp_attachments_attachment_upload',
-			'file_input' => 'bp-attachments-attachment-upload',
-			'base_dir'   => 'bp-attachments',
+			'action'             => 'bp_attachments_attachment_upload',
+			'file_input'         => 'bp-attachments-attachment-upload',
+			'base_dir'           => 'bp-attachments',
+			'required_wp_files'  => array( 'file', 'image' ),
 		) );
 	}
 
+	/**
+	 * Set the directory when uploading a file
+	 *
+	 * @since 1.1.0
+	 *
+	 * @return array upload data (path, url, basedir...)
+	 */
+	public function upload_dir_filter() {
+		$user_id = bp_displayed_user_id();
+
+		if ( bp_is_group() ) {
+			$user_id = bp_loggedin_user_id();
+		}
+
+		$subdir  = '/public/' . $user_id;
+		$time    = current_time( 'mysql' );
+		$year    = substr( $time, 0, 4 );
+		$month   = substr( $time, 5, 2 );
+		$subdir .= "/$year/$month";
+
+		return apply_filters( 'bp_attachments_upload_datas', array(
+			'path'    => $this->upload_path . $subdir,
+			'url'     => $this->url . $subdir,
+			'subdir'  => $subdir,
+			'basedir' => $this->upload_path,
+			'baseurl' => $this->url,
+			'error'   => false
+		) );
+	}
+
+	/**
+	 * Build script datas for the Uploader UI
+	 *
+	 * @since 1.1.0
+	 *
+	 * @return array the javascript localization data
+	 */
+	public function script_data() {
+		// Get default script data
+		$script_data = parent::script_data();
+
+		$user_id = bp_loggedin_user_id();
+		if ( bp_is_user() ) {
+			$user_id = bp_displayed_user_id();
+		}
+
+		$script_data['bp_params'] = array(
+			'object'     => 'user',
+			'component'  => 'members',
+			'user_id'    => $user_id,
+			'item_id'    => 0,
+		);
+
+		if ( bp_is_group() ) {
+			$script_data['bp_params'] = array(
+				'object'     => 'group',
+				'component'  => 'groups',
+				'user_id'    => $user_id,
+				'item_id'    => bp_get_current_group_id(),
+			);
+		}
+
+		$script_data['bp_params']['nonce'] = wp_create_nonce( 'bp_fetch_attachments' );
+
+		// Build the capability args
+		$capabiltiy_args = array_intersect_key( $script_data['bp_params'], array(
+			'component' => true,
+			'item_id'   => true,
+		) );
+
+		/**
+		 * Used to check if we should display the uploader
+		 */
+		$script_data['bp_params']['can_upload'] = bp_attachments_loggedin_user_can( 'publish_bp_attachments', $capabiltiy_args );
+
+		// Include our specific css
+		$script_data['extra_css'] = array( 'bp-attachments' );
+
+		// Include our specific js
+		$script_data['extra_js']  = array( 'bp-attachments' );
+
+		return apply_filters( 'bp_attachments_attachment_script_data', $script_data );
+	}
+
 	public function insert_attachment( $upload = array(), $args = array() ) {
-		$uploaded = parent::upload( $upload, '', current_time( 'mysql' ) );
+		$uploaded = parent::upload( $upload );
 
 		if ( ! empty( $uploaded['error'] ) ) {
 			return new WP_Error( 'upload_error', $uploaded['error'] );
@@ -72,7 +157,17 @@ class BP_Attachments_Attachment extends BP_Attachment {
 			'post_status'    => 'inherit',
 			'post_name'      => wp_unique_post_slug( sanitize_title( $title ), 0, 'inherit', 'bp_attachment', 0 ),
 			'context'        => 'buddypress',
+			'bp_component'   => 'members',
+			'bp_item_id'     => 0,
 		) );
+
+		if ( isset( $attachment_data['bp_component'] ) && 'members' !== $attachment_data['bp_component'] ) {
+			$term = get_term_by( 'slug', $attachment_data['bp_component'], 'bp_component' );
+
+			if ( ! empty( $term ) ) {
+				$attachment_data['tax_input'] = array( 'bp_component' => array( $term->term_id ) );
+			}
+		}
 
 		// Save the Attachment
 		$attachment_id = wp_insert_post( $attachment_data );
@@ -81,89 +176,122 @@ class BP_Attachments_Attachment extends BP_Attachment {
 			update_attached_file( $attachment_id, $file );
 			add_post_meta( $attachment_id, '_wp_attachment_context', 'buddypress', true );
 
+			// Add the component's single item id
+			if ( ! empty( $term->term_id ) ) {
+				add_post_meta( $attachment_id, '_bp_' . $attachment_data['bp_component'] . '_id', $attachment_data['bp_item_id'] );
+			}
+
 			if ( $is_image ) {
 				// Add the avatar image sizes
 				add_image_size( 'bp_attachments_avatar', bp_core_avatar_full_width(), bp_core_avatar_full_height(), true );
-				add_filter( 'intermediate_image_sizes_advanced', array( $this, 'restrict_image_sizes' ), 10, 1 );
+				add_filter( 'intermediate_image_sizes_advanced', 'bp_attachments_restrict_image_sizes', 10, 1 );
 			}
 
 			wp_update_attachment_metadata( $attachment_id, wp_generate_attachment_metadata( $attachment_id, $file ) );
 
-			$icon = wp_mime_type_icon( $attachment_id );
-
 			if ( $is_image ) {
 				// Remove it so no other attachments will be affected
 				remove_image_size( 'bp_attachments_avatar' );
-				remove_filter( 'intermediate_image_sizes_advanced', array( $this, 'restrict_image_sizes' ), 10, 1 );
+				remove_filter( 'intermediate_image_sizes_advanced', 'bp_attachments_restrict_image_sizes', 10, 1 );
 
 				add_filter( 'image_downsize', 'bp_attachments_image_downsize', 10, 3 );
-				// Try to get the bp_attachments_avatar size
-				$thumbnail = wp_get_attachment_image_src( $attachment_id, 'bp_attachments_avatar', true );
-				remove_filter( 'image_downsize', 'bp_attachments_image_downsize', 10, 3 );
-
-				if ( ! empty( $thumbnail[0] ) ) {
-					$icon = $thumbnail[0];
-				}
 			}
 
-			// Finally return the avatar to the editor
-			return array(
-				'attachment_id' => (int) $attachment_id,
-				'name'          => esc_html( $title ),
-				'icon'          => $icon,
-				'url'           => esc_url_raw( $url ),
-				'edit_url'      => bp_attachments_get_edit_link( $attachment_id ),
-			);
+			add_filter( 'image_size_names_choose', 'bp_attachments_filter_image_sizes', 10, 1 );
+
+			$attachment = bp_attachments_prepare_attachment_for_js( $attachment_id );
+
+			remove_filter( 'image_size_names_choose', 'bp_attachments_filter_image_sizes', 10, 1 );
+
+			if ( empty( $attachment['id'] ) ) {
+				return new WP_Error( 'fetch_error', __( 'oops! failed getting the attachment id', 'bp-attachments' ) );
+			}
+
+			$attachment['attachment_id'] = $attachment['id'];
+			$attachment['uploaded']      = true;
+			unset( $attachment['id'] );
+
+			// Finally return the attachment
+			return $attachment;
 		} else {
 			return $attachment_id;
 		}
 	}
 
-	public function restrict_image_sizes( $sizes = array() ) {
-		return array_intersect_key( $sizes, array( 'bp_attachments_avatar' => true ) );
-	}
+	public static function get( $args = array() ) {
 
-	/**
-	 * Set the directory when uploading a file
-	 *
-	 * @since 1.1.0
-	 *
-	 * @return array upload data (path, url, basedir...)
-	 */
-	public function upload_dir_filter() {
-		return apply_filters( 'bp_attachments_upload_datas', array(
-			'path'    => $this->upload_path . '/public/' . bp_displayed_user_id(),
-			'url'     => $this->url . '/public/' . bp_displayed_user_id(),
-			'subdir'  => '/public/' . bp_displayed_user_id(),
-			'basedir' => $this->upload_path,
-			'baseurl' => $this->url,
-			'error'   => false
-		) );
-	}
-
-	/**
-	 * Build script datas for the Uploader UI
-	 *
-	 * @since 1.1.0
-	 *
-	 * @return array the javascript localization data
-	 */
-	public function script_data() {
-		// Get default script data
-		$script_data = parent::script_data();
-
-		$script_data['bp_params'] = array(
-			'object'     => 'user',
-			'user_id'    => bp_displayed_user_id(),
+		$defaults = array(
+			'item_ids'        => array(), // one or more item ids regarding the component (eg group_ids, message_ids )
+			'component'	      => false,   // groups / messages / blogs / xprofile...
+			'show_private'    => false,   // wether to include private attachment
+			'user_id'	      => false,   // the author id of the attachment
+			'post_id'         => false,
+			'per_page'	      => 20,
+			'page'		      => 1,
+			'search'          => false,
+			'exclude'		  => false,   // comma separated list or array of attachment ids.
+			'orderby' 		  => 'modified',
+			'order'           => 'DESC',
 		);
 
-		// Include our specific css
-		$script_data['extra_css'] = array( 'bp-attachments' );
+		$r = bp_parse_args( $args, $defaults, 'attachments_query_args' );
 
-		// Include our specific js
-		$script_data['extra_js']  = array( 'bp-attachments' );
+		$attachment_status = 'inherit';
 
-		return apply_filters( 'bp_attachments_attachment_script_data', $script_data );
+		if ( ! empty( $r['show_private'] ) ) {
+			$attachment_status = array( 'inherit', 'private' );
+		}
+
+		$query_args = array(
+			'post_status'	 => $attachment_status,
+			'post_type'	     => 'bp_attachment',
+			'posts_per_page' => $r['per_page'],
+			'paged'		     => $r['page'],
+			'orderby' 		 => $r['orderby'],
+			'order'          => $r['order'],
+		);
+
+		if ( ! empty( $r['user_id'] ) )
+			$query_args['author'] = $r['user_id'];
+
+		if ( ! empty( $r['exclude'] ) ) {
+			if ( ! is_array( $r['exclude'] ) )
+				$r['exclude'] = explode( ',', $r['exclude'] );
+
+			$query_args['post__not_in'] = $r['exclude'];
+		}
+
+		if ( ! empty( $r['post_id'] ) ) {
+			$query_args['post_parent'] = $r['post_id'];
+		}
+
+		if ( ! empty( $r['component'] ) ) {
+			$query_args['tax_query'] = array(
+				array(
+					'taxonomy' => 'bp_component',
+					'field' => 'slug',
+					'terms' => $r['component']
+				)
+			);
+
+			// component is defined, we can zoom on specific ids
+			if ( ! empty( $r['item_ids'] ) ) {
+				// We really want an array!
+				$item_ids = (array) $r['item_ids'];
+
+				$query_args['meta_query'] = array(
+					array(
+						'key'     => "_bp_{$r['component']}_id",
+						'value'   => $r['item_ids'],
+						'compare' => 'IN',
+					)
+				);
+			}
+		}
+
+		$attachments = new WP_Query( $query_args );
+
+		return array( 'attachments' => $attachments->posts, 'total' => $attachments->found_posts );
 	}
 }
 endif;

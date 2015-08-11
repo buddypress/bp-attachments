@@ -12,7 +12,7 @@
  * Plugin Name:       BP Attachments
  * Plugin URI:        https://buddypress.trac.wordpress.org/ticket/5429
  * Description:       BP Attachments is a BuddyPress component to help others deal with attachments.
- * Version:           1.1.0-alpha
+ * Version:           1.1.0-beta
  * Author:            The BuddyPress Community
  * Author URI:        http://buddypress.org/community/members/
  * Text Domain:       bp-attachments
@@ -62,6 +62,7 @@ class BP_Attachments_Loader {
 	private function __construct() {
 		$this->setup_globals();
 		$this->setup_hooks();
+		$this->setup_api_prefs();
 	}
 
 	/**
@@ -90,7 +91,7 @@ class BP_Attachments_Loader {
 	 */
 	private function setup_globals() {
 		/** BP Attachments globals ********************************************/
-		$this->version                = '1.1.0-alpha';
+		$this->version                = '1.1.0-beta';
 		$this->domain                 = 'bp-attachments';
 		$this->file                   = __FILE__;
 		$this->basename               = plugin_basename( $this->file );
@@ -98,6 +99,7 @@ class BP_Attachments_Loader {
 		$this->plugin_url             = plugin_dir_url( $this->file );
 		$this->lang_dir               = trailingslashit( $this->plugin_dir . 'languages' );
 		$this->includes_dir           = trailingslashit( $this->plugin_dir . 'bp-attachments' );
+		$this->templates_dir          = $this->plugin_dir . 'templates';
 		$this->includes_url           = trailingslashit( $this->plugin_url . 'bp-attachments' );
 		$this->plugin_js              = trailingslashit( $this->includes_url . 'js' );
 		$this->plugin_css             = trailingslashit( $this->includes_url . 'css' );
@@ -110,6 +112,10 @@ class BP_Attachments_Loader {
 		/** BuddyPress & BP Attachments configs **********************************/
 		$this->config = $this->network_check();
 
+	}
+
+	public function setup_api_prefs() {
+		$this->use_bp_attachments_api = apply_filters( 'bp_attachments_use_bp_api', true );
 	}
 
 	/**
@@ -179,8 +185,7 @@ class BP_Attachments_Loader {
 	 * @since 1.0.0
 	 */
 	public function includes() {
-		if ( bp_is_active( $this->component_id ) )
-			require( $this->includes_dir . 'bp-attachments-loader.php' );
+		require( $this->includes_dir . 'bp-attachments-loader.php' );
 	}
 
 	/**
@@ -193,9 +198,12 @@ class BP_Attachments_Loader {
 		// BP Attachments && BuddyPress share the same config & BuddyPress version is ok
 		if ( $this->version_check() && $this->root_blog_check() && $this->config['network_status'] ) {
 			// Filters
-			add_filter( 'bp_optional_components',       array( $this, 'append_component' ), 10, 1 );
+			add_filter( 'bp_required_components',       array( $this, 'append_component' ), 10, 1 );
 			add_filter( 'bp_core_admin_get_components', array( $this, 'component_desc' ),   10, 2 );
 			add_action( 'bp_core_components_included',  array( $this, 'includes' ),         10    );
+
+			// Register the template directory
+			add_action( 'bp_register_theme_directory', array( $this, 'register_template_dir' ) );
 
 		} else {
 			add_action( $this->config['network_active'] ? 'network_admin_notices' : 'admin_notices', array( $this, 'admin_warning' ) );
@@ -244,9 +252,9 @@ class BP_Attachments_Loader {
 	 * @package BP Attachments
 	 * @since 1.0.0
 	 */
-	public function append_component( $optional_components = array() ) {
-		$optional_components[] = 'attachments';
-		return $optional_components;
+	public function append_component( $required_components = array() ) {
+		$required_components[] = 'attachments';
+		return $required_components;
 	}
 
 	/**
@@ -257,15 +265,40 @@ class BP_Attachments_Loader {
 	 */
 	public function component_desc( $components, $type, $optional_components_desc = array() ) {
 		// BP Attachments is optional
-		if ( 'optional' != $type )
+		if ( 'required' != $type ) {
 			return $components;
+		}
 
 		return array_merge( $components, array(
 			'attachments' => array(
 				'title'       => __( 'Attachments', 'bp-attachments' ),
-				'description' => __( 'Utility to manage BuddyPress media elements', 'bp-attachments' )
+				'description' => __( 'Utility to manage files', 'bp-attachments' )
  			)
 		) );
+	}
+
+	/**
+	 * Register the template dir into BuddyPress template stack
+	 *
+	 * @package BP Attachments
+	 * @since 1.1.0
+	 */
+	public function register_template_dir() {
+		bp_register_template_stack( array( $this, 'template_dir' ),  20 );
+	}
+
+	/**
+	 * Get the template dir
+	 *
+	 * @package BP Attachments
+	 * @since 1.1.0
+	 */
+	public function template_dir() {
+		if ( $this->component_id !== bp_current_component() && ! ( bp_is_group() && $this->component_id === bp_current_action() ) ) {
+			return;
+		}
+
+		return apply_filters( 'bp_attachments_template_dir', $this->templates_dir );
 	}
 
 	/**

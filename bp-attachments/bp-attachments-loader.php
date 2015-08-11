@@ -44,14 +44,14 @@ class BP_Attachments_Component extends BP_Component {
 	public function includes( $includes = array() ) {
 		// Files to include
 		$includes = array(
-			'actions',
 			'screens',
-			'filters',
 			'ajax',
 			'classes',
 			'template',
 			'functions',
-			'parts'
+			'parts',
+			'actions',
+			'filters'
 		);
 
 		if ( bp_is_active( 'groups' ) ) {
@@ -93,10 +93,6 @@ class BP_Attachments_Component extends BP_Component {
 	 * @since BP Attachments (1.0.0)
 	 */
 	public function actions() {
-
-		// register upload dir
-		add_action( 'bp_' . $this->id . '_setup_globals', array( $this, 'register_upload_dir' ), 10 );
-
 		// This should be done by component themselves.. Forcing here for tests reason
 		add_action( 'bp_groups_setup_globals', array( $this, 'register_groups' ), 10 );
 
@@ -132,7 +128,7 @@ class BP_Attachments_Component extends BP_Component {
 		wp_register_style(
 			'bp-attachments',
 			bp_attachments_loader()->plugin_css . 'bp-attachments.css',
-			array( 'dashicons' ),
+			array( 'dashicons', 'thickbox' ),
 			bp_attachments_loader()->version
 		);
 
@@ -140,26 +136,10 @@ class BP_Attachments_Component extends BP_Component {
 		wp_register_script(
 			'bp-attachments',
 			bp_attachments_loader()->plugin_js . 'bp-attachments.js',
-			array(),
+			array( 'thickbox' ),
 			bp_attachments_loader()->version,
 			true
 		);
-	}
-
-	/**
-	 * Set upload dirs
-	 *
-	 * @since BP Attachments (1.0.0)
-	 */
-	public function register_upload_dir() {
-		$upload_data = bp_attachments_set_upload_dir();
-
-		if( ! empty( $upload_data ) && is_array( $upload_data ) ) {
-			foreach ( $upload_data as $key => $data ) {
-				// adding the uploads dir and url to Attachments component global.
-				buddypress()->{$this->id}->{$key} = $data;
-			}
-		}
 	}
 
 	/**
@@ -222,7 +202,7 @@ class BP_Attachments_Component extends BP_Component {
 		$this->attachments_link = trailingslashit( $user_domain . $this->slug );
 
 		// Add the subnav items to the attachments nav item if we are using a theme that supports this
-		$sub_nav[] = array(
+		$sub_nav['main'] = array(
 			'name'            => sprintf( __( 'All <span class="%s">%s</span>', 'bp-attachments' ), esc_attr( $class ), number_format_i18n( $this->attachments_count['total'] ) ),
 			'slug'            => 'my-attachments',
 			'parent_url'      => $this->attachments_link,
@@ -231,15 +211,12 @@ class BP_Attachments_Component extends BP_Component {
 			'position'        => 10
 		);
 
-		$sub_nav[] = array(
-			'name'            => __( 'Add new', 'bp-attachments' ),
-			'slug'            => 'new-attachment',
-			'parent_url'      => $this->attachments_link,
-			'parent_slug'     => $this->slug,
-			'screen_function' => array( 'BP_Attachments_User_Screens', 'new_screens' ),
-			'position'        => 20,
-			'user_has_access' => bp_is_my_profile(),
-		);
+
+		if ( bp_attachments_loader()->use_bp_attachments_api ) {
+			$sub_nav['main']['screen_function'] = array( 'BP_Attachments_User_Screens', 'new_screens' );
+			$main_nav['screen_function'] = array( 'BP_Attachments_User_Screens', 'new_screens' );
+		}
+
 
 		parent::setup_nav( $main_nav, $sub_nav );
 	}
@@ -276,7 +253,7 @@ class BP_Attachments_Component extends BP_Component {
 			);
 
 			// Add submenus for components that support attachments (terms)
-			if ( ! empty( $this->component_terms ) ) {
+			if ( ! empty( $this->component_terms ) && ! bp_attachments_loader()->use_bp_attachments_api ) {
 				foreach( $this->component_terms as $component ) {
 					$wp_admin_nav[] = array(
 						'parent' => 'my-account-' . $this->id,
@@ -377,6 +354,10 @@ class BP_Attachments_Component extends BP_Component {
 	 * @since BP Attachments (1.0.0)
 	 */
 	public function term_nav() {
+		if ( bp_attachments_loader()->use_bp_attachments_api ) {
+			return;
+		}
+
 		$this->component_terms = get_terms( 'bp_component', array( 'hide_empty' => 1, 'fields' => 'all' ) );
 
 		$position = 20;

@@ -1,8 +1,8 @@
 === BP Attachments ===
-Contributors: johnjamesjacoby, DJPaul, boonebgorges, r-a-y, imath
+Contributors: johnjamesjacoby, DJPaul, boonebgorges, r-a-y, imath, mercime, tw2113, dcavins, hnla
 Tags: buddypress, attachments
-Requires at least: 3.8.1
-Tested up to: 3.9-beta2
+Requires at least: 4.2
+Tested up to: 4.3
 Stable tag: TBD
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -13,7 +13,7 @@ BP Attachments is a BuddyPress component to help others deal with attachments.
 
 <h4>BuddyPress version</h4>
 
-<strong>Requires at least BuddyPress 2.0-alpha-8020</strong>
+<strong>Requires at least BuddyPress 2.3.0</strong>
 
 <h4>More Information</h4>
 
@@ -36,10 +36,16 @@ TBD
 
 == Upgrade Notice ==
 
+= 1.1.0 =
+TBD
+
 = 1.0.0 =
 TBD
 
 == Changelog ==
+
+= 1.1.0-beta =
+* Uses the BP Attachments API
 
 = 1.0.0-bleeding =
 initial version

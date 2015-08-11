@@ -176,7 +176,7 @@ class BP_Attachments_User_Screens {
 	 * @since BP Attachments (1.1.0)
 	 */
 	public function new_user_title() {
-		printf( __( 'Testing the BuddyPress Attachments API', 'bp-attachments' ) );
+		esc_html_e( 'Testing the BuddyPress Attachments API', 'bp-attachments' );
 	}
 
 	/**
@@ -187,16 +187,8 @@ class BP_Attachments_User_Screens {
 	public function new_user_content() {
 		// Enqueue BuddyPress attachments scripts
 		bp_attachments_enqueue_scripts( 'BP_Attachments_Attachment' );
-		?>
-		<div id="bp-attachments">
-			<?php /* Markup for the uploader */ ?>
-				<div class="bp-attachments-uploader"></div>
-				<div class="bp-attachments-uploader-status"></div>
 
-			<?php bp_attachments_get_template_part( 'uploader' );
-			/* Markup for the uploader */ ?>
-		</div>
-		<?php
+		bp_attachments_get_template_part( 'files/index' );
 	}
 
 	/**

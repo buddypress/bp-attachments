@@ -105,18 +105,21 @@ function bp_attachments_handle_upload( $args = array() ) {
  * @return mixed false/title of the deleted attachment
  */
 function bp_attachments_delete_attachment( $attachment_id = 0 ) {
-	if ( empty( $attachment_id ) )
+	if ( empty( $attachment_id ) ) {
 		return false;
+	}
 
-	if ( ! bp_attachments_loggedin_user_can( 'delete_bp_attachment', $attachment_id ) )
-			return false;
+	if ( ! bp_attachments_loggedin_user_can( 'delete_bp_attachment', $attachment_id ) ) {
+		return false;
+	}
 
 	$deleted = BP_Attachments::delete( $attachment_id );
 
-	if ( ! empty( $deleted->post_title ) )
+	if ( ! empty( $deleted->post_title ) ) {
 		return $deleted->post_title;
-	else
+	} else {
 		return false;
+	}
 }
 
 /**
@@ -274,10 +277,15 @@ function bp_attachments_prepare_attachment_for_js( $attachment ) {
 
 		if ( ! empty( $get_attachment->attachment ) )
 			$attachment = $get_attachment->attachment;
+
+	/** return if already ready for js */
+	} elseif ( is_array( $attachment ) && ! empty( $attachment['attachment_id'] ) ) {
+		return $attachment;
 	}
 
-	if ( 'bp_attachment' != $attachment->post_type )
+	if ( 'bp_attachment' != $attachment->post_type ) {
 		return;
+	}
 
 	$meta = wp_get_attachment_metadata( $attachment->ID );
 	if ( false !== strpos( $attachment->post_mime_type, '/' ) )
@@ -391,63 +399,6 @@ function bp_attachments_prepare_attachment_for_js( $attachment ) {
 	}
 
 	return apply_filters( 'bp_attachments_prepare_attachment_for_js', $response, $attachment, $meta );
-}
-
-/**
- * Register and create the upload directories
- *
- * @since BP Attachments (1.0.0)
- */
-function bp_attachments_set_upload_dir() {
-	$upload_datas = wp_upload_dir();
-
-	$bp_attachments_upload_dir = $upload_datas["basedir"] .'/bp-attachments';
-	$bp_attachments_upload_url = $upload_datas["baseurl"] .'/bp-attachments';
-
-	$bp_attachments_upload_data = array(
-		'basedir'    => $bp_attachments_upload_dir,
-		'baseurl'    => $bp_attachments_upload_url,
-		'publicdir'  => $bp_attachments_upload_dir . '/public',
-		'publicurl'  => $bp_attachments_upload_url . '/public',
-		'privatedir' => $bp_attachments_upload_dir . '/private',
-		'privateurl' => $bp_attachments_upload_url . '/private',
-	);
-
-	// Create dirs if they're not already
-	if( ! file_exists( $bp_attachments_upload_dir ) ) {
-		// Create main bp-attachments dir
-		@wp_mkdir_p( $bp_attachments_upload_dir );
-
-		if( ! file_exists( $bp_attachments_upload_data['publicdir'] ) ) {
-			// Create public attachments dir
-			@wp_mkdir_p( $bp_attachments_upload_data['publicdir'] );
-		}
-
-		if( ! file_exists( $bp_attachments_upload_data['privatedir'] ) ) {
-			// Create private attachments dir
-			@wp_mkdir_p( $bp_attachments_upload_data['privatedir'] );
-
-			/**
-			 * Create an .htaccess file to prevent files to be reached.
-			 *
-			 * @todo use BP Docs way to secure downloads !
-			 */
-			if( ! file_exists( $bp_attachments_upload_data['privatedir'] .'/.htaccess' ) ) {
-
-				if ( ! function_exists( 'insert_with_markers' ) )
-					require_once( ABSPATH . '/wp-admin/includes/misc.php' );
-
-				// Defining the rule, we need to make it unreachable and use php to reach it
-				$rules = array( 'Order Allow,Deny','Deny from all' );
-
-				// creating the .htaccess file
-				insert_with_markers( $bp_attachments_upload_data['privatedir'] .'/.htaccess', 'BuddyPress Attachments', $rules );
-			}
-		}
-	}
-
-	//finally returns upload_data
-	return $bp_attachments_upload_data;
 }
 
 /**

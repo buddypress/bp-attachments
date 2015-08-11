@@ -1,38 +1,45 @@
 #buddypress div.bp-attachments-uploader-status {
-	clear: both;
-	margin: 1em 0;
+	margin: 1em 0 0;
 }
 
-#buddypress div.bp-attachments-uploader-status p.updated {
-	display: block;
+#buddypress div.bp-attachments-uploader-status ul li {
+	list-style: none;
 	padding: 10px 15px;
+	margin: 0 0 1em 0;
 }
 
-#buddypress div.bp-attachments-uploader-status p.success {
-	background-color: #efc;
-	border: 1px solid #591;
-	color: #250;
-}
-
-#buddypress div.bp-attachments-uploader-status p.error {
+#buddypress div.bp-attachments-uploader-status ul li.error,
+#buddypress div.bp-attachments-uploader-status ul li.delete_error,
+#buddypress div.bp-attachments-uploader-status ul li.remove_error {
 	background-color: #fdc;
 	border: 1px solid #a00;
 	color: #800;
 }
 
-#buddypress div.bp-attachments-uploader-status .bp-progress {
-	background: none;
-	border: 1px solid #d1d1d1;
-	float: right;
-	height: 34px;
-	margin: 6px 10px 0 0;
-	margin-bottom: 2px;
-	padding: 0;
-	overflow: hidden;
-	width: 200px;
+#buddypress div.bp-attachments-uploader-status ul li.warning {
+	background-color: #ffd;
+	border: 1px solid #cb2;
+	color: #440;
 }
 
-#buddypress div.bp-attachments-uploader-status .bp-bar {
+#buddypress div.bp-attachments-uploader-status ul li.success,
+#buddypress div.bp-attachments-uploader-status ul li.delete_success,
+#buddypress div.bp-attachments-uploader-status ul li.remove_success {
+	background-color: #efc;
+	border: 1px solid #591;
+	color: #250;
+}
+
+#buddypress div.bp-attachments-downloading .bp-progress {
+	background: none;
+	border: 1px solid #d1d1d1;
+	height: 10px;
+	padding: 0;
+	overflow: hidden;
+	width: 80%;
+}
+
+#buddypress div.bp-attachments-downloading .bp-bar {
 	background-color: #c3ff88;
 	width: 0;
 	height: 100%;
@@ -117,21 +124,6 @@
 	clear:both;
 }
 
-#buddypress .bp-uploader-progress .filename {
-	height: 34px;
-	line-height: 34px;
-	font-weight: bold;
-	margin-top: 6px;
-	float: left;
-	font-size: 80%;
-	max-width: 350px;
-}
-
-#buddypress .bp-uploader-progress .filename img {
-	vertical-align: middle;
-	height:34px;
-}
-
 #buddypress .bp-uploader-progress .bp-progress.bp-attachments-success {
 	border: none;
 }
@@ -157,3 +149,116 @@
 	outline: none;
 	text-decoration: none;
 }
+
+#buddypress ul#bp-attachments-items {
+	margin: 1.6em auto;
+	padding: 1em 0;
+	list-style: none;
+	overflow: hidden;
+}
+
+#buddypress ul#bp-attachments-items li {
+	display:inline-block;
+	overflow:hidden;
+	margin:10px;
+}
+
+#buddypress ul#bp-attachments-items li .bp-attachments-file {
+	position:relative;
+	text-align: center;
+	font-size:0.8em;
+	background: #f1f1f1;
+}
+
+#buddypress ul#bp-attachments-items li .bp-attachments-file .bp-attachments-filename {
+	position:absolute;
+	left:0;
+	bottom:0;
+	width:100%;
+	background: #fff;
+	border:none;
+	text-decoration: none;
+}
+
+#buddypress ul#bp-attachments-items li .bp-attachments-file .bp-attachments-icon img {
+	margin-top: 10px;
+	display:inline-block;
+}
+#buddypress ul#bp-attachments-items li .bp-attachments-file .bp-attachments-icon {
+	border:none;
+	text-decoration: none;
+}
+
+#TB_caption {
+	font-size:1em;
+	float:none;
+}
+
+#TB_window .screen-reader-text {
+	position: absolute;
+	margin: -1px;
+	padding: 0;
+	height: 1px;
+	width: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	border: 0;
+}
+
+#TB_caption #TB_secondLine {
+	float:right;
+	margin-right:1em;
+}
+
+#TB_Image {
+	border:none;
+}
+
+#TB_closeWindow .tb-close-icon {
+	background: #FFF;
+}
+
+.bp-attachments-actions {
+	text-align: center;
+}
+
+.bp-attachments-actions a {
+	text-decoration: none;
+	border:none;
+	display:inline-block;
+	margin:0 0.6em;
+}
+
+.bp-attachments-actions a:before {
+	font-family: dashicons;
+	font-size:18px;
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.bp-attachments-actions a.edit:before {
+	content: "\f464";
+}
+
+.bp-attachments-actions a.delete {
+	color:#800;
+}
+
+.bp-attachments-actions a.delete:before {
+	content: "\f182";
+}
+
+.bp-attachments-actions a.bp-groups:before {
+	content: "\f307";
+}
+
+.bp-attachments-actions a.remove:before {
+ 	content: "\f158";
+ }

@@ -63,16 +63,16 @@ function bp_attachments_upload() {
 
 	$r = bp_parse_args( $_REQUEST, array(
 		'item_id'         => 0,
-		'component'       => '',
+		'component'       => 'members',
 		'item_type'       => 'attachment',
 		'action'          => 'bp_attachments_upload',
-		'file_id'         => 'bp_attachment_file'
+		'file_id'         => 'bp-attachments-attachment-upload'
 	), 'attachments_ajax_upload' );
 
-	// We don't categorized members as a bp_component term
-	if ( 'members' == $r['component'] ) {
-		unset( $r['component'] );
+	if ( 'bp_attachments_upload' === $_POST['action'] ) {
+		$_POST['action'] = 'bp_attachments_attachment_upload';
 	}
+
 	$cap_args = false;
 
 	if ( ! empty( $r['component'] ) ) {
@@ -80,32 +80,32 @@ function bp_attachments_upload() {
 	}
 
 	// capability check
-	if ( ! bp_attachments_loggedin_user_can( 'publish_bp_attachments', $cap_args ) )
-		wp_die();
-
-	$attachment_id = bp_attachments_handle_upload( $r );
-
-	if ( is_wp_error( $attachment_id ) ) {
-		echo json_encode( array(
-			'success' => false,
-			'data'    => array(
-				'message'  => $attachment_id->get_error_message(),
-				'filename' => $_FILES['bp_attachment_file']['name'],
-			)
-		) );
-
+	if ( ! bp_attachments_loggedin_user_can( 'publish_bp_attachments', $cap_args ) ) {
 		wp_die();
 	}
 
-	if ( ! $attachment = bp_attachments_prepare_attachment_for_js( $attachment_id ) )
-		wp_die();
+	$user_id = bp_displayed_user_id();
+	if ( ! bp_is_user() ) {
+		$user_id = bp_loggedin_user_id();
+	}
 
-	echo json_encode( array(
-		'success' => true,
-		'data'    => $attachment,
+	$attachment_object = new BP_Attachments_Attachment();
+	$response = $attachment_object->insert_attachment( $_FILES, array(
+		'post_author'  => $user_id,
+		'bp_component' => $r['component'],
+		'bp_item_id'   => $r['item_id'],
 	) );
 
-	wp_die();
+	// Error while trying to upload the file
+	if ( is_wp_error( $response ) ) {
+		bp_attachments_json_response( false, false, array(
+			'type'    => 'upload_error',
+			'message' => $response->get_error_message(),
+		) );
+	}
+
+	// Finally return the attachment to the editor
+	bp_attachments_json_response( true, false, $response );
 }
 add_action( 'wp_ajax_bp_attachments_upload', 'bp_attachments_upload' );
 
@@ -203,17 +203,27 @@ function bp_attachments_attachment_upload() {
 	}
 
 	// Check params
-	if ( empty( $bp_params['object'] ) || empty( $bp_params['user_id'] ) ) {
+	if ( empty( $bp_params['object'] ) || empty( $bp_params['user_id'] ) || ! isset( $bp_params['item_id'] ) ) {
 		bp_attachments_json_response( false, $is_html4 );
 	}
 
-	// Capability check
-	if ( ! bp_current_user_can( 'upload_files' ) ) {
+	/* @todo improve this */
+	$component = 'members';
+	if ( 'group' === $bp_params['object'] ) {
+		$component = 'groups';
+	}
+
+	// capability check
+	if ( ! bp_attachments_loggedin_user_can( 'publish_bp_attachments', array( 'component' => $component, 'item_id' => $bp_params['item_id'] ) ) ) {
 		bp_attachments_json_response( false, $is_html4 );
 	}
 
 	$attachment_object = new BP_Attachments_Attachment();
-	$response = $attachment_object->insert_attachment( $_FILES, array( 'post_author' => $bp_params['user_id'] ) );
+	$response = $attachment_object->insert_attachment( $_FILES, array(
+		'post_author'  => $bp_params['user_id'],
+		'bp_component' => $component,
+		'bp_item_id'   => $bp_params['item_id'],
+	) );
 
 	// Error while trying to upload the file
 	if ( is_wp_error( $response ) ) {
@@ -227,3 +237,112 @@ function bp_attachments_attachment_upload() {
 	bp_attachments_json_response( true, $is_html4, $response );
 }
 add_action( 'wp_ajax_bp_attachments_attachment_upload', 'bp_attachments_attachment_upload' );
+
+function bp_attachments_get_files() {
+	// Bail if not a POST action
+	if ( 'POST' !== strtoupper( $_SERVER['REQUEST_METHOD'] ) ) {
+		wp_die();
+	}
+
+	// Check the nonce
+	check_admin_referer( 'bp_fetch_attachments', 'nonce' );
+
+	// Init the BuddyPress parameters
+	$args = array();
+
+	// We need it to carry on
+	if ( ! empty( $_POST ) ) {
+		$args = wp_parse_args( $_POST, array(
+			'user_id'        => 0,
+			'item_id'        => 0,
+			'item_object'    => '',
+			'item_component' => '',
+			'page'           => 1,
+			'per_page'       => 20,
+		) );
+	} else {
+		bp_attachments_json_response( false );
+	}
+
+	if ( empty( $args ) ) {
+		bp_attachments_json_response( false, false, array(
+			'type'    => 'fetch_error',
+			'message' => __( 'OOps no args ??', 'bp-attachments' ),
+		) );
+	}
+
+	if ( ! empty( $args['item_component'] ) && 'members' !== $args['item_component'] ) {
+		$args['component'] = $args['item_component'];
+		$args['item_ids'] = wp_parse_id_list( $args['item_id'] );
+
+		// Unset the user id as we're in a Groups single item
+		unset( $args['user_id'] );
+	}
+
+	$query = BP_Attachments_Attachment::get( $args );
+
+	add_filter( 'image_size_names_choose', 'bp_attachments_filter_image_sizes', 10, 1 );
+	$attachments = array_map( 'bp_attachments_prepare_attachment_for_js', $query['attachments'] );
+	remove_filter( 'image_size_names_choose', 'bp_attachments_filter_image_sizes', 10, 1 );
+	$attachments = array_filter( $attachments );
+
+	bp_attachments_json_response( true, false, $attachments );
+}
+add_action( 'wp_ajax_bp_attachments_get_files', 'bp_attachments_get_files' );
+add_action( 'wp_ajax_nopriv_bp_attachments_get_files', 'bp_attachments_get_files' );
+
+function bp_attachments_delete_file() {
+	$response = array( 'feedback' => __( 'was not deleted due to an error, please try again later.', 'bp-attachments' ) );
+
+	if ( empty( $_POST['attachment_id'] ) ) {
+		bp_attachments_json_response( false, false, $response );
+	}
+
+	$attachment_id = (int) $_POST['attachment_id'];
+
+	// Check the nonce
+	check_admin_referer( 'delete_bp_attachment_' . $attachment_id, 'nonce' );
+
+	if ( ! bp_attachments_loggedin_user_can( 'delete_bp_attachment', $attachment_id ) ) {
+		bp_attachments_json_response( false, false, $response );
+	}
+
+	if ( bp_attachments_delete_attachment( $attachment_id ) ) {
+		bp_attachments_json_response( true, false, array( 'feedback' => __( 'was successfully deleted.', 'bp-attachments' ) ) );
+	} else {
+		bp_attachments_json_response( false, false, $response );
+	}
+}
+add_action( 'wp_ajax_bp_attachments_delete_file', 'bp_attachments_delete_file' );
+
+function bp_attachments_remove_file() {
+	$response = array( 'feedback' => __( 'was not removed due to an error, please try again later.', 'bp-attachments' ) );
+
+	if ( empty( $_POST['attachment_id'] ) || empty( $_POST['item_id'] ) || empty( $_POST['item_object'] ) ) {
+		bp_attachments_json_response( false, false, $response );
+	}
+
+	$attachment_id = (int) $_POST['attachment_id'];
+	$item_id       = (int) $_POST['item_id'];
+	$object        = sanitize_key( $_POST['item_object'] );
+
+	if ( 'group' === $object ) {
+		$component = 'groups';
+	} else {
+		$component = apply_filters( 'bp_attachments_remove_file_for_component_single_item', '', $attachment_id, $object, $item_id );
+	}
+
+	// Check the nonce
+	check_admin_referer( 'remove_bp_attachment_' . $attachment_id, 'nonce' );
+
+	if ( ! bp_attachments_loggedin_user_can( 'edit_bp_attachments', array( 'component' => $component, 'item_id' => $item_id ) ) ) {
+		bp_attachments_json_response( false, false, $response );
+	}
+
+	if ( delete_post_meta( $attachment_id, "_bp_{$component}_id", $item_id ) ) {
+		bp_attachments_json_response( true, false, array( 'feedback' => __( 'was successfully removed from this group.', 'bp-attachments' ) ) );
+	} else {
+		bp_attachments_json_response( false, false, $response );
+	}
+}
+add_action( 'wp_ajax_bp_attachments_remove_file', 'bp_attachments_remove_file' );

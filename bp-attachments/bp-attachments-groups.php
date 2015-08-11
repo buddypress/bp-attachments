@@ -38,13 +38,20 @@ class BP_Attachments_Group extends BP_Group_Extension {
     		) );
     	}
 
+    	$current_group = groups_get_current_group();
+    	$visibility    = 'private';
+
+    	if ( ! empty( $current_group->status ) && 'public' === $current_group->status ) {
+    		$visibility = $current_group->status;
+    	}
+
     	$class = ( 0 === absint( $attachments_count['total'] ) ) ? 'no-count' : 'count';
 
     	$args = array(
     		'slug'              => bp_attachments_loader()->component_slug,
     		'name'              => __( 'Attachments', 'bp-attachments' ),
     		'nav_item_name'     => sprintf( __( 'Attachments <span class="%s">%s</span>', 'bp-attachments' ), esc_attr( $class ), number_format_i18n( $attachments_count['total'] ) ),
-    		'visibility'        => 'private',
+    		'visibility'        => $visibility,
     		'nav_item_position' => 61,
     		'enable_nav_item'   => $this->enable_nav_item(),
     		'screens'           => array(
@@ -122,6 +129,42 @@ class BP_Attachments_Group extends BP_Group_Extension {
 		if ( bp_is_group() ) {
 			add_action( 'bp_actions', array( $this, 'remove_from_group') );
 		}
+
+		add_filter( 'bp_attachments_prepare_attachment_for_js', array( $this, 'append_groups_info' ), 10, 2 );
+	}
+
+	public function append_groups_info( $js_response, $attachment ) {
+		if ( empty( $attachment->ID ) ) {
+			return $js_response;
+		}
+
+		if ( bp_is_user() ) {
+			// Get the array of group ids
+			$groups = get_post_meta( $attachment->ID, '_bp_groups_id' );
+
+			if ( ! empty( $groups ) ) {
+				$nb_groups = count( $groups );
+				$js_response['bp_groups'] = sprintf( _n( 'Shared in %s group.', 'Shared in %s groups.', $nb_groups, 'buddypress' ), number_format_i18n( $nb_groups ) );
+			}
+		} elseif ( bp_is_group() ) {
+			if ( bp_attachments_loggedin_user_can( 'edit_bp_attachments', array( 'component' => buddypress()->groups->id, 'item_id' => bp_get_current_group_id(), 'attachment_id' => $attachment->ID ) ) ) {
+				$js_response['nonces']['remove'] = wp_create_nonce( 'remove_bp_attachment_' . $attachment->ID );
+			}
+
+			$js_response['owner_avatar'] = array(
+				'user_domain' => esc_url_raw( bp_core_get_user_domain( $attachment->post_author ) ),
+				'user_title'  => esc_attr( bp_core_get_user_displayname( $attachment->post_author ) ),
+				'user_avatar' => bp_core_fetch_avatar( array(
+					'item_id' => $attachment->post_author,
+					'type'    => 'thumb',
+					'width'   => 20,
+					'height'  => 20,
+					'html'    => false,
+				) ),
+			);
+		}
+
+		return $js_response;
 	}
 
     /**
@@ -221,7 +264,7 @@ class BP_Attachments_Group extends BP_Group_Extension {
      * @return string html output
      */
     public function display( $group_id = null ) {
-        ?>
+    	if ( ! bp_attachments_loader()->use_bp_attachments_api ) : ?>
         <h3>
 	        <?php bp_attachments_browser( 'bp-attachments-upload', array(
 				'item_id'         => bp_get_current_group_id(),
@@ -237,6 +280,17 @@ class BP_Attachments_Group extends BP_Group_Extension {
 		<?php
 		do_action( 'bp_attachments_uploader_fallback' );
 		bp_attachments_template_loop( 'groups' );
+
+		else : ?>
+
+			<h3><?php esc_html_e( 'Testing the BuddyPress Attachments API', 'bp-attachments' ); ?></h3>
+
+			<?php // Enqueue BuddyPress attachments scripts
+			bp_attachments_enqueue_scripts( 'BP_Attachments_Attachment' );
+
+			bp_attachments_get_template_part( 'files/index' );
+
+		endif;
     }
 
     /**
@@ -383,7 +437,7 @@ class BP_Attachments_Group extends BP_Group_Extension {
     function enable_nav_item() {
     	$group_id = bp_get_current_group_id();
 
-    	if( empty( $group_id ) ) {
+    	if ( empty( $group_id ) ) {
     		return false;
     	}
 

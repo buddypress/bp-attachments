@@ -74,11 +74,17 @@ function bp_attachments_map_meta_caps( $caps = array(), $cap = '', $user_id = 0,
 				if ( ! empty( $args[0]->component ) && ! empty( $args[0]->item_id ) ){
 					switch( $args[0]->component ) {
 						case 'groups':
-							if( groups_is_user_member( $user_id, $args[0]->item_id ) )
+							if ( groups_is_user_member( $user_id, $args[0]->item_id ) ) {
 								$caps = array( 'read' );
+							}
 							break;
 
 						// and so on for other components
+						default:
+							if ( bp_is_my_profile() ) {
+								$caps = array( 'read' );
+							}
+							break;
 					}
 				}
 
@@ -274,4 +280,15 @@ function bp_attachments_image_downsize( $output = '', $id = 0, $size = 'medium' 
 		return array( $img_url, $width, $height, $is_intermediate );
 	}
 	return false;
+}
+
+function bp_attachments_filter_image_sizes( $image_sizes = array() ) {
+	return array(
+		'bp_attachments_avatar' => __( 'Avatar', 'bp-attachments' ),
+		'full'                  => $image_sizes['full'],
+	);
+}
+
+function bp_attachments_restrict_image_sizes( $sizes = array() ) {
+	return array_intersect_key( $sizes, array( 'bp_attachments_avatar' => true ) );
 }

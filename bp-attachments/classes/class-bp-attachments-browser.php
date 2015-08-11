@@ -36,7 +36,7 @@ class BP_Attachments_Browser {
 			'post_id'         => 0,
 			'btn_caption'     => __( 'Manage attachments', 'bp-attachments' ), // the button caption
 			'btn_class'       => 'attachments-editor',                         // the button class
-			'file_data_name'  => 'bp_attachment_file',                         // the name of the $_FILE to upload
+			'file_data_name'  => 'bp-attachments-attachment-upload',           // the name of the $_FILE to upload
 			'multi_selection' => false,                                        // allow multiple file upload ?
 			'action'          => 'bp_attachments_upload',                      // the ajax action to deal with the file
 			'callback'        => false,
