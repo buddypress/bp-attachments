@@ -84,9 +84,8 @@ window.bp = window.bp || {};
 			// Reset feedbacks
 			bp.Attachments.feedback.reset();
 
-			return wp.ajax.post( 'bp_attachments_delete_file', {
+			return bp.ajax.post( 'bp_attachments_delete_file', {
 				attachment_id: self.get( 'id' ),
-				/*item_object: BP_Uploader.settings.defaults.multipart_params.bp_params.object,*/
 				nonce:       self.get( 'nonces' ).delete
 			} ).done( function( resp ) {
 				bp.Attachments.files.remove( self );
@@ -112,7 +111,7 @@ window.bp = window.bp || {};
 			// Reset feedbacks
 			bp.Attachments.feedback.reset();
 
-			return wp.ajax.post( 'bp_attachments_remove_file', {
+			return bp.ajax.post( 'bp_attachments_remove_file', {
 				attachment_id: self.get( 'id' ),
 				item_id:       BP_Uploader.settings.defaults.multipart_params.bp_params.item_id,
 				item_object:   BP_Uploader.settings.defaults.multipart_params.bp_params.object,
@@ -186,7 +185,7 @@ window.bp = window.bp || {};
 					nonce:          BP_Uploader.settings.defaults.multipart_params.bp_params.nonce
 				} );
 
-				return wp.ajax.send( options );
+				return bp.ajax.send( options );
 			}
 		},
 
