@@ -164,7 +164,7 @@ class BP_Attachments_Template {
 	public function __construct( $args = array() ) {
 
 		$defaults = array(
-			'item_ids'        => array(), // one or more item ids regarding the component (eg group_ids, message_ids ) 
+			'item_ids'        => array(), // one or more item ids regarding the component (eg group_ids, message_ids )
 			'component'	      => false,   // groups / messages / blogs / xprofile...
 			'show_private'    => false,   // wether to include private attachment
 			'user_id'	      => false,   // the author id of the attachment
@@ -172,7 +172,7 @@ class BP_Attachments_Template {
 			'page'		      => 1,
 			'search'          => false,
 			'exclude'		  => false,   // comma separated list or array of attachment ids.
-			'orderby' 		  => 'ID', 
+			'orderby' 		  => 'ID',
 			'order'           => 'DESC',
 			'page_arg'        => 'apage',
 		);
@@ -210,7 +210,7 @@ class BP_Attachments_Template {
 			'page'		      => $this->pag_page,
 			'search'          => $this->search_terms,
 			'exclude'		  => $this->exclude,
-			'orderby' 		  => $this->order_by, 
+			'orderby' 		  => $this->order_by,
 			'order'           => $this->sort_order,
 		) );
 
@@ -386,7 +386,7 @@ function bp_attachments_has_attachments( $args = array() ) {
 		'page'         => 1,
 		'search_terms' => isset( $_REQUEST['s'] ) ? stripslashes( $_REQUEST['s'] ) : '',
 		'exclude'      => false,
-		'orderby'      => 'modified', 
+		'orderby'      => 'modified',
 		'order'        => 'DESC',
 		'page_arg'     => 'apage',
 	), 'attachments_has_args' );
@@ -496,7 +496,7 @@ function bp_attachments_the_attachment_id() {
 function bp_attachments_class() {
 	echo bp_attachments_get_class();
 }
-	
+
 	/**
 	 * Return the class of the attachment row.
 	 *
@@ -546,7 +546,7 @@ function bp_attachments_thumbnail() {
 function bp_attachments_the_title() {
 	echo bp_attachments_get_the_title();
 }
-	
+
 	/**
 	 * Return the title of the attachment.
 	 *
@@ -564,7 +564,7 @@ function bp_attachments_the_title() {
 function bp_attachments_the_link() {
 	echo bp_attachments_get_the_link();
 }
-	
+
 	/**
 	 * Return the link of the attachment.
 	 *
@@ -582,7 +582,7 @@ function bp_attachments_the_link() {
 function bp_attachments_last_modified() {
 	echo bp_attachments_get_last_modified();
 }
-	
+
 	/**
 	 * Return the date of the attachment.
 	 *
@@ -610,7 +610,7 @@ function bp_attachments_has_description() {
 function bp_attachments_the_excerpt() {
 	echo bp_attachments_get_the_excerpt();
 }
-	
+
 	/**
 	 * Return the description of the attachment.
 	 *
@@ -630,7 +630,7 @@ function bp_attachments_the_excerpt() {
 function bp_attachments_the_status() {
 	echo bp_attachments_get_the_status();
 }
-	
+
 	/**
 	 * Return the status (inherit/private) of the attachment.
 	 *
@@ -641,7 +641,7 @@ function bp_attachments_the_status() {
 
 		if ( 'private' == buddypress()->attachments->query_loop->attachment->post_status )
 			$status = __( 'Private', 'bp-attachments' );
-			
+
 		return apply_filters( 'bp_attachments_get_the_status', $status );
 	}
 
@@ -653,7 +653,7 @@ function bp_attachments_the_status() {
 function bp_attachments_the_mime_type() {
 	echo bp_attachments_get_the_mime_type();
 }
-	
+
 	/**
 	 * Return the mime type of the attachment.
 	 *
@@ -681,7 +681,7 @@ add_action( 'bp_attachments_members_actions', 'bp_attachments_the_user_actions' 
 	function bp_attachments_get_the_user_actions() {
 		$attachment_id = buddypress()->attachments->query_loop->attachment->ID;
 		$user_id = buddypress()->attachments->query_loop->attachment->post_author;
-		
+
 		$edit = $delete = false;
 
 		if ( bp_attachments_loggedin_user_can( 'edit_bp_attachment', $attachment_id ) ) {
@@ -719,7 +719,7 @@ function bp_attachments_single_the_form_action() {
 function bp_attachments_single_the_id() {
 	echo bp_attachments_single_get_the_id();
 }
-	
+
 	/**
 	 * Return the ID of the attachment being edited.
 	 *
@@ -737,7 +737,7 @@ function bp_attachments_single_the_id() {
 function bp_attachments_single_the_title() {
 	echo bp_attachments_single_get_the_title();
 }
-	
+
 	/**
 	 * Return the title of the attachment being edited.
 	 *
@@ -773,7 +773,7 @@ function bp_attachments_single_the_description() {
 function bp_attachments_single_attached_to() {
 	echo bp_attachments_single_get_attached_to();
 }
-	
+
 	/**
 	 * Return the list of components single items the attachment is linked to.
 	 *
@@ -802,3 +802,90 @@ function bp_attachments_single_attached_to() {
 
 		return apply_filters( 'bp_attachments_single_get_attached_to', $output, buddypress()->attachments->attachment );
 	}
+
+/** Activity Attachments ******************************************************/
+
+// Make sure there won't be any fatals if ticket #6569 makes it in trunk
+if ( ! function_exists( 'bp_activity_whats_new_placeholder' ) ) :
+function bp_activity_whats_new_placeholder() {
+	echo bp_get_activity_whats_new_placeholder();
+}
+endif;
+
+	// Make sure there won't be any fatals if ticket #6569 makes it in trunk
+	if ( ! function_exists( 'bp_get_activity_whats_new_placeholder' ) ) :
+	function bp_get_activity_whats_new_placeholder() {
+		$placeholder = sprintf( __( "What's new, %s?", 'bp-attachments' ), bp_get_user_firstname( bp_get_loggedin_user_fullname() ) );
+
+		if ( bp_is_group() ) {
+			$placeholder = sprintf( __( "What's new in %s, %s?", 'bp-attachments' ), bp_get_group_name(), bp_get_user_firstname( bp_get_loggedin_user_fullname() ) );
+		}
+
+		return apply_filters( 'bp_get_activity_whats_new_placeholder', $placeholder );
+	}
+	endif;
+
+function bp_attachments_activity_post_form_attachments() {
+	// Enqueue needed scripts
+	bp_attachments_enqueue_scripts( 'BP_Attachments_Attachment' );
+
+	bp_attachments_get_template_part( 'activity/index' );
+}
+add_action( 'bp_activity_post_form_before_options', 'bp_attachments_activity_post_form_attachments' );
+
+/**
+ * @todo cache the attachments !!!!!!!!!!!!!!!!
+ */
+function bp_attachments_activity_append_attachments() {
+	global $activities_template;
+
+	if ( ! isset( $activities_template->activity->id ) ) {
+		return;
+	}
+
+	// Get the attachment ids
+	$attachments = (array) bp_activity_get_meta( $activities_template->activity->id, '_bp_attachments_attachment_ids', false );
+
+	if ( empty( $attachments ) ) {
+		return;
+	}
+
+	// Init the output and the more link
+	$output     = '';
+	$more_link  = '';
+
+	add_filter( 'image_downsize', 'bp_attachments_image_downsize', 10, 3 );
+
+	if ( 1 === count( $attachments ) ) {
+		$attachment_id = reset( $attachments );
+		$output = wp_get_attachment_image( $attachment_id, 'full', false, array( 'class' => 'bp-attachments-full' ) );
+	} else {
+		$size = 'bp_attachments_avatar';
+		$more = __( 'View full size images', 'bp-attachments' );
+
+		if ( bp_is_single_activity() ) {
+			$size = 'full';
+		} else {
+			// More than 3, pick 3 random ones
+			if ( 3 < count( $attachments ) ) {
+				$attachments = array_intersect_key( $attachments, array_flip( array_rand( $attachments, 3 ) ) );
+				$more        = __( 'View all images', 'bp-attachments' );
+			}
+
+			$more_link = sprintf( '<p><a href="%1$s" title="%2$s">%3$s</a></p>',
+				esc_url( bp_activity_get_permalink( $activities_template->activity->id, $activities_template->activity ) ),
+				esc_attr( $more ),
+				esc_html( $more )
+			);
+		}
+
+		foreach( $attachments as $attachment_id ) {
+			$output .= wp_get_attachment_image( $attachment_id, $size, false, array( 'class' => 'bp-attachments-' . $size ) );
+		}
+	}
+
+	remove_filter( 'image_downsize', 'bp_attachments_image_downsize', 10, 3 );
+
+	echo apply_filters( 'bp_attachments_activity_append_attachments', $output . $more_link, $activities_template->activity, $attachments );
+}
+add_action( 'bp_activity_entry_content', 'bp_attachments_activity_append_attachments' );

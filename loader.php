@@ -100,6 +100,7 @@ class BP_Attachments_Loader {
 		$this->lang_dir               = trailingslashit( $this->plugin_dir . 'languages' );
 		$this->includes_dir           = trailingslashit( $this->plugin_dir . 'bp-attachments' );
 		$this->templates_dir          = $this->plugin_dir . 'templates';
+		$this->templates_url          = trailingslashit( $this->plugin_url . 'templates' );
 		$this->includes_url           = trailingslashit( $this->plugin_url . 'bp-attachments' );
 		$this->plugin_js              = trailingslashit( $this->includes_url . 'js' );
 		$this->plugin_css             = trailingslashit( $this->includes_url . 'css' );
@@ -203,7 +204,10 @@ class BP_Attachments_Loader {
 			add_action( 'bp_core_components_included',  array( $this, 'includes' ),         10    );
 
 			// Register the template directory
-			add_action( 'bp_register_theme_directory', array( $this, 'register_template_dir' ) );
+			add_action( 'bp_register_theme_directory', array( $this, 'register_template_dir' )     );
+
+			// Replace the BuddyPress Javascript src to use ours
+			add_action( 'bp_enqueue_scripts',          array( $this, 'replace_buddypress_js' ), 11 );
 
 		} else {
 			add_action( $this->config['network_active'] ? 'network_admin_notices' : 'admin_notices', array( $this, 'admin_warning' ) );
@@ -287,6 +291,10 @@ class BP_Attachments_Loader {
 		bp_register_template_stack( array( $this, 'template_dir' ),  20 );
 	}
 
+	public function is_activity() {
+		return (bool) bp_is_activity_component() || bp_is_group_home();
+	}
+
 	/**
 	 * Get the template dir
 	 *
@@ -294,11 +302,106 @@ class BP_Attachments_Loader {
 	 * @since 1.1.0
 	 */
 	public function template_dir() {
-		if ( $this->component_id !== bp_current_component() && ! ( bp_is_group() && $this->component_id === bp_current_action() ) ) {
+		if ( $this->component_id !== bp_current_component() && ! ( bp_is_group() && $this->component_id === bp_current_action() ) && ! $this->is_activity() ) {
 			return;
 		}
 
 		return apply_filters( 'bp_attachments_template_dir', $this->templates_dir );
+	}
+
+	/**
+	 * Use a patched version of BuddyPress js
+	 *
+	 * @see https://buddypress.trac.wordpress.org/ticket/6569
+	 *
+	 * @package BP Attachments
+	 * @since 1.1.0
+	 */
+	public function replace_buddypress_js() {
+		global $wp_scripts;
+
+		/**
+		 * Filter here to completely disable activity attachments
+		 *
+		 * @param  bool $value
+		 */
+		if ( true === apply_filters( 'bp_attachments_disable_activity_attachments', false ) ) {
+			return;
+		}
+
+		if ( $this->is_activity() && isset( $wp_scripts->registered['bp-legacy-js'] ) ) {
+			$wp_scripts->registered['bp-legacy-js']->src = $this->templates_url . 'js/buddypress.js';
+
+			add_filter( 'bp_get_template_part', array( $this, 'get_custom_post_form' ), 10, 3 );
+
+			/**
+			 * Filter here if you are overriding the buddypress.css
+			 *
+			 * @param string $css_handle handle of your css (bp-child-css or bp-parent-css)
+			 */
+			$css_handle = apply_filters( 'bp_attachments_bp_css_handle', 'bp-legacy-css' );
+			wp_add_inline_style( $css_handle, '
+				/* Style adjustments */
+				#buddypress form#whats-new-form textarea {
+					width: 97.5%;
+					resize: none;
+					overflow: hidden;
+					height: auto;
+				}
+
+				body.no-js #buddypress form#whats-new-form textarea {
+					resize: vertical;
+					overflow: auto;
+				}
+
+				#buddypress #whats-new-options {
+					height: auto;
+					float: left;
+				}
+
+				#buddypress #whats-new-content #whats-new-actions {
+					height:0;
+				}
+
+				#buddypress #whats-new-content.active #whats-new-actions {
+					width:auto;
+				}
+
+				#buddypress #whats-new-content, #buddypress #whats-new-actions {
+					overflow: hidden;
+				}
+
+				#buddypress .bp-attachments-full {
+					max-width: 100%;
+					margin: 0.6em auto;
+					display: block;
+				}
+
+				#buddypress .bp-attachments-bp_attachments_avatar {
+					margin: 0.6em;
+				}
+			'
+			);
+		}
+	}
+
+	/**
+	 * Replace the Activity post form, if needed
+	 *
+	 * @package BP Attachments
+	 * @since 1.1.0
+	 *
+	 * @param  array $templates
+	 * @param  string $slug
+	 * @param  string $name
+	 * @return array the custom activity post form template
+	 */
+	public function get_custom_post_form( $templates, $slug = '', $name = '' ) {
+		if ( 'activity/post-form.php' === reset( $templates ) ) {
+			$templates = array( 'activity/custom-post-form.php' );
+		}
+
+		return $templates;
 	}
 
 	/**

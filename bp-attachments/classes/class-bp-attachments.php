@@ -222,7 +222,7 @@ class BP_Attachments {
 		$sql = array();
 		$detailed_count = array( 'total' => 0 );
 
-		$sql['select'] = "SELECT COUNT( p.ID ) as count, p.post_status as status, t.term_taxonomy_id as term_id";
+		$sql['select'] = "SELECT COUNT( DISTINCT( p.ID ) ) as count, p.post_status as status, t.term_taxonomy_id as term_id";
 		$sql['from'] = "FROM {$wpdb->posts} p LEFT JOIN {$wpdb->term_relationships} t ON( p.ID = t.object_id )";
 		$sql['where'] = array( $wpdb->prepare( "p.post_type = %s", 'bp_attachment' ) );
 		$sql['groupby'] = array( 'p.post_status', 't.term_taxonomy_id' );

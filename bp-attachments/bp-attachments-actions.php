@@ -176,3 +176,60 @@ function bp_attachments_catch_upload() {
 	}
 }
 add_action( 'bp_actions', 'bp_attachments_catch_upload' );
+
+/** Activity Actions **********************************************************/
+
+/**
+ * Link the Attachments to the Activity and the group
+ * using metadatas
+ *
+ * @since 1.1.0
+ */
+function bp_attachments_activity_save( $activity = null ) {
+	if ( empty( $_POST['bp_attachments_activity_meta'] ) ) {
+		return;
+	}
+
+	$attachments = (array) $_POST['bp_attachments_activity_meta'];
+
+	// Make sure to link the activity id to the Attachment
+	// and vice/versa
+	foreach ( $attachments as $attachment_id ) {
+		add_post_meta( $attachment_id, '_bp_activity_id', $activity->id );
+
+		// Was it posted within a group from the activity directory ?
+		if ( 'groups' === $activity->component && ! empty( $activity->item_id ) && true === (bool) groups_get_groupmeta( $activity->item_id, 'group-use-attachments' ) ) {
+			add_post_meta( $attachment_id, '_bp_groups_id', $activity->item_id );
+
+			// Set the term!
+			$term = get_term_by( 'slug', $activity->component, 'bp_component' );
+
+			if ( ! empty( $term ) ) {
+				wp_set_object_terms( $attachment_id, array( $term->term_id ), 'bp_component' );
+			}
+		}
+
+		bp_activity_add_meta( $activity->id, '_bp_attachments_attachment_ids', (int) $attachment_id );
+	}
+}
+add_action( 'bp_activity_after_save', 'bp_attachments_activity_save', 10, 1 );
+
+/**
+ * Remove an attachment from an activity when it was deleted
+ *
+ * @since 1.1.0
+ */
+function bp_attachments_activity_unattach( $attachment_id = 0 ) {
+	if ( empty( $attachment_id ) ) {
+		return;
+	}
+
+	$activity_id = get_post_meta( $attachment_id, '_bp_activity_id', true );
+
+	if ( empty( $activity_id ) ) {
+		return;
+	}
+
+	bp_activity_delete_meta( $activity_id, '_bp_attachments_attachment_ids', $attachment_id );
+}
+add_action( 'bp_attachments_before_attachment_delete', 'bp_attachments_activity_unattach', 10, 1 );

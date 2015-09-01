@@ -346,3 +346,22 @@ function bp_attachments_remove_file() {
 	}
 }
 add_action( 'wp_ajax_bp_attachments_remove_file', 'bp_attachments_remove_file' );
+
+function bp_attachments_activity_bulk_delete() {
+	if ( empty( $_POST['attachment_ids'] ) ) {
+		bp_attachments_json_response( false );
+	}
+
+	// Get the ids to delete
+	$attachments = (array) $_POST['attachment_ids'];
+
+	// Check the nonce
+	check_admin_referer( 'bp_bulk_delete_attachments', 'nonce' );
+
+	foreach ( $attachments as $attachment_id ) {
+		bp_attachments_delete_attachment( $attachment_id );
+	}
+
+	bp_attachments_json_response( true );
+}
+add_action( 'wp_ajax_bp_attachments_activity_bulk_delete', 'bp_attachments_activity_bulk_delete' );

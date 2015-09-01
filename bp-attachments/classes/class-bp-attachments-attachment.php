@@ -22,12 +22,18 @@ class BP_Attachments_Attachment extends BP_Attachment {
 	 * @since 1.1.0
 	 */
 	public function __construct() {
-		parent::__construct( array(
+		$parameters = array(
 			'action'             => 'bp_attachments_attachment_upload',
 			'file_input'         => 'bp-attachments-attachment-upload',
 			'base_dir'           => 'bp-attachments',
 			'required_wp_files'  => array( 'file', 'image' ),
-		) );
+		);
+
+		if ( bp_attachments_is_activity() ) {
+			$parameters['allowed_mime_types'] = array( 'jpg', 'gif', 'png' );
+		}
+
+		parent::__construct( $parameters );
 	}
 
 	/**
@@ -40,7 +46,7 @@ class BP_Attachments_Attachment extends BP_Attachment {
 	public function upload_dir_filter() {
 		$user_id = bp_displayed_user_id();
 
-		if ( bp_is_group() ) {
+		if ( bp_is_group() || bp_attachments_is_activity() ) {
 			$user_id = bp_loggedin_user_id();
 		}
 
@@ -92,7 +98,13 @@ class BP_Attachments_Attachment extends BP_Attachment {
 			);
 		}
 
-		$script_data['bp_params']['nonce'] = wp_create_nonce( 'bp_fetch_attachments' );
+		$is_activity = bp_attachments_is_activity();
+
+		if ( ! $is_activity ) {
+			$script_data['bp_params']['nonce'] = wp_create_nonce( 'bp_fetch_attachments' );
+		} else {
+			$script_data['bp_params']['nonce'] = wp_create_nonce( 'bp_bulk_delete_attachments' );
+		}
 
 		// Build the capability args
 		$capabiltiy_args = array_intersect_key( $script_data['bp_params'], array(
@@ -105,11 +117,26 @@ class BP_Attachments_Attachment extends BP_Attachment {
 		 */
 		$script_data['bp_params']['can_upload'] = bp_attachments_loggedin_user_can( 'publish_bp_attachments', $capabiltiy_args );
 
+		/**
+		 * Used to check if loaded into the activity post form
+		 */
+		$script_data['bp_params']['is_activity'] = $is_activity;
+
+		$extra_css = array( 'bp-attachments' );
+		if ( ! $is_activity ) {
+			$extra_css = array_merge( array( 'thickbox' ), $extra_css );
+		}
+
 		// Include our specific css
-		$script_data['extra_css'] = array( 'bp-attachments' );
+		$script_data['extra_css'] = $extra_css;
+
+		$extra_js = array( 'bp-attachments' );
+		if ( ! $is_activity ) {
+			$extra_js = array_merge( array( 'thickbox' ), $extra_js );
+		}
 
 		// Include our specific js
-		$script_data['extra_js']  = array( 'bp-attachments' );
+		$script_data['extra_js']  = $extra_js;
 
 		return apply_filters( 'bp_attachments_attachment_script_data', $script_data );
 	}

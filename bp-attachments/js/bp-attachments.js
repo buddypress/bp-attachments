@@ -16,9 +16,9 @@ window.bp = window.bp || {};
 	bp.Attachments = {
 		start: function() {
 			// Init some collections
-			this.views       = new Backbone.Collection();
-			this.feedback    = new bp.Collections.attachmentsFeedback();
-			this.files       = new bp.Collections.bpAttachments();
+			this.views    = new Backbone.Collection();
+			this.feedback = new bp.Collections.attachmentsFeedback();
+			this.files    = new bp.Collections.bpAttachments();
 
 			// Set up Uploader View
 			if ( true === BP_Uploader.settings.defaults.multipart_params.bp_params.can_upload ) {
@@ -89,6 +89,11 @@ window.bp = window.bp || {};
 				nonce:       self.get( 'nonces' ).delete
 			} ).done( function( resp ) {
 				bp.Attachments.files.remove( self );
+
+				// On the activity component by default the browser is not shown
+				if ( $( '#bp-activity-attachments' ).length && ! $( '#bp-attachments-items li' ).length ) {
+					$( '#bp-activity-attachments .bp-attachments-browser' ).hide();
+				}
 
 				// Display a success message
 				bp.Attachments.feedback.add( { type: 'delete_success', 'message': self.get( 'name' ) + ': ' + resp.feedback } );
@@ -212,6 +217,22 @@ window.bp = window.bp || {};
 			if ( response.length >= 1 ) {
 				bp.Attachments.files.hasMore = true;
 			}
+		},
+
+		bulkDelete: function() {
+			var attachments;
+
+			if ( 0 === this.models.length ) {
+				return;
+			}
+
+			attachments = _.pluck( this.models, 'id' );
+
+			// Delete the attachments
+			bp.ajax.post( 'bp_attachments_activity_bulk_delete', {
+				attachment_ids: attachments,
+				nonce:          BP_Uploader.settings.defaults.multipart_params.bp_params.nonce,
+			} );
 		}
 	} );
 
@@ -273,21 +294,33 @@ window.bp = window.bp || {};
 		id: 'bp-attachments-items',
 
 		initialize: function() {
-			// Fetch the files
-			this.collection.fetch( { success : this.success, error : this.fail } );
+			// Fetch the files and load oldest if not in the activity post form
+			if ( false === BP_Uploader.settings.defaults.multipart_params.bp_params.is_activity ) {
+				this.collection.fetch( { success : this.success, error : this.fail } );
+
+				// Load oldest attachments..
+				$( document ).on( 'scroll', { el: this.el }, this.scroll );
+
+				// Adjust width for the browser
+				this.on( 'ready', this.adjustWidth );
+
+			// In the activity post form remove all views on collection's reset
+			} else {
+				this.collection.on( 'reset', this.cleanViews, this );
+			}
 
 			// Catch events on the collection
 			this.collection.on( 'add', this.addItemView, this );
 			this.collection.on( 'remove', this.removeItemView, this );
-
-			this.on( 'ready', this.adjustWidth );
-
-			// Load oldest attachments..
-			$( document ).on( 'scroll', { el: this.el }, this.scroll );
 		},
 
 		addItemView: function( file ) {
 			var options = {}, attachment_id = file.get( 'id' ), position;
+
+			// On the activity component by default the browser is not shown
+			if ( $( '#bp-activity-attachments' ).length ) {
+				$( '#bp-activity-attachments .bp-attachments-browser' ).show();
+			}
 
 			// If the file is uploading, prepend it.
 			if ( file.get( 'uploading' ) || file.get( 'uploaded') ) {
@@ -327,16 +360,23 @@ window.bp = window.bp || {};
 
 		scroll: function( event ) {
 			var el = event.data.el, body = event.target,
-				offset, bottom;
+				offset, bottom, scrollTop;
 
 			if ( document === body ) {
 				body = document.body;
 			}
 
+			/* This is ok for Chrome but not for firefox ????? */
+			scrollTop = body.scrollTop;
+			if ( 0 === body.scrollTop ) {
+				/* This is ok for firefox but not for Chrome ????? */
+				scrollTop = document.documentElement.scrollTop;
+			}
+
 			offset = $( el ).offset();
 			bottom = offset.top;
 
-			if ( body.scrollHeight > body.scrollTop + bottom ) {
+			if ( body.scrollHeight > scrollTop + bottom + 170 ) {
 				return;
 			}
 
@@ -358,6 +398,12 @@ window.bp = window.bp || {};
 			// Display a warning message
 			bp.Attachments.feedback.add( { type: 'warning', 'message': 'Error while fetching the items' } );
 			/* replace by BP_Uploader.strings.fetchingerror               ^^                              */
+		},
+
+		cleanViews: function() {
+			_.each( this.views._views[""], function( view ) {
+				view.remove();
+			} );
 		}
 	} );
 
@@ -427,6 +473,57 @@ window.bp = window.bp || {};
 			this.model.set( 'removing', true );
 			this.model.removeAttachment();
 		}
+	} );
+
+	/**
+	 * @todo This needs to be improved, their should be a nav to let
+	 * plugins add their own views triggering an event just like
+	 * the avatar UI
+	 */
+	$( '#bp-attachments-activity-btn' ).on( 'click', function( event ) {
+		event.preventDefault();
+
+		var btn =  $( this );
+
+		if ( btn.hasClass( 'active' ) ) {
+			$( '#bp-attachments' ).hide();
+			btn.removeClass( 'active' );
+		} else {
+			btn.addClass( 'active' );
+			$( '#bp-attachments' ).show();
+		}
+	} );
+
+	// Delete all Attachments on reset button click
+	$( '#aw-whats-new-reset' ).on( 'click', function() {
+		var hasConfirmed = true;
+
+		if ( 0 !== bp.Attachments.files.models.length ) {
+			hasConfirmed = confirm( 'Are you sure, this will delete the uploaded attachments' );
+		}
+
+		if ( ! hasConfirmed ) {
+			return false;
+		}
+
+		// Delete the uploaded attachments
+		bp.Attachments.files.bulkDelete();
+
+		return true;
+	} );
+
+	// Reset the collection on form reset
+	// This means when the reset button is clicked and the form is submitted
+	$( '#whats-new-form' ).on( 'reset', function() {
+		// Reset files
+		bp.Attachments.files.reset();
+
+		// Reset Warnings
+		bp.Attachments.feedback.reset();
+
+		// Reset the display
+		$( '#bp-attachments-activity-btn' ).removeClass( 'active' );
+		$( '#bp-attachments' ).hide();
 	} );
 
 	bp.Attachments.start();

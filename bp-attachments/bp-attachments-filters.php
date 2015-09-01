@@ -44,7 +44,7 @@ function bp_attachments_map_meta_caps( $caps = array(), $cap = '', $user_id = 0,
 
 					// Allow author to edit his attachment
 					if ( $user_id == $_post->post_author ) {
-						$caps[] = 'read';
+						$caps[] = 'exist';
 
 					// @todo private attachments will need other rules
 
@@ -66,23 +66,30 @@ function bp_attachments_map_meta_caps( $caps = array(), $cap = '', $user_id = 0,
 		case 'publish_bp_attachments' :
 
 			if ( bp_is_my_profile() ) {
-				$caps = array( 'read' );
+				$caps = array( 'exist' );
 			}
 
 			if ( ! empty( $args[0] ) && is_a( $args[0], 'BP_Attachments_Can' ) ) {
 
-				if ( ! empty( $args[0]->component ) && ! empty( $args[0]->item_id ) ){
+				if ( ! empty( $args[0]->component ) && isset( $args[0]->item_id ) ){
 					switch( $args[0]->component ) {
 						case 'groups':
 							if ( groups_is_user_member( $user_id, $args[0]->item_id ) ) {
-								$caps = array( 'read' );
+								$caps = array( 'exist' );
+							}
+							break;
+
+						case 'members':
+							if ( bp_is_activity_component() || bp_is_my_profile() ) {
+								$caps = array( 'exist' );
 							}
 							break;
 
 						// and so on for other components
+
 						default:
 							if ( bp_is_my_profile() ) {
-								$caps = array( 'read' );
+								$caps = array( 'exist' );
 							}
 							break;
 					}
@@ -102,20 +109,28 @@ function bp_attachments_map_meta_caps( $caps = array(), $cap = '', $user_id = 0,
 		case 'edit_bp_attachments'        :
 
 			if ( bp_is_my_profile() ) {
-				$caps = array( 'read' );
+				$caps = array( 'exist' );
 			}
 
 			if ( ! empty( $args[0] ) && is_a( $args[0], 'BP_Attachments_Can' ) ) {
 
-				if ( ! empty( $args[0]->component ) && ! empty( $args[0]->item_id ) ){
+				if ( ! empty( $args[0]->component ) && isset( $args[0]->item_id ) ){
 					switch( $args[0]->component ) {
 						case 'groups':
 						case 'group' :
 							if( groups_is_user_admin( $user_id, $args[0]->item_id ) )
-								$caps = array( 'read' );
+								$caps = array( 'exist' );
 							break;
 
 						// and so on for other components
+
+						default:
+							if ( (int) $user_id === (int) $_post->post_author ) {
+								$caps = array( 'exist' );
+							}
+							break;
+
+
 					}
 				}
 
@@ -151,7 +166,7 @@ function bp_attachments_map_meta_caps( $caps = array(), $cap = '', $user_id = 0,
 
 				// Allow author to edit his attachment
 				if ( $user_id == $_post->post_author ) {
-					$caps[] = 'read';
+					$caps[] = 'exist';
 
 				// Admins can always edit
 				} else if ( user_can( $user_id, 'manage_options' ) ) {
@@ -178,7 +193,7 @@ function bp_attachments_map_meta_caps( $caps = array(), $cap = '', $user_id = 0,
 
 				// Allow author to edit his attachment
 				if ( $user_id == $_post->post_author ) {
-					$caps[] = 'read';
+					$caps[] = 'exist';
 
 				// Admins can always edit
 				} else if ( user_can( $user_id, 'manage_options' ) ) {
@@ -228,7 +243,7 @@ function bp_attachments_map_meta_caps( $caps = array(), $cap = '', $user_id = 0,
 		// This should be improved..
 		case 'assign_bp_components'   :
 			if ( is_user_logged_in() ) {
-				$caps = array( 'read' );
+				$caps = array( 'exist' );
 			}
 			break;
 

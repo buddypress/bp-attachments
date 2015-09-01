@@ -157,6 +157,43 @@
 	overflow: hidden;
 }
 
+#buddypress #bp-activity-attachments #bp-attachments {
+	display: none;
+}
+
+#buddypress #bp-activity-attachments #bp-attachments-activity-btn {
+	display:inline-block;
+ 	margin:1em 0;
+ 	padding:5px 10px;
+ 	float:none;
+	width:auto;
+}
+
+#buddypress #bp-activity-attachments #bp-attachments-activity-btn:before {
+	font-family: dashicons;
+	font-size:20px;
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	content: "\f306";
+	vertical-align:top;
+}
+
+#buddypress #bp-activity-attachments .bp-attachments-browser {
+	display:none;
+}
+
+#buddypress #bp-activity-attachments ul#bp-attachments-items {
+	margin: 0.6em auto;
+	padding: 0;
+}
+
 #buddypress ul#bp-attachments-items li {
 	display:inline-block;
 	overflow:hidden;
@@ -261,4 +298,4 @@
 
 .bp-attachments-actions a.remove:before {
  	content: "\f158";
- }
+}

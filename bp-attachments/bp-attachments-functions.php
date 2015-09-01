@@ -320,7 +320,8 @@ function bp_attachments_prepare_attachment_for_js( $attachment ) {
 			'update' => false,
 			'delete' => false,
 		),
-		'editLink'   => false,
+		'editLink'    => false,
+		'is_activity' => bp_attachments_is_activity(),
 	);
 
 	if ( current_user_can( 'edit_bp_attachment', $attachment->ID ) ) {
@@ -488,4 +489,15 @@ function bp_attachments_get_delete_link( $attachment_id = 0, $user_id = 0 ) {
 	$delete_link = add_query_arg( array( 'attachment' => $attachment_id, 'action' => 'delete' ), $delete_link );
 
 	return apply_filters( 'bp_attachments_get_delete_link', $delete_link, $attachment_id, $user_id );
+}
+
+/**
+ * Are we in an activity area (Group/User/Directory)
+ *
+ * @since 1.1.0
+ *
+ * @return bool True if in an activity area, false otherwise
+ */
+function bp_attachments_is_activity() {
+	return bp_attachments_loader()->is_activity();
 }

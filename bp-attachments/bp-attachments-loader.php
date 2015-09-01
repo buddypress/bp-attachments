@@ -128,7 +128,7 @@ class BP_Attachments_Component extends BP_Component {
 		wp_register_style(
 			'bp-attachments',
 			bp_attachments_loader()->plugin_css . 'bp-attachments.css',
-			array( 'dashicons', 'thickbox' ),
+			array( 'dashicons' ),
 			bp_attachments_loader()->version
 		);
 
@@ -136,7 +136,7 @@ class BP_Attachments_Component extends BP_Component {
 		wp_register_script(
 			'bp-attachments',
 			bp_attachments_loader()->plugin_js . 'bp-attachments.js',
-			array( 'thickbox' ),
+			array(),
 			bp_attachments_loader()->version,
 			true
 		);
