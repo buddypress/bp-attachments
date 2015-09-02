@@ -85,6 +85,12 @@ class BP_Attachments_Admin {
 		add_action( bp_core_admin_hook(),                     array( $this, 'admin_menus'  ),  5    );
 		add_action( 'bp_admin_init',                          array( $this, 'activate' )            );
 
+		// Moderate activity attachments
+		add_action( 'load-toplevel_page_bp-activity',         array( $this, 'activity_admin_load' ),         100    );
+		add_action( 'load-toplevel_page_bp-activity-network', array( $this, 'activity_admin_load' ),         100    );
+		add_filter( 'bp_activity_admin_comment_row_actions',  array( $this, 'intercept_activity_item' ),      10, 2 );
+		add_filter( 'bp_get_activity_content_body',           array( $this, 'append_activity_attachments' ),  10, 1 );
+
 
 		/** Filters ***************************************************/
 		// Respect BuddyPress Component Order
@@ -260,6 +266,140 @@ class BP_Attachments_Admin {
 			$active['attachments'] = 1;
 			bp_update_option( 'bp-active-components', $active );
 		}
+	}
+
+	public function activity_admin_load() {
+		if ( ! did_action( 'bp_activity_admin_load' ) ) {
+			return;
+		}
+
+		/**
+		 * in bp-activity-admin.php There should be an action
+		 * just after wp_enqueue_style( 'bp_activity_admin_css' )
+		 * to let plugins enqueue their style and scripts
+		 */
+
+		// Always add extra css
+		wp_add_inline_style( 'bp_activity_admin_css', '
+				/* Style adjustments */
+				.bp-attachments-full {
+					max-width: 100%;
+					height: auto;
+					margin: 0.6em auto;
+					display: block;
+				}
+
+				.bp-attachments-bp_attachments_avatar {
+					margin: 0.6em;
+				}
+			'
+		);
+
+		/**
+		 * in bp-activity-admin.php There should be an action
+		 * just after add_meta_box( 'bp_activity_userid' )
+		 * to let plugins enqueue their custom metabox
+		 */
+
+		// Only add metabox when on a single activity
+		$doaction = bp_admin_list_table_current_bulk_action();
+
+		if ( 'edit' !== $doaction || empty( $_GET['aid'] ) ) {
+			return;
+		}
+
+		add_meta_box(
+			'bp_attachments',
+			_x( 'Photos', 'activity admin edit screen', 'bp-attachments' ),
+			array( $this, 'do_activity_meta_box' ),
+			get_current_screen()->id,
+			'side',
+			'core'
+		);
+	}
+
+	public function do_activity_meta_box( $activity = null ) {
+		/**
+		 * For now, let's just display the photos, when/if
+		 * https://buddypress.trac.wordpress.org/ticket/6610 will be committed
+		 * we'll be able to add some awesome moderating tools :)
+		 */
+
+		if ( empty( $activity->id ) ) {
+			return false;
+		}
+
+		// To zoom photos
+		add_thickbox();
+
+		// Get the attachment ids
+		$attachments = (array) bp_activity_get_meta( $activity->id, '_bp_attachments_attachment_ids', false );
+
+		if ( empty( $attachments ) ) {
+			printf( '<p class="description">%s</p>', esc_html__( 'No Photo attached to this activity', 'bp-attachments' ) );
+			return;
+		}
+
+		$attachments_metadata = array();
+		$output               = '<p class="description">' . esc_html__( 'Click on thumbnails to zoom images', 'bp-attachments' ) . '</p>';
+
+		add_filter( 'image_downsize', 'bp_attachments_image_downsize', 10, 3 );
+
+		// Loop threw attachments
+		foreach( $attachments as $attachment_id ) {
+			// For a later use
+			$full  = wp_get_attachment_image_src( $attachment_id, 'full' );
+			$url   = reset( $full );
+			$thumb = wp_get_attachment_image( $attachment_id, array( 100, 100 ), false, array( 'class' => 'bp-attachments-bp_attachments_avatar' ) );
+
+			$output .= sprintf( '<a href="%1$s" class="thickbox" rel="%2$s">%3$s</a>',
+				esc_url( $url ),
+				'activity-attachment-' . intval( $activity->id ),
+				$thumb
+			);
+
+			// Object to let plugins use wp_list_pluck() ;)
+			$attachments_metadata[] = (object) array( 'attachment_id' => $attachment_id, 'url' => $url, 'thumb' => $thumb, 'full' => $full );
+		}
+
+		remove_filter( 'image_downsize', 'bp_attachments_image_downsize', 10, 3 );
+
+		echo apply_filters( 'bp_attachments_activity_admin_photos_metabox_content', $output, $attachments_metadata );
+	}
+
+	/**
+	 * No way to get the activity id using the bp_get_activity_content_body
+	 * within the administration as the $activities_template is null
+	 */
+	public function intercept_activity_item( $actions = '', $activity = null ) {
+		$this->current_activity = $activity;
+		return $actions;
+	}
+
+	public function append_activity_attachments( $activity_content = '' ) {
+		// Taking no risk!
+		$current_screen = get_current_screen();
+
+		if ( empty( $current_screen->id ) || false === strpos( $current_screen->id, 'bp-activity' ) || empty( $this->current_activity ) ) {
+			return $activity_content;
+		}
+
+		global $activities_template;
+		$reset_activities_template = $activities_template;
+
+		// Faking the activities template so that we can use our template function
+		$activities_template = new stdClass();
+		$activities_template->activity = (object) $this->current_activity;
+
+		// Let's Use the Edit action of the Activity Administration Screen
+		add_filter( 'bp_attachments_activity_append_attachments_more_link', '__return_false' );
+
+		$attachments_output = bp_attachments_activity_append_attachments( '', false );
+
+		remove_filter( 'bp_attachments_activity_append_attachments_more_link', '__return_false' );
+		$activities_template = $reset_activities_template;
+
+		return $activity_content . $attachments_output;
 	}
 }
 endif; // class_exists check

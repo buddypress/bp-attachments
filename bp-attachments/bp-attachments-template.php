@@ -836,7 +836,7 @@ add_action( 'bp_activity_post_form_before_options', 'bp_attachments_activity_pos
 /**
  * @todo cache the attachments !!!!!!!!!!!!!!!!
  */
-function bp_attachments_activity_append_attachments() {
+function bp_attachments_activity_append_attachments( $action_variable = '', $echo = true ) {
 	global $activities_template;
 
 	if ( ! isset( $activities_template->activity->id ) ) {
@@ -886,6 +886,14 @@ function bp_attachments_activity_append_attachments() {
 
 	remove_filter( 'image_downsize', 'bp_attachments_image_downsize', 10, 3 );
 
-	echo apply_filters( 'bp_attachments_activity_append_attachments', $output . $more_link, $activities_template->activity, $attachments );
+	// Filter here to edit the more link
+	$more_link = apply_filters( 'bp_attachments_activity_append_attachments_more_link', $more_link, $activities_template->activity, $attachments );
+	$return = apply_filters( 'bp_attachments_activity_append_attachments', $output . $more_link, $activities_template->activity, $attachments );
+
+	if ( $echo ) {
+		echo $return;
+	} else {
+		return $return;
+	}
 }
 add_action( 'bp_activity_entry_content', 'bp_attachments_activity_append_attachments' );
