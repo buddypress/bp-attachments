@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BP Attachments 1.1.0-beta\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bp-attachments\n"
-"POT-Creation-Date: 2015-08-11 19:54:49+00:00\n"
+"POT-Creation-Date: 2015-09-03 06:10:13+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -57,17 +57,31 @@ msgstr ""
 msgid "%s successfully uploaded"
 msgstr ""
 
-#: bp-attachments/bp-attachments-admin.php:202
+#: bp-attachments/bp-attachments-admin.php:208
 msgid "BP Attachments"
 msgstr ""
 
-#: bp-attachments/bp-attachments-admin.php:203
-#: bp-attachments/bp-attachments-admin.php:247
+#: bp-attachments/bp-attachments-admin.php:209
+#: bp-attachments/bp-attachments-admin.php:253
 #: bp-attachments/bp-attachments-groups.php:52
 #: bp-attachments/bp-attachments-loader.php:32
 #: bp-attachments/bp-attachments-loader.php:243
-#: bp-attachments/classes/class-bp-attachments-browser.php:175 loader.php:274
+#: bp-attachments/classes/class-bp-attachments-browser.php:175 loader.php:278
+#: templates/assets/_attachments/activity/index.php:13
 msgid "Attachments"
+msgstr ""
+
+#: bp-attachments/bp-attachments-admin.php:318
+msgctxt "activity admin edit screen"
+msgid "Photos"
+msgstr ""
+
+#: bp-attachments/bp-attachments-admin.php:344
+msgid "No Photo attached to this activity"
+msgstr ""
+
+#: bp-attachments/bp-attachments-admin.php:349
+msgid "Click on thumbnails to zoom images"
 msgstr ""
 
 #: bp-attachments/bp-attachments-ajax.php:270
@@ -90,23 +104,23 @@ msgstr ""
 msgid "was successfully removed from this group."
 msgstr ""
 
-#: bp-attachments/bp-attachments-filters.php:287
+#: bp-attachments/bp-attachments-filters.php:302
 msgid "Avatar"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:339
+#: bp-attachments/bp-attachments-functions.php:340
 msgid "Thumbnail"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:340
+#: bp-attachments/bp-attachments-functions.php:341
 msgid "Medium"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:341
+#: bp-attachments/bp-attachments-functions.php:342
 msgid "Large"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:342
+#: bp-attachments/bp-attachments-functions.php:343
 msgid "Full Size"
 msgstr ""
 
@@ -374,7 +388,35 @@ msgstr ""
 msgid "No components are available"
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-attachment.php:207
+#: bp-attachments/bp-attachments-template.php:818
+msgid "What's new, %s?"
+msgstr ""
+
+#: bp-attachments/bp-attachments-template.php:821
+msgid "What's new in %s, %s?"
+msgstr ""
+
+#: bp-attachments/bp-attachments-template.php:864
+msgid "View full size images"
+msgstr ""
+
+#: bp-attachments/bp-attachments-template.php:872
+msgid "View all images"
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-attachment.php:143
+msgid "No items found"
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-attachment.php:144
+msgid "Error while fetching the items, please try again later"
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-attachment.php:145
+msgid "Are you sure, this will delete the uploaded attachments"
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-attachment.php:241
 msgid "oops! failed getting the attachment id"
 msgstr ""
 
@@ -410,20 +452,40 @@ msgstr ""
 msgid "One file at a time"
 msgstr ""
 
-#: loader.php:227
+#: loader.php:231
 msgid "BP Attachments requires at least version %s of BuddyPress."
 msgstr ""
 
-#: loader.php:231
+#: loader.php:235
 msgid "BP Attachments requires to be activated on the blog where BuddyPress is activated."
 msgstr ""
 
-#: loader.php:235
+#: loader.php:239
 msgid "BP Attachments and BuddyPress need to share the same network configuration."
 msgstr ""
 
-#: loader.php:275
+#: loader.php:279
 msgid "Utility to manage files"
+msgstr ""
+
+#: templates/activity/custom-post-form.php:51
+msgid "Post in"
+msgstr ""
+
+#: templates/activity/custom-post-form.php:54
+msgid "My Profile"
+msgstr ""
+
+#: templates/activity/custom-post-form.php:96
+msgid "Cancel"
+msgstr ""
+
+#: templates/activity/custom-post-form.php:97
+msgid "Post Update"
+msgstr ""
+
+#: templates/assets/_attachments/activity/index.php:12
+msgid "Add Attachment"
 msgstr ""
 #. Plugin Name of the plugin/theme
 msgid "BP Attachments"

@@ -138,6 +138,13 @@ class BP_Attachments_Attachment extends BP_Attachment {
 		// Include our specific js
 		$script_data['extra_js']  = $extra_js;
 
+		// Add some custom feedback messages
+		$script_data['feedback_messages'] = array(
+			'no_attachments' => __( 'No items found', 'bp-attachments' ),
+			'fetching_error' => __( 'Error while fetching the items, please try again later', 'bp-attachments' ),
+			'confirm'        => __( 'Are you sure, this will delete the uploaded attachments', 'bp-attachments' ),
+		);
+
 		return apply_filters( 'bp_attachments_attachment_script_data', $script_data );
 	}
 

@@ -389,15 +389,13 @@ window.bp = window.bp || {};
 		success: function( collection ) {
 			if ( 0 === collection.length ) {
 				// Display a warning message
-				bp.Attachments.feedback.add( { type: 'warning', 'message': 'No items found' } );
-				/* replace by BP_Uploader.strings.fetchingnoitems               ^^            */
+				bp.Attachments.feedback.add( { type: 'warning', 'message': BP_Uploader.strings.feedback_messages.no_attachments } );
 			}
 		},
 
 		fail: function() {
 			// Display a warning message
-			bp.Attachments.feedback.add( { type: 'warning', 'message': 'Error while fetching the items' } );
-			/* replace by BP_Uploader.strings.fetchingerror               ^^                              */
+			bp.Attachments.feedback.add( { type: 'warning', 'message': BP_Uploader.strings.feedback_messages.fetching_error } );
 		},
 
 		cleanViews: function() {
@@ -499,7 +497,7 @@ window.bp = window.bp || {};
 		var hasConfirmed = true;
 
 		if ( 0 !== bp.Attachments.files.models.length ) {
-			hasConfirmed = confirm( 'Are you sure, this will delete the uploaded attachments' );
+			hasConfirmed = confirm( BP_Uploader.strings.feedback_messages.confirm );
 		}
 
 		if ( ! hasConfirmed ) {
