@@ -292,6 +292,11 @@ class BP_Attachments_Admin {
 				.bp-attachments-bp_attachments_avatar {
 					margin: 0.6em;
 				}
+
+				#bp-activities-edit-form .bp-attachments-bp_attachments_avatar {
+					width: 100px;
+					height: 100px;
+				}
 			'
 		);
 
@@ -350,7 +355,7 @@ class BP_Attachments_Admin {
 			// For a later use
 			$full  = wp_get_attachment_image_src( $attachment_id, 'full' );
 			$url   = reset( $full );
-			$thumb = wp_get_attachment_image( $attachment_id, array( 100, 100 ), false, array( 'class' => 'bp-attachments-bp_attachments_avatar' ) );
+			$thumb = wp_get_attachment_image( $attachment_id, 'bp_attachments_avatar', false, array( 'class' => 'bp-attachments-bp_attachments_avatar' ) );
 
 			$output .= sprintf( '<a href="%1$s" class="thickbox" rel="%2$s">%3$s</a>',
 				esc_url( $url ),
