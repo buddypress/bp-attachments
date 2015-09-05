@@ -214,7 +214,7 @@ class BP_Attachments_Loader {
 		}
 
 		// loads the languages..
-		add_action( 'bp_init', array( $this, 'load_textdomain' ), 6 );
+		add_action( 'bp_init', array( $this, 'load_textdomain' ), 5 );
 
 	}
 
