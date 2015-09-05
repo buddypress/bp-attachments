@@ -52,7 +52,7 @@ class BP_Attachments_User_Screens {
 			$deleted = bp_attachments_delete_attachment( $_GET['attachment'] );
 
 			if ( ! empty( $deleted ) ) {
-				bp_core_add_message( sprintf( __( 'Attachment: %s successfully deleted', 'bp-attachments' ), $deleted ) );
+				bp_core_add_message( sprintf( __( 'Attachment: %s successfully deleted.', 'bp-attachments' ), $deleted ) );
 			} else {
 				bp_core_add_message( __( 'Attachment could not be deleted.', 'bp-attachments' ), 'error' );
 			}
@@ -70,7 +70,7 @@ class BP_Attachments_User_Screens {
 			$attachment = bp_attachments_get_attachment( $attachment_id );
 
 			if ( empty( $attachment ) || ! bp_attachments_loggedin_user_can( 'edit_bp_attachment', $attachment_id ) ) {
-				bp_core_add_message( sprintf( __( 'Attachment could not be found', 'bp-attachments' ), 'error' ) );
+				bp_core_add_message( __( 'Attachment could not be found.', 'bp-attachments' ), 'error' );
 				bp_core_redirect( $redirect );
 			}
 
@@ -86,7 +86,7 @@ class BP_Attachments_User_Screens {
 			$attachment_id = absint( $_POST['_bp_attachments_edit']['id'] );
 
 			if ( empty( $attachment_id ) || ! bp_attachments_loggedin_user_can( 'edit_bp_attachment', $attachment_id ) ) {
-				bp_core_add_message( sprintf( __( 'Attachment could not be edited', 'bp-attachments' ), 'error' ) );
+				bp_core_add_message( __( 'Attachment could not be edited.', 'bp-attachments' ), 'error' );
 				bp_core_redirect( $redirect );
 			}
 

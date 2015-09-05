@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BP Attachments 1.1.0-beta\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bp-attachments\n"
-"POT-Creation-Date: 2015-09-03 06:10:13+00:00\n"
+"POT-Creation-Date: 2015-09-05 14:14:55+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -319,7 +319,7 @@ msgid "Edit Attachment"
 msgstr ""
 
 #: bp-attachments/bp-attachments-screens.php:55
-msgid "Attachment: %s successfully deleted"
+msgid "Attachment: %s successfully deleted."
 msgstr ""
 
 #: bp-attachments/bp-attachments-screens.php:57
@@ -327,19 +327,16 @@ msgid "Attachment could not be deleted."
 msgstr ""
 
 #: bp-attachments/bp-attachments-screens.php:73
-msgid "Attachment could not be found"
+msgid "Attachment could not be found."
 msgstr ""
 
 #: bp-attachments/bp-attachments-screens.php:89
-msgid "Attachment could not be edited"
+#: bp-attachments/bp-attachments-screens.php:99
+msgid "Attachment could not be edited."
 msgstr ""
 
 #: bp-attachments/bp-attachments-screens.php:97
 msgid "Attachment: %s successfully updated"
-msgstr ""
-
-#: bp-attachments/bp-attachments-screens.php:99
-msgid "Attachment could not be edited."
 msgstr ""
 
 #: bp-attachments/bp-attachments-screens.php:200
