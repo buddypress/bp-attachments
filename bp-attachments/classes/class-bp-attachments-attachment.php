@@ -23,10 +23,11 @@ class BP_Attachments_Attachment extends BP_Attachment {
 	 */
 	public function __construct() {
 		$parameters = array(
-			'action'             => 'bp_attachments_attachment_upload',
-			'file_input'         => 'bp-attachments-attachment-upload',
-			'base_dir'           => 'bp-attachments',
-			'required_wp_files'  => array( 'file', 'image' ),
+			'action'                 => 'bp_attachments_attachment_upload',
+			'file_input'             => 'bp-attachments-attachment-upload',
+			'base_dir'               => 'bp-attachments',
+			'required_wp_files'      => array( 'file', 'image' ),
+			'upload_dir_filter_args' => 1,
 		);
 
 		if ( bp_attachments_is_activity() ) {
@@ -43,7 +44,7 @@ class BP_Attachments_Attachment extends BP_Attachment {
 	 *
 	 * @return array upload data (path, url, basedir...)
 	 */
-	public function upload_dir_filter() {
+	public function upload_dir_filter( $upload_dir = array() ) {
 		$user_id = bp_displayed_user_id();
 
 		if ( bp_is_group() || bp_attachments_is_activity() ) {
@@ -51,10 +52,15 @@ class BP_Attachments_Attachment extends BP_Attachment {
 		}
 
 		$subdir  = '/public/' . $user_id;
-		$time    = current_time( 'mysql' );
-		$year    = substr( $time, 0, 4 );
-		$month   = substr( $time, 5, 2 );
-		$subdir .= "/$year/$month";
+
+		if ( ! empty( $upload_dir['subdir'] ) ) {
+			$subdir .= $upload_dir['subdir'];
+		} else {
+			$time    = current_time( 'mysql' );
+			$year    = substr( $time, 0, 4 );
+			$month   = substr( $time, 5, 2 );
+			$subdir .= "/$year/$month";
+		}
 
 		return apply_filters( 'bp_attachments_upload_datas', array(
 			'path'    => $this->upload_path . $subdir,

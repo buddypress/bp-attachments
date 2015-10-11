@@ -13,7 +13,7 @@ BP Attachments is a BuddyPress component to help others deal with attachments.
 
 <h4>BuddyPress version</h4>
 
-<strong>Requires at least BuddyPress 2.3.0</strong>
+<strong>Requires at least BuddyPress 2.4.0</strong>
 
 <h4>More Information</h4>
 
@@ -36,6 +36,9 @@ TBD
 
 == Upgrade Notice ==
 
+= 1.2.0 =
+TBD
+
 = 1.1.0 =
 TBD
 
@@ -43,6 +46,10 @@ TBD
 TBD
 
 == Changelog ==
+
+= 1.2.0 =
+* Adaptations for BuddyPress 2.4.0
+* Required BuddyPress version is now 2.4.0
 
 = 1.1.0-beta =
 * Uses the BP Attachments API

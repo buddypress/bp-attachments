@@ -12,7 +12,7 @@
  * Plugin Name:       BP Attachments
  * Plugin URI:        https://buddypress.trac.wordpress.org/ticket/5429
  * Description:       BP Attachments is a BuddyPress component to help others deal with attachments.
- * Version:           1.1.0-beta
+ * Version:           1.2.0-alpha
  * Author:            The BuddyPress Community
  * Author URI:        http://buddypress.org/community/members/
  * Text Domain:       bp-attachments
@@ -51,7 +51,7 @@ class BP_Attachments_Loader {
 	 *
 	 * @var      string
 	 */
-	public static $bp_version_required = '2.3.0';
+	public static $bp_version_required = '2.4.0-alpha';
 
 	/**
 	 * Initialize the plugin
@@ -91,7 +91,7 @@ class BP_Attachments_Loader {
 	 */
 	private function setup_globals() {
 		/** BP Attachments globals ********************************************/
-		$this->version                = '1.1.0-beta';
+		$this->version                = '1.2.0-alpha';
 		$this->domain                 = 'bp-attachments';
 		$this->file                   = __FILE__;
 		$this->basename               = plugin_basename( $this->file );
@@ -292,7 +292,7 @@ class BP_Attachments_Loader {
 	}
 
 	public function is_activity() {
-		return (bool) bp_is_activity_component() || bp_is_group_home();
+		return (bool) bp_is_activity_component() || bp_is_group_activity();
 	}
 
 	/**

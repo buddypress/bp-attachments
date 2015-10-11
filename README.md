@@ -9,7 +9,7 @@ Required Configurations
 ----------------------
 
 + WordPress 4.2
-+ Requires at least BuddyPress 2.3.0
++ Requires at least BuddyPress 2.4.0
 
 
 Installation

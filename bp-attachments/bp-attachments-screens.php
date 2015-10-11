@@ -67,7 +67,7 @@ class BP_Attachments_User_Screens {
 			$redirect = remove_query_arg( array( 'attachment', 'action' ), wp_get_referer() );
 			$attachment_id = absint( $_GET['attachment'] );
 
-			$attachment = bp_attachments_get_attachment( $attachment_id );
+			$attachment = bp_attachments_plugin_get_attachment( $attachment_id );
 
 			if ( empty( $attachment ) || ! bp_attachments_loggedin_user_can( 'edit_bp_attachment', $attachment_id ) ) {
 				bp_core_add_message( __( 'Attachment could not be found.', 'bp-attachments' ), 'error' );

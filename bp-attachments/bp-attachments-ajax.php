@@ -291,7 +291,7 @@ function bp_attachments_get_files() {
 add_action( 'wp_ajax_bp_attachments_get_files', 'bp_attachments_get_files' );
 add_action( 'wp_ajax_nopriv_bp_attachments_get_files', 'bp_attachments_get_files' );
 
-function bp_attachments_delete_file() {
+function bp_attachments_plugin_delete_file() {
 	$response = array( 'feedback' => __( 'was not deleted due to an error, please try again later.', 'bp-attachments' ) );
 
 	if ( empty( $_POST['attachment_id'] ) ) {
@@ -313,7 +313,7 @@ function bp_attachments_delete_file() {
 		bp_attachments_json_response( false, false, $response );
 	}
 }
-add_action( 'wp_ajax_bp_attachments_delete_file', 'bp_attachments_delete_file' );
+add_action( 'wp_ajax_bp_attachments_delete_file', 'bp_attachments_plugin_delete_file' );
 
 function bp_attachments_remove_file() {
 	$response = array( 'feedback' => __( 'was not removed due to an error, please try again later.', 'bp-attachments' ) );

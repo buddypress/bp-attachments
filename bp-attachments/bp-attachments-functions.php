@@ -17,13 +17,13 @@ if ( !defined( 'ABSPATH' ) ) exit;
  * @param  integer $attachment_id
  * @return BP_Attachments
  */
-function bp_attachments_get_attachment( $attachment_id = 0 ) {
+function bp_attachments_plugin_get_attachment( $attachment_id = 0 ) {
 	if ( empty( $attachment_id ) )
 		return false;
 
 	$attachment = new BP_Attachments( $attachment_id );
 
-	return apply_filters( 'bp_attachments_get_attachment', $attachment );
+	return apply_filters( 'bp_attachments_plugin_get_attachment', $attachment );
 }
 
 /**
@@ -273,7 +273,7 @@ function bp_attachments_prepare_attachment_for_js( $attachment ) {
 		return;
 
 	if ( ! is_a( $attachment, 'WP_Post' ) && is_numeric( $attachment ) ) {
-		$get_attachment = bp_attachments_get_attachment( $attachment );
+		$get_attachment = bp_attachments_plugin_get_attachment( $attachment );
 
 		if ( ! empty( $get_attachment->attachment ) )
 			$attachment = $get_attachment->attachment;
