@@ -4,3 +4,6 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+#PHP Storm
+.idea
