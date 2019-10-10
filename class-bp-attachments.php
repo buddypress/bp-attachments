@@ -21,7 +21,7 @@
  * GitHub Plugin URI: https://github.com/buddypress/bp-attachments
  */
 
-// Exit if accessed directly
+// Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -45,7 +45,7 @@ class BP_Attachments {
 	 */
 	public static function start() {
 		// If the single instance hasn't been set, set it now.
-		if ( null == self::$instance ) {
+		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
 
@@ -58,23 +58,11 @@ class BP_Attachments {
 	 * @since 1.0.0
 	 */
 	private function __construct() {
-		$this->inc();
-	}
-
-	/**
-	 * Load needed files.
-	 *
-	 * @since 1.0.0
-	 */
-	private function inc() {
-		// Classes.
+		// Autoload Classes.
 		spl_autoload_register( array( $this, 'autoload' ) );
 
-		// Functions.
-		$inc_path = plugin_dir_path( __FILE__ ) . 'bp-attachments/';
-
-		require $inc_path . 'globals.php';
-		require $inc_path . 'bp-attachments-loader.php';
+		// Load the Component's loader.
+		require plugin_dir_path( __FILE__ ) . 'bp-attachments/bp-attachments-loader.php';
 	}
 
 	/**
@@ -102,7 +90,11 @@ class BP_Attachments {
 	}
 }
 
-// Let's start !
+/**
+ * Let's start !
+ *
+ * @since 1.0.0
+ */
 function bp_attachments() {
 	return BP_Attachments::start();
 }

@@ -8,7 +8,7 @@
  * @since 1.0.0
  */
 
-// Exit if accessed directly
+// Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -17,13 +17,13 @@ defined( 'ABSPATH' ) || exit;
  * @since 1.0.0
  */
 function bp_attachments_admin_menu() {
-    add_media_page(
-        __( 'User Media', 'bp-attachments' ),
-        __( 'BuddyPress', 'bp-attachments' ),
-        'upload_files',
-        'bp-user-media',
-        'bp_attachments_admin_media'
-    );
+	add_media_page(
+		__( 'User Media', 'bp-attachments' ),
+		__( 'BuddyPress', 'bp-attachments' ),
+		'upload_files',
+		'bp-user-media',
+		'bp_attachments_admin_media'
+	);
 }
 add_action( 'admin_menu', 'bp_attachments_admin_menu' );
 
@@ -33,9 +33,9 @@ add_action( 'admin_menu', 'bp_attachments_admin_menu' );
  * @since 1.0.0
  */
 function bp_attachments_admin_media() {
-    ?>
-    <div class="wrap">
-        <h1><?php esc_html_e( 'User Media', 'bp-attachments' ); ?></h1>
-    </div>
-    <?php
+	?>
+	<div class="wrap">
+		<h1><?php esc_html_e( 'User Media', 'bp-attachments' ); ?></h1>
+	</div>
+	<?php
 }

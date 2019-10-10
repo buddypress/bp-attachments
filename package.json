@@ -8,9 +8,9 @@
     "node": "~10.13.0"
   },
   "scripts": {
-    "wpcs": "./vendor/bin/phpcs bp-attachments --standard=WordPress",
+    "wpcs": "./vendor/bin/phpcs class-bp-attachments.php bp-attachments --standard=WordPress",
     "pot": "./vendor/bin/wp i18n make-pot . languages/bp-attachments.pot",
-    "win:wpcs": ".\\vendor\\bin\\phpcs bp-attachments --standard=WordPress",
+    "win:wpcs": ".\\vendor\\bin\\phpcs class-bp-attachments.php bp-attachments --standard=WordPress",
     "win:pot": ".\\vendor\\bin\\wp i18n make-pot . languages/bp-attachments.pot"
   },
   "keywords": [

@@ -8,7 +8,7 @@
  * @since 1.0.0
  */
 
-// Exit if accessed directly
+// Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -26,34 +26,38 @@ class BP_Attachments_Component extends BP_Component {
 		parent::start(
 			'attachments',
 			__( 'Attachments', 'bp-attachments' ),
-			bp_attachments()->inc_path
+			plugin_dir_path( dirname( __FILE__ ) )
 		);
 	}
 
 	/**
 	 * Include component files.
 	 *
+	 * @see BP_Component::includes() for a description of arguments.
+	 *
 	 * @since 1.0.0
+	 *
+	 * @param array $includes See BP_Component::includes() for a description.
 	 */
 	public function includes( $includes = array() ) {
-		// Files to include
+		// Files to include.
 		$includes = array(
-            'functions',
-        );
+			'functions',
+		);
 
-        if ( is_admin() ) {
+		if ( is_admin() ) {
 			$includes[] = 'admin';
 		}
 
 		parent::includes( $includes );
-    }
+	}
 
-    /**
+	/**
 	 * Late includes method.
 	 *
 	 * Only load up certain code when on specific pages.
 	 *
-	 * @since 3.0.0
+	 * @since 1.0.0
 	 */
 	public function late_includes() {
 		// Bail if PHPUnit is running.
@@ -78,12 +82,16 @@ class BP_Attachments_Component extends BP_Component {
 	/**
 	 * Set up component global variables.
 	 *
+	 * @see BP_Component::setup_globals() for a description of arguments.
+	 *
 	 * @since 1.0.0
+	 *
+	 * @param array $args See BP_Component::setup_globals() for a description.
 	 */
 	public function setup_globals( $args = array() ) {
 		$bp = buddypress();
 
-		// Globals for component.
+		// Globals for BuddyPress components.
 		$args = array(
 			'slug'                  => $this->id,
 			'has_directory'         => false,
@@ -91,14 +99,30 @@ class BP_Attachments_Component extends BP_Component {
 		);
 
 		parent::setup_globals( $args );
+
+		/**
+		 * Globals specific to this component.
+		 */
+
+		// Current version.
+		$this->version = '1.0.0-alpha';
+
+		// Paths.
+		$this->templates_dir = trailingslashit( plugin_dir_path( $this->path ) ) . 'templates';
+
+		// URLs.
+		$this->templates_url = plugins_url( 'templates/', $this->path );
+		$this->js_url        = plugins_url( 'js/', $this->path );
+		$this->assets_url    = plugins_url( 'assets/', $this->path );
+		$this->dist_url      = plugins_url( 'dist/', $this->path );
 	}
 
 	/**
 	 * Set up component navigation.
 	 *
 	 * @since 1.0.0
-     *
-     * @see BP_Component::setup_nav() for a description of arguments.
+	 *
+	 * @see BP_Component::setup_nav() for a description of arguments.
 	 *
 	 * @param array $main_nav Optional. See BP_Component::setup_nav() for
 	 *                        description.
@@ -106,14 +130,14 @@ class BP_Attachments_Component extends BP_Component {
 	 *                        description.
 	 */
 	public function setup_nav( $main_nav = array(), $sub_nav = array() ) {
-        // Main User navigation.
+		// Main User navigation.
 		$main_nav = array(
 			'name'                => __( 'Media', 'bp-attachments' ),
 			'slug'                => $this->slug,
 			'position'            => 80,
 			'screen_function'     => 'bp_attachments_personal_screen',
 			'default_subnav_slug' => 'personal',
-			'item_css_id'         => $this->id
+			'item_css_id'         => $this->id,
 		);
 
 		// Determine the user domain to use.
@@ -125,24 +149,23 @@ class BP_Attachments_Component extends BP_Component {
 			return;
 		}
 
-		// User link
+		// User link.
 		$this->attachments_link = trailingslashit( $user_domain . $this->slug );
 
-		// Add the subnav items to the attachments nav item if we are using a theme that supports this
+		// Add the subnav items to the attachments nav item if we are using a theme that supports this.
 		$sub_nav['default'] = wp_parse_args(
-            array(
-                'name'            => __( 'Personal', 'bp-attachments' ),
-                'slug'            => 'personal',
-                'parent_url'      => $this->attachments_link,
-                'parent_slug'     => $this->slug,
-                'position'        => 10,
-                'item_css_id'     => 'personal-' . $this->id,
-            ),
-            $main_nav
-        );
+			array(
+				'name'        => __( 'Personal', 'bp-attachments' ),
+				'slug'        => 'personal',
+				'parent_url'  => $this->attachments_link,
+				'parent_slug' => $this->slug,
+				'position'    => 10,
+				'item_css_id' => 'personal-' . $this->id,
+			),
+			$main_nav
+		);
 
-        unset( $sub_nav['default']['default_subnav_slug'] );
-
+		unset( $sub_nav['default']['default_subnav_slug'] );
 
 		parent::setup_nav( $main_nav, $sub_nav );
 	}
@@ -151,51 +174,50 @@ class BP_Attachments_Component extends BP_Component {
 	 * Set up the component entries in the WordPress Admin Bar.
 	 *
 	 * @since 1.0.0
-     *
-     * @see BP_Component::setup_admin_bar() for a description of arguments.
+	 *
+	 * @see BP_Component::setup_admin_bar() for a description of arguments.
 	 *
 	 * @param array $wp_admin_nav See BP_Component::setup_admin_bar()
 	 *                            for description.
-	 * @return bool
 	 */
 	public function setup_admin_bar( $wp_admin_nav = array() ) {
 		$bp = buddypress();
 
-		// Menus for logged in user
+		// Menus for logged in user.
 		if ( is_user_logged_in() ) {
 
-			// Setup the logged in user variables
+			// Setup the logged in user variables.
 			$user_domain      = bp_loggedin_user_domain();
-            $attachments_link = trailingslashit( $user_domain . $this->slug );
+			$attachments_link = trailingslashit( $user_domain . $this->slug );
 
-            $default_admin_nav = array(
+			$default_admin_nav = array(
 				'parent' => $bp->my_account_menu_id,
 				'id'     => 'my-account-' . $this->id,
 				'title'  => __( 'Media', 'bp-attachments' ),
-				'href'   => $attachments_link
+				'href'   => $attachments_link,
 			);
 
-			// Add the "My Account" sub menus
+			// Add the "My Account" sub menus.
 			$wp_admin_nav[] = $default_admin_nav;
 
-			// My Attachments
+			// My Attachments.
 			$wp_admin_nav[] = wp_parse_args(
-                array(
-                    'parent' => 'my-account-' . $this->id,
-                    'id'     => 'my-account-' . $this->id . '-personal',
-                    'title'  => __( 'Personal', 'bp-attachments' ),
-                ),
-                $default_admin_nav
-            );
+				array(
+					'parent' => 'my-account-' . $this->id,
+					'id'     => 'my-account-' . $this->id . '-personal',
+					'title'  => __( 'Personal', 'bp-attachments' ),
+				),
+				$default_admin_nav
+			);
 		}
 
 		parent::setup_admin_bar( $wp_admin_nav );
-    }
+	}
 
-    /**
+	/**
 	 * Set up the title for pages and <title>.
-     *
-     * @since 1.0.0
+	 *
+	 * @since 1.0.0
 	 */
 	public function setup_title() {
 
@@ -206,17 +228,23 @@ class BP_Attachments_Component extends BP_Component {
 			if ( bp_is_my_profile() ) {
 				$bp->bp_options_title = __( 'My Sites', 'buddypress' );
 
-			    /**
-                 * If we are not viewing the logged in user, set up the current
-                 * users avatar and name.
-                 */
+				/**
+				 * If we are not viewing the logged in user, set up the current
+				 * users avatar and name.
+				 */
 			} else {
-				$bp->bp_options_avatar = bp_core_fetch_avatar( array(
-					'item_id' => bp_displayed_user_id(),
-					'type'    => 'thumb',
-					'alt'     => sprintf( __( 'Profile picture of %s', 'bp-attachments' ), bp_get_displayed_user_fullname() )
-				) );
-				$bp->bp_options_title = bp_get_displayed_user_fullname();
+				$bp->bp_options_avatar = bp_core_fetch_avatar(
+					array(
+						'item_id' => bp_displayed_user_id(),
+						'type'    => 'thumb',
+						'alt'     => sprintf(
+							/* translators: %s is the Displayed User full name */
+							__( 'Profile picture of %s', 'bp-attachments' ),
+							bp_get_displayed_user_fullname()
+						),
+					)
+				);
+				$bp->bp_options_title  = bp_get_displayed_user_fullname();
 			}
 		}
 
