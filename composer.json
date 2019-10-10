@@ -1,0 +1,14 @@
+{
+  "name": "buddypress/bp-attachments",
+  "description": "BP Attachments is a BuddyPress component to manage user media.",
+  "type": "wordpress-plugin",
+  "require": {
+    "squizlabs/php_codesniffer" : "^3.3.1",
+    "wp-cli/wp-cli-bundle": "*"
+  },
+  "require-dev": {
+    "dealerdirect/phpcodesniffer-composer-installer": "*",
+    "phpcompatibility/phpcompatibility-wp" : "*",
+    "wp-coding-standards/wpcs": "*"
+  }
+}

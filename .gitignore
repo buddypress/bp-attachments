@@ -1,6 +1,13 @@
+# Operating system specific files
+.DS_Store
 .DS_*
 ._*
 .Spotlight-V100
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Files and folders related to build/test tools
+node_modules
+npm-debug.log
+vendor

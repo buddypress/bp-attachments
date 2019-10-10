@@ -1,0 +1,62 @@
+# Copyright (C) 2019 The BuddyPress Community
+# This file is distributed under the same license as the BP Attachments plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: BP Attachments 1.0.0-alpha\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bp-attachments\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2019-10-10T12:39:53+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.3.0\n"
+"X-Domain: bp-attachments\n"
+
+#. Plugin Name of the plugin
+msgid "BP Attachments"
+msgstr ""
+
+#. Plugin URI of the plugin
+msgid "https://github.com/buddypress/bp-attachments"
+msgstr ""
+
+#. Description of the plugin
+msgid "BP Attachments is a BuddyPress component to manage user media."
+msgstr ""
+
+#. Author of the plugin
+msgid "The BuddyPress Community"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "http://buddypress.org/community/members/"
+msgstr ""
+
+#: bp-attachments/bp-attachments-admin.php:21
+#: bp-attachments/bp-attachments-admin.php:38
+msgid "User Media"
+msgstr ""
+
+#: bp-attachments/bp-attachments-admin.php:22
+msgid "BuddyPress"
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-component.php:28
+msgid "Attachments"
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-component.php:111
+#: bp-attachments/classes/class-bp-attachments-component.php:174
+msgid "Media"
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-component.php:134
+#: bp-attachments/classes/class-bp-attachments-component.php:186
+msgid "Personal"
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-component.php:217
+msgid "Profile picture of %s"
+msgstr ""

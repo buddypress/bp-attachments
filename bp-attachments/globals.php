@@ -31,6 +31,5 @@ function bp_attachments_globals() {
     $bp_attachments->js_url        = plugins_url( 'js/', dirname( __FILE__ ) );
     $bp_attachments->assets_url    = plugins_url( 'assets/', dirname( __FILE__ ) );
 	$bp_attachments->dist_url      = plugins_url( 'dist/', dirname( __FILE__ ) );
-
 }
 add_action( 'bp_loaded', 'bp_attachments_globals', 1 );
