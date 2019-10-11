@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2019-10-10T12:39:53+00:00\n"
+"POT-Creation-Date: 2019-10-10T19:06:22+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.3.0\n"
 "X-Domain: bp-attachments\n"
@@ -47,16 +47,17 @@ msgstr ""
 msgid "Attachments"
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-component.php:111
-#: bp-attachments/classes/class-bp-attachments-component.php:174
+#: bp-attachments/classes/class-bp-attachments-component.php:135
+#: bp-attachments/classes/class-bp-attachments-component.php:196
 msgid "Media"
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-component.php:134
-#: bp-attachments/classes/class-bp-attachments-component.php:186
+#: bp-attachments/classes/class-bp-attachments-component.php:158
+#: bp-attachments/classes/class-bp-attachments-component.php:208
 msgid "Personal"
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-component.php:217
+#. translators: %s is the Displayed User full name
+#: bp-attachments/classes/class-bp-attachments-component.php:242
 msgid "Profile picture of %s"
 msgstr ""
