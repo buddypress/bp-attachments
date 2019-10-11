@@ -112,9 +112,9 @@ class BP_Attachments_Component extends BP_Component {
 
 		// URLs.
 		$this->templates_url = plugins_url( 'templates/', $this->path );
-		$this->js_url        = plugins_url( 'js/', $this->path );
-		$this->assets_url    = plugins_url( 'assets/', $this->path );
-		$this->dist_url      = plugins_url( 'dist/', $this->path );
+		$this->js_url        = plugins_url( 'bp-attachments/js/', $this->path );
+		$this->assets_url    = plugins_url( 'bp-attachments/assets/', $this->path );
+		$this->dist_url      = plugins_url( 'bp-attachments/dist/', $this->path );
 	}
 
 	/**
