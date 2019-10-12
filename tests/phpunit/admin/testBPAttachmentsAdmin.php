@@ -16,9 +16,6 @@ class BP_Attachments_Admin_UnitTestCase extends BP_UnitTestCase {
 		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'administrator' ) ) );
 		set_current_screen( 'dashboard' );
 
-		// is_admin() is not yet set in BP_Attachments_Component::includes().
-		require_once buddypress()->attachments->path . 'bp-attachments-admin.php';
-
 		parent::setUp();
 	}
 

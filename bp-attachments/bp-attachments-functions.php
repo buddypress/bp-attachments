@@ -12,18 +12,37 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Get the WPDB API.
+ * Get the plugin version.
  *
  * @since 1.0.0
  *
- * @return wpdb The WPDB API.
+ * @return string The plugin version.
  */
-function bp_attachments_get_db() {
-	$wp_db = null;
+function bp_attachments_get_version() {
+	return buddypress()->attachments->version;
+}
 
-	if ( isset( $GLOBALS['wpdb'] ) && is_object( $GLOBALS['wpdb'] ) ) {
-		$wp_db = $GLOBALS['wpdb'];
-	}
+/**
+ * Is this a plugin install?
+ *
+ * @since 1.0.0
+ *
+ * @return boolean True if it's an install. False otherwise.
+ */
+function bp_attachments_is_install() {
+	return ! bp_get_option( '_bp_attachments_version' );
+}
 
-	return $wp_db;
+/**
+ * Is this a plugin update?
+ *
+ * @since 1.0.0
+ *
+ * @return boolean True if it's an update. False otherwise.
+ */
+function bp_attachments_is_update() {
+	$db_version = bp_get_option( '_bp_attachments_version' );
+	$version    = bp_attachments_get_version();
+
+	return version_compare( $version, $db_version, '<' );
 }

@@ -8,11 +8,12 @@
 	convertWarningsToExceptions="true"
 	>
 	<testsuites>
-		<testsuite>
+		<testsuite name="BP Attchments">
 			<directory prefix="test" suffix=".php">./tests/</directory>
 		</testsuite>
 	</testsuites>
 	<php>
         <const name="SCRIPT_DEBUG" value="0" />
+		<const name="BP_ATTACHMENTS_VERSION" value="1.0.0-alpha" />
     </php>
 </phpunit>
