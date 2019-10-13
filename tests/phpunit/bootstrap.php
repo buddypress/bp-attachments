@@ -27,6 +27,15 @@ if ( ! defined( 'BP_TESTS_DIR' ) ) {
 	}
 }
 
+if ( ! defined( 'BP_ATTACHMENTS_TESTS_DIR' ) ) {
+	$bpa_tests_dir = getenv( 'BP_ATTACHMENTS_TESTS_DIR' );
+	if ( $bpa_tests_dir ) {
+		define( 'BP_ATTACHMENTS_TESTS_DIR', $bpa_tests_dir );
+	} else {
+		define( 'BP_ATTACHMENTS_TESTS_DIR', dirname( __FILE__ ) );
+	}
+}
+
 /**
  * Load the BP Attachments plugin.
  *

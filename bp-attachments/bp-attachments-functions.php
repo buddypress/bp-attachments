@@ -94,3 +94,39 @@ function bp_attachments_get_private_uploads_dir() {
 function bp_attachments_get_public_uploads_dir() {
 	return bp_attachments_get_media_uploads_dir( 'public' );
 }
+
+/**
+ * List all media items (including sub-directories) of a directory.
+ *
+ * @since 1.0.0
+ *
+ * @param string $dir Absolute path to the directory to list media items for.
+ * @return array      The list of media items found.
+ */
+function bp_attachments_list_dir_media( $dir = '' ) {
+	$list = array();
+
+	if ( ! is_dir( $dir ) ) {
+		return $list;
+	}
+
+	$iterator = new FilesystemIterator( $dir, FilesystemIterator::SKIP_DOTS );
+
+	foreach ( new BP_Attachments_Filter_Iterator( $iterator ) as $media ) {
+		$media_name = $media->getfilename();
+		$path       = $media->getPathname();
+		$id         = md5( $media_name );
+		$list[]     = (object) array(
+			'id'                   => $id,
+			'path'                 => $path,
+			'name'                 => $media_name,
+			'size'                 => $media->getSize(),
+			'type'                 => $media->getType(),
+			'mime_type'            => mime_content_type( $path ),
+			'latest_modified_date' => $media->getMTime(),
+			'latest_access_date'   => $media->getATime(),
+		);
+	}
+
+	return $list;
+}

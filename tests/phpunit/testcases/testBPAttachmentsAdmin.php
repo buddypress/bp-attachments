@@ -29,11 +29,7 @@ class BP_Attachments_Admin_UnitTestCase extends BP_UnitTestCase {
 		parent::tearDown();
 	}
 
-	public function test_bp_attachments_uploads_dir( $uploads_dir = array() ) {
-		if ( ! $uploads_dir ) {
-			return $uploads_dir;
-		}
-
+	public function filter_bp_attachments_uploads_dir( $uploads_dir = array() ) {
 		return array(
 			'basedir' => str_replace( 'buddypress', 'bp_attachments_test_install_dir', $uploads_dir['basedir']  ),
 			'baseurl' => str_replace( 'buddypress', 'bp_attachments_test_install_dir', $uploads_dir['baseurl']  ),
@@ -57,7 +53,7 @@ class BP_Attachments_Admin_UnitTestCase extends BP_UnitTestCase {
 	public function test_bp_attachments_install() {
 		$this->clean_files();
 
-		add_filter( 'bp_attachments_uploads_dir_get', array( $this, 'test_bp_attachments_uploads_dir' ), 0, 1 );
+		add_filter( 'bp_attachments_uploads_dir_get', array( $this, 'filter_bp_attachments_uploads_dir' ), 0, 1 );
 		bp_attachments_install();
 
 		$private_uploads = bp_attachments_get_private_uploads_dir();
@@ -66,6 +62,6 @@ class BP_Attachments_Admin_UnitTestCase extends BP_UnitTestCase {
 		$public_uploads = bp_attachments_get_public_uploads_dir();
 		$this->assertTrue( is_dir( $public_uploads['basedir'] . '/' . $public_uploads['subdir'] ) );
 
-		remove_filter( 'bp_attachments_uploads_dir_get', array( $this, 'test_bp_attachments_uploads_dir' ), 0, 1 );
+		remove_filter( 'bp_attachments_uploads_dir_get', array( $this, 'filter_bp_attachments_uploads_dir' ), 0, 1 );
 	}
 }

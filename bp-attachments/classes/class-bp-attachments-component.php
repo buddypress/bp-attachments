@@ -3,7 +3,7 @@
  * BP Attachments Component.
  *
  * @package BP Attachments
- * @subpackage \bp-attachments\bp-attachments-component
+ * @subpackage \bp-attachments\classes\class-bp-attachments-component
  *
  * @since 1.0.0
  */
