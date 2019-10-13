@@ -3,7 +3,7 @@
  * BP Attachments Admin tests.
  *
  * @package BP Attachments
- * @subpackage \tests\phpunit\testBPAttachmentsAdmin
+ * @subpackage \tests\phpunit\admin\testBPAttachmentsAdmin
  *
  * @since 1.0.0
  */
