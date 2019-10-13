@@ -46,3 +46,51 @@ function bp_attachments_is_update() {
 
 	return version_compare( $version, $db_version, '<' );
 }
+
+/**
+ * Get the media uploads dir for the requested visibility type.
+ *
+ * @since 1.0.0
+ *
+ * @param string $type `public` ou `private`.
+ * @return array       The uploads dir data.
+ */
+function bp_attachments_get_media_uploads_dir( $type = 'public' ) {
+	if ( 'public' !== $type && 'private' !== $type ) {
+		$type = 'public';
+	}
+
+	$bp_uploads_dir = bp_attachments_uploads_dir_get();
+	$subdir         = '/' . $type;
+
+	$uploads = array_merge(
+		$bp_uploads_dir,
+		array(
+			'path'   => $bp_uploads_dir['basedir'] . $subdir,
+			'url'    => $bp_uploads_dir['baseurl'] . $subdir,
+			'subdir' => $subdir,
+			'error'  => false,
+		)
+	);
+
+	unset( $uploads['dir'] );
+	return $uploads;
+}
+
+/**
+ * Get the root folder for private media.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_get_private_uploads_dir() {
+	return bp_attachments_get_media_uploads_dir( 'private' );
+}
+
+/**
+ * Get the root folder for public media.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_get_public_uploads_dir() {
+	return bp_attachments_get_media_uploads_dir( 'public' );
+}

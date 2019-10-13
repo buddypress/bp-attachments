@@ -39,18 +39,7 @@ function _load_bp_attachments_plugin() {
 	// Load our plugin.
 	require_once dirname( __FILE__ ) . '/../../class-bp-attachments.php';
 
-	// Install the DB tables.
-	require_once dirname( __FILE__ ) . '/../../bp-attachments/bp-attachments-admin.php';
-	global $wpdb;
-
-	bp_delete_option( '_bp_attachments_version' );
-
-	foreach ( $wpdb->get_col( "SHOW TABLES LIKE '" . $wpdb->prefix . "bp_attachments%'" ) as $table ) {
-		$wpdb->query( "DROP TABLE {$table}" );
-	}
-
-	bp_attachments_install();
-
+	// Set version.
 	bp_update_option( '_bp_attachments_version', BP_ATTACHMENTS_VERSION );
 }
 tests_add_filter( 'muplugins_loaded', '_load_bp_attachments_plugin' );

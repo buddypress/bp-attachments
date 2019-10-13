@@ -16,6 +16,9 @@ class BP_Attachments_Admin_UnitTestCase extends BP_UnitTestCase {
 		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'administrator' ) ) );
 		set_current_screen( 'dashboard' );
 
+		// is_admin() is not yet set in BP_Attachments_Component::includes().
+		require_once buddypress()->attachments->path . 'bp-attachments-admin.php';
+
 		parent::setUp();
 	}
 
@@ -26,10 +29,43 @@ class BP_Attachments_Admin_UnitTestCase extends BP_UnitTestCase {
 		parent::tearDown();
 	}
 
-	public function test_bp_attachments_get_media_table() {
-		$schema = bp_attachments_get_media_schema();
+	public function test_bp_attachments_uploads_dir( $uploads_dir = array() ) {
+		if ( ! $uploads_dir ) {
+			return $uploads_dir;
+		}
 
-		$this->assertContains( 'uploads_relative_path', $schema[0] );
-		$this->assertContains( 'object_type', $schema[1] );
+		return array(
+			'basedir' => str_replace( 'buddypress', 'bp_attachments_test_install_dir', $uploads_dir['basedir']  ),
+			'baseurl' => str_replace( 'buddypress', 'bp_attachments_test_install_dir', $uploads_dir['baseurl']  ),
+			'dir'     => 'bp_attachments_test_install_dir',
+		);
+	}
+
+	private function clean_files() {
+		$upload_dir = wp_get_upload_dir();
+		$test_dir   = $upload_dir['basedir'] . '/bp_attachments_test_install_dir';
+
+		if ( ! is_dir( $test_dir ) ) {
+			return;
+		}
+
+		unlink( $test_dir . '/private/.htaccess' );
+
+		$this->rrmdir( $test_dir );
+	}
+
+	public function test_bp_attachments_install() {
+		$this->clean_files();
+
+		add_filter( 'bp_attachments_uploads_dir_get', array( $this, 'test_bp_attachments_uploads_dir' ), 0, 1 );
+		bp_attachments_install();
+
+		$private_uploads = bp_attachments_get_private_uploads_dir();
+		$this->assertTrue( file_exists( $private_uploads['basedir'] . '/' . $private_uploads['subdir'] . '/' . '.htaccess' ) );
+
+		$public_uploads = bp_attachments_get_public_uploads_dir();
+		$this->assertTrue( is_dir( $public_uploads['basedir'] . '/' . $public_uploads['subdir'] ) );
+
+		remove_filter( 'bp_attachments_uploads_dir_get', array( $this, 'test_bp_attachments_uploads_dir' ), 0, 1 );
 	}
 }

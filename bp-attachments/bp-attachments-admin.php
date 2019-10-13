@@ -12,86 +12,46 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Get the BP Attachments DB tables schema.
- *
- * @since 1.0.0
- *
- * @global $wpdb The WPDB API.
- * @return array The list of SQL commands to perform during installation.
- */
-function bp_attachments_get_media_schema() {
-	if ( ! function_exists( 'wp_get_db_schema' ) ) {
-		require_once ABSPATH . 'wp-admin/includes/schema.php';
-	}
-
-	global $wpdb;
-	$sql = array();
-
-	$wp_db_schema    = wp_get_db_schema( 'blog' );
-	$charset_collate = $wpdb->get_charset_collate();
-	$bp_prefix       = bp_core_get_table_prefix();
-
-	// First the object table.
-	preg_match( "#CREATE TABLE {$wpdb->posts} \((.*?)\) {$charset_collate};#is", $wp_db_schema, $posts_schema );
-	$object_sql_lines = array();
-
-	if ( $posts_schema[1] ) {
-		$sql_lines      = explode( ",\n", $posts_schema[1] );
-		$remove_fields  = 'post_excerpt comment_status ping_status post_password guid to_ping pinged menu_order';
-		$replace_fields = 'post_content_filtered comment_count';
-
-		foreach ( $sql_lines as $sql_line ) {
-			$first_token = strtok( trim( $sql_line, " \n\t" ), ' ' );
-
-			if ( false !== strpos( $remove_fields, $first_token ) ) {
-				continue;
-			}
-
-			if ( false !== strpos( $replace_fields, $first_token ) ) {
-				$sql_line = str_replace( array( 'post_content_filtered', 'comment_count' ), array( 'uploads_relative_path', 'download_count' ), $sql_line );
-			}
-
-			if ( ! in_array( $sql_line, $object_sql_lines, true ) ) {
-				$object_sql_lines[] = "\t" . trim( $sql_line, "\n\t" );
-			}
-		}
-	}
-
-	// Then the meta table.
-	preg_match( "#CREATE TABLE {$wpdb->postmeta} \((.*?)\) {$charset_collate};#is", $wp_db_schema, $postmeta_schema );
-	$meta_sql_lines = '';
-
-	if ( $postmeta_schema[1] ) {
-		preg_match( "#post_id (.*) '0',#is", $postmeta_schema[1], $post_id );
-
-		if ( $post_id[0] ) {
-			$meta_sql_lines = str_replace(
-				$post_id[0],
-				$post_id[0] . "\n\tobject_type varchar(50) NOT NULL default '',",
-				$postmeta_schema[1]
-			);
-
-			$meta_sql_lines = str_replace( 'post_id', 'media_id', $meta_sql_lines );
-		}
-	}
-
-	return array(
-		"CREATE TABLE {$bp_prefix}bp_attachments (\n" . join( ",\n", $object_sql_lines ) . "\n) {$charset_collate}",
-		"CREATE TABLE {$bp_prefix}bp_attachments_meta (" . $meta_sql_lines . ") {$charset_collate}",
-	);
-}
-
-/**
  * Install the plugin.
  *
  * @since 1.0.0
  */
 function bp_attachments_install() {
-	require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+	// 1. Install the private uploads dir.
+	add_filter( 'upload_dir', 'bp_attachments_get_private_uploads_dir' );
 
-	$sql = bp_attachments_get_media_schema();
+	$private_uploads = wp_upload_dir();
+	$private_dir     = trailingslashit( $private_uploads['path'] );
 
-	dbDelta( $sql );
+	remove_filter( 'upload_dir', 'bp_attachments_get_private_uploads_dir' );
+
+	if ( ! file_exists( $private_dir . '/.htaccess' ) ) {
+		// Include admin functions to get access to insert_with_markers().
+		require_once ABSPATH . 'wp-admin/includes/misc.php';
+
+		$home = trailingslashit( get_option( 'home' ) );
+		$base = wp_parse_url( $home, PHP_URL_PATH );
+
+		// Defining the rule: users need to be logged in to access private media.
+		$rules = array(
+			'<IfModule mod_rewrite.c>',
+			'RewriteEngine On',
+			sprintf( 'RewriteBase %s', $base ),
+			'RewriteCond %{HTTP_COOKIE} !^.*wordpress_logged_in.*$ [NC]',
+			'RewriteRule  .* wp-login.php [NC,L]',
+			'</IfModule>',
+		);
+
+		// Create the .htaccess file.
+		insert_with_markers( $private_dir . '/.htaccess', 'BP Attachments', $rules );
+	}
+
+	// 2. Install the public uploads dir.
+	add_filter( 'upload_dir', 'bp_attachments_get_public_uploads_dir' );
+
+	$public_uploads = wp_upload_dir();
+
+	remove_filter( 'upload_dir', 'bp_attachments_get_public_uploads_dir' );
 }
 
 /**
