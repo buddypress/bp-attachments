@@ -12,7 +12,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * BP Attachments Component Class.
+ * BP Attachments FilterIterator Class.
  *
  * @since 1.0.0
  */
