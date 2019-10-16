@@ -31,6 +31,20 @@ class BP_Attachments_Component extends BP_Component {
 	}
 
 	/**
+	 * Set-up the BP Attachments hooks.
+	 *
+	 * @since 1.0.0
+	 */
+	public function setup_actions() {
+		parent::setup_actions();
+
+		// src/buddypress does not include the BP REST API.
+		if ( ! has_action( 'bp_rest_api_init', array( $this, 'rest_api_init' ), 10 ) ) {
+			add_action( 'bp_rest_api_init', array( $this, 'rest_api_init' ), 10 );
+		}
+	}
+
+	/**
 	 * Include component files.
 	 *
 	 * @see BP_Component::includes() for a description of arguments.
@@ -249,5 +263,17 @@ class BP_Attachments_Component extends BP_Component {
 		}
 
 		parent::setup_title();
+	}
+
+	/**
+	 * Register the BP Attachments REST Controller.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $controllers Optional. See BP_Component::rest_api_init() for
+	 *                           description.
+	 */
+	public function rest_api_init( $controllers = array() ) {
+		parent::rest_api_init( array( 'BP_Attachments_REST_Controller' ) );
 	}
 }
