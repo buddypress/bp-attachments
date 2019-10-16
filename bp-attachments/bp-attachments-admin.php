@@ -89,14 +89,48 @@ function bp_attachments_admin_menu() {
 add_action( 'admin_menu', 'bp_attachments_admin_menu' );
 
 /**
+ * Register JavaScripts and Styles for WP Admin context.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_admin_register_scripts() {
+	$bp_attachments = buddypress()->attachments;
+
+	wp_register_script(
+		'bp-attachments-uploader',
+		$bp_attachments->js_url . 'uploader/index.js',
+		array(
+			'wp-element',
+			'wp-components',
+			'wp-i18n',
+			'wp-api-fetch',
+			'lodash',
+		),
+		$bp_attachments->version,
+		true
+	);
+
+	wp_register_style(
+		'bp-attachments-admin',
+		$bp_attachments->assets_url . 'admin/style.css',
+		array(),
+		$bp_attachments->version
+	);
+}
+add_action( 'bp_admin_enqueue_scripts', 'bp_attachments_admin_register_scripts', 1 );
+
+/**
  * Display the BuddyPress Media Admin screen.
  *
  * @since 1.0.0
  */
 function bp_attachments_admin_media() {
+	wp_enqueue_script( 'bp-attachments-uploader' );
+	wp_enqueue_style( 'bp-attachments-admin' );
 	?>
 	<div class="wrap">
 		<h1><?php esc_html_e( 'User Media', 'bp-attachments' ); ?></h1>
+		<div id="bp-media-uploader"></div>
 	</div>
 	<?php
 }

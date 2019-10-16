@@ -1,0 +1,12 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"X-Generator: babel-plugin-makepot\n"
+
+#: bp-attachments/js/src/block/index.js:5
+msgid "BP Attachments"
+msgstr ""
+
+#: bp-attachments/js/src/block/index.js:7
+msgid "BuddyPress Attachments Media."
+msgstr ""

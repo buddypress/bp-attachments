@@ -92,6 +92,46 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	}
 
 	/**
+	 * Creates a BP Attachments Media.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param WP_REST_Request $request Full details about the request.
+	 * @return WP_Error|WP_REST_Response Response object on success, WP_Error object on failure.
+	 */
+	public function create_item( $request ) {
+		// Get the file via $_FILES or raw data.
+		$files   = $request->get_file_params();
+		$headers = $request->get_headers();
+
+		if ( empty( $files ) ) {
+			return new WP_Error(
+				'bp_rest_upload_no_data',
+				__( 'No data supplied.', 'bp-attachments' ),
+				array(
+					'status' => 400,
+				)
+			);
+		}
+
+		$bp_uploader = new BP_Attachments_Media();
+		$uploaded    = $bp_uploader->upload( $files );
+
+		if ( is_wp_error( $uploaded ) ) {
+			return $uploaded;
+		}
+
+		$name = wp_basename( $uploaded['file'] );
+
+		return rest_ensure_response(
+			array(
+				'name' => $name,
+				'id'   => md5( $name ),
+			)
+		);
+	}
+
+	/**
 	 * Retrieves the query params for the BP Attachments Media collection.
 	 *
 	 * @since 1.0.0
