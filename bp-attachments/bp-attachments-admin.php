@@ -102,7 +102,9 @@ function bp_attachments_admin_register_scripts() {
 		array(
 			'wp-element',
 			'wp-components',
+			'wp-compose',
 			'wp-i18n',
+			'wp-data',
 			'wp-api-fetch',
 			'lodash',
 		),
