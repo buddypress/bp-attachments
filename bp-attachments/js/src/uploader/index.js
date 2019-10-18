@@ -1,4 +1,4 @@
-const { Component, render, Fragment } = wp.element;
+const { Component, render, createElement, Fragment } = wp.element;
 const { DropZoneProvider, DropZone } = wp.components;
 const { __ } = wp.i18n;
 const { apiFetch } = wp;

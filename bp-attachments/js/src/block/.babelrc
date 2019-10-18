@@ -1,9 +1,6 @@
 {
-    "presets": ["@wordpress/babel-preset-default"],
+    "presets": ["@wordpress/default"],
     "plugins": [
-		[ "@babel/plugin-transform-react-jsx", {
-			"pragma": "createElement"
-		} ],
         [
             "@wordpress/babel-plugin-makepot",
             {
