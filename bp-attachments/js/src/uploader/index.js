@@ -4,21 +4,33 @@ const { __ } = wp.i18n;
 const { apiFetch } = wp;
 const { registerStore, withDispatch, withSelect } = wp.data;
 const { compose } = wp.compose;
-const { find, forEach, reject } = lodash;
+const { find, forEach, reject, uniqueId } = lodash;
 
 function *saveAttachment( file ) {
-	let uploading = true;
+	let uploading = true, uploaded;
 	yield { type: 'UPLOAD_START', uploading, file };
 
 	const formData = new FormData();
 	formData.append( 'file', file );
 	formData.append( 'action', 'bp_attachments_media_upload' );
 
-	const uploaded = yield actions.uploadFile( '/buddypress/v1/attachments', formData );
+	uploading = false;
+	try {
+		uploaded = yield actions.uploadFile( '/buddypress/v1/attachments', formData );
+		yield { type: 'UPLOAD_END', uploading, uploaded };
 
-	uploading = false
-	yield { type: 'UPLOAD_END', uploading, uploaded };
-	return actions.addFile( uploaded );
+		return actions.addFile( uploaded );
+	} catch ( error ) {
+		uploaded = {
+			id: uniqueId(),
+			name: file.name,
+			error: error.message,
+		};
+
+		yield { type: 'UPLOAD_END', uploading, uploaded };
+
+		return actions.traceError( uploaded );
+	}
 }
 
 const DEFAULT_STATE = {
@@ -44,17 +56,24 @@ const actions = {
 			file,
 		};
 	},
+
+	traceError( file ) {
+		return {
+			type: 'ADD_ERROR',
+			file,
+		};
+	},
 };
 
 registerStore( 'bp-attachments', {
-    reducer( state = DEFAULT_STATE, action ) {
-        switch ( action.type ) {
-            case 'ADD_FILE':
-                return {
-                    ...state,
-                    files: [
-                        ...state.files,
-                        action.file,
+	reducer( state = DEFAULT_STATE, action ) {
+		switch ( action.type ) {
+			case 'ADD_FILE':
+				return {
+					...state,
+					files: [
+						...state.files,
+						action.file,
 					],
 				};
 
@@ -68,20 +87,29 @@ registerStore( 'bp-attachments', {
 					],
 				};
 
+			case 'ADD_ERROR':
+				return {
+					...state,
+					errored: [
+						...state.errored,
+						action.file,
+					],
+				};
+
 			case 'UPLOAD_END':
 				return {
 					...state,
 					uploading: action.uploading,
 					uploaded: reject( state.uploaded, [ 'name', action.uploaded.name ] ),
 				};
-        }
+		}
 
-        return state;
-    },
+		return state;
+	},
 
-    actions,
+	actions,
 
-    selectors: {
+	selectors: {
 		isUploading( state ) {
 			const { uploading } = state;
 			return uploading;
@@ -90,49 +118,33 @@ registerStore( 'bp-attachments', {
 			const { uploaded } = state;
 			return uploaded;
 		},
+		getErroredFiles( state ) {
+			const { errored } = state;
+			return errored;
+		},
 		getFiles( state ) {
 			const { files } = state;
 			return files;
 		}
 	},
 
-    controls: {
-        UPLOAD_FILE( action ) {
-            return apiFetch( { path: action.path, method: 'POST', body: action.formData } );
-        },
-    },
+	controls: {
+		UPLOAD_FILE( action ) {
+			return apiFetch( { path: action.path, method: 'POST', body: action.formData } );
+		},
+	},
 
-    resolvers: {},
+	resolvers: {},
 } );
 
 class BP_Media_Uploader extends Component {
-    constructor() {
+	constructor() {
 		super( ...arguments );
-
-        this.state = {
-			files: [],
-			uploaded: [],
-			errored: [],
-			uploading: false,
-		};
-
-		this.onResetState = this.onResetState.bind( this );
-	}
-
-	onResetState( event ) {
-		event.preventDefault();
-
-		this.setState( {
-			files: [],
-			uploaded: [],
-			errored: [],
-			uploading: false,
-		} );
 	}
 
 	renderResult( file ) {
 		const { files, errored } = this.props;
-		const isError = find( errored, { fileName: file.name } );
+		const isError = find( errored, { name: file.name } );
 		const isSuccess = find( files, { name: file.name } );
 
 		if ( isSuccess ) {
@@ -147,8 +159,8 @@ class BP_Media_Uploader extends Component {
 		if ( isError ) {
 			return (
 				<span className="bp-info">
+					<span>{ isError.error }</span>
 					<span className="bp-errored"></span>
-					<span>{ isError.error.message }</span>
 				</span>
 			);
 		}
@@ -162,12 +174,14 @@ class BP_Media_Uploader extends Component {
 	}
 
 	render() {
-		const { onFilesDropped, getUploadedFiles, isUploading, files } = this.props;
-		let dzClass = 'enabled';
+		const { onFilesDropped, isUploading, uploaded, files, errored } = this.props;
+		let dzClass = 'enabled', result = [];
 
 		if ( !! isUploading ) {
 			dzClass = 'disabled';
 		}
+
+		result = result.concat( uploaded, files, errored );
 
 		return (
 			<Fragment>
@@ -181,9 +195,9 @@ class BP_Media_Uploader extends Component {
 						/>
 					</div>
 				</DropZoneProvider>
-				{ !! getUploadedFiles.length &&
+				{ !! result.length &&
 					<ol className="bp-files-list">
-						{ getUploadedFiles.map( file => {
+						{ result.map( file => {
 							return (
 								<li key={ file.name } className="row">
 									<span className="filename">{ file.name }</span>
@@ -202,8 +216,9 @@ const BP_Media_UI = compose( [
 	withSelect( ( select ) => {
 		return {
 			isUploading: select( 'bp-attachments' ).isUploading(),
-			getUploadedFiles: select( 'bp-attachments' ).getUploadedFiles(),
+			uploaded: select( 'bp-attachments' ).getUploadedFiles(),
 			files: select( 'bp-attachments' ).getFiles(),
+			errored: select( 'bp-attachments' ).getErroredFiles(),
 		};
 	} ),
 	withDispatch( ( dispatch ) => ( {

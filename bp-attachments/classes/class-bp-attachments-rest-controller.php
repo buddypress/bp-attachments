@@ -117,8 +117,14 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		$bp_uploader = new BP_Attachments_Media();
 		$uploaded    = $bp_uploader->upload( $files );
 
-		if ( is_wp_error( $uploaded ) ) {
-			return $uploaded;
+		if ( isset( $uploaded['error'] ) && $uploaded['error'] ) {
+			return new WP_Error(
+				'rest_upload_unknown_error',
+				$uploaded['error'],
+				array(
+					'status' => 500,
+				)
+			);
 		}
 
 		$name = wp_basename( $uploaded['file'] );

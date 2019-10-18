@@ -23,8 +23,7 @@ class BP_Attachments_Media extends BP_Attachment {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		// Allowed types & upload size.
-		$allowed_types        = bp_attachments_get_allowed_types( '' );
+		// Max upload size.
 		$max_upload_file_size = bp_attachments_get_max_upload_file_size();
 
 		parent::__construct(
@@ -42,11 +41,7 @@ class BP_Attachments_Media extends BP_Attachment {
 						__( 'That media is too big. Please upload one smaller than %s', 'bp-attachments' ),
 						size_format( $max_upload_file_size )
 					),
-					12 => sprintf(
-						/* translators: %s is for the comma separated list of allowed media types. */
-						_n( 'Please upload only this file type: %s.', 'Please upload only these file types: %s.', count( $allowed_types ), 'buddypress' ),
-						self::get_media_types( $allowed_types )
-					),
+					12 => __( 'This file type is not allowed. Please use another one.', 'bp-attachments' ),
 				),
 			)
 		);
