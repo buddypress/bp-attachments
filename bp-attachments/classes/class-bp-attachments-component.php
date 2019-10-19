@@ -285,6 +285,20 @@ class BP_Attachments_Component extends BP_Component {
 	}
 
 	/**
+	 * Setup cache groups
+	 *
+	 * @since 1.0.0
+	 */
+	public function setup_cache_groups() {
+		// Global groups.
+		wp_cache_add_global_groups( array(
+			'bp_attachments',
+		) );
+
+		parent::setup_cache_groups();
+	}
+
+	/**
 	 * Add additional rewrite tags.
 	 *
 	 * @since 1.0.0
@@ -473,28 +487,26 @@ class BP_Attachments_Component extends BP_Component {
 		 * for an existing User Media.
 		 */
 		if ( $parse_array['bp_attachments_item_action'] ) {
-			$action = array_search( $parse_array['bp_attachments_item_action'], bp_attachments_get_item_actions(), true );
 			$status = array_search( $parse_array['bp_attachments_status'], bp_attachments_get_item_stati(), true );
 			$object = array_search( $parse_array['bp_attachments_object'], bp_attachments_get_item_objects(), true );
+			$action = array_search( $parse_array['bp_attachments_item_action'], bp_attachments_get_item_actions(), true );
 
 			if ( $action && $status && $object ) {
-				$relative_path = join( '/',
-					array_filter(
-						array(
-							$object,
-							$parse_array['bp_attachments_object_item'],
-							$parse_array['bp_attachments_item_action_variables'],
-						)
+				$relative_path = array_filter(
+					array(
+						$status,
+						$object,
+						$parse_array['bp_attachments_object_item'],
+						$parse_array['bp_attachments_item_action_variables'],
 					)
 				);
 
-				$uploads   = bp_attachments_get_media_uploads_dir( $status );
-				$json_file = trailingslashit( $uploads['path'] ) . $relative_path . '.json';
+				$id    = array_pop( $relative_path );
+				$media = BP_Attachments_Media::get_instance( $id, implode( '/', $relative_path ) );
 
-				if ( file_exists( $json_file ) ) {
-					$json_data                = file_get_contents( $json_file );
-					$query->queried_object    = json_decode( $json_data );
-					$query->queried_object_id = $query->queried_object->id;
+				if ( $media ) {
+					$query->queried_object    = $media;
+					$query->queried_object_id = $media->id;
 				}
 			}
 		}

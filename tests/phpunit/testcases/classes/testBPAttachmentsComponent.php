@@ -19,7 +19,9 @@ class BP_Attachments_Component_UnitTestCase extends BP_UnitTestCase {
 	}
 
 	function filter_bp_attachments_uploads_dir_get( $dir = array() ) {
-		$dir['basedir'] = BP_ATTACHMENTS_TESTS_DIR . '/assets';
+		if ( is_array( $dir ) ) {
+			$dir['basedir'] = BP_ATTACHMENTS_TESTS_DIR . '/assets';
+		}
 
 		return $dir;
 	}

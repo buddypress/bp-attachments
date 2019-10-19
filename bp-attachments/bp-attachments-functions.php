@@ -172,3 +172,35 @@ function bp_attachments_list_dir_media( $dir = '' ) {
 
 	return $list;
 }
+
+/**
+ * Sanitize a BP Attachment media.
+ *
+ * @since 1.0.0
+ *
+ * @param object $media The BP Attachment media to sanitize.
+ * @return object|null  The sanitized BP Attachment media.
+ */
+function bp_attachments_sanitize_media( $media = null ) {
+	if ( ! is_object( $media ) ) {
+		return null;
+	}
+
+	if ( ! isset( $media->id ) ) {
+		return null;
+	}
+
+	foreach ( array_keys( get_object_vars( $media ) ) as $property ) {
+		if ( in_array( $property, array( 'id', 'title', 'type' ), true ) ) {
+			$media->{$property} = sanitize_text_field( $media->{$property} );
+		} elseif ( 'description' === $property ) {
+			$media->{$property} = sanitize_textarea_field( $media->{$property} );
+		} elseif ( 'mime_type' === $property ) {
+			$media->{$property} = sanitize_mime_type( $media->{$property} );
+		} elseif ( 'name' === $property ) {
+			$media->{$property} = sanitize_file_name( $media->{$property} );
+		}
+	}
+
+	return $media;
+}

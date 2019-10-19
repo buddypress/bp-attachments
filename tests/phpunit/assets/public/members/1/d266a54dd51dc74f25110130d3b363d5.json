@@ -3,5 +3,6 @@
   "name": "file-1.txt",
   "title": "File 1",
   "description": "A random file.",
-  "type": "text/plain"
+  "mime_type": "text/plain",
+  "type": "file"
 }
