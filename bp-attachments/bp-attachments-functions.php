@@ -96,6 +96,48 @@ function bp_attachments_get_public_uploads_dir() {
 }
 
 /**
+ * Get translated BP Attachment stati.
+ *
+ * @since 1.0.0
+ *
+ * @return array The available attachment stati.
+ */
+function bp_attachments_get_item_stati() {
+	return array(
+		'public'  => sanitize_title( _x( 'public', 'public status slug', 'bp-attachments' ) ),
+		'private' => sanitize_title( _x( 'private', 'private status slug', 'bp-attachments' ) ),
+	);
+}
+
+/**
+ * Get translated BP Attachment objects.
+ *
+ * @since 1.0.0
+ *
+ * @return array The available attachment objects.
+ */
+function bp_attachments_get_item_objects() {
+	return array(
+		'members' => sanitize_title( _x( 'members', 'member object slug', 'bp-attachments' ) ),
+		'groups'  => sanitize_title( _x( 'groups', 'group object slug', 'bp-attachments' ) ),
+	);
+}
+
+/**
+ * Get translated BP Attachment actions.
+ *
+ * @since 1.0.0
+ *
+ * @return array The available attachment actions.
+ */
+function bp_attachments_get_item_actions() {
+	return array(
+		'download' => sanitize_title( _x( 'download', 'download action slug', 'bp-attachments' ) ),
+		'view'     => sanitize_title( _x( 'view', 'view action slug', 'bp-attachments' ) ),
+	);
+}
+
+/**
  * List all media items (including sub-directories) of a directory.
  *
  * @since 1.0.0

@@ -105,14 +105,28 @@ class BP_Attachments_Component extends BP_Component {
 	public function setup_globals( $args = array() ) {
 		$bp = buddypress();
 
+		// Rewrite args.
+		$rewrite_args = array(
+			'root_slug'   => 'bp-attachments',
+			'rewrite_ids' => array(
+				'directory'                    => 'bp_attachments',
+				'directory_status'             => 'bp_attachments_status',
+				'directory_object'             => 'bp_attachments_object',
+				'single_item'                  => 'bp_attachments_object_item',
+				'single_item_action'           => 'bp_attachments_item_action',
+				'single_item_action_variables' => 'bp_attachments_item_action_variables',
+			),
+		);
+
 		// Globals for BuddyPress components.
 		$args = array(
 			'slug'                  => $this->id,
 			'has_directory'         => false,
 			'notification_callback' => 'bp_attachements_format_notifications',
+			'directory_title'       => __( 'User Media', 'bp-attachments' ),
 		);
 
-		parent::setup_globals( $args );
+		parent::setup_globals( $args + $rewrite_args );
 
 		/**
 		 * Globals specific to this component.
@@ -128,6 +142,12 @@ class BP_Attachments_Component extends BP_Component {
 		$this->templates_url = plugins_url( 'templates/', $this->path );
 		$this->js_url        = plugins_url( 'bp-attachments/js/dist/', $this->path );
 		$this->assets_url    = plugins_url( 'bp-attachments/assets/', $this->path );
+
+		// Rewrites.
+		if ( ! isset( $this->rewrite_ids ) )  {
+			$this->rewrite_ids           = $rewrite_args['rewrite_ids'];
+			$this->directory_permastruct = $this->root_slug . '/%' . $this->rewrite_ids['directory'] . '%';
+		}
 	}
 
 	/**
@@ -262,6 +282,224 @@ class BP_Attachments_Component extends BP_Component {
 		}
 
 		parent::setup_title();
+	}
+
+	/**
+	 * Add additional rewrite tags.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $rewrite tags {
+	 *      Associative array of arguments list used to register WordPress permastructs.
+	 *      The main array keys describe the rules type and allow individual edits if needed.
+	 *
+	 *      @type string $id    The name of the new rewrite tag. Required.
+	 *      @type string $regex The regular expression to substitute the tag for in rewrite rules.
+	 *                          Required.
+	 * }
+	 */
+	public function add_rewrite_tags( $rewrite_tags = array() ) {
+		$rewrite_tags = array(
+			'directory' => array(
+				'id'    => '%' . $this->rewrite_ids['directory'] . '%',
+				'regex' => '([1]{1,})',
+			),
+			'directory-status' => array(
+				'id'    => '%' . $this->rewrite_ids['directory_status'] . '%',
+				'regex' => '([^/]+)',
+			),
+			'directory-object' => array(
+				'id'    => '%' . $this->rewrite_ids['directory_object'] . '%',
+				'regex' => '([^/]+)',
+			),
+			'single-item' => array(
+				'id'      => '%' . $this->rewrite_ids['single_item'] . '%',
+				'regex'   => '([^/]+)',
+			),
+			'single-item-action' => array(
+				'id'      => '%' . $this->rewrite_ids['single_item_action'] . '%',
+				'regex'   => '([^/]+)',
+			),
+			'single-item-action-variables' => array(
+				'id'      => '%' . $this->rewrite_ids['single_item_action_variables'] . '%',
+				'regex'   => '([^/]+)',
+			),
+		);
+
+		foreach ( $rewrite_tags as $rewrite_tag ) {
+			if ( ! isset( $rewrite_tag['id'] ) || ! isset( $rewrite_tag['regex'] ) ) {
+				continue;
+			}
+
+			add_rewrite_tag( $rewrite_tag['id'], $rewrite_tag['regex'] );
+		}
+
+		parent::add_rewrite_tags();
+	}
+
+	/**
+	 * Add additional rewrite rules.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $rewrite_rules {
+	 *      Associative array of arguments list used to register WordPress permastructs.
+	 *      The main array keys describe the rules type and allow individual edits if needed.
+	 *
+	 *      @type string $regex    Regular expression to match request against. Required.
+	 *      @type string $query    The corresponding query vars for this rewrite rule. Required.
+	 *      @type string $priority The Priority of the new rule. Accepts 'top' or 'bottom'. Optional.
+	 *                             Default 'top'.
+	 * }
+	 */
+	public function add_rewrite_rules( $rewrite_rules = array() ) {
+		$rewrite_rules = array(
+			'paged-directory' => array(
+				'regex' => $this->root_slug . '/page/?([0-9]{1,})/?$',
+				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1&paged=$matches[1]',
+			),
+			'single-item-action-variables' => array(
+				'regex' => $this->root_slug . '/([^/]+)\/([^/]+)\/([^/]+)\/([^/]+)\/(.+?)/?$',
+				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1&' . $this->rewrite_ids['directory_status'] . '=$matches[1]&' . $this->rewrite_ids['directory_object'] . '=$matches[2]&' . $this->rewrite_ids['single_item'] . '=$matches[3]&' . $this->rewrite_ids['single_item_action'] . '=$matches[4]&' . $this->rewrite_ids['single_item_action_variables'] . '=$matches[5]',
+			),
+			'single-item-action' => array(
+				'regex' => $this->root_slug . '/([^/]+)\/([^/]+)\/([^/]+)\/([^/]+)/?$',
+				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1&' . $this->rewrite_ids['directory_status'] . '=$matches[1]&' . $this->rewrite_ids['directory_object'] . '=$matches[2]&' . $this->rewrite_ids['single_item'] . '=$matches[3]&' . $this->rewrite_ids['single_item_action'] . '=$matches[4]',
+			),
+			'single-item' => array(
+				'regex' => $this->root_slug . '/([^/]+)\/([^/]+)\/([^/]+)/?$',
+				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1&' . $this->rewrite_ids['directory_status'] . '=$matches[1]&' . $this->rewrite_ids['directory_object'] . '=$matches[2]&' . $this->rewrite_ids['single_item'] . '=$matches[3]',
+			),
+			'directory_object' => array(
+				'regex' => $this->root_slug . '/([^/]+)\/([^/]+)/?$',
+				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1&' . $this->rewrite_ids['directory_status'] . '=$matches[1]&' . $this->rewrite_ids['directory_object'] . '=$matches[2]',
+			),
+			'directory_status' => array(
+				'regex' => $this->root_slug . '/([^/]+)/?$',
+				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1&' . $this->rewrite_ids['directory_status'] . '=$matches[1]',
+			),
+			'directory' => array(
+				'regex' => $this->root_slug,
+				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1',
+			),
+		);
+
+		$priority = 'top';
+
+		foreach ( $rewrite_rules as $rewrite_rule ) {
+			if ( ! isset( $rewrite_rule['regex'] ) || ! isset( $rewrite_rule['query'] ) ) {
+				continue;
+			}
+			if ( ! isset( $rewrite_rule['priority'] ) || ! ! $rewrite_rule['priority'] ) {
+				$rewrite_rule['priority'] = $priority;
+			}
+
+			add_rewrite_rule( $rewrite_rule['regex'], $rewrite_rule['query'], $rewrite_rule['priority'] );
+		}
+
+		parent::add_rewrite_rules();
+	}
+
+	/**
+	 * Add permalink structures.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $structs {
+	 *      Associative array of arguments list used to register WordPress permastructs.
+	 *      The main array keys hold the name argument of the `add_permastruct()` function.
+	 *
+	 *      @type string $struct The permalink structure. Required.
+	 *      @type array  $args   The permalink structure arguments. Optional
+	 * }
+	 */
+	public function add_permastructs( $structs = array() ) {
+		$structs = array(
+			// Directory permastruct.
+			$this->rewrite_ids['directory'] => array(
+				'struct' => $this->directory_permastruct,
+				'args'   => array(),
+			),
+		);
+
+		foreach ( $structs as $name => $params ) {
+			if ( ! $name || ! isset( $params['struct'] ) || ! $params['struct'] ) {
+				continue;
+			}
+
+			if ( ! $params['args'] ) {
+				$params['args'] = array();
+			}
+
+			$args = wp_parse_args( $params['args'], array(
+				'with_front'  => false,
+				'ep_mask'     => EP_NONE,
+				'paged'       => true,
+				'feed'        => false,
+				'forcomments' => false,
+				'walk_dirs'   => true,
+				'endpoints'   => false,
+			) );
+
+			// Add the permastruct.
+			add_permastruct( $name, $params['struct'], $args );
+		}
+
+		parent::add_permastructs();
+	}
+
+	/**
+	 * Allow the component to parse the main query.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param object $query The main WP_Query.
+	 */
+	public function parse_query( $query ) {
+		$is_attachments_component = 1 === (int) $query->get( $this->rewrite_ids['directory'] );
+		$bp                       = buddypress();
+
+		if ( $is_attachments_component ) {
+			$bp->current_component = $this->id;
+		}
+
+		$parse_array = array_fill_keys( $this->rewrite_ids, false );
+		foreach( $this->rewrite_ids as $rewrite_arg ) {
+			$parse_array[ $rewrite_arg ] = $query->get( $rewrite_arg );
+		}
+
+		/**
+		 * Set the queried object if a view or download action is requested
+		 * for an existing User Media.
+		 */
+		if ( $parse_array['bp_attachments_item_action'] ) {
+			$action = array_search( $parse_array['bp_attachments_item_action'], bp_attachments_get_item_actions(), true );
+			$status = array_search( $parse_array['bp_attachments_status'], bp_attachments_get_item_stati(), true );
+			$object = array_search( $parse_array['bp_attachments_object'], bp_attachments_get_item_objects(), true );
+
+			if ( $action && $status && $object ) {
+				$relative_path = join( '/',
+					array_filter(
+						array(
+							$object,
+							$parse_array['bp_attachments_object_item'],
+							$parse_array['bp_attachments_item_action_variables'],
+						)
+					)
+				);
+
+				$uploads   = bp_attachments_get_media_uploads_dir( $status );
+				$json_file = trailingslashit( $uploads['path'] ) . $relative_path . '.json';
+
+				if ( file_exists( $json_file ) ) {
+					$json_data                = file_get_contents( $json_file );
+					$query->queried_object    = json_decode( $json_data );
+					$query->queried_object_id = $query->queried_object->id;
+				}
+			}
+		}
+
+		parent::parse_query( $query );
 	}
 
 	/**
