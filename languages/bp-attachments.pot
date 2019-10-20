@@ -9,12 +9,14 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2019-10-10T19:06:22+00:00\n"
+"POT-Creation-Date: 2019-10-20T16:57:38+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.3.0\n"
 "X-Domain: bp-attachments\n"
 
 #. Plugin Name of the plugin
+#: bp-attachments/js/src/block/index.js:5
+#: bp-attachments/js/dist/block/index.js:5
 msgid "BP Attachments"
 msgstr ""
 
@@ -34,30 +36,123 @@ msgstr ""
 msgid "http://buddypress.org/community/members/"
 msgstr ""
 
-#: bp-attachments/bp-attachments-admin.php:21
-#: bp-attachments/bp-attachments-admin.php:38
+#: bp-attachments/bp-attachments-admin.php:82
+#: bp-attachments/bp-attachments-admin.php:134
+#: bp-attachments/classes/class-bp-attachments-component.php:126
 msgid "User Media"
 msgstr ""
 
-#: bp-attachments/bp-attachments-admin.php:22
+#: bp-attachments/bp-attachments-admin.php:83
 msgid "BuddyPress"
+msgstr ""
+
+#: bp-attachments/bp-attachments-functions.php:107
+msgctxt "public status slug"
+msgid "public"
+msgstr ""
+
+#: bp-attachments/bp-attachments-functions.php:108
+msgctxt "private status slug"
+msgid "private"
+msgstr ""
+
+#: bp-attachments/bp-attachments-functions.php:121
+msgctxt "member object slug"
+msgid "members"
+msgstr ""
+
+#: bp-attachments/bp-attachments-functions.php:122
+msgctxt "group object slug"
+msgid "groups"
+msgstr ""
+
+#: bp-attachments/bp-attachments-functions.php:135
+msgctxt "download action slug"
+msgid "download"
+msgstr ""
+
+#: bp-attachments/bp-attachments-functions.php:136
+msgctxt "view action slug"
+msgid "view"
 msgstr ""
 
 #: bp-attachments/classes/class-bp-attachments-component.php:28
 msgid "Attachments"
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-component.php:135
-#: bp-attachments/classes/class-bp-attachments-component.php:196
+#: bp-attachments/classes/class-bp-attachments-component.php:168
+#: bp-attachments/classes/class-bp-attachments-component.php:229
 msgid "Media"
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-component.php:158
-#: bp-attachments/classes/class-bp-attachments-component.php:208
+#: bp-attachments/classes/class-bp-attachments-component.php:191
+#: bp-attachments/classes/class-bp-attachments-component.php:241
 msgid "Personal"
 msgstr ""
 
 #. translators: %s is the Displayed User full name
-#: bp-attachments/classes/class-bp-attachments-component.php:242
+#: bp-attachments/classes/class-bp-attachments-component.php:275
 msgid "Profile picture of %s"
+msgstr ""
+
+#. translators: %s is for the max upload file size.
+#: bp-attachments/classes/class-bp-attachments-media.php:49
+msgid "That media is too big. Please upload one smaller than %s"
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-media.php:52
+msgid "This file type is not allowed. Please use another one."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-media.php:156
+msgid "Please select an existing directory."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-media.php:177
+msgid "Unknown group. Please try again"
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-media.php:208
+msgid "Unknown user. Please try again"
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:76
+msgid "Sorry, you are not allowed to create media."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:110
+msgid "No data supplied."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:167
+msgid "A unique alphanumeric ID for the file."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:173
+msgid "The name of the file."
+msgstr ""
+
+#: bp-attachments/js/src/block/index.js:7
+#: bp-attachments/js/dist/block/index.js:7
+msgid "BuddyPress Attachments Media."
+msgstr ""
+
+#: bp-attachments/js/src/uploader/index.js:154
+#: bp-attachments/js/dist/uploader/index.js:1030
+msgid "Uploaded!"
+msgstr ""
+
+#: bp-attachments/js/src/uploader/index.js:171
+#: bp-attachments/js/dist/uploader/index.js:1047
+msgid "Uploading..."
+msgstr ""
+
+#: bp-attachments/js/src/uploader/index.js:190
+#: bp-attachments/js/dist/uploader/index.js:1066
+msgid "Drop your files in the box below."
+msgstr ""
+
+#: bp-attachments/js/src/uploader/index.js:192
+#: bp-attachments/js/dist/uploader/index.js:1068
+msgid "Drop your files here."
 msgstr ""

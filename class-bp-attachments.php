@@ -88,6 +88,44 @@ class BP_Attachments {
 
 		require $path;
 	}
+
+	/**
+	 * Activate the BP Attachments Component.
+	 *
+	 * @since 1.0.0
+	 */
+	public static function activate() {
+		if ( ! function_exists( 'buddypress' ) ) {
+			return;
+		}
+
+		$active_components = array_merge(
+			bp_get_option( 'bp-active-components', array() ),
+			// Use the Component's id.
+			array( 'attachments' => 1 )
+		);
+
+		bp_update_option( 'bp-active-components', $active_components );
+	}
+
+	/**
+	 * Deactivate the BP Attachments Component.
+	 *
+	 * @since 1.0.0
+	 */
+	public static function deactivate() {
+		if ( ! function_exists( 'buddypress' ) ) {
+			return;
+		}
+
+		$active_components = array_diff_key(
+			bp_get_option( 'bp-active-components', array() ),
+			// Use the Component's id.
+			array( 'attachments' => 1 )
+		);
+
+		bp_update_option( 'bp-active-components', $active_components );
+	}
 }
 
 /**
@@ -99,3 +137,10 @@ function bp_attachments() {
 	return BP_Attachments::start();
 }
 add_action( 'bp_loaded', 'bp_attachments', 0 );
+
+/**
+ * Use Activation and Deactivation hooks to update the
+ * BuddyPress active components.
+ */
+register_activation_hook( __FILE__, array( 'BP_Attachments', 'activate' ) );
+register_deactivation_hook( __FILE__, array( 'BP_Attachments', 'deactivate' ) );
