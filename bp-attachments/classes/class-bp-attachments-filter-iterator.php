@@ -24,6 +24,6 @@ class BP_Attachments_Filter_Iterator extends FilterIterator {
 	 */
 	public function accept() {
 		$spl_file_info = $this->getInnerIterator()->current();
-		return ! preg_match( '#\.json$#', $spl_file_info );
+		return ! preg_match( '#\.json$|\._revisions_#', $spl_file_info );
 	}
 }

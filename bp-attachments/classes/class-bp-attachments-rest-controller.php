@@ -56,7 +56,10 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	 * @return WP_REST_Response List of BP Attachments Media response data.
 	 */
 	public function get_items( $request ) {
-		return rest_ensure_response( array() );
+		$dir  = bp_attachments_get_private_uploads_dir()['path'] . '/members/1';
+		$list = bp_attachments_list_dir_media( $dir );
+
+		return rest_ensure_response( $list );
 	}
 
 	/**
@@ -101,8 +104,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	 */
 	public function create_item( $request ) {
 		// Get the file via $_FILES or raw data.
-		$files   = $request->get_file_params();
-		$headers = $request->get_headers();
+		$files = $request->get_file_params();
 
 		if ( empty( $files ) ) {
 			return new WP_Error(
@@ -127,14 +129,36 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 			);
 		}
 
-		$name = wp_basename( $uploaded['file'] );
+		$dir       = trailingslashit( dirname( $uploaded['file'] ) );
+		$name      = wp_basename( $uploaded['file'] );
+		$ext       = pathinfo( $name, PATHINFO_EXTENSION );
+		$title     = wp_basename( $name, ".$ext" );
+		$id        = md5( $name );
+		$revisions = $dir . '._revisions_' . $id;
 
-		return rest_ensure_response(
-			array(
-				'name' => $name,
-				'id'   => md5( $name ),
-			)
+		$upload = array(
+			'id'          => $id,
+			'name'        => $name,
+			'title'       => $title,
+			'description' => '',
+			'mime_type'   => $uploaded['type'],
+			'type'        => 'file',
 		);
+
+		$media = bp_attachments_sanitize_media( (object) $upload );
+
+		// Create the JSON data file.
+		if ( ! file_exists( $dir . $id . '.json' ) ) {
+			file_put_contents( $dir . $id . '.json', wp_json_encode( $media ) ); // phpcs:ignore
+		}
+
+		// Create the revisions directory.
+		if ( ! is_dir( $revisions ) ) {
+			mkdir( $revisions );
+		}
+
+		// Return the response.
+		return rest_ensure_response( $media );
 	}
 
 	/**
@@ -162,16 +186,49 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 			'type'       => 'object',
 			// Base properties for every BP Attachments Media.
 			'properties' => array(
-				'id'   => array(
-					'context'     => array( 'view', 'edit' ),
-					'description' => __( 'A unique alphanumeric ID for the file.', 'bp-attachments' ),
-					'readonly'    => true,
-					'type'        => 'string',
+				'id'          => array(
+					'context'           => array( 'view', 'edit' ),
+					'description'       => __( 'A unique alphanumeric ID for the media.', 'bp-attachments' ),
+					'readonly'          => true,
+					'type'              => 'string',
+					'sanitize_callback' => 'sanitize_text_field',
+					'validate_callback' => 'rest_validate_request_arg',
 				),
-				'name' => array(
-					'context'     => array( 'view', 'edit' ),
-					'description' => __( 'The name of the file.', 'bp-attachments' ),
-					'type'        => 'string',
+				'name'        => array(
+					'context'           => array( 'view', 'edit' ),
+					'description'       => __( 'The name of the media.', 'bp-attachments' ),
+					'type'              => 'string',
+					'sanitize_callback' => 'sanitize_file_name',
+					'validate_callback' => 'rest_validate_request_arg',
+				),
+				'title'       => array(
+					'context'           => array( 'view', 'edit' ),
+					'description'       => __( 'The pretty name of the media.', 'bp-attachments' ),
+					'type'              => 'string',
+					'sanitize_callback' => 'sanitize_text_field',
+					'validate_callback' => 'rest_validate_request_arg',
+				),
+				'description' => array(
+					'context'           => array( 'view', 'edit' ),
+					'description'       => __( 'The description of the media.', 'bp-attachments' ),
+					'type'              => 'string',
+					'sanitize_callback' => 'sanitize_textarea_field',
+					'validate_callback' => 'rest_validate_request_arg',
+				),
+				'mime_type'   => array(
+					'context'           => array( 'view', 'edit' ),
+					'description'       => __( 'The description of the media.', 'bp-attachments' ),
+					'type'              => 'string',
+					'sanitize_callback' => 'sanitize_mime_type',
+					'validate_callback' => 'rest_validate_request_arg',
+				),
+				'type'        => array(
+					'context'           => array( 'view', 'edit' ),
+					'description'       => __( 'Whether the media is a directory or a file.', 'bp-attachments' ),
+					'type'              => 'string',
+					'enum'              => array( 'file', 'directory' ),
+					'sanitize_callback' => 'sanitize_text_field',
+					'validate_callback' => 'rest_validate_request_arg',
 				),
 			),
 		);

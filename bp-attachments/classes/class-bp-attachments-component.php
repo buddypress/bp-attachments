@@ -144,7 +144,7 @@ class BP_Attachments_Component extends BP_Component {
 		$this->assets_url    = plugins_url( 'bp-attachments/assets/', $this->path );
 
 		// Rewrites.
-		if ( ! isset( $this->rewrite_ids ) )  {
+		if ( ! isset( $this->rewrite_ids ) ) {
 			$this->rewrite_ids           = $rewrite_args['rewrite_ids'];
 			$this->directory_permastruct = $this->root_slug . '/%' . $this->rewrite_ids['directory'] . '%';
 		}
@@ -291,9 +291,11 @@ class BP_Attachments_Component extends BP_Component {
 	 */
 	public function setup_cache_groups() {
 		// Global groups.
-		wp_cache_add_global_groups( array(
-			'bp_attachments',
-		) );
+		wp_cache_add_global_groups(
+			array(
+				'bp_attachments',
+			)
+		);
 
 		parent::setup_cache_groups();
 	}
@@ -303,7 +305,7 @@ class BP_Attachments_Component extends BP_Component {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array $rewrite tags {
+	 * @param array $rewrite_tags {
 	 *      Associative array of arguments list used to register WordPress permastructs.
 	 *      The main array keys describe the rules type and allow individual edits if needed.
 	 *
@@ -314,29 +316,29 @@ class BP_Attachments_Component extends BP_Component {
 	 */
 	public function add_rewrite_tags( $rewrite_tags = array() ) {
 		$rewrite_tags = array(
-			'directory' => array(
+			'directory'                    => array(
 				'id'    => '%' . $this->rewrite_ids['directory'] . '%',
 				'regex' => '([1]{1,})',
 			),
-			'directory-status' => array(
+			'directory-status'             => array(
 				'id'    => '%' . $this->rewrite_ids['directory_status'] . '%',
 				'regex' => '([^/]+)',
 			),
-			'directory-object' => array(
+			'directory-object'             => array(
 				'id'    => '%' . $this->rewrite_ids['directory_object'] . '%',
 				'regex' => '([^/]+)',
 			),
-			'single-item' => array(
-				'id'      => '%' . $this->rewrite_ids['single_item'] . '%',
-				'regex'   => '([^/]+)',
+			'single-item'                  => array(
+				'id'    => '%' . $this->rewrite_ids['single_item'] . '%',
+				'regex' => '([^/]+)',
 			),
-			'single-item-action' => array(
-				'id'      => '%' . $this->rewrite_ids['single_item_action'] . '%',
-				'regex'   => '([^/]+)',
+			'single-item-action'           => array(
+				'id'    => '%' . $this->rewrite_ids['single_item_action'] . '%',
+				'regex' => '([^/]+)',
 			),
 			'single-item-action-variables' => array(
-				'id'      => '%' . $this->rewrite_ids['single_item_action_variables'] . '%',
-				'regex'   => '([^/]+)',
+				'id'    => '%' . $this->rewrite_ids['single_item_action_variables'] . '%',
+				'regex' => '([^/]+)',
 			),
 		);
 
@@ -368,7 +370,7 @@ class BP_Attachments_Component extends BP_Component {
 	 */
 	public function add_rewrite_rules( $rewrite_rules = array() ) {
 		$rewrite_rules = array(
-			'paged-directory' => array(
+			'paged-directory'              => array(
 				'regex' => $this->root_slug . '/page/?([0-9]{1,})/?$',
 				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1&paged=$matches[1]',
 			),
@@ -376,23 +378,23 @@ class BP_Attachments_Component extends BP_Component {
 				'regex' => $this->root_slug . '/([^/]+)\/([^/]+)\/([^/]+)\/([^/]+)\/(.+?)/?$',
 				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1&' . $this->rewrite_ids['directory_status'] . '=$matches[1]&' . $this->rewrite_ids['directory_object'] . '=$matches[2]&' . $this->rewrite_ids['single_item'] . '=$matches[3]&' . $this->rewrite_ids['single_item_action'] . '=$matches[4]&' . $this->rewrite_ids['single_item_action_variables'] . '=$matches[5]',
 			),
-			'single-item-action' => array(
+			'single-item-action'           => array(
 				'regex' => $this->root_slug . '/([^/]+)\/([^/]+)\/([^/]+)\/([^/]+)/?$',
 				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1&' . $this->rewrite_ids['directory_status'] . '=$matches[1]&' . $this->rewrite_ids['directory_object'] . '=$matches[2]&' . $this->rewrite_ids['single_item'] . '=$matches[3]&' . $this->rewrite_ids['single_item_action'] . '=$matches[4]',
 			),
-			'single-item' => array(
+			'single-item'                  => array(
 				'regex' => $this->root_slug . '/([^/]+)\/([^/]+)\/([^/]+)/?$',
 				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1&' . $this->rewrite_ids['directory_status'] . '=$matches[1]&' . $this->rewrite_ids['directory_object'] . '=$matches[2]&' . $this->rewrite_ids['single_item'] . '=$matches[3]',
 			),
-			'directory_object' => array(
+			'directory_object'             => array(
 				'regex' => $this->root_slug . '/([^/]+)\/([^/]+)/?$',
 				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1&' . $this->rewrite_ids['directory_status'] . '=$matches[1]&' . $this->rewrite_ids['directory_object'] . '=$matches[2]',
 			),
-			'directory_status' => array(
+			'directory_status'             => array(
 				'regex' => $this->root_slug . '/([^/]+)/?$',
 				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1&' . $this->rewrite_ids['directory_status'] . '=$matches[1]',
 			),
-			'directory' => array(
+			'directory'                    => array(
 				'regex' => $this->root_slug,
 				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1',
 			),
@@ -445,15 +447,18 @@ class BP_Attachments_Component extends BP_Component {
 				$params['args'] = array();
 			}
 
-			$args = wp_parse_args( $params['args'], array(
-				'with_front'  => false,
-				'ep_mask'     => EP_NONE,
-				'paged'       => true,
-				'feed'        => false,
-				'forcomments' => false,
-				'walk_dirs'   => true,
-				'endpoints'   => false,
-			) );
+			$args = wp_parse_args(
+				$params['args'],
+				array(
+					'with_front'  => false,
+					'ep_mask'     => EP_NONE,
+					'paged'       => true,
+					'feed'        => false,
+					'forcomments' => false,
+					'walk_dirs'   => true,
+					'endpoints'   => false,
+				)
+			);
 
 			// Add the permastruct.
 			add_permastruct( $name, $params['struct'], $args );
@@ -478,7 +483,7 @@ class BP_Attachments_Component extends BP_Component {
 		}
 
 		$parse_array = array_fill_keys( $this->rewrite_ids, false );
-		foreach( $this->rewrite_ids as $rewrite_arg ) {
+		foreach ( $this->rewrite_ids as $rewrite_arg ) {
 			$parse_array[ $rewrite_arg ] = $query->get( $rewrite_arg );
 		}
 
