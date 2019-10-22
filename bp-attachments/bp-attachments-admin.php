@@ -127,12 +127,31 @@ add_action( 'bp_admin_enqueue_scripts', 'bp_attachments_admin_register_scripts',
  * @since 1.0.0
  */
 function bp_attachments_admin_media() {
-	wp_enqueue_script( 'bp-attachments-uploader' );
+	// Style.
 	wp_enqueue_style( 'bp-attachments-admin' );
+
+	// JavaScript.
+	wp_enqueue_script( 'bp-attachments-uploader' );
+
+	// Preload the current user's data.
+	$preload_logged_in_user = array_reduce(
+		array( '/buddypress/v1/members/me?context=edit' ),
+		'rest_preload_api_request',
+		array()
+	);
+
+	// Create the Fetch API Preloading middleware.
+	wp_add_inline_script(
+		'wp-api-fetch',
+		sprintf( 'wp.apiFetch.use( wp.apiFetch.createPreloadingMiddleware( %s ) );', wp_json_encode( $preload_logged_in_user ) ),
+		'after'
+	);
 	?>
+
 	<div class="wrap">
 		<h1><?php esc_html_e( 'User Media', 'bp-attachments' ); ?></h1>
 		<div id="bp-media-uploader"></div>
 	</div>
+
 	<?php
 }

@@ -34,6 +34,7 @@ function *saveAttachment( file ) {
 }
 
 const DEFAULT_STATE = {
+	user: {},
 	files: [],
 	uploaded: [],
 	errored: [],
@@ -41,6 +42,27 @@ const DEFAULT_STATE = {
 };
 
 const actions = {
+	getLoggedInUser( user ) {
+		return {
+			type: 'GET_LOGGED_IN_USER',
+			user,
+		};
+	},
+
+	getFiles( files ) {
+		return {
+			type: 'GET_FILES',
+			files,
+		};
+	},
+
+	fetchFromAPI( path ) {
+		return {
+			type: 'FETCH_FROM_API',
+			path,
+		};
+	},
+
 	saveAttachment,
 	uploadFile( path, formData ) {
 		return {
@@ -68,6 +90,18 @@ const actions = {
 registerStore( 'bp-attachments', {
 	reducer( state = DEFAULT_STATE, action ) {
 		switch ( action.type ) {
+			case 'GET_LOGGED_IN_USER':
+				return {
+					...state,
+					user: action.user,
+				};
+
+			case 'GET_FILES':
+				return {
+					...state,
+					files: action.files,
+				};
+
 			case 'ADD_FILE':
 				return {
 					...state,
@@ -110,6 +144,11 @@ registerStore( 'bp-attachments', {
 	actions,
 
 	selectors: {
+		loggedInUser( state ) {
+			const { user } = state;
+			return user;
+		},
+
 		isUploading( state ) {
 			const { uploading } = state;
 			return uploading;
@@ -125,16 +164,32 @@ registerStore( 'bp-attachments', {
 		getFiles( state ) {
 			const { files } = state;
 			return files;
-		}
+		},
 	},
 
 	controls: {
 		UPLOAD_FILE( action ) {
 			return apiFetch( { path: action.path, method: 'POST', body: action.formData } );
 		},
+
+		FETCH_FROM_API( action ) {
+			return apiFetch( { path: action.path } );
+		},
 	},
 
-	resolvers: {},
+	resolvers: {
+		* loggedInUser() {
+			const path = '/buddypress/v1/members/me?context=edit';
+			const user = yield actions.fetchFromAPI( path );
+			yield actions.getLoggedInUser( user );
+		},
+
+		* getFiles() {
+			const path = '/buddypress/v1/attachments?context=edit';
+			const files = yield actions.fetchFromAPI( path );
+			return actions.getFiles( files );
+		},
+	},
 } );
 
 class BP_Media_Uploader extends Component {
@@ -174,14 +229,20 @@ class BP_Media_Uploader extends Component {
 	}
 
 	render() {
-		const { onFilesDropped, isUploading, uploaded, files, errored } = this.props;
+		const { onFilesDropped, isUploading, uploaded, files, errored, user } = this.props;
 		let dzClass = 'enabled', result = [];
 
 		if ( !! isUploading ) {
 			dzClass = 'disabled';
 		}
 
-		result = result.concat( uploaded, files, errored );
+		/**
+		 * This needs to be improved.
+		 *
+		 * Errors should only be displayed and uploading/uploaded files should
+		 * be merged with the list of files of the displayed directory.
+		 */
+		result = result.concat( uploaded, errored, find( files, 'title' ) || [] );
 
 		return (
 			<Fragment>
@@ -214,11 +275,14 @@ class BP_Media_Uploader extends Component {
 
 const BP_Media_UI = compose( [
 	withSelect( ( select ) => {
+		const bpAttachmentsStore = select( 'bp-attachments' );
+
 		return {
-			isUploading: select( 'bp-attachments' ).isUploading(),
-			uploaded: select( 'bp-attachments' ).getUploadedFiles(),
-			files: select( 'bp-attachments' ).getFiles(),
-			errored: select( 'bp-attachments' ).getErroredFiles(),
+			user: bpAttachmentsStore.loggedInUser(),
+			isUploading: bpAttachmentsStore.isUploading(),
+			uploaded: bpAttachmentsStore.getUploadedFiles(),
+			files: bpAttachmentsStore.getFiles(),
+			errored: bpAttachmentsStore.getErroredFiles(),
 		};
 	} ),
 	withDispatch( ( dispatch ) => ( {
