@@ -9,16 +9,16 @@
  */
 
 class BP_Attachments_Functions_UnitTestCase extends BP_UnitTestCase {
-	public function test_bp_attachments_list_dir_media() {
+	public function test_bp_attachments_list_media_in_directory() {
 		$dir = BP_ATTACHMENTS_TESTS_DIR . '/assets/public/members/1';
 
-		$media_items = bp_attachments_list_dir_media( $dir );
+		$media_items = bp_attachments_list_media_in_directory( $dir );
 
 		$expected = array(
 			'file-1.txt' => 'file',
-			'folder-1'   => 'dir',
+			'folder-1'   => 'directory',
 		);
 
-		$this->assertSame( $expected, wp_list_pluck( $media_items, 'type', 'name' ) );
+		$this->assertEquals( $expected, wp_list_pluck( $media_items, 'type', 'name' ) );
 	}
 }

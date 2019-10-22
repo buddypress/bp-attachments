@@ -140,6 +140,10 @@ function bp_attachments_get_item_actions() {
 /**
  * List all media items (including sub-directories) of a directory.
  *
+ * Not Used anymore.
+ *
+ * @todo delete.
+ *
  * @since 1.0.0
  *
  * @param string $dir Absolute path to the directory to list media items for.
@@ -168,6 +172,35 @@ function bp_attachments_list_dir_media( $dir = '' ) {
 			'latest_modified_date' => $media->getMTime(),
 			'latest_access_date'   => $media->getATime(),
 		);
+	}
+
+	return $list;
+}
+
+/**
+ * List all media items (including sub-directories) of a directory.
+ *
+ * @since 1.0.0
+ *
+ * @param string $dir Absolute path to the directory to list media items for.
+ * @return array      The list of media items found.
+ */
+function bp_attachments_list_media_in_directory( $dir = '' ) {
+	$list = array();
+
+	if ( ! is_dir( $dir ) ) {
+		return $list;
+	}
+
+	$iterator = new FilesystemIterator( $dir, FilesystemIterator::SKIP_DOTS );
+
+	foreach ( new BP_Attachments_Filter_Iterator( $iterator ) as $media ) {
+		$json_data                        = file_get_contents( $media ); // phpcs:ignore
+		$media_data                       = json_decode( $json_data );
+		$media_data->latest_modified_date = $media->getMTime();
+
+		// Merge all JSON data of the directory.
+		$list[] = $media_data;
 	}
 
 	return $list;

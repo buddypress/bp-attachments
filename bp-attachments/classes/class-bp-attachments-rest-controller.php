@@ -57,7 +57,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	 */
 	public function get_items( $request ) {
 		$dir  = bp_attachments_get_private_uploads_dir()['path'] . '/members/1';
-		$list = bp_attachments_list_dir_media( $dir );
+		$list = bp_attachments_list_media_in_directory( $dir );
 
 		return rest_ensure_response( $list );
 	}

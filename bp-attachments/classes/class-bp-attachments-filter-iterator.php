@@ -18,12 +18,14 @@ defined( 'ABSPATH' ) || exit;
  */
 class BP_Attachments_Filter_Iterator extends FilterIterator {
 	/**
-	 * Exclude JSON files from the found files and dirs.
+	 * Make sure to only get the JSON files.
+	 *
+	 * These files are describing the Media.
 	 *
 	 * @since 1.0.0
 	 */
 	public function accept() {
 		$spl_file_info = $this->getInnerIterator()->current();
-		return ! preg_match( '#\.json$|\._revisions_#', $spl_file_info );
+		return preg_match( '#\.json$#', $spl_file_info );
 	}
 }

@@ -42,6 +42,8 @@ if ( ! defined( 'BP_ATTACHMENTS_TESTS_DIR' ) ) {
  * @since 1.0.0
  */
 function _load_bp_attachments_plugin() {
+	add_filter( 'bp_rest_api_is_available', '__return_false' );
+
 	// Make sure BP is installed and loaded first.
 	require BP_TESTS_DIR . '/includes/loader.php';
 
