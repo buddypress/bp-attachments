@@ -1,3 +1,6 @@
+/**
+ * WordPress dependencies
+ */
 const { Component, render, createElement, Fragment } = wp.element;
 const { DropZoneProvider, DropZone } = wp.components;
 const { __ } = wp.i18n;
@@ -5,6 +8,11 @@ const { apiFetch } = wp;
 const { registerStore, withDispatch, withSelect } = wp.data;
 const { compose } = wp.compose;
 const { find, forEach, reject, uniqueId } = lodash;
+
+/**
+ * Internal dependencies
+ */
+import MediaItem from './elements/media-item';
 
 function *saveAttachment( file ) {
 	let uploading = true, uploaded;
@@ -230,7 +238,7 @@ class BP_Media_Uploader extends Component {
 
 	render() {
 		const { onFilesDropped, isUploading, uploaded, files, errored, user } = this.props;
-		let dzClass = 'enabled', result = [];
+		let mediaItems, dzClass = 'enabled', result = [];
 
 		if ( !! isUploading ) {
 			dzClass = 'disabled';
@@ -242,7 +250,19 @@ class BP_Media_Uploader extends Component {
 		 * Errors should only be displayed and uploading/uploaded files should
 		 * be merged with the list of files of the displayed directory.
 		 */
-		result = result.concat( uploaded, errored, find( files, 'title' ) || [] );
+		result = result.concat( uploaded, errored );
+
+		if ( files.length ) {
+			mediaItems = files.map( ( file ) => {
+				return (
+					<MediaItem
+						key={ 'media-item-' + file.id }
+						name={ file.name }
+						id={ file.id }
+					/>
+				);
+			} );
+		}
 
 		return (
 			<Fragment>
@@ -268,6 +288,9 @@ class BP_Media_Uploader extends Component {
 						} ) }
 					</ol>
 				}
+				<div className="media-items">
+                    { mediaItems }
+                </div>
 			</Fragment>
 		);
 	}
