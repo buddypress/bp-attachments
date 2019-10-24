@@ -3,18 +3,21 @@
  */
 const { Component, createElement } = wp.element;
 
+/**
+ * Internal dependencies
+ */
+import setTemplate from '../utils/set-template';
+
 class MediaItem extends Component {
 	constructor() {
         super( ...arguments );
 	}
 
     render() {
-		const { id, name } = this.props;
+		const Template = setTemplate( 'bp-attachments-media-item' );
 
         return (
-            <div className="bp-attachments-media">
-				<span>{ name }</span>
-			</div>
+            <div className="media-item" dangerouslySetInnerHTML={ { __html: Template( this.props ) } } />
         );
     }
 }

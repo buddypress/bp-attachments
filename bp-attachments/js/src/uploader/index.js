@@ -7,6 +7,10 @@ const { __ } = wp.i18n;
 const { apiFetch } = wp;
 const { registerStore, withDispatch, withSelect } = wp.data;
 const { compose } = wp.compose;
+
+/**
+ * External dependencies
+ */
 const { find, forEach, reject, uniqueId } = lodash;
 
 /**

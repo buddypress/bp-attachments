@@ -151,6 +151,9 @@ function bp_attachments_admin_media() {
 	<div class="wrap">
 		<h1><?php esc_html_e( 'User Media', 'bp-attachments' ); ?></h1>
 		<div id="bp-media-uploader"></div>
+		<script type="html/template" id="tmpl-bp-attachments-media-item">
+			<span class="media-name" data-media_id="{{ data.id }}">{{ data.name }}</span>
+		</script>
 	</div>
 
 	<?php
