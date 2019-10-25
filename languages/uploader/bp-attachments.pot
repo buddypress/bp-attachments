@@ -3,18 +3,14 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "X-Generator: babel-plugin-makepot\n"
 
-#: bp-attachments/js/src/uploader/index.js:221
-msgid "Uploaded!"
+#: bp-attachments/js/src/uploader/elements/split-button.js:20
+msgid "Upload new"
 msgstr ""
 
-#: bp-attachments/js/src/uploader/index.js:238
-msgid "Uploading..."
+#: bp-attachments/js/src/uploader/elements/split-button.js:24
+msgid "More actions"
 msgstr ""
 
-#: bp-attachments/js/src/uploader/index.js:275
-msgid "Drop your files in the box below."
-msgstr ""
-
-#: bp-attachments/js/src/uploader/index.js:277
-msgid "Drop your files here."
+#: bp-attachments/js/src/uploader/elements/split-button.js:30
+msgid "Add new directory"
 msgstr ""

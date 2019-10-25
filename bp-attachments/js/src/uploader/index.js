@@ -17,6 +17,7 @@ const { find, forEach, reject, uniqueId } = lodash;
  * Internal dependencies
  */
 import MediaItem from './elements/media-item';
+import SplitButton from './elements/split-button';
 
 function *saveAttachment( file ) {
 	let uploading = true, uploaded;
@@ -270,6 +271,7 @@ class BP_Media_Uploader extends Component {
 
 		return (
 			<Fragment>
+				<SplitButton/>
 				<DropZoneProvider>
 					<div>
 						<h2>{ __( 'Drop your files in the box below.', 'bp-attachments' ) }</h2>
