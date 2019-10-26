@@ -9,7 +9,7 @@ const { registerStore } = wp.data;
  */
 const { reject, uniqueId } = lodash;
 
-function *saveAttachment( file ) {
+function * saveAttachment( file ) {
 	let uploading = true, uploaded;
 	yield { type: 'UPLOAD_START', uploading, file };
 
@@ -21,6 +21,7 @@ function *saveAttachment( file ) {
 	try {
 		uploaded = yield actions.uploadFile( '/buddypress/v1/attachments', formData );
 		yield { type: 'UPLOAD_END', uploading, uploaded };
+		uploaded.uploaded = true;
 
 		return actions.addFile( uploaded );
 	} catch ( error ) {
@@ -42,6 +43,7 @@ const DEFAULT_STATE = {
 	uploaded: [],
 	errored: [],
 	uploading: false,
+	ended: false,
 };
 
 const actions = {
@@ -72,6 +74,12 @@ const actions = {
 			type: 'UPLOAD_FILE',
 			path,
 			formData,
+		};
+	},
+
+	reset() {
+		return {
+			type: 'RESET_UPLOADS',
 		};
 	},
 
@@ -109,7 +117,7 @@ const store = registerStore( 'bp-attachments', {
 				return {
 					...state,
 					files: [
-						...state.files,
+						...reject( state.files, [ 'id', action.file.id ] ),
 						action.file,
 					],
 				};
@@ -138,6 +146,16 @@ const store = registerStore( 'bp-attachments', {
 					...state,
 					uploading: action.uploading,
 					uploaded: reject( state.uploaded, [ 'name', action.uploaded.name ] ),
+					ended: true,
+				};
+
+			case 'RESET_UPLOADS':
+				return {
+					...state,
+					uploading: false,
+					uploaded: [],
+					errored:[],
+					ended: false,
 				};
 		}
 
@@ -168,6 +186,10 @@ const store = registerStore( 'bp-attachments', {
 			const { files } = state;
 			return files;
 		},
+		hasUploaded( state ) {
+			const { ended } = state;
+			return ended;
+		}
 	},
 
 	controls: {

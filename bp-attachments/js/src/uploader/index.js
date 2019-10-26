@@ -4,7 +4,7 @@
 const { Component, render, createElement, Fragment } = wp.element;
 const { DropZoneProvider, DropZone } = wp.components;
 const { __ } = wp.i18n;
-const { withDispatch, withSelect } = wp.data;
+const { withDispatch, withSelect, dispatch } = wp.data;
 const { compose } = wp.compose;
 
 /**
@@ -22,6 +22,22 @@ import SplitButton from './elements/split-button';
 class BP_Media_Uploader extends Component {
 	constructor() {
 		super( ...arguments );
+
+		this.state = {
+			uploadEnabled: false,
+			makedirEnabled: false,
+		};
+
+		this.handleAction = this.handleAction.bind( this );
+	}
+
+	handleAction( action ) {
+		const isUpload = 'upload' === action;
+		const isMakeDir = 'makedir' === action;
+
+		dispatch( 'bp-attachments' ).reset();
+
+		this.setState( { uploadEnabled: isUpload, makedirEnabled: isMakeDir } );
 	}
 
 	renderResult( file ) {
@@ -56,19 +72,14 @@ class BP_Media_Uploader extends Component {
 	}
 
 	render() {
-		const { onFilesDropped, isUploading, uploaded, files, errored, user } = this.props;
-		let mediaItems, dzClass = 'enabled', result = [];
+		const { onFilesDropped, isUploading, hasUploaded, uploaded, files, errored, user } = this.props;
+		const { uploadEnabled, makedirEnabled } = this.state;
+		let mediaItems, dzClass = 'disabled', result = [];
 
-		if ( !! isUploading ) {
-			dzClass = 'disabled';
+		if ( uploadEnabled && ! isUploading && ! hasUploaded ) {
+			dzClass = 'enabled';
 		}
 
-		/**
-		 * This needs to be improved.
-		 *
-		 * Errors should only be displayed and uploading/uploaded files should
-		 * be merged with the list of files of the displayed directory.
-		 */
 		result = result.concat( uploaded, errored );
 
 		if ( files.length ) {
@@ -85,16 +96,13 @@ class BP_Media_Uploader extends Component {
 
 		return (
 			<Fragment>
-				<SplitButton/>
+				<SplitButton onDoAction={ this.handleAction }/>
 				<DropZoneProvider>
-					<div>
-						<h2>{ __( 'Drop your files in the box below.', 'bp-attachments' ) }</h2>
-						<DropZone
-							label={ __( 'Drop your files here.', 'bp-attachments' ) }
-							onFilesDrop={ onFilesDropped }
-							className={ dzClass }
-						/>
-					</div>
+					<DropZone
+						label={ __( 'Drop your files here.', 'bp-attachments' ) }
+						onFilesDrop={ onFilesDropped }
+						className={ dzClass }
+					/>
 				</DropZoneProvider>
 				{ !! result.length &&
 					<ol className="bp-files-list">
@@ -123,6 +131,7 @@ const BP_Media_UI = compose( [
 		return {
 			user: bpAttachmentsStore.loggedInUser(),
 			isUploading: bpAttachmentsStore.isUploading(),
+			hasUploaded: bpAttachmentsStore.hasUploaded(),
 			uploaded: bpAttachmentsStore.getUploadedFiles(),
 			files: bpAttachmentsStore.getFiles(),
 			errored: bpAttachmentsStore.getErroredFiles(),
