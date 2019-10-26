@@ -16,8 +16,9 @@ const { find, forEach } = lodash;
  * Internal dependencies
  */
 import store from './store';
-import MediaItem from './elements/media-item';
 import SplitButton from './elements/split-button';
+import MediaToolbar from './elements/media-toolbar';
+import MediaItem from './elements/media-item';
 
 class BP_Media_Uploader extends Component {
 	constructor() {
@@ -97,13 +98,19 @@ class BP_Media_Uploader extends Component {
 		return (
 			<Fragment>
 				<SplitButton onDoAction={ this.handleAction }/>
-				<DropZoneProvider>
-					<DropZone
-						label={ __( 'Drop your files here.', 'bp-attachments' ) }
-						onFilesDrop={ onFilesDropped }
-						className={ dzClass }
-					/>
-				</DropZoneProvider>
+				<div className={ 'uploader-container ' + dzClass }>
+					<button className="close dashicons dashicons-no" onClick={ this.handleAction }>
+						<span className="screen-reader-text">{ __( 'Close the upload panel', 'bp-attachments' ) }</span>
+					</button>
+					<DropZoneProvider>
+						<DropZone
+							label={ __( 'Drop your files here.', 'bp-attachments' ) }
+							onFilesDrop={ onFilesDropped }
+							className="uploader-inline"
+						/>
+					</DropZoneProvider>
+				</div>
+				<MediaToolbar />
 				{ !! result.length &&
 					<ol className="bp-files-list">
 						{ result.map( file => {
