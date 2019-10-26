@@ -57,6 +57,7 @@ class BP_Attachments_Component extends BP_Component {
 		// Files to include.
 		$includes = array(
 			'functions',
+			'templates',
 		);
 
 		if ( is_admin() ) {

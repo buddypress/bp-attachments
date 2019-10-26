@@ -154,9 +154,8 @@ function bp_attachments_admin_media() {
 		<hr class="wp-header-end">
 
 		<div id="bp-media-uploader"></div>
-		<script type="html/template" id="tmpl-bp-attachments-media-item">
-			<span class="media-name" data-media_id="{{ data.id }}">{{ data.name }}</span>
-		</script>
+
+		<?php bp_attachments_get_javascript_templates(); ?>
 	</div>
 
 	<?php
