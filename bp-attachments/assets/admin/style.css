@@ -56,7 +56,7 @@
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
     background: #fff;
     margin: 0;
-    pabping: 10px 5px;
+    padding: 10px 5px;
     width: 448px;
 }
 
@@ -117,22 +117,23 @@ a.file-item {
 #bp-media-admin-page-title-actions .split-button-body {
 	display: none;
 	position: absolute;
-	bottom: 39px;
+	top: 39px;
 	right: 0;
-	border: 1px solid #0071a1;
-	background-color: #f3f5f6;
-	min-width: 180px;
+	min-width: 115px;
 	max-width: 100%;
 	margin: 0;
-	padding: 8px;
 	list-style: none;
 	box-shadow: 1px 0 4px rgba( 0, 0, 0, 0.15 );
+}
+
+#bp-media-admin-page-title-actions .split-button-body li {
+	margin: 0;
 }
 
 #bp-media-admin-page-title-actions .split-button-body:before,
 #bp-media-admin-page-title-actions .split-button-body:after {
 	position: absolute;
-	right: 12px;
+	right: 6px;
 	display: block;
 	width: 0;
 	height: 0;
@@ -142,36 +143,40 @@ a.file-item {
 }
 
 #bp-media-admin-page-title-actions .split-button-body:before {
-	bottom: -18px;
-	border-top-color: #0071a1;
+	top: -18px;
+	border-bottom-color: #0071a1;
 	border-width: 9px;
-	right: 11px;
+	right: 5px;
 }
 
 #bp-media-admin-page-title-actions .split-button-body:after {
-	bottom: -16px;
-	border-top-color: #0071a1;
+	top: -16px;
+	border-bottom-color: #0071a1;
 	border-width: 8px;
 }
 
 #bp-media-admin-page-title-actions .split-button-body .split-button-option {
 	display: block;
-	padding: 5px 15px;
-	margin: 0;
+	padding: 0;
+	padding: 4px 8px;
 	width: 100%;
-	border: 0;
-	text-align: left;
+	border: 1px solid #0071a1;
+	background-color: #f3f5f6;
+	text-align: center;
 	line-height: normal;
-	background: none;
-	color: inherit;
+	color: #0071a1;
 	text-decoration: none;
 	outline: none;
 	transition: none;
+	font-weight: 600;
+	font-size: 13px;
 }
 
 #bp-media-admin-page-title-actions .split-button-body .split-button-option:hover,
 .split-button-body .split-button-option:active {
-	color: inherit;
+	background: #f1f1f1;
+	border-color: #016087;
+	color: #016087;
 }
 
 #bp-media-admin-page-title-actions .is-open .split-button-body {

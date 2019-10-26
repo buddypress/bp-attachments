@@ -11,16 +11,34 @@ class SplitButtonPortal extends Component {
 }
 
 class SplitButton extends Component {
+	constructor() {
+		super( ...arguments );
+
+		this.state = {
+			is_open: false,
+		};
+
+		this.toggleClass = this.toggleClass.bind( this );
+	}
+
+	toggleClass() {
+		this.setState( { is_open: ! this.state.is_open } );
+	}
+
 	render() {
+		const { is_open } = this.state;
+		const toggleClass = true === is_open ? 'split-button is-open' : 'split-button';
+		const dashiconClass = true === is_open ? 'dashicons dashicons-arrow-up-alt2' : 'dashicons dashicons-arrow-down-alt2';
+
 		return (
 			<SplitButtonPortal>
-				<div className="split-button">
+				<div className={ toggleClass }>
 					<div className="split-button-head">
 						<a href="#new-bp-media-upload" className="button split-button-primary" aria-live="polite">
 							{ __( 'Upload new', 'bp-attachments' ) }
 						</a>
-						<button type="button" className="split-button-toggle" aria-haspopup="true" aria-expanded="false">
-							<i className="dashicons dashicons-arrow-down-alt2"></i>
+						<button type="button" className="split-button-toggle" aria-haspopup="true" aria-expanded={ is_open } onClick={ this.toggleClass }>
+							<i className={ dashiconClass }></i>
 							<span className="screen-reader-text">{ __( 'More actions', 'bp-attachments' ) }</span>
 						</button>
 					</div>
