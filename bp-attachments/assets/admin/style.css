@@ -147,6 +147,7 @@ a.file-item {
 	margin: 0;
 	list-style: none;
 	box-shadow: 1px 0 4px rgba( 0, 0, 0, 0.15 );
+	z-index: 2;
 }
 
 #bp-media-admin-page-title-actions .split-button-body li {
