@@ -13,5 +13,14 @@ defined( 'ABSPATH' ) || exit;
 ?>
 
 <script type="html/template" id="tmpl-bp-attachments-media-item">
-	<span class="media-name" data-media_id="{{ data.id }}">{{ data.name }}</span>
+	<div class="item-preview">
+		<div class="vignette">
+			<div class="centered">
+				<img src="{{ data.icon }}" class="icon" alt="" />
+			</div>
+			<div class="media-name" data-media_id="{{ data.id }}">
+				<div>{{ data.title }}</div>
+			</div>
+		</div>
+	</div>
 </script>

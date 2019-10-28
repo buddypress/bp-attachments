@@ -198,6 +198,8 @@ function bp_attachments_list_media_in_directory( $dir = '' ) {
 		$json_data                        = file_get_contents( $media ); // phpcs:ignore
 		$media_data                       = json_decode( $json_data );
 		$media_data->latest_modified_date = $media->getMTime();
+		$media_data->extension            = preg_replace( '/^.+?\.([^.]+)$/', '$1', $media_data->name );
+		$media_data->icon                 = wp_mime_type_icon( wp_ext2type( $media_data->extension ) );
 
 		// Merge all JSON data of the directory.
 		$list[] = $media_data;

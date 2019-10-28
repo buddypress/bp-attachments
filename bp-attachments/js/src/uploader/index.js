@@ -88,8 +88,10 @@ class BP_Media_Uploader extends Component {
 				return (
 					<MediaItem
 						key={ 'media-item-' + file.id }
-						name={ file.name }
 						id={ file.id }
+						name={ file.name }
+						title={ file.title }
+						icon={ file.icon }
 					/>
 				);
 			} );
