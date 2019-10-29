@@ -91,7 +91,10 @@ class BP_Media_Uploader extends Component {
 						id={ file.id }
 						name={ file.name }
 						title={ file.title }
+						mediaType={ file.media_type }
 						icon={ file.icon }
+						vignette={ file.vignette }
+						orientation={ file.orientation }
 					/>
 				);
 			} );

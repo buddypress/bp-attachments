@@ -190,6 +190,14 @@ a.file-item {
 	left: 0;
 }
 
+#bp-media-uploader .media-item .vignette img.portrait {
+	max-height: 100%;
+}
+
+#bp-media-uploader .media-item .vignette img.landscape {
+	max-width: 100%;
+}
+
 #bp-media-uploader .media-item .vignette .centered img {
 	transform: translate( -50%, -50% );
 }

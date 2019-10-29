@@ -138,6 +138,26 @@ function bp_attachments_get_item_actions() {
 }
 
 /**
+ * Get the BP Attachment URI out of its path.
+ *
+ * @since 1.0.0
+ *
+ * @param string $filename The name of the BP Attachment item.
+ * @param string $path     The absolute path to the BP Attachment item.
+ * @return string          The BP Attachment URI.
+ */
+function bp_attachments_get_media_uri( $filename = '', $path = '' ) {
+	$uploads   = wp_get_upload_dir();
+	$file_path = trailingslashit( $path ) . $filename;
+
+	if ( ! file_exists( $file_path ) ) {
+		return '';
+	}
+
+	return str_replace( $uploads['basedir'], $uploads['baseurl'], $file_path );
+}
+
+/**
  * List all media items (including sub-directories) of a directory.
  *
  * Not Used anymore.
@@ -199,7 +219,21 @@ function bp_attachments_list_media_in_directory( $dir = '' ) {
 		$media_data                       = json_decode( $json_data );
 		$media_data->latest_modified_date = $media->getMTime();
 		$media_data->extension            = preg_replace( '/^.+?\.([^.]+)$/', '$1', $media_data->name );
-		$media_data->icon                 = wp_mime_type_icon( wp_ext2type( $media_data->extension ) );
+		$media_data->media_type           = wp_ext2type( $media_data->extension );
+		$media_data->icon                 = wp_mime_type_icon( $media_data->media_type );
+		$media_data->vignette             = '';
+		$media_data->orientation          = null;
+
+		if ( 'image' === $media_data->media_type ) {
+			$media_data->vignette   = bp_attachments_get_media_uri( $media_data->name, $dir );
+			list( $width, $height ) = getimagesize( trailingslashit( $dir ) . $media_data->name );
+
+			if ( $width > $height ) {
+				$media_data->orientation = 'landscape';
+			} else {
+				$media_data->orientation = 'portrait';
+			}
+		}
 
 		// Merge all JSON data of the directory.
 		$list[] = $media_data;

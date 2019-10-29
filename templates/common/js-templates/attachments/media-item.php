@@ -16,7 +16,11 @@ defined( 'ABSPATH' ) || exit;
 	<div class="item-preview">
 		<div class="vignette">
 			<div class="centered">
-				<img src="{{ data.icon }}" class="icon" alt="" />
+				<# if ( 'image' === data.mediaType && '' !== data.vignette ) { #>
+					<img src="{{ data.vignette }}" class="{{data.orientation}}" alt="" />
+				<# } else { #>
+					<img src="{{ data.icon }}" class="icon" alt="" />
+				<# } #>
 			</div>
 			<div class="media-name" data-media_id="{{ data.id }}">
 				<div>{{ data.title }}</div>
