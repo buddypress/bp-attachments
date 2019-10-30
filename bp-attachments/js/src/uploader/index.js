@@ -17,6 +17,7 @@ const { find, forEach } = lodash;
  */
 import store from './store';
 import SplitButton from './elements/split-button';
+import DirectoryForm from './elements/directory-form';
 import MediaToolbar from './elements/media-toolbar';
 import MediaItem from './elements/media-item';
 
@@ -30,6 +31,7 @@ class BP_Media_Uploader extends Component {
 		};
 
 		this.handleAction = this.handleAction.bind( this );
+		this.closeForm = this.closeForm.bind( this );
 	}
 
 	handleAction( action ) {
@@ -39,6 +41,12 @@ class BP_Media_Uploader extends Component {
 		dispatch( 'bp-attachments' ).reset();
 
 		this.setState( { uploadEnabled: isUpload, makedirEnabled: isMakeDir } );
+	}
+
+	closeForm( event ) {
+		event.preventDefault();
+
+		this.handleAction( '' );
 	}
 
 	renderResult( file ) {
@@ -75,10 +83,14 @@ class BP_Media_Uploader extends Component {
 	render() {
 		const { onFilesDropped, isUploading, hasUploaded, uploaded, files, errored, user } = this.props;
 		const { uploadEnabled, makedirEnabled } = this.state;
-		let mediaItems, dzClass = 'disabled', result = [];
+		let mediaItems, dzClass = 'disabled', dfClass = 'disabled', result = [];
 
 		if ( uploadEnabled && ! isUploading && ! hasUploaded ) {
 			dzClass = 'enabled';
+		}
+
+		if ( makedirEnabled ) {
+			dfClass = 'enabled';
 		}
 
 		result = result.concat( uploaded, errored );
@@ -104,7 +116,7 @@ class BP_Media_Uploader extends Component {
 			<Fragment>
 				<SplitButton onDoAction={ this.handleAction }/>
 				<div className={ 'uploader-container ' + dzClass }>
-					<button className="close dashicons dashicons-no" onClick={ this.handleAction }>
+					<button className="close dashicons dashicons-no" onClick={ ( e ) => this.closeForm( e ) }>
 						<span className="screen-reader-text">{ __( 'Close the upload panel', 'bp-attachments' ) }</span>
 					</button>
 					<DropZoneProvider>
@@ -115,6 +127,11 @@ class BP_Media_Uploader extends Component {
 						/>
 					</DropZoneProvider>
 				</div>
+				<DirectoryForm className={ dfClass }>
+					<button className="close dashicons dashicons-no" onClick={ ( e ) => this.closeForm( e ) }>
+						<span className="screen-reader-text">{ __( 'Close the Create directory form', 'bp-attachments' ) }</span>
+					</button>
+				</DirectoryForm>
 				<MediaToolbar />
 				{ !! result.length &&
 					<ol className="bp-files-list">

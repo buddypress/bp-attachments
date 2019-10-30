@@ -115,7 +115,7 @@ function bp_attachments_admin_register_scripts() {
 	wp_register_style(
 		'bp-attachments-admin',
 		$bp_attachments->assets_url . 'admin/style.css',
-		array(),
+		array( 'dashicons', 'wp-components' ),
 		$bp_attachments->version
 	);
 }

@@ -29,6 +29,10 @@ class SplitButton extends Component {
 	doAction( action, event ) {
 		event.preventDefault();
 
+		if ( 'makedir' === action ) {
+			this.setState( { is_open: false } );
+		}
+
 		this.props.onDoAction( action );
 	}
 
@@ -51,7 +55,7 @@ class SplitButton extends Component {
 					</div>
 					<ul className="split-button-body">
 						<li>
-							<a href="#new-bp-media-directory" className="button-link directory-button split-button-option">
+							<a href="#new-bp-media-directory" className="button-link directory-button split-button-option" onClick={ ( e ) => this.doAction( 'makedir', e ) }>
 								{ __( 'Add new directory', 'bp-attachments' ) }
 							</a>
 						</li>
