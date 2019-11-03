@@ -202,7 +202,54 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 
 			// Make a new directory.
 		} else {
-			$media = null;
+			$dir_data = wp_parse_args(
+				array_map( 'wp_unslash', $request->get_params() ),
+				array(
+					'directory_name' => '',
+					'directory_type' => 'folder',
+				)
+			);
+
+			if ( ! $dir_data['directory_name'] || ! $dir_data['directory_type'] ) {
+				return new WP_Error(
+					'bp_rest_upload_no_data',
+					__( 'No data supplied.', 'bp-attachments' ),
+					array(
+						'status' => 400,
+					)
+				);
+			}
+
+			$bp_dir_maker   = new BP_Attachments_Media();
+			$directory_name = sanitize_title( $dir_data['directory_name'] );
+			$made_dir       = $bp_dir_maker->make_dir( $directory_name, $dir_data['directory_type'] );
+
+			if ( is_wp_error( $made_dir ) ) {
+				return new WP_Error(
+					'bp_rest_makedir_failure',
+					$made_dir->get_error_message(),
+					array(
+						'status' => 500,
+					)
+				);
+			}
+
+			$folder = array(
+				'id'          => md5( $directory_name ),
+				'name'        => $directory_name,
+				'title'       => $dir_data['directory_name'],
+				'description' => '',
+				'mime_type'   => 'inode/directory',
+				'type'        => 'directory',
+			);
+
+			$media = bp_attachments_sanitize_media( (object) $folder );
+
+			// Create the JSON data file.
+			$dir = trailingslashit( dirname( $made_dir['path'] ) );
+			if ( ! file_exists( $dir . $media->id . '.json' ) ) {
+				file_put_contents( $dir . $media->id . '.json', wp_json_encode( $media ) ); // phpcs:ignore
+			}
 		}
 
 		// Return the response.

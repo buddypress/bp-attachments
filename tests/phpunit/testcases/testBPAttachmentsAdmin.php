@@ -38,7 +38,7 @@ class BP_Attachments_Admin_UnitTestCase extends BP_UnitTestCase {
 	}
 
 	private function clean_files() {
-		$upload_dir = wp_get_upload_dir();
+		$upload_dir = bp_upload_dir();
 		$test_dir   = $upload_dir['basedir'] . '/bp_attachments_test_install_dir';
 
 		if ( ! is_dir( $test_dir ) ) {

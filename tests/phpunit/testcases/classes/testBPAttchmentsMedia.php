@@ -17,7 +17,7 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 		$this->current_user = wp_get_current_user();
 		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'administrator' ) ) );
 		$this->bp_uploads = bp_attachments_uploads_dir_get();
-		$this->reset_request = $_REQUEST;
+		$this->reset_request = $_POST;
 
 		parent::setUp();
 	}
@@ -25,7 +25,7 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 	public function tearDown() {
 		wp_set_current_user( $this->current_user->ID );
 		$this->bp_uploads = array();
-		$_REQUEST = $this->reset_request;
+		$_POST = $this->reset_request;
 
 		parent::tearDown();
 	}
@@ -34,7 +34,7 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 		$media = new BP_Attachments_Media();
 		$user_id = get_current_user_id();
 
-		$_REQUEST = array(
+		$_POST = array(
 			'status'    => 'public',
 			'object_id' => $user_id,
 		);
@@ -57,7 +57,7 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 		$media = new BP_Attachments_Media();
 		$user_id = get_current_user_id();
 
-		$_REQUEST = array(
+		$_POST = array(
 			'object_id' => $user_id,
 		);
 
@@ -79,7 +79,7 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 		$media = new BP_Attachments_Media();
 		$user_id = 9999999;
 
-		$_REQUEST = array(
+		$_POST = array(
 			'object_id' => $user_id,
 		);
 
@@ -89,7 +89,7 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 	}
 
 	public function mmdir( $path ) {
-		$base = trailingslashit( wp_get_upload_dir()['basedir'] );
+		$base = trailingslashit( bp_upload_dir()['basedir'] );
 		$absolute_path = str_replace( $base, '', $path );
 
 		$dirs      = explode( '/', $absolute_path );
@@ -111,7 +111,7 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 		$user_id    = get_current_user_id();
 		$parent_dir = '/public/members/' . $user_id . '/foobar';
 
-		$_REQUEST = array(
+		$_POST = array(
 			'object_id'  => $user_id,
 			'parent_dir' => $parent_dir,
 		);
@@ -128,7 +128,7 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 
 		$this->mmdir( $this->bp_uploads['basedir'] . $parent_dir );
 
-		$_REQUEST = array(
+		$_POST = array(
 			'object_id'  => $user_id,
 			'parent_dir' => $parent_dir,
 		);
@@ -151,7 +151,7 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 		$media = new BP_Attachments_Media();
 		$group_id = self::factory()->group->create();
 
-		$_REQUEST = array(
+		$_POST = array(
 			'object'    => 'groups',
 			'object_id' => $group_id,
 		);
@@ -174,7 +174,7 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 		$media = new BP_Attachments_Media();
 		$group_id = self::factory()->group->create( array( 'status' => 'private' ) );
 
-		$_REQUEST = array(
+		$_POST = array(
 			'object'    => 'groups',
 			'object_id' => $group_id,
 		);
@@ -197,7 +197,7 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 		$media = new BP_Attachments_Media();
 		$group_id = 9999999;
 
-		$_REQUEST = array(
+		$_POST = array(
 			'object'    => 'groups',
 			'object_id' => $group_id,
 		);

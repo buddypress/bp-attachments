@@ -147,7 +147,7 @@ function bp_attachments_get_item_actions() {
  * @return string          The BP Attachment URI.
  */
 function bp_attachments_get_media_uri( $filename = '', $path = '' ) {
-	$uploads   = wp_get_upload_dir();
+	$uploads   = bp_upload_dir();
 	$file_path = trailingslashit( $path ) . $filename;
 
 	if ( ! file_exists( $file_path ) ) {

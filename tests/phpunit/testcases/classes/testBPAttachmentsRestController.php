@@ -50,7 +50,7 @@ class BP_attachments_REST_controller_UnitTestCase extends WP_Test_REST_Controlle
 	}
 
 	private function clean_test_directory() {
-		$upload_dir = wp_get_upload_dir();
+		$upload_dir = bp_upload_dir();
 		$test_dir   = $upload_dir['basedir'] . '/bp_attachments_tests_dir';
 
 		if ( ! is_dir( $test_dir ) ) {
@@ -114,6 +114,7 @@ class BP_attachments_REST_controller_UnitTestCase extends WP_Test_REST_Controlle
 
 	/**
 	 * @group rest_create_item
+	 * @group rest_create_media
 	 */
 	public function test_create_item() {
 		$reset_files = $_FILES;
@@ -137,15 +138,15 @@ class BP_attachments_REST_controller_UnitTestCase extends WP_Test_REST_Controlle
 			'size'     => filesize( $media_file ),
 		);
 
-		$_POST['action'] = 'bp_attachments_media_upload';
+		$_POST = array(
+			'action' => 'bp_attachments_media_upload',
+			'status' => 'public',
+			'object' => 'members',
+		);
 
 		$request = new WP_REST_Request( 'POST', $this->endpoint_url );
 		$request->add_header( 'content-type', 'application/x-www-form-urlencoded' );
-		$request->set_body_params( array(
-			'action'    => 'bp_attachments_media_upload',
-			'status'    => 'public',
-			'object'    => 'members',
-		) );
+		$request->set_body_params( $_POST );
 		$request->set_file_params( $_FILES );
 		$response = $this->server->dispatch( $request );
 
@@ -158,6 +159,40 @@ class BP_attachments_REST_controller_UnitTestCase extends WP_Test_REST_Controlle
 		$_FILES = $reset_files;
 		$_POST  = $reset_post;
 
+		$this->bp_testcase->set_current_user( $this->user );
+	}
+
+	/**
+	 * @group rest_create_item
+	 * @group rest_create_directory
+	 */
+	public function test_create_item_directory() {
+		$reset_post  = $_POST;
+		$u = $this->factory->user->create( array(
+			'role'       => 'subscriber',
+			'user_email' => 'subscriber@example.com',
+		) );
+
+		$this->bp_testcase->set_current_user( $u );
+
+		$_POST = array(
+			'action'         => 'bp_attachments_make_directory',
+			'status'         => 'public',
+			'object'         => 'members',
+			'directory_name' => 'My Beautiful directory',
+		);
+
+		$request = new WP_REST_Request( 'POST', $this->endpoint_url );
+		$request->add_header( 'content-type', 'application/x-www-form-urlencoded' );
+		$request->set_body_params( $_POST );
+
+		$response = $this->server->dispatch( $request );
+
+		$get_data = $response->get_data();
+
+		$this->assertSame( $get_data->title, 'My Beautiful directory' );
+
+		$_POST  = $reset_post;
 		$this->bp_testcase->set_current_user( $this->user );
 	}
 

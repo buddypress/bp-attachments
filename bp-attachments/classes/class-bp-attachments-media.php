@@ -141,7 +141,7 @@ class BP_Attachments_Media extends BP_Attachment {
 	public function upload_dir_filter( $upload_dir = array() ) {
 		// Populate media arguments merging default with the requested ones.
 		$media_args = wp_parse_args(
-			array_map( 'wp_unslash', $_REQUEST ), // phpcs:ignore
+			array_map( 'wp_unslash', $_POST ), // phpcs:ignore
 			array(
 				'status'     => 'private',
 				'object'     => 'members',
@@ -260,7 +260,7 @@ class BP_Attachments_Media extends BP_Attachment {
 		}
 
 		// Check for an existing file with the same name to eventually create a revision.
-		$upload_data = $this->upload_dir_filter( wp_get_upload_dir() );
+		$upload_data = $this->upload_dir_filter( bp_upload_dir() );
 
 		if ( isset( $upload_data['error'] ) && $upload_data['error'] ) {
 			$file['error'] = 15;
@@ -302,5 +302,48 @@ class BP_Attachments_Media extends BP_Attachment {
 
 		// Return with error code attached.
 		return $file;
+	}
+
+	/**
+	 * Create a BP Attachments directory.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $directory_name The name of the directory.
+	 * @param string $directory_type The type of the directory.
+	 * @return WP_Error|array        A WP Error object in case of failure.
+	 *                               An array with created data otherwise.
+	 */
+	public function make_dir( $directory_name = '', $directory_type = '' ) {
+		if ( ! $directory_name || ! in_array( $directory_type, array( 'folder', 'album', 'audio_playlist', 'video_playlist' ), true ) ) {
+			return new WP_Error( 'missing_parameter', __( 'The name of your directory or its type are missing or not supported.', 'bp-attachments' ) );
+		}
+
+		// Make sure the directory will be created in the attachment directory.
+		add_filter( 'upload_dir', array( $this, 'upload_dir_filter' ), 10, 1 );
+
+		// Create the directory at the requested destination.
+		$destination_data = wp_upload_dir( null, true );
+
+		// Restore WordPress Uploads data.
+		remove_filter( 'upload_dir', array( $this, 'upload_dir_filter' ), 10, 1 );
+
+		if ( isset( $destination_data['error'] ) && $destination_data['error'] ) {
+			return new WP_Error( 'missing_destination', __( 'The destination for your directory was not found.', 'bp-attachments' ) );
+		}
+
+		$path = trailingslashit( $destination_data['path'] ) . $directory_name;
+		if ( is_dir( $path ) ) {
+			return new WP_Error( 'directory_exists', __( 'There is already a directory with this name into the requested destination.', 'bp-attachments' ) );
+		}
+
+		// Create the directory.
+		mkdir( $path );
+
+		return array(
+			'path' => $path,
+			'url'  => trailingslashit( $destination_data['url'] ) . $directory_name,
+			'type' => $directory_type,
+		);
 	}
 }
