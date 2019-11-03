@@ -28,6 +28,45 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	}
 
 	/**
+	 * Registers the routes for the BP Attachment objects of the controller.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @see register_rest_route()
+	 */
+	public function register_routes() {
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base,
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_items' ),
+					'permission_callback' => array( $this, 'get_items_permissions_check' ),
+					'args'                => $this->get_collection_params(),
+				),
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'create_item' ),
+					'permission_callback' => array( $this, 'create_item_permissions_check' ),
+					'args'                => array(
+						'action' => array(
+							'description' => __( 'Whether to upload a media or create a directory.', 'bp-attachments' ),
+							'type'        => 'string',
+							'enum'        => array( 'bp_attachments_media_upload', 'bp_attachments_make_directory' ),
+							'required'    => true,
+							'arg_options' => array(
+								'sanitize_callback' => 'sanitize_key',
+							),
+						),
+					),
+				),
+				'schema' => array( $this, 'get_public_item_schema' ),
+			)
+		);
+	}
+
+	/**
 	 * Check if a given request has access to BP Attachments media.
 	 *
 	 * @since 1.0.0
@@ -103,58 +142,67 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	 * @return WP_Error|WP_REST_Response Response object on success, WP_Error object on failure.
 	 */
 	public function create_item( $request ) {
-		// Get the file via $_FILES or raw data.
-		$files = $request->get_file_params();
+		$action = $request->get_param( 'action' );
 
-		if ( empty( $files ) ) {
-			return new WP_Error(
-				'bp_rest_upload_no_data',
-				__( 'No data supplied.', 'bp-attachments' ),
-				array(
-					'status' => 400,
-				)
+		// Upload a file.
+		if ( 'bp_attachments_make_directory' !== $action ) {
+			// Get the file via $_FILES or raw data.
+			$files = $request->get_file_params();
+
+			if ( empty( $files ) ) {
+				return new WP_Error(
+					'bp_rest_upload_no_data',
+					__( 'No data supplied.', 'bp-attachments' ),
+					array(
+						'status' => 400,
+					)
+				);
+			}
+
+			$bp_uploader = new BP_Attachments_Media();
+			$uploaded    = $bp_uploader->upload( $files );
+
+			if ( isset( $uploaded['error'] ) && $uploaded['error'] ) {
+				return new WP_Error(
+					'rest_upload_unknown_error',
+					$uploaded['error'],
+					array(
+						'status' => 500,
+					)
+				);
+			}
+
+			$dir       = trailingslashit( dirname( $uploaded['file'] ) );
+			$name      = wp_basename( $uploaded['file'] );
+			$ext       = pathinfo( $name, PATHINFO_EXTENSION );
+			$title     = wp_basename( $name, ".$ext" );
+			$id        = md5( $name );
+			$revisions = $dir . '._revisions_' . $id;
+
+			$upload = array(
+				'id'          => $id,
+				'name'        => $name,
+				'title'       => $title,
+				'description' => '',
+				'mime_type'   => $uploaded['type'],
+				'type'        => 'file',
 			);
-		}
 
-		$bp_uploader = new BP_Attachments_Media();
-		$uploaded    = $bp_uploader->upload( $files );
+			$media = bp_attachments_sanitize_media( (object) $upload );
 
-		if ( isset( $uploaded['error'] ) && $uploaded['error'] ) {
-			return new WP_Error(
-				'rest_upload_unknown_error',
-				$uploaded['error'],
-				array(
-					'status' => 500,
-				)
-			);
-		}
+			// Create the JSON data file.
+			if ( ! file_exists( $dir . $id . '.json' ) ) {
+				file_put_contents( $dir . $id . '.json', wp_json_encode( $media ) ); // phpcs:ignore
+			}
 
-		$dir       = trailingslashit( dirname( $uploaded['file'] ) );
-		$name      = wp_basename( $uploaded['file'] );
-		$ext       = pathinfo( $name, PATHINFO_EXTENSION );
-		$title     = wp_basename( $name, ".$ext" );
-		$id        = md5( $name );
-		$revisions = $dir . '._revisions_' . $id;
+			// Create the revisions directory.
+			if ( ! is_dir( $revisions ) ) {
+				mkdir( $revisions );
+			}
 
-		$upload = array(
-			'id'          => $id,
-			'name'        => $name,
-			'title'       => $title,
-			'description' => '',
-			'mime_type'   => $uploaded['type'],
-			'type'        => 'file',
-		);
-
-		$media = bp_attachments_sanitize_media( (object) $upload );
-
-		// Create the JSON data file.
-		if ( ! file_exists( $dir . $id . '.json' ) ) {
-			file_put_contents( $dir . $id . '.json', wp_json_encode( $media ) ); // phpcs:ignore
-		}
-
-		// Create the revisions directory.
-		if ( ! is_dir( $revisions ) ) {
-			mkdir( $revisions );
+			// Make a new directory.
+		} else {
+			$media = null;
 		}
 
 		// Return the response.

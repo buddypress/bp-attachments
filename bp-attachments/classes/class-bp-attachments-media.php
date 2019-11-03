@@ -52,6 +52,7 @@ class BP_Attachments_Media extends BP_Attachment {
 					12 => __( 'This file type is not allowed. Please use another one.', 'bp-attachments' ),
 					13 => __( 'A file with this name already exists but the revisions directory is missing.', 'bp-attachments' ),
 					14 => __( 'A file with this name already exists but the data describing this existing file are missing.', 'bp-attachments' ),
+					15 => __( 'Unexpected error, please contact the administrator of the site.', 'bp-attachments' ),
 				),
 			)
 		);
@@ -254,44 +255,49 @@ class BP_Attachments_Media extends BP_Attachment {
 			$file['error'] = 11;
 
 			// File is of invalid type.
-		} elseif ( ! bp_attachments_check_filetype( $file['tmp_name'], $file['name'], bp_attachments_get_allowed_mimes( '' ) ) ) {
+		} elseif ( ! bp_attachments_is_file_type_allowed( $file['tmp_name'], $file['name'] ) ) {
 			$file['error'] = 12;
 		}
 
 		// Check for an existing file with the same name to eventually create a revision.
 		$upload_data = $this->upload_dir_filter( wp_get_upload_dir() );
-		$dir         = trailingslashit( $upload_data['path'] );
-		$filename    = sanitize_file_name( $file['name'] );
-		$id          = md5( $filename );
 
-		if ( file_exists( $dir . $filename ) ) {
-			if ( ! is_dir( $dir . '._revisions_' . $id ) ) {
-				$file['error'] = 13;
+		if ( isset( $upload_data['error'] ) && $upload_data['error'] ) {
+			$file['error'] = 15;
+		} else {
+			$dir      = trailingslashit( $upload_data['path'] );
+			$filename = sanitize_file_name( $file['name'] );
+			$id       = md5( $filename );
+
+			if ( file_exists( $dir . $filename ) ) {
+				if ( ! is_dir( $dir . '._revisions_' . $id ) ) {
+					$file['error'] = 13;
+				}
+
+				if ( ! file_exists( $dir . $id . '.json' ) ) {
+					$file['error'] = 14;
+				}
+
+				$file_data     = json_decode( wp_unslash( file_get_contents( $dir . $id . '.json' ) ) ); // phpcs:ignore
+				$revision_name = wp_unique_filename( $dir . '._revisions_' . $id, $filename );
+
+				$revision = array(
+					'name' => $revision_name,
+					'date' => bp_core_current_time( true, 'timestamp' ),
+				);
+
+				if ( ! isset( $file_data->revisions ) ) {
+					$file_data->revisions = array( $revision );
+				} else {
+					$file_data->revisions[] = $revision;
+				}
+
+				$media = bp_attachments_sanitize_media( $file_data );
+
+				// Create the JSON data file.
+				file_put_contents( $dir . $id . '.json', wp_json_encode( $media ) ); // phpcs:ignore
+				rename( $dir . $filename, trailingslashit( $dir . '._revisions_' . $id ) . $revision_name );
 			}
-
-			if ( ! file_exists( $dir . $id . '.json' ) ) {
-				$file['error'] = 14;
-			}
-
-			$file_data     = json_decode( wp_unslash( file_get_contents( $dir . $id . '.json' ) ) ); // phpcs:ignore
-			$revision_name = wp_unique_filename( $dir . '._revisions_' . $id, $filename );
-
-			$revision = array(
-				'name' => $revision_name,
-				'date' => bp_core_current_time( true, 'timestamp' ),
-			);
-
-			if ( ! isset( $file_data->revisions ) ) {
-				$file_data->revisions = array( $revision );
-			} else {
-				$file_data->revisions[] = $revision;
-			}
-
-			$media = bp_attachments_sanitize_media( $file_data );
-
-			// Create the JSON data file.
-			file_put_contents( $dir . $id . '.json', wp_json_encode( $media ) ); // phpcs:ignore
-			rename( $dir . $filename, trailingslashit( $dir . '._revisions_' . $id ) . $revision_name );
 		}
 
 		// Return with error code attached.

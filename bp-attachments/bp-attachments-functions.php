@@ -273,3 +273,24 @@ function bp_attachments_sanitize_media( $media = null ) {
 
 	return $media;
 }
+
+/**
+ * Checks if a file type is allowed.
+ *
+ * @since 1.0.0
+ *
+ * @param string $file     Full path to the file.
+ * @param string $filename The name of the file (may differ from $file due to $file being
+ *                         in a tmp directory).
+ * @return boolean         True if allowed. False otherwise.
+ */
+function bp_attachments_is_file_type_allowed( $file, $filename ) {
+	$allowed_types = bp_attachments_get_allowed_types( '' );
+	$wp_filetype   = wp_check_filetype_and_ext( $file, $filename );
+
+	if ( ! isset( $wp_filetype['ext'] ) || ! $wp_filetype['ext'] ) {
+		return false;
+	}
+
+	return in_array( $wp_filetype['ext'], $allowed_types, true );
+}
