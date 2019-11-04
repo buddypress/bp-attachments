@@ -210,6 +210,41 @@ class BP_attachments_REST_controller_UnitTestCase extends WP_Test_REST_Controlle
 		$this->assertErrorResponse( 'rest_invalid_param', $response, 400 );
 	}
 
+	/**
+	 * @group rest_prepare_for_fs
+	 */
+	public function test_prepare_item_for_filesystem() {
+		$controller = new BP_Attachments_REST_Controller();
+		$request    = new WP_REST_Request( 'POST', $this->endpoint_url );
+		$request->set_body_params( array(
+			'action'     => 'bp_attachments_media_upload',
+			'path'       => BP_ATTACHMENTS_TESTS_DIR . '/assets/public/members/1/file-1.txt',
+			'mime_type'  => 'text/plain',
+			'context'    => 'edit',
+		) );
+
+		$media = $controller->prepare_item_for_filesystem( $request );
+		$this->assertTrue( 'text/plain' === $media->mime_type );
+	}
+
+	/**
+	 * @group rest_prepare_for_fs
+	 */
+	public function test_prepare_item_for_filesystem_for_dir() {
+		$controller = new BP_Attachments_REST_Controller();
+		$request    = new WP_REST_Request( 'POST', $this->endpoint_url );
+		$request->set_body_params( array(
+			'action'     => 'bp_attachments_make_directory',
+			'path'       => BP_ATTACHMENTS_TESTS_DIR . '/assets/public/members/1/folder-1',
+			'title'      => 'Folder 1',
+			'media_type' => 'video_playlist',
+			'context'    => 'edit',
+		) );
+
+		$media = $controller->prepare_item_for_filesystem( $request );
+		$this->assertTrue( 'video_playlist' === $media->media_type );
+	}
+
 	public function test_update_item() {
 		$this->markTestSkipped();
 	}

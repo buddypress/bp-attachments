@@ -144,6 +144,9 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	public function create_item( $request ) {
 		$action = $request->get_param( 'action' );
 
+		// Set the context of the request.
+		$request->set_param( 'context', 'edit' );
+
 		// Upload a file.
 		if ( 'bp_attachments_make_directory' !== $action ) {
 			// Get the file via $_FILES or raw data.
@@ -172,33 +175,8 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 				);
 			}
 
-			$dir       = trailingslashit( dirname( $uploaded['file'] ) );
-			$name      = wp_basename( $uploaded['file'] );
-			$ext       = pathinfo( $name, PATHINFO_EXTENSION );
-			$title     = wp_basename( $name, ".$ext" );
-			$id        = md5( $name );
-			$revisions = $dir . '._revisions_' . $id;
-
-			$upload = array(
-				'id'          => $id,
-				'name'        => $name,
-				'title'       => $title,
-				'description' => '',
-				'mime_type'   => $uploaded['type'],
-				'type'        => 'file',
-			);
-
-			$media = bp_attachments_sanitize_media( (object) $upload );
-
-			// Create the JSON data file.
-			if ( ! file_exists( $dir . $id . '.json' ) ) {
-				file_put_contents( $dir . $id . '.json', wp_json_encode( $media ) ); // phpcs:ignore
-			}
-
-			// Create the revisions directory.
-			if ( ! is_dir( $revisions ) ) {
-				mkdir( $revisions );
-			}
+			$request->set_param( 'path', $uploaded['file'] );
+			$request->set_param( 'mime_type', $uploaded['type'] );
 
 			// Make a new directory.
 		} else {
@@ -234,26 +212,99 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 				);
 			}
 
-			$folder = array(
-				'id'          => md5( $directory_name ),
-				'name'        => $directory_name,
-				'title'       => $dir_data['directory_name'],
-				'description' => '',
-				'mime_type'   => 'inode/directory',
-				'type'        => 'directory',
+			$request->set_param( 'path', $made_dir['path'] );
+			$request->set_param( 'title', $dir_data['directory_name'] );
+			$request->set_param( 'media_type', $made_dir['media_type'] );
+		}
+
+		$prepared_media = $this->prepare_item_for_filesystem( $request );
+
+		if ( is_wp_error( $prepared_media ) ) {
+			return new WP_Error(
+				$prepared_media->get_error_code(),
+				$made_dir->get_error_message(),
+				array(
+					'status' => 500,
+				)
 			);
+		}
 
-			$media = bp_attachments_sanitize_media( (object) $folder );
+		$media = bp_attachments_create_media( $prepared_media );
 
-			// Create the JSON data file.
-			$dir = trailingslashit( dirname( $made_dir['path'] ) );
-			if ( ! file_exists( $dir . $media->id . '.json' ) ) {
-				file_put_contents( $dir . $media->id . '.json', wp_json_encode( $media ) ); // phpcs:ignore
-			}
+		if ( is_wp_error( $media ) ) {
+			return new WP_Error(
+				$media->get_error_code(),
+				$media->get_error_message(),
+				array(
+					'status' => 500,
+				)
+			);
 		}
 
 		// Return the response.
 		return rest_ensure_response( $media );
+	}
+
+	/**
+	 * Prepares a BP Attachments Media for File System.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param WP_REST_Request $request Full details about the request.
+	 * @return WP_Error|object The media object on success, WP_Error object on failure.
+	 */
+	public function prepare_item_for_filesystem( $request ) {
+		$media = new stdClass();
+
+		$schema = $this->get_item_schema();
+
+		/**
+		 * Update item using the media ID.
+		 *
+		 * @todo
+		 */
+
+		if ( ! isset( $request['path'] ) || ! $request['path'] ) {
+			return new WP_Error(
+				'rest_bp_attachments_missing_media_path',
+				__( 'The path to your media file is missing.', 'bp_attachments' ),
+				array(
+					'status' => 500,
+				)
+			);
+		}
+
+		if ( ( 'bp_attachments_media_upload' === $request['action'] && ! file_exists( $request['path'] ) ) || ( 'bp_attachments_make_directory' === $request['action'] && ! is_dir( $request['path'] ) ) ) {
+			return new WP_Error(
+				'rest_bp_attachments_missing_media_path',
+				__( 'The path to your media file does not exist.', 'bp_attachments' ),
+				array(
+					'status' => 500,
+				)
+			);
+		}
+
+		// Media Path.
+		if ( ! empty( $schema['properties']['path'] ) && isset( $request['path'] ) ) {
+			$media->path = $request['path'];
+		}
+
+		// Media Mime Type.
+		if ( ! empty( $schema['properties']['mime_type'] ) && isset( $request['mime_type'] ) ) {
+			$media->mime_type = $request['mime_type'];
+		}
+
+		// Media title.
+		if ( ! empty( $schema['properties']['title'] ) && isset( $request['title'] ) ) {
+			$media->title = $request['title'];
+		}
+
+		// Media Media Type.
+		if ( ! empty( $schema['properties']['media_type'] ) && isset( $request['media_type'] ) ) {
+			$media->media_type = $request['media_type'];
+		}
+
+		return $media;
 	}
 
 	/**
@@ -275,60 +326,121 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	 * @return array Item schema data.
 	 */
 	public function get_item_schema() {
-		$schema = array(
-			'$schema'    => 'http://json-schema.org/draft-04/schema#',
-			'title'      => 'bp_attachments',
-			'type'       => 'object',
-			// Base properties for every BP Attachments Media.
-			'properties' => array(
-				'id'          => array(
-					'context'           => array( 'view', 'edit' ),
-					'description'       => __( 'A unique alphanumeric ID for the media.', 'bp-attachments' ),
-					'readonly'          => true,
-					'type'              => 'string',
-					'sanitize_callback' => 'sanitize_text_field',
-					'validate_callback' => 'rest_validate_request_arg',
+		if ( ! isset( $this->schema ) ) {
+			$this->schema = array(
+				'$schema'    => 'http://json-schema.org/draft-04/schema#',
+				'title'      => 'bp_attachments',
+				'type'       => 'object',
+				// Base properties for every BP Attachments Media.
+				'properties' => array(
+					'id'            => array(
+						'context'           => array( 'view', 'edit' ),
+						'description'       => __( 'A unique alphanumeric ID for the media.', 'bp-attachments' ),
+						'readonly'          => true,
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+						'validate_callback' => 'rest_validate_request_arg',
+					),
+					'name'          => array(
+						'context'           => array( 'view', 'edit' ),
+						'description'       => __( 'The name of the media.', 'bp-attachments' ),
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_file_name',
+						'validate_callback' => 'rest_validate_request_arg',
+					),
+					'title'         => array(
+						'context'           => array( 'view', 'edit' ),
+						'description'       => __( 'The pretty name of the media.', 'bp-attachments' ),
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+						'validate_callback' => 'rest_validate_request_arg',
+					),
+					'description'   => array(
+						'context'           => array( 'view', 'edit' ),
+						'description'       => __( 'The description of the media.', 'bp-attachments' ),
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_textarea_field',
+						'validate_callback' => 'rest_validate_request_arg',
+					),
+					'mime_type'     => array(
+						'context'           => array( 'view', 'edit' ),
+						'description'       => __( 'The description of the media.', 'bp-attachments' ),
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_mime_type',
+						'validate_callback' => 'rest_validate_request_arg',
+						'readonly'          => true,
+					),
+					'type'          => array(
+						'context'           => array( 'view', 'edit' ),
+						'description'       => __( 'Whether the media is a directory or a file.', 'bp-attachments' ),
+						'type'              => 'string',
+						'enum'              => array( 'file', 'directory' ),
+						'sanitize_callback' => 'sanitize_text_field',
+						'validate_callback' => 'rest_validate_request_arg',
+						'readonly'          => true,
+					),
+					'last_modified' => array(
+						'context'           => array( 'view', 'edit' ),
+						'description'       => __( 'Timestamp of the last time the media was modified.', 'bp-attachments' ),
+						'type'              => 'integer',
+						'sanitize_callback' => 'rest_sanitize_request_arg',
+						'validate_callback' => 'rest_validate_request_arg',
+						'readonly'          => true,
+					),
+					'size'          => array(
+						'context'           => array( 'view', 'edit' ),
+						'description'       => __( 'Timestamp of the last time the media was modified.', 'bp-attachments' ),
+						'type'              => 'integer',
+						'sanitize_callback' => 'rest_sanitize_request_arg',
+						'validate_callback' => 'rest_validate_request_arg',
+						'readonly'          => true,
+					),
+					'vignette'      => array(
+						'context'           => array( 'view', 'edit' ),
+						'description'       => __( 'Url of the image to use as a vignette.', 'bp-attachments' ),
+						'type'              => 'string',
+						'format'            => 'uri',
+						'sanitize_callback' => 'rest_sanitize_request_arg',
+						'validate_callback' => 'rest_validate_request_arg',
+						'readonly'          => true,
+					),
+					'orientation'   => array(
+						'context'           => array( 'view', 'edit' ),
+						'description'       => __( 'Orientation for the vignette.', 'bp-attachments' ),
+						'type'              => 'string',
+						'enum'              => array( 'portrait', 'landscape' ),
+						'sanitize_callback' => 'rest_sanitize_request_arg',
+						'validate_callback' => 'rest_validate_request_arg',
+						'readonly'          => true,
+					),
+					'extension'     => array(
+						'context'           => array( 'view', 'edit' ),
+						'description'       => __( 'Extension of the file.', 'bp-attachments' ),
+						'type'              => 'string',
+						'sanitize_callback' => 'rest_sanitize_request_arg',
+						'validate_callback' => 'rest_validate_request_arg',
+						'readonly'          => true,
+					),
+					'media_type'    => array(
+						'context'           => array( 'view', 'edit' ),
+						'description'       => __( 'Human readable media type', 'bp-attachments' ),
+						'type'              => 'string',
+						'sanitize_callback' => 'rest_sanitize_request_arg',
+						'validate_callback' => 'rest_validate_request_arg',
+						'readonly'          => true,
+					),
+					'path'          => array(
+						'context'           => array( 'edit' ),
+						'description'       => __( 'The path to the media', 'bp-attachments' ),
+						'type'              => 'string',
+						'sanitize_callback' => 'rest_sanitize_request_arg',
+						'validate_callback' => 'rest_validate_request_arg',
+						'readonly'          => true,
+					),
 				),
-				'name'        => array(
-					'context'           => array( 'view', 'edit' ),
-					'description'       => __( 'The name of the media.', 'bp-attachments' ),
-					'type'              => 'string',
-					'sanitize_callback' => 'sanitize_file_name',
-					'validate_callback' => 'rest_validate_request_arg',
-				),
-				'title'       => array(
-					'context'           => array( 'view', 'edit' ),
-					'description'       => __( 'The pretty name of the media.', 'bp-attachments' ),
-					'type'              => 'string',
-					'sanitize_callback' => 'sanitize_text_field',
-					'validate_callback' => 'rest_validate_request_arg',
-				),
-				'description' => array(
-					'context'           => array( 'view', 'edit' ),
-					'description'       => __( 'The description of the media.', 'bp-attachments' ),
-					'type'              => 'string',
-					'sanitize_callback' => 'sanitize_textarea_field',
-					'validate_callback' => 'rest_validate_request_arg',
-				),
-				'mime_type'   => array(
-					'context'           => array( 'view', 'edit' ),
-					'description'       => __( 'The description of the media.', 'bp-attachments' ),
-					'type'              => 'string',
-					'sanitize_callback' => 'sanitize_mime_type',
-					'validate_callback' => 'rest_validate_request_arg',
-				),
-				'type'        => array(
-					'context'           => array( 'view', 'edit' ),
-					'description'       => __( 'Whether the media is a directory or a file.', 'bp-attachments' ),
-					'type'              => 'string',
-					'enum'              => array( 'file', 'directory' ),
-					'sanitize_callback' => 'sanitize_text_field',
-					'validate_callback' => 'rest_validate_request_arg',
-				),
-			),
-		);
+			);
+		}
 
-		$this->schema = $schema;
-		return $this->add_additional_fields_schema( $schema );
+		return $this->add_additional_fields_schema( $this->schema );
 	}
 }

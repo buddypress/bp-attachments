@@ -158,6 +158,101 @@ function bp_attachments_get_media_uri( $filename = '', $path = '' ) {
 }
 
 /**
+ * Create a Media Item.
+ *
+ * @since 1.0.0
+ *
+ * @param object $media Media Data to create the Media Item.
+ * @return object       The created Media Item.
+ */
+function bp_attachments_create_media( $media = null ) {
+	if ( ! is_object( $media ) || ! isset( $media->path ) || ! $media->path ) {
+		return new WP_Error( 'bp_attachments_missing_media_path', __( 'The path to your media file is missing.', 'bp_attachments' ) );
+	}
+
+	$media_data = new SplFileInfo( $media->path );
+
+	if ( ! $media_data->isFile() && ! $media_data->isDir() ) {
+		return new WP_Error( 'bp_attachments_missing_media_path', __( 'The path to your media does not exist.', 'bp_attachments' ) );
+	}
+
+	$parent_dir = trailingslashit( dirname( $media->path ) );
+	$revisions  = '';
+
+	$media->name          = wp_basename( $media->path );
+	$media->id            = md5( $media->name );
+	$media->last_modified = $media_data->getMTime();
+
+	// Set the title.
+	if ( ! isset( $media->title ) || ! $media->title ) {
+		$media->title = $media->name;
+	}
+
+	// Set the description.
+	if ( ! isset( $media->description ) ) {
+		$media->description = '';
+	}
+
+	$media->size        = '';
+	$media->icon        = '';
+	$media->vignette    = '';
+	$media->extension   = '';
+	$media->orientation = null;
+
+	if ( ! isset( $media->mime_type ) || ! $media->mime_type ) {
+		$media->mime_type = '';
+	}
+
+	if ( $media_data->isFile() ) {
+		$media->type      = 'file';
+		$media->extension = $media_data->getExtension();
+
+		if ( $media->title === $media->name ) {
+			$media->title = wp_basename( $media->name, ".{$media->extension}" );
+		}
+
+		$media->media_type = wp_ext2type( $media->extension );
+		$media->icon       = wp_mime_type_icon( $media->media_type );
+		$media->size       = $media_data->getSize();
+
+		if ( 'image' === $media->media_type ) {
+			$media->vignette        = bp_attachments_get_media_uri( $media->name, untrailingslashit( $parent_dir ) );
+			list( $width, $height ) = getimagesize( trailingslashit( $parent_dir ) . $media->name );
+
+			if ( $width > $height ) {
+				$media->orientation = 'landscape';
+			} else {
+				$media->orientation = 'portrait';
+			}
+		}
+
+		$revisions = $parent_dir . '._revisions_' . $media->id;
+	} else {
+		$media->type      = 'directory';
+		$media->mime_type = 'inode/directory';
+
+		if ( ! isset( $media->media_type ) || ! $media->media_type ) {
+			$media->media_type = 'folder';
+		}
+	}
+
+	unset( $media->path );
+	$media = bp_attachments_sanitize_media( $media );
+
+	// Create the JSON data file.
+	if ( ! file_exists( $parent_dir . $media->id . '.json' ) ) {
+		file_put_contents( $parent_dir . $media->id . '.json', wp_json_encode( $media ) ); // phpcs:ignore
+	}
+
+	// Create the revisions directory.
+	if ( $revisions && ! is_dir( $revisions ) ) {
+		mkdir( $revisions );
+	}
+
+	return $media;
+}
+
+/**
  * List all media items (including sub-directories) of a directory.
  *
  * Not Used anymore.
@@ -183,14 +278,14 @@ function bp_attachments_list_dir_media( $dir = '' ) {
 		$path       = $media->getPathname();
 		$id         = md5( $media_name );
 		$list[]     = (object) array(
-			'id'                   => $id,
-			'path'                 => $path,
-			'name'                 => $media_name,
-			'size'                 => $media->getSize(),
-			'type'                 => $media->getType(),
-			'mime_type'            => mime_content_type( $path ),
-			'latest_modified_date' => $media->getMTime(),
-			'latest_access_date'   => $media->getATime(),
+			'id'                 => $id,
+			'path'               => $path,
+			'name'               => $media_name,
+			'size'               => $media->getSize(),
+			'type'               => $media->getType(),
+			'mime_type'          => mime_content_type( $path ),
+			'last_modified'      => $media->getMTime(),
+			'latest_access_date' => $media->getATime(),
 		);
 	}
 
@@ -215,14 +310,14 @@ function bp_attachments_list_media_in_directory( $dir = '' ) {
 	$iterator = new FilesystemIterator( $dir, FilesystemIterator::SKIP_DOTS );
 
 	foreach ( new BP_Attachments_Filter_Iterator( $iterator ) as $media ) {
-		$json_data                        = file_get_contents( $media ); // phpcs:ignore
-		$media_data                       = json_decode( $json_data );
-		$media_data->latest_modified_date = $media->getMTime();
-		$media_data->extension            = preg_replace( '/^.+?\.([^.]+)$/', '$1', $media_data->name );
-		$media_data->media_type           = wp_ext2type( $media_data->extension );
-		$media_data->icon                 = wp_mime_type_icon( $media_data->media_type );
-		$media_data->vignette             = '';
-		$media_data->orientation          = null;
+		$json_data                 = file_get_contents( $media ); // phpcs:ignore
+		$media_data                = json_decode( $json_data );
+		$media_data->last_modified = $media->getMTime();
+		$media_data->extension     = preg_replace( '/^.+?\.([^.]+)$/', '$1', $media_data->name );
+		$media_data->media_type    = wp_ext2type( $media_data->extension );
+		$media_data->icon          = wp_mime_type_icon( $media_data->media_type );
+		$media_data->vignette      = '';
+		$media_data->orientation   = null;
 
 		if ( 'image' === $media_data->media_type ) {
 			$media_data->vignette   = bp_attachments_get_media_uri( $media_data->name, $dir );

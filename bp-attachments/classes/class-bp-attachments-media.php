@@ -341,9 +341,9 @@ class BP_Attachments_Media extends BP_Attachment {
 		mkdir( $path );
 
 		return array(
-			'path' => $path,
-			'url'  => trailingslashit( $destination_data['url'] ) . $directory_name,
-			'type' => $directory_type,
+			'path'       => $path,
+			'url'        => trailingslashit( $destination_data['url'] ) . $directory_name,
+			'media_type' => $directory_type,
 		);
 	}
 }
