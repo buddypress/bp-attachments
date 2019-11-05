@@ -51,23 +51,25 @@ class BP_Media_Uploader extends Component {
 
 	renderResult( file ) {
 		const { files, errored } = this.props;
-		const isError = find( errored, { name: file.name } );
-		const isSuccess = find( files, { name: file.name } );
+		const { uploadEnabled, makedirEnabled } = this.state;
 
-		if ( isSuccess ) {
-			return (
-				<span className="bp-info">
-					<span className="bp-uploaded"></span>
-					<span className="screen-reader-text">{ __( 'Uploaded!', 'bp-attachments' ) }</span>
-				</span>
-			);
-		}
+		const isError = find( errored, { name: file.name } );
+		const isSuccess = true === makedirEnabled ? find( files, { title: file.name } ) : find( files, { name: file.name } );
 
 		if ( isError ) {
 			return (
 				<span className="bp-info">
 					<span>{ isError.error }</span>
 					<span className="bp-errored"></span>
+				</span>
+			);
+		}
+
+		if ( isSuccess ) {
+			return (
+				<span className="bp-info">
+					<span className="bp-uploaded"></span>
+					<span className="screen-reader-text">{ __( 'Uploaded!', 'bp-attachments' ) }</span>
 				</span>
 			);
 		}
@@ -89,7 +91,7 @@ class BP_Media_Uploader extends Component {
 			dzClass = 'enabled';
 		}
 
-		if ( makedirEnabled ) {
+		if ( makedirEnabled && ! isUploading && ! hasUploaded ) {
 			dfClass = 'enabled';
 		}
 

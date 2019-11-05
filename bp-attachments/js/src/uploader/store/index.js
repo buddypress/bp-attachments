@@ -19,11 +19,44 @@ function * saveAttachment( file ) {
 
 	uploading = false;
 	try {
-		uploaded = yield actions.uploadFile( '/buddypress/v1/attachments', formData );
+		uploaded = yield actions.createMedia( '/buddypress/v1/attachments', formData );
 		yield { type: 'UPLOAD_END', uploading, uploaded };
 		uploaded.uploaded = true;
 
-		return actions.addFile( uploaded );
+		return actions.addMedia( uploaded );
+	} catch ( error ) {
+		uploaded = {
+			id: uniqueId(),
+			name: file.name,
+			error: error.message,
+		};
+
+		yield { type: 'UPLOAD_END', uploading, uploaded };
+
+		return actions.traceError( uploaded );
+	}
+}
+
+function * createDirectory( directory ) {
+	let uploading = true, uploaded, file = {
+		name: directory.directoryName,
+		type: directory.directoryType,
+	};
+
+	yield { type: 'UPLOAD_START', uploading, file };
+
+	const formData = new FormData();
+	formData.append( 'directory_name', file.name );
+	formData.append( 'directory_type', file.type );
+	formData.append( 'action', 'bp_attachments_make_directory' );
+
+	uploading = false;
+	try {
+		uploaded = yield actions.createMedia( '/buddypress/v1/attachments', formData );
+		yield { type: 'UPLOAD_END', uploading, uploaded };
+		uploaded.uploaded = true;
+
+		return actions.addMedia( uploaded );
 	} catch ( error ) {
 		uploaded = {
 			id: uniqueId(),
@@ -69,9 +102,10 @@ const actions = {
 	},
 
 	saveAttachment,
-	uploadFile( path, formData ) {
+	createDirectory,
+	createMedia( path, formData ) {
 		return {
-			type: 'UPLOAD_FILE',
+			type: 'CREATE_MEDIA',
 			path,
 			formData,
 		};
@@ -83,9 +117,9 @@ const actions = {
 		};
 	},
 
-	addFile( file ) {
+	addMedia( file ) {
 		return {
-			type: 'ADD_FILE',
+			type: 'ADD_MEDIA',
 			file,
 		};
 	},
@@ -113,7 +147,7 @@ const store = registerStore( 'bp-attachments', {
 					files: action.files,
 				};
 
-			case 'ADD_FILE':
+			case 'ADD_MEDIA':
 				return {
 					...state,
 					files: [
@@ -145,7 +179,7 @@ const store = registerStore( 'bp-attachments', {
 				return {
 					...state,
 					uploading: action.uploading,
-					uploaded: reject( state.uploaded, [ 'name', action.uploaded.name ] ),
+					uploaded: reject( state.uploaded, ( u ) => { return u.name === action.uploaded.name || u.name === action.uploaded.title; } ),
 					ended: true,
 				};
 
@@ -193,7 +227,7 @@ const store = registerStore( 'bp-attachments', {
 	},
 
 	controls: {
-		UPLOAD_FILE( action ) {
+		CREATE_MEDIA( action ) {
 			return apiFetch( { path: action.path, method: 'POST', body: action.formData } );
 		},
 

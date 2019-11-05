@@ -4,7 +4,7 @@
 const { Component, createElement } = wp.element;
 const { SelectControl, TextControl, Button } = wp.components;
 const { compose } = wp.compose;
-const { withSelect } = wp.data;
+const { withSelect, withDispatch } = wp.data;
 const { __ } = wp.i18n;
 
 class DirectoryForm extends Component {
@@ -34,7 +34,12 @@ class DirectoryForm extends Component {
 	submitForm( event ) {
 		event.preventDefault();
 
-		// @todo handle the action.
+		this.props.onDirectoryCreate( this.state );
+
+		this.setState( {
+			directoryType: 'folder',
+			directoryName: '',
+		} );
 	}
 
 	render() {
@@ -72,5 +77,10 @@ class DirectoryForm extends Component {
 export default compose( [
 	withSelect( ( select ) => ( {
 		files: select( 'bp-attachments' ).getFiles(),
+	} ) ),
+	withDispatch( ( dispatch ) => ( {
+		onDirectoryCreate( directory ) {
+			dispatch( 'bp-attachments' ).createDirectory( directory );
+		},
 	} ) ),
 ] )( DirectoryForm );
