@@ -29,12 +29,7 @@ class BP_Attachments_Functions_UnitTestCase extends BP_UnitTestCase {
 	 * @group checktype
 	 */
 	public function test_bp_attachments_is_file_type_allowed() {
-		$file    = BP_ATTACHMENTS_TESTS_DIR . '/assets/file-examples.com/file_example_XLS_10.xls';
-		$filename = wp_basename( $file );
-
-		$this->assertTrue( bp_attachments_is_file_type_allowed( $file, $filename ) );
-
-		$file    = BP_ATTACHMENTS_TESTS_DIR . '/assets/file-examples.com/file_example_XLSX_10.xlsx';
+		$file    = BP_ATTACHMENTS_TESTS_DIR . '/assets/file-examples.com/file_example_JPG_100kB.jpg';
 		$filename = wp_basename( $file );
 
 		$this->assertTrue( bp_attachments_is_file_type_allowed( $file, $filename ) );

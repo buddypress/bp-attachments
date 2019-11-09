@@ -241,6 +241,13 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 			);
 		}
 
+		// Add the icon.
+		if ( 'inode/directory' !== $media->mime_type ) {
+			$media->icon = wp_mime_type_icon( $media->media_type );
+		} else {
+			$media->icon = bp_attachments_get_directory_icon( $media->media_type );
+		}
+
 		// Return the response.
 		return rest_ensure_response( $media );
 	}

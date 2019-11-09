@@ -212,7 +212,6 @@ function bp_attachments_create_media( $media = null ) {
 		}
 
 		$media->media_type = wp_ext2type( $media->extension );
-		$media->icon       = wp_mime_type_icon( $media->media_type );
 		$media->size       = $media_data->getSize();
 
 		if ( 'image' === $media->media_type ) {
@@ -309,15 +308,28 @@ function bp_attachments_list_media_in_directory( $dir = '' ) {
 
 	$iterator = new FilesystemIterator( $dir, FilesystemIterator::SKIP_DOTS );
 
+	/**
+	 * Some of the properties should have been created during the upload/make dir process.
+	 *
+	 * @todo Add checks to avoid running some functions when not necessary.
+	 */
 	foreach ( new BP_Attachments_Filter_Iterator( $iterator ) as $media ) {
 		$json_data                 = file_get_contents( $media ); // phpcs:ignore
 		$media_data                = json_decode( $json_data );
 		$media_data->last_modified = $media->getMTime();
 		$media_data->extension     = preg_replace( '/^.+?\.([^.]+)$/', '$1', $media_data->name );
 		$media_data->media_type    = wp_ext2type( $media_data->extension );
-		$media_data->icon          = wp_mime_type_icon( $media_data->media_type );
-		$media_data->vignette      = '';
-		$media_data->orientation   = null;
+
+		// Add the icon.
+		if ( 'inode/directory' !== $media_data->mime_type ) {
+			$media_data->icon = wp_mime_type_icon( $media_data->media_type );
+		} else {
+			$media_data->icon = bp_attachments_get_directory_icon( $media_data->media_type );
+		}
+
+		// Vignette & orientation are only used for images.
+		$media_data->vignette    = '';
+		$media_data->orientation = null;
 
 		if ( 'image' === $media_data->media_type ) {
 			$media_data->vignette   = bp_attachments_get_media_uri( $media_data->name, $dir );
@@ -388,4 +400,17 @@ function bp_attachments_is_file_type_allowed( $file, $filename ) {
 	}
 
 	return in_array( $wp_filetype['ext'], $allowed_types, true );
+}
+
+/**
+ * Get the directory icon according to its type.
+ *
+ * @since 1.0.0
+ *
+ * @param string $type The type of the directory. Defauts to `folder`.
+ *                     Possible values are `folder`, `album`, `audio_playlist`, `video_playlist`.
+ * @return string      The URL to the icon.
+ */
+function bp_attachments_get_directory_icon( $type = 'folder' ) {
+	return trailingslashit( buddypress()->attachments->assets_url ) . 'images/default.svg';
 }
