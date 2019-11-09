@@ -18,6 +18,8 @@ defined( 'ABSPATH' ) || exit;
 			<div class="centered">
 				<# if ( 'image' === data.mediaType && '' !== data.vignette ) { #>
 					<img src="{{ data.vignette }}" class="{{data.orientation}}" alt="" />
+				<# } else if ( 'inode/directory' === data.mimeType ) { #>
+					<img src="{{ data.icon }}" class="icon" alt="" width="100%" height="100%" />
 				<# } else { #>
 					<img src="{{ data.icon }}" class="icon" alt="" />
 				<# } #>

@@ -106,6 +106,7 @@ class BP_Media_Uploader extends Component {
 						name={ file.name }
 						title={ file.title }
 						mediaType={ file.media_type }
+						mimeType={ file.mime_type }
 						icon={ file.icon }
 						vignette={ file.vignette }
 						orientation={ file.orientation }
