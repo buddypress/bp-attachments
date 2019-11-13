@@ -408,9 +408,22 @@ function bp_attachments_is_file_type_allowed( $file, $filename ) {
  * @since 1.0.0
  *
  * @param string $type The type of the directory. Defauts to `folder`.
- *                     Possible values are `folder`, `album`, `audio_playlist`, `video_playlist`.
+ *                     Possible values are: `folder`, `album`, `audio_playlist`, `video_playlist`,
+ *                     `groups`, `members`, `public`, `private`.
  * @return string      The URL to the icon.
  */
 function bp_attachments_get_directory_icon( $type = 'folder' ) {
-	return trailingslashit( buddypress()->attachments->assets_url ) . 'images/default.svg';
+	$svg = 'default';
+
+	if ( 'album' === $type ) {
+		$svg = 'photo';
+	} elseif ( 'audio_playlist' === $type ) {
+		$svg = 'audio';
+	} elseif ( 'video_playlist' === $type ) {
+		$svg = 'video';
+	} elseif ( in_array( $typs, array( 'groups', 'members', 'public', 'private' ), true ) ) {
+		$svg = $type;
+	}
+
+	return trailingslashit( buddypress()->attachments->assets_url ) . 'images/' . $svg . '.svg';
 }
