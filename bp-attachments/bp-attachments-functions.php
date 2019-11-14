@@ -421,7 +421,7 @@ function bp_attachments_get_directory_icon( $type = 'folder' ) {
 		$svg = 'audio';
 	} elseif ( 'video_playlist' === $type ) {
 		$svg = 'video';
-	} elseif ( in_array( $typs, array( 'groups', 'members', 'public', 'private' ), true ) ) {
+	} elseif ( in_array( $type, array( 'groups', 'members', 'public', 'private' ), true ) ) {
 		$svg = $type;
 	}
 
