@@ -70,6 +70,18 @@ function * createDirectory( directory ) {
 	}
 }
 
+// This needs improvements too.
+function * requestMedia( args ) {
+	let path = '/buddypress/v1/attachments?context=edit';
+
+	if ( args && args.directory ) {
+		path += '&directory=' + args.directory;
+	}
+
+	const files = yield actions.fetchFromAPI( path );
+	return actions.getFiles( files );
+}
+
 const DEFAULT_STATE = {
 	user: {},
 	files: [],
@@ -87,6 +99,7 @@ const actions = {
 		};
 	},
 
+	requestMedia,
 	getFiles( files ) {
 		return {
 			type: 'GET_FILES',

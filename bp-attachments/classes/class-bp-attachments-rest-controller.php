@@ -95,10 +95,29 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	 * @return WP_REST_Response List of BP Attachments Media response data.
 	 */
 	public function get_items( $request ) {
-		$dir  = bp_attachments_get_private_uploads_dir()['path'] . '/members/1';
-		$list = bp_attachments_list_media_in_directory( $dir );
+		/**
+		 * This hardcoded way of setting the directory is done for development purpose.
+		 *
+		 * @todo Improve this asap!
+		 */
+		$dir    = bp_attachments_get_private_uploads_dir()['path'] . '/members/1';
+		$parent = $request->get_param( 'directory' );
 
-		return rest_ensure_response( $list );
+		if ( $parent ) {
+			$dir = trailingslashit( $dir ) . $parent;
+		}
+
+		$media = bp_attachments_list_media_in_directory( $dir );
+
+		$retval = array();
+		foreach ( $media as $medium ) {
+			$retval[] = $this->prepare_response_for_collection(
+				$this->prepare_item_for_response( $medium, $request )
+			);
+		}
+
+		$response = rest_ensure_response( $retval );
+		return $response;
 	}
 
 	/**
@@ -315,6 +334,56 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	}
 
 	/**
+	 * Prepare links for the request.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param object $medium BP Attachments object.
+	 * @return array
+	 */
+	protected function prepare_links( $medium ) {
+		$base = sprintf( '/%s/%s/', $this->namespace, $this->rest_base );
+
+		// Entity meta.
+		$links = array(
+			'collection' => array(
+				'href' => rest_url( $base ),
+			),
+		);
+
+		/**
+		 * Filter links prepared for the REST response.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param array  $links The prepared links of the REST response.
+		 * @param object $medium Activity object.
+		 */
+		return apply_filters( 'bp_attachments_item_rest_prepare_links', $links, $medium );
+	}
+
+	/**
+	 * Prepares BP Attachment data for return as an object.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param object          $medium  BP Attachments object.
+	 * @param WP_REST_Request $request Full details about the request.
+	 * @return WP_REST_Response
+	 */
+	public function prepare_item_for_response( $medium, $request ) {
+		$data    = get_object_vars( $medium );
+		$context = ! empty( $request['context'] ) ? $request['context'] : 'view';
+		$data    = $this->add_additional_fields_to_object( $data, $request );
+		$data    = $this->filter_response_by_context( $data, $context );
+
+		$response = rest_ensure_response( $data );
+		$response->add_links( $this->prepare_links( $medium ) );
+
+		return $response;
+	}
+
+	/**
 	 * Retrieves the query params for the BP Attachments Media collection.
 	 *
 	 * @since 1.0.0
@@ -322,7 +391,23 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	 * @return array Collection parameters.
 	 */
 	public function get_collection_params() {
-		return WP_REST_Controller::get_collection_params();
+		$params                       = WP_REST_Controller::get_collection_params();
+		$params['context']['default'] = 'view';
+
+		$params['directory'] = array(
+			'description' => __( 'Relative path to the directory to only list its content.', 'bp-attachments' ),
+			'default'     => '',
+			'type'        => 'string',
+		);
+
+		/**
+		 * Filters the collection query params.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param array $params Query params.
+		 */
+		return apply_filters( 'bp_attachments_rest_collection_params', $params );
 	}
 
 	/**

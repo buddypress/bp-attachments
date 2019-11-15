@@ -3,22 +3,34 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "X-Generator: babel-plugin-makepot\n"
 
-#: bp-attachments/js/src/uploader/index.js:123
-msgid "Close the upload panel"
+#: bp-attachments/js/src/uploader/elements/directory-form.js:52
+msgid "Create a new directory"
 msgstr ""
 
-#: bp-attachments/js/src/uploader/index.js:127
-msgid "Drop your files here."
+#: bp-attachments/js/src/uploader/elements/directory-form.js:54
+msgid "Type a name for your directory"
 msgstr ""
 
-#: bp-attachments/js/src/uploader/index.js:135
-msgid "Close the Create directory form"
+#: bp-attachments/js/src/uploader/elements/directory-form.js:59
+msgid "Select a type for your directory"
 msgstr ""
 
-#: bp-attachments/js/src/uploader/index.js:72
-msgid "Uploaded!"
+#: bp-attachments/js/src/uploader/elements/directory-form.js:62
+msgid "File directory"
 msgstr ""
 
-#: bp-attachments/js/src/uploader/index.js:80
-msgid "Uploading..."
+#: bp-attachments/js/src/uploader/elements/directory-form.js:63
+msgid "Photo Album"
+msgstr ""
+
+#: bp-attachments/js/src/uploader/elements/directory-form.js:64
+msgid "Audio Playlist"
+msgstr ""
+
+#: bp-attachments/js/src/uploader/elements/directory-form.js:65
+msgid "Video Playlist"
+msgstr ""
+
+#: bp-attachments/js/src/uploader/elements/directory-form.js:70
+msgid "Save directory"
 msgstr ""
