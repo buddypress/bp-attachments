@@ -95,6 +95,8 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	 * @return WP_REST_Response List of BP Attachments Media response data.
 	 */
 	public function get_items( $request ) {
+		$basedir = bp_attachments_uploads_dir_get()['basedir'];
+
 		/**
 		 * This hardcoded way of setting the directory is done for development purpose.
 		 *
@@ -117,6 +119,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		}
 
 		$response = rest_ensure_response( $retval );
+		$response->header( 'X-BP-Attachments-Relative-Path', str_replace( $basedir, '', $dir ) );
 		return $response;
 	}
 
