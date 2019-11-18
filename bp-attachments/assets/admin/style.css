@@ -143,6 +143,16 @@ a.file-item {
 	border: none;
 }
 
+#bp-media-uploader .bp-media-breadcrumb span {
+	display: inline-block;
+	vertical-align: top;
+}
+
+#bp-media-uploader .bp-media-breadcrumb {
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+	margin-bottom: 1em;
+}
+
 #bp-media-uploader .media-items {
 	top: 72px;
 	left: 0;

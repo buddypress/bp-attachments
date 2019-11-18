@@ -20,6 +20,7 @@ import SplitButton from './elements/split-button';
 import DirectoryForm from './elements/directory-form';
 import MediaToolbar from './elements/media-toolbar';
 import MediaItem from './elements/media-item';
+import BreadCrumb from './elements/breadcrumb';
 
 class BP_Media_Uploader extends Component {
 	constructor() {
@@ -148,6 +149,7 @@ class BP_Media_Uploader extends Component {
 						} ) }
 					</ol>
 				}
+				<BreadCrumb />
 				<div className="media-items">
                     { mediaItems }
                 </div>
