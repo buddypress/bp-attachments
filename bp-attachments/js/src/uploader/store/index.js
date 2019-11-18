@@ -2,7 +2,7 @@
  * WordPress dependencies
  */
 const { apiFetch } = wp;
-const { registerStore } = wp.data;
+const { registerStore, dispatch } = wp.data;
 
 /**
  * External dependencies
@@ -76,6 +76,16 @@ function * createDirectory( directory ) {
 	}
 }
 
+async function getJsonResponse( response, relativePath ) {
+	const files = await response.json().then( ( data ) => {
+		return data;
+	} );
+
+	store.dispatch(
+		actions.getFiles( files, relativePath )
+	);
+}
+
 // This needs improvements too.
 function * requestMedia( args ) {
 	let path = '/buddypress/v1/attachments?context=edit';
@@ -96,12 +106,7 @@ function * requestMedia( args ) {
 		relativePathHeader = get( response, [ 'headers', 'X-BP-Attachments-Relative-Path' ], '' );
 	}
 
-	/**
-	 * It should be possible to use the response to avoid
-	 * double requesting the same thing.
-	 */
-	const files = yield actions.fetchFromAPI( path, true );
-	return actions.getFiles( files, relativePathHeader );
+	return getJsonResponse( response, relativePathHeader );
 }
 
 const DEFAULT_STATE = {
