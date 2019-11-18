@@ -7,15 +7,21 @@ const { registerStore } = wp.data;
 /**
  * External dependencies
  */
-const { reject, uniqueId } = lodash;
+const { get, hasIn, reject, uniqueId } = lodash;
 
 function * saveAttachment( file ) {
 	let uploading = true, uploaded;
+	const parentDir = store.getState().relativePath;
+
 	yield { type: 'UPLOAD_START', uploading, file };
 
 	const formData = new FormData();
 	formData.append( 'file', file );
 	formData.append( 'action', 'bp_attachments_media_upload' );
+
+	if ( parentDir ) {
+		formData.append( 'parent_dir', parentDir );
+	}
 
 	uploading = false;
 	try {
@@ -78,13 +84,30 @@ function * requestMedia( args ) {
 		path += '&directory=' + args.directory;
 	}
 
-	const files = yield actions.fetchFromAPI( path );
-	return actions.getFiles( files );
+	const response = yield actions.fetchFromAPI( path, false );
+	let relativePathHeader = '';
+	if ( hasIn( response, [ 'headers', 'get' ] ) ) {
+		// If the request is fetched using the fetch api, the header can be
+		// retrieved using the 'get' method.
+		relativePathHeader = response.headers.get( 'X-BP-Attachments-Relative-Path' );
+	} else {
+		// If the request was preloaded server-side and is returned by the
+		// preloading middleware, the header will be a simple property.
+		relativePathHeader = get( response, [ 'headers', 'X-BP-Attachments-Relative-Path' ], '' );
+	}
+
+	/**
+	 * It should be possible to use the response to avoid
+	 * double requesting the same thing.
+	 */
+	const files = yield actions.fetchFromAPI( path, true );
+	return actions.getFiles( files, relativePathHeader );
 }
 
 const DEFAULT_STATE = {
 	user: {},
 	files: [],
+	relativePath: '',
 	uploaded: [],
 	errored: [],
 	uploading: false,
@@ -100,17 +123,19 @@ const actions = {
 	},
 
 	requestMedia,
-	getFiles( files ) {
+	getFiles( files, relativePath ) {
 		return {
 			type: 'GET_FILES',
 			files,
+			relativePath,
 		};
 	},
 
-	fetchFromAPI( path ) {
+	fetchFromAPI( path, parse ) {
 		return {
 			type: 'FETCH_FROM_API',
 			path,
+			parse,
 		};
 	},
 
@@ -158,6 +183,7 @@ const store = registerStore( 'bp-attachments', {
 				return {
 					...state,
 					files: action.files,
+					relativePath: action.relativePath,
 				};
 
 			case 'ADD_MEDIA':
@@ -236,6 +262,10 @@ const store = registerStore( 'bp-attachments', {
 		hasUploaded( state ) {
 			const { ended } = state;
 			return ended;
+		},
+		getRelativePath( state ) {
+			const { relativePath } = state;
+			return relativePath;
 		}
 	},
 
@@ -245,21 +275,21 @@ const store = registerStore( 'bp-attachments', {
 		},
 
 		FETCH_FROM_API( action ) {
-			return apiFetch( { path: action.path } );
+			return apiFetch( { path: action.path, parse: action.parse } );
 		},
 	},
 
 	resolvers: {
 		* loggedInUser() {
 			const path = '/buddypress/v1/members/me?context=edit';
-			const user = yield actions.fetchFromAPI( path );
+			const user = yield actions.fetchFromAPI( path, true );
 			yield actions.getLoggedInUser( user );
 		},
 
 		* getFiles() {
 			const path = '/buddypress/v1/attachments?context=edit';
-			const files = yield actions.fetchFromAPI( path );
-			return actions.getFiles( files );
+			const files = yield actions.fetchFromAPI( path, true );
+			return actions.getFiles( files, '' );
 		},
 	},
 } );
