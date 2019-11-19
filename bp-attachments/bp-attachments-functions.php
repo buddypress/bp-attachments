@@ -412,10 +412,12 @@ function bp_attachments_get_directory_types() {
  *
  * @since 1.0.0
  *
- * @param integer $user_id The ID of the user.
+ * @param integer $user_id    The ID of the user.
+ * @param integer $object_dir The requested object directory.
+ *                            Possible values are `groups` & `member`.
  * @return array The user's root directories.
  */
-function bp_attachments_list_member_root_objects( $user_id = 0 ) {
+function bp_attachments_list_member_root_objects( $user_id = 0, $object_dir = '' ) {
 	$list         = array();
 	$current_time = bp_core_current_time( true, 'timestamp' );
 	$common_props = bp_attachments_get_directory_common_props();
@@ -426,8 +428,18 @@ function bp_attachments_list_member_root_objects( $user_id = 0 ) {
 
 	$user_id = (int) $user_id;
 
-	if ( ! bp_is_active( 'groups' ) ) {
-		$list = bp_attachments_get_directory_types();
+	if ( ! bp_is_active( 'groups' ) || in_array( $object_dir, array( 'member', 'groups' ), true ) ) {
+		// Get the directory types for the member.
+		if ( 'member' === $object_dir ) {
+			$list = bp_attachments_get_directory_types();
+		} else {
+			/**
+			 * Get the list of groups the current user is a member of.
+			 *
+			 * @todo
+			 */
+			$list = array();
+		}
 	} else {
 		$list['groups'] = (object) array_merge(
 			array(
@@ -446,7 +458,7 @@ function bp_attachments_list_member_root_objects( $user_id = 0 ) {
 			array(
 				'id'            => 'member-' . $user_id,
 				'title'         => __( 'My Media', 'bp-attachments' ),
-				'media_type'    => 'folder',
+				'media_type'    => 'avatar',
 				'name'          => 'member',
 				'last_modified' => $current_time,
 				'description'   => __( 'This directory contains all your personal media.', 'bp-attachments' ),

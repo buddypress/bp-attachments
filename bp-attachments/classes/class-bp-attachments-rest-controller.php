@@ -100,7 +100,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		$parent  = $request->get_param( 'directory' );
 		$user_id = $request->get_param( 'user_id' );
 
-		if ( $parent ) {
+		if ( $parent && ! in_array( $parent, array( 'member', 'groups' ), true ) ) {
 			$object     = $request->get_param( 'object' );
 			$visibility = 'private';
 
@@ -123,7 +123,8 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 			$dir   = trailingslashit( $dir ) . $parent;
 			$media = bp_attachments_list_media_in_directory( $dir );
 		} else {
-			$media = bp_attachments_list_member_root_objects( $user_id );
+			$media = bp_attachments_list_member_root_objects( $user_id, $parent );
+			unset( $parent );
 		}
 
 		$retval = array();
