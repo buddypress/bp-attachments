@@ -350,6 +350,123 @@ function bp_attachments_list_media_in_directory( $dir = '' ) {
 }
 
 /**
+ * Returns the common properties of a directory.
+ *
+ * @since 1.0.0
+ *
+ * @return array The common properties of a directory.
+ */
+function bp_attachments_get_directory_common_props() {
+	return array(
+		'size'        => '',
+		'vignette'    => '',
+		'extension'   => '',
+		'orientation' => null,
+		'mime_type'   => 'inode/directory',
+		'type'        => 'directory',
+	);
+}
+
+/**
+ * Returns the list of supported directory types.
+ *
+ * @since 1.0.0
+ *
+ * @return array The list of supported directory types.
+ */
+function bp_attachments_get_directory_types() {
+	$current_time = bp_core_current_time( true, 'timestamp' );
+	$common_props = bp_attachments_get_directory_common_props();
+
+	$private_dir = (object) array_merge(
+		array(
+			'id'            => 'private-' . $user_id,
+			'title'         => __( 'Private', 'bp-attachments' ),
+			'media_type'    => 'private',
+			'name'          => 'private',
+			'last_modified' => $current_time,
+			'description'   => __( 'This Private directory and its children are only visible to logged in users.', 'bp-attachments' ),
+			'icon'          => bp_attachments_get_directory_icon( 'private' ),
+		),
+		$common_props
+	);
+
+	$public_dir = (object) array_merge(
+		array(
+			'id'            => 'public-' . $user_id,
+			'title'         => __( 'Public', 'bp-attachments' ),
+			'media_type'    => 'public',
+			'name'          => 'public',
+			'last_modified' => $current_time,
+			'description'   => __( 'This Public directory and its children are visible to everyone.', 'bp-attachments' ),
+			'icon'          => bp_attachments_get_directory_icon( 'public' ),
+		),
+		$common_props
+	);
+
+	return array( $private_dir, $public_dir );
+}
+
+/**
+ * Returns the user's root directories.
+ *
+ * @since 1.0.0
+ *
+ * @param integer $user_id The ID of the user.
+ * @return array The user's root directories.
+ */
+function bp_attachments_list_member_root_objects( $user_id = 0 ) {
+	$list         = array();
+	$current_time = bp_core_current_time( true, 'timestamp' );
+	$common_props = bp_attachments_get_directory_common_props();
+
+	if ( ! $user_id ) {
+		$user_id = bp_loggedin_user_id();
+	}
+
+	$user_id = (int) $user_id;
+
+	if ( ! bp_is_active( 'groups' ) ) {
+		$list = bp_attachments_get_directory_types();
+	} else {
+		$list['groups'] = (object) array_merge(
+			array(
+				'id'            => 'groups-' . $user_id,
+				'title'         => __( 'My Groups', 'bp-attachments' ),
+				'media_type'    => 'groups',
+				'name'          => 'groups',
+				'last_modified' => $current_time,
+				'description'   => __( 'This directory contains the media directories of the groups you are a member of.', 'bp-attachments' ),
+				'icon'          => bp_attachments_get_directory_icon( 'groups' ),
+			),
+			$common_props
+		);
+
+		$list['member'] = (object) array_merge(
+			array(
+				'id'            => 'member-' . $user_id,
+				'title'         => __( 'My Media', 'bp-attachments' ),
+				'media_type'    => 'folder',
+				'name'          => 'member',
+				'last_modified' => $current_time,
+				'description'   => __( 'This directory contains all your personal media.', 'bp-attachments' ),
+				'icon'          => bp_core_fetch_avatar(
+					array(
+						'item_id' => $user_id,
+						'object'  => 'user',
+						'type'    => 'full',
+						'html'    => false,
+					)
+				),
+			),
+			$common_props
+		);
+	}
+
+	return $list;
+}
+
+/**
  * Sanitize a BP Attachment media.
  *
  * @since 1.0.0

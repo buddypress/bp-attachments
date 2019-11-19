@@ -97,19 +97,34 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	public function get_items( $request ) {
 		$basedir = bp_attachments_uploads_dir_get()['basedir'];
 
-		/**
-		 * This hardcoded way of setting the directory is done for development purpose.
-		 *
-		 * @todo Improve this asap!
-		 */
-		$dir    = bp_attachments_get_private_uploads_dir()['path'] . '/members/1';
-		$parent = $request->get_param( 'directory' );
+		$parent  = $request->get_param( 'directory' );
+		$user_id = $request->get_param( 'user_id' );
 
 		if ( $parent ) {
-			$dir = trailingslashit( $dir ) . $parent;
-		}
+			$object     = $request->get_param( 'object' );
+			$visibility = 'private';
 
-		$media = bp_attachments_list_media_in_directory( $dir );
+			if ( ! $user_id ) {
+				$user_id = get_current_user_id();
+			}
+
+			if ( 'private' === $parent || 'public' === $parent ) {
+				$visibility = $parent;
+				$parent     = '';
+			} else {
+				$parse_parent = explode( '/', trim( $parent, '/' ) );
+				$visibility   = $parse_parent[0];
+
+				array_splice( $parse_parent, 0, 3 );
+				$parent = implode( '/', $parse_parent );
+			}
+
+			$dir   = bp_attachments_get_media_uploads_dir( $visibility )['path'] . '/' . $object . '/' . $user_id;
+			$dir   = trailingslashit( $dir ) . $parent;
+			$media = bp_attachments_list_media_in_directory( $dir );
+		} else {
+			$media = bp_attachments_list_member_root_objects( $user_id );
+		}
 
 		$retval = array();
 		foreach ( $media as $medium ) {
@@ -394,6 +409,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	 * @return array Collection parameters.
 	 */
 	public function get_collection_params() {
+		$bp                           = buddypress();
 		$params                       = WP_REST_Controller::get_collection_params();
 		$params['context']['default'] = 'view';
 
@@ -401,6 +417,31 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 			'description' => __( 'Relative path to the directory to only list its content.', 'bp-attachments' ),
 			'default'     => '',
 			'type'        => 'string',
+		);
+
+		$params['user_id'] = array(
+			'description'       => __( 'Limit result set to items created by a specific user (ID).', 'bp-attachments' ),
+			'default'           => 0,
+			'type'              => 'integer',
+			'sanitize_callback' => 'absint',
+			'validate_callback' => 'rest_validate_request_arg',
+		);
+
+		$objects = array(
+			$bp->members->id,
+		);
+
+		if ( bp_is_active( 'groups' ) ) {
+			$objects[] = $bp->groups->id;
+		}
+
+		$params['object'] = array(
+			'description'       => __( 'Limit result set to items attached to active BuddyPress component.', 'bp-attachments' ),
+			'default'           => 'members',
+			'type'              => 'string',
+			'enum'              => $objects,
+			'sanitize_callback' => 'sanitize_key',
+			'validate_callback' => 'rest_validate_request_arg',
 		);
 
 		/**

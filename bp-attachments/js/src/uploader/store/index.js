@@ -91,7 +91,13 @@ function * requestMedia( args ) {
 	let path = '/buddypress/v1/attachments?context=edit';
 
 	if ( args && args.directory ) {
-		path += '&directory=' + args.directory;
+		path += '&directory=';
+
+		if ( args.path ) {
+			path += args.path;
+		}
+
+		path += args.directory;
 	}
 
 	const response = yield actions.fetchFromAPI( path, false );

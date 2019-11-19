@@ -1,7 +1,7 @@
 /**
  * WordPress dependencies
  */
-const { Component, createElement } = wp.element;
+const { Component, createElement, Fragment } = wp.element;
 const { Dashicon } = wp.components;
 const { compose } = wp.compose;
 const { withSelect, withDispatch } = wp.data;
@@ -9,7 +9,7 @@ const { withSelect, withDispatch } = wp.data;
 /**
  * External dependencies
  */
-const { last } = lodash;
+const { last, trim, drop, dropRight } = lodash;
 
 class BreadCrumb extends Component {
 	constructor() {
@@ -19,7 +19,7 @@ class BreadCrumb extends Component {
 	}
 
 	onCrumbClick( event ) {
-		event.preventDefault;
+		event.preventDefault();
 
 		const { changeDirectory } = this.props;
 		let crumbItem = event.currentTarget.getAttribute( 'data-path' );
@@ -33,26 +33,54 @@ class BreadCrumb extends Component {
 
 	render() {
 		const { path, user } = this.props;
+		const crumbs = trim( path, '/' ).split( '/' );
+		const objectPath = '/' + crumbs[0] + '/' + crumbs[1] + '/' + user.id + '/';
+
+		if ( ! path ) {
+			return null;
+		}
+
+		let currentCrumb = last( crumbs ), crumbsList = crumbs, crumbItems;
 
 		// HardCoded for development purpose.
 		// @todo Make it completely variable!
-		const root = '/private/members/' + user.id;
-		const crumbs = path.replace( root + '/', '' ).split( '/' );
-		const currentCrumb = last( crumbs );
-
-		if ( ! path || root === path ) {
-			return null;
+		if ( path === objectPath ) {
+			currentCrumb = crumbs[0];
+			crumbsList = [];
+		} else {
+			crumbsList = drop( crumbsList, 3 );
+			crumbsList = dropRight( crumbsList, 1 );
+			crumbsList.unshift( crumbs[0] );
 		}
 
 		/**
 		 * @todo: remove the last crumb then loop on each
 		 * to attach a link
 		 */
+		if ( crumbsList.length ) {
+			crumbItems = crumbsList.map( ( crumb ) => {
+				let slug = crumb + '/';
+				if ( crumb === crumbs[0] ) {
+					slug = '';
+				}
+
+				return (
+					<Fragment key={ crumb }>
+						<Dashicon icon="arrow-right"/>
+						<a href={ '#' + crumb } data-path={ objectPath + slug } onClick={ ( e ) => this.onCrumbClick( e ) }>
+							<span>{ crumb }</span>
+						</a>
+					</Fragment>
+				);
+			} );
+		}
+
 		return (
 			<div className="bp-media-breadcrumb">
 				<a href="#root" data-path="root" onClick={ ( e ) => this.onCrumbClick( e ) }>
 					<Dashicon icon="admin-home" />
 				</a>
+				{ crumbItems }
 				<Dashicon icon="arrow-right"/>
 				<span>{ currentCrumb }</span>
 			</div>

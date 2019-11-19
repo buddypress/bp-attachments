@@ -2,9 +2,9 @@
  * WordPress dependencies
  */
 const { Component, createElement, Fragment } = wp.element;
-const { Button, Modal } = wp.components;
+const { Modal } = wp.components;
 const { compose } = wp.compose;
-const { withDispatch } = wp.data;
+const { withDispatch, withSelect } = wp.data;
 const { sprintf, __ } = wp.i18n;
 
 /**
@@ -34,10 +34,10 @@ class MediaItem extends Component {
 	}
 
 	onMediaClick() {
-		const { mediaOpen, mimeType, name, id } = this.props;
+		const { mediaOpen, mimeType, name, path } = this.props;
 
 		if ( 'inode/directory' === mimeType ) {
-			return mediaOpen( { name: name } );
+			return mediaOpen( { name: name, path: path } );
 		}
 
 		return this.openModal();
@@ -75,9 +75,12 @@ class MediaItem extends Component {
 }
 
 export default compose( [
+	withSelect( ( select ) => ( {
+		path: select( 'bp-attachments' ).getRelativePath(),
+	} ) ),
 	withDispatch( ( dispatch ) => ( {
 		mediaOpen( media ) {
-			dispatch( 'bp-attachments' ).requestMedia( { directory: media.name } );
+			dispatch( 'bp-attachments' ).requestMedia( { directory: media.name, path: media.path } );
 		},
 	} ) ),
 ] )( MediaItem );
