@@ -430,7 +430,7 @@ function bp_attachments_list_member_root_objects( $user_id = 0, $object_dir = ''
 
 	if ( ! bp_is_active( 'groups' ) || in_array( $object_dir, array( 'member', 'groups' ), true ) ) {
 		// Get the directory types for the member.
-		if ( 'member' === $object_dir ) {
+		if ( 'groups' !== $object_dir ) {
 			$list = bp_attachments_get_directory_types();
 		} else {
 			/**

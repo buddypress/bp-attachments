@@ -7,7 +7,7 @@ const { registerStore, dispatch } = wp.data;
 /**
  * External dependencies
  */
-const { get, hasIn, reject, uniqueId } = lodash;
+const { get, hasIn, reject, uniqueId, trimEnd } = lodash;
 
 function * saveAttachment( file ) {
 	let uploading = true, uploaded;
@@ -48,6 +48,7 @@ function * createDirectory( directory ) {
 		name: directory.directoryName,
 		type: directory.directoryType,
 	};
+	const parentDir = store.getState().relativePath;
 
 	yield { type: 'UPLOAD_START', uploading, file };
 
@@ -55,6 +56,10 @@ function * createDirectory( directory ) {
 	formData.append( 'directory_name', file.name );
 	formData.append( 'directory_type', file.type );
 	formData.append( 'action', 'bp_attachments_make_directory' );
+
+	if ( parentDir ) {
+		formData.append( 'parent_dir', parentDir );
+	}
 
 	uploading = false;
 	try {
@@ -94,7 +99,8 @@ function * requestMedia( args ) {
 		path += '&directory=';
 
 		if ( args.path ) {
-			path += args.path;
+			// Makes sure there is a trailing slash.
+			path += trimEnd( args.path, '/' ) + '/';
 		}
 
 		path += args.directory;
