@@ -129,6 +129,7 @@ const DEFAULT_STATE = {
 	errored: [],
 	uploading: false,
 	ended: false,
+	isSelectable: false,
 };
 
 const actions = {
@@ -183,6 +184,12 @@ const actions = {
 		return {
 			type: 'ADD_ERROR',
 			file,
+		};
+	},
+	toggleSelectable( isSelectable ) {
+		return {
+			type:'TOGGLE_SELECTABLE',
+			isSelectable,
 		};
 	},
 };
@@ -247,6 +254,12 @@ const store = registerStore( 'bp-attachments', {
 					errored:[],
 					ended: false,
 				};
+
+			case 'TOGGLE_SELECTABLE':
+				return {
+					...state,
+					isSelectable: action.isSelectable,
+				};
 		}
 
 		return state;
@@ -264,26 +277,36 @@ const store = registerStore( 'bp-attachments', {
 			const { uploading } = state;
 			return uploading;
 		},
+
 		getUploadedFiles( state ) {
 			const { uploaded } = state;
 			return uploaded;
 		},
+
 		getErroredFiles( state ) {
 			const { errored } = state;
 			return errored;
 		},
+
 		getFiles( state ) {
 			const { files } = state;
 			return files;
 		},
+
 		hasUploaded( state ) {
 			const { ended } = state;
 			return ended;
 		},
+
 		getRelativePath( state ) {
 			const { relativePath } = state;
 			return relativePath;
-		}
+		},
+
+		isSelectable( state ) {
+			const { isSelectable } = state;
+			return isSelectable;
+		},
 	},
 
 	controls: {

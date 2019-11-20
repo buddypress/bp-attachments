@@ -106,6 +106,11 @@
 	background: #fff;
 }
 
+#bp-media-uploader .media-toolbar-secondary .media-button {
+	margin: 10px 0;
+	margin-right: 10px;
+}
+
 .bp-files-list {
 	width: 724px;
 	margin: 0 auto;

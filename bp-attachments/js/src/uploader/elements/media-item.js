@@ -43,12 +43,12 @@ class MediaItem extends Component {
 		return this.openModal();
 	}
 
-    render() {
+	render() {
 		const Template = setTemplate( 'bp-attachments-media-item' );
 		const { isOpen } = this.state;
 		const { title, vignette } = this.props;
 
-        return (
+		return (
 			<Fragment>
 				<div
 					className="media-item"
@@ -70,8 +70,8 @@ class MediaItem extends Component {
 					</Modal>
 				) }
 			</Fragment>
-        );
-    }
+		);
+	}
 }
 
 export default compose( [
