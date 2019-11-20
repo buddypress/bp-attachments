@@ -318,7 +318,10 @@ function bp_attachments_list_media_in_directory( $dir = '' ) {
 		$media_data                = json_decode( $json_data );
 		$media_data->last_modified = $media->getMTime();
 		$media_data->extension     = preg_replace( '/^.+?\.([^.]+)$/', '$1', $media_data->name );
-		$media_data->media_type    = wp_ext2type( $media_data->extension );
+
+		if ( ! isset( $media_data->media_type ) || ! $media_data->media_type ) {
+			$media_data->media_type = wp_ext2type( $media_data->extension );
+		}
 
 		// Add the icon.
 		if ( 'inode/directory' !== $media_data->mime_type ) {
