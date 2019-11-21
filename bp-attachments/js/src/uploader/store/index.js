@@ -186,10 +186,19 @@ const actions = {
 			file,
 		};
 	},
+
 	toggleSelectable( isSelectable ) {
 		return {
-			type:'TOGGLE_SELECTABLE',
+			type: 'TOGGLE_SELECTABLE',
 			isSelectable,
+		};
+	},
+
+	toggleMediaSelection( id, isSelected ) {
+		return {
+			type: 'TOGGLE_MEDIA_SELECTION',
+			id,
+			isSelected,
 		};
 	},
 };
@@ -259,6 +268,18 @@ const store = registerStore( 'bp-attachments', {
 				return {
 					...state,
 					isSelectable: action.isSelectable,
+				};
+
+			case 'TOGGLE_MEDIA_SELECTION' :
+				return {
+					...state,
+					files: state.files.map( file => {
+						if ( action.id === file.id ) {
+							file.selected = action.isSelected
+						}
+
+						return file;
+					} ),
 				};
 		}
 

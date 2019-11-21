@@ -18,6 +18,7 @@ class MediaItem extends Component {
 
 		this.state = {
 			isOpen: false,
+			isSelected: false,
 		};
 
 		this.onMediaClick = this.onMediaClick.bind( this );
@@ -34,7 +35,13 @@ class MediaItem extends Component {
 	}
 
 	onMediaClick() {
-		const { mediaOpen, mimeType, name, path } = this.props;
+		const { mediaOpen, toggleMediaSelection, mimeType, name, path, isSelectable, id } = this.props;
+		const { isSelected } = this.state;
+
+		if ( isSelectable ) {
+			this.setState( { isSelected: ! isSelected } );
+			return toggleMediaSelection( id, ! isSelected );
+		}
 
 		if ( 'inode/directory' === mimeType ) {
 			return mediaOpen( { name: name, path: path } );
@@ -45,14 +52,16 @@ class MediaItem extends Component {
 
 	render() {
 		const Template = setTemplate( 'bp-attachments-media-item' );
-		const { isOpen } = this.state;
+		const { isOpen, isSelected } = this.state;
 		const { title, vignette } = this.props;
+		const classes = isSelected ? 'media-item selected' : 'media-item';
 
 		return (
 			<Fragment>
 				<div
-					className="media-item"
+					className={ classes }
 					dangerouslySetInnerHTML={ { __html: Template( this.props ) } }
+					role="checkbox"
 					onClick={ this.onMediaClick }
 				/>
 				{ isOpen && (
@@ -75,12 +84,20 @@ class MediaItem extends Component {
 }
 
 export default compose( [
-	withSelect( ( select ) => ( {
-		path: select( 'bp-attachments' ).getRelativePath(),
-	} ) ),
+	withSelect( ( select ) => {
+		const bpAttachmentsStore = select( 'bp-attachments' );
+
+		return {
+			path: bpAttachmentsStore.getRelativePath(),
+			isSelectable: bpAttachmentsStore.isSelectable(),
+		};
+	} ),
 	withDispatch( ( dispatch ) => ( {
 		mediaOpen( media ) {
 			dispatch( 'bp-attachments' ).requestMedia( { directory: media.name, path: media.path } );
+		},
+		toggleMediaSelection( id, isSelected ) {
+			dispatch( 'bp-attachments' ).toggleMediaSelection( id, isSelected );
 		},
 	} ) ),
 ] )( MediaItem );

@@ -7,6 +7,11 @@ const { compose } = wp.compose;
 const { withDispatch, withSelect } = wp.data;
 const { __ } = wp.i18n;
 
+/**
+ * External dependencies
+ */
+const { filter } = lodash;
+
 class MediaToolbar extends Component {
 	constructor() {
 		super( ...arguments );
@@ -21,10 +26,21 @@ class MediaToolbar extends Component {
 
 	deleteSelected( event ) {
 		event.preventDefault();
+
+		const { media } = this.props;
+		const toDelete = filter( media, ['selected', true] );
+
+		// @todo handle deletion.
 	}
 
 	render() {
-		const { selectable } = this.props;
+		const { selectable, media } = this.props;
+		const selection = filter( media, ['selected', true] );
+		let isDisabled = true;
+
+		if ( selectable && selection.length ) {
+			isDisabled = false;
+		}
 
 		return (
 			<div className="media-toolbar wp-filter">
@@ -40,7 +56,7 @@ class MediaToolbar extends Component {
 						</div>
 					) }
 					{ selectable && (
-						<Button isPrimary={ true } disabled={ true } isLarge={ true } className="media-button delete-selected-button" onClick={ ( e ) => this.deleteSelected( e ) }>
+						<Button isPrimary={ true } disabled={ isDisabled } isLarge={ true } className="media-button delete-selected-button" onClick={ ( e ) => this.deleteSelected( e ) }>
 							{ __( 'Delete selection', 'bp-attachments' ) }
 						</Button>
 					) }
@@ -54,9 +70,14 @@ class MediaToolbar extends Component {
 }
 
 export default compose( [
-	withSelect( ( select ) => ( {
-		selectable: select( 'bp-attachments' ).isSelectable(),
-	} ) ),
+	withSelect( ( select ) => {
+		const bpAttachmentsStore = select( 'bp-attachments' );
+
+		return {
+			selectable: bpAttachmentsStore.isSelectable(),
+			media: bpAttachmentsStore.getFiles(),
+		};
+	} ),
 	withDispatch( ( dispatch ) => ( {
 		onToggleSelectable( selectable ) {
 			dispatch( 'bp-attachments' ).toggleSelectable( selectable );

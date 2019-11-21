@@ -84,7 +84,7 @@ class BP_Media_Uploader extends Component {
 	}
 
 	render() {
-		const { onFilesDropped, isUploading, hasUploaded, uploaded, files, errored, user } = this.props;
+		const { onFilesDropped, isUploading, hasUploaded, uploaded, files, errored, user, isSelectable } = this.props;
 		const { uploadEnabled, makedirEnabled } = this.state;
 		let mediaItems, dzClass = 'disabled', dfClass = 'disabled', result = [];
 
@@ -111,6 +111,7 @@ class BP_Media_Uploader extends Component {
 						icon={ file.icon }
 						vignette={ file.vignette }
 						orientation={ file.orientation }
+						isSelected= { file.selected || false }
 					/>
 				);
 			} );
@@ -150,7 +151,7 @@ class BP_Media_Uploader extends Component {
 					</ol>
 				}
 				<BreadCrumb />
-				<div className="media-items">
+				<div className={ isSelectable ? 'media-items mode-select' : 'media-items' }>
                     { mediaItems }
                 </div>
 			</Fragment>
@@ -169,6 +170,7 @@ const BP_Media_UI = compose( [
 			uploaded: bpAttachmentsStore.getUploadedFiles(),
 			files: bpAttachmentsStore.getFiles(),
 			errored: bpAttachmentsStore.getErroredFiles(),
+			isSelectable: bpAttachmentsStore.isSelectable(),
 		};
 	} ),
 	withDispatch( ( dispatch ) => ( {
