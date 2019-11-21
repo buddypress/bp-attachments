@@ -75,6 +75,24 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	 * @return bool|WP_Error
 	 */
 	public function get_items_permissions_check( $request ) {
+		$retval = true;
+
+		/**
+		 * Restrict the endpoint to Site Admins during
+		 * development process.
+		 *
+		 * @todo build a BP Attachments capacity management.
+		 */
+		if ( ! current_user_can( 'manage_options' ) ) {
+			$retval = new WP_Error(
+				'bp_rest_authorization_required',
+				__( 'Sorry, you are not allowed to request media.', 'bp-attachments' ),
+				array(
+					'status' => rest_authorization_required_code(),
+				)
+			);
+		}
+
 		/**
 		 * Filter the BP Attachments media `get_items` permissions check.
 		 *
@@ -83,7 +101,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		 * @param bool|WP_Error   $retval  Returned value.
 		 * @param WP_REST_Request $request The request sent to the API.
 		 */
-		return apply_filters( 'bp_attachments_get_items_rest_permissions_check', true, $request );
+		return apply_filters( 'bp_attachments_get_items_rest_permissions_check', $retval, $request );
 	}
 
 	/**
@@ -150,7 +168,13 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	public function create_item_permissions_check( $request ) {
 		$retval = true;
 
-		if ( ! is_user_logged_in() ) {
+		/**
+		 * Restrict the endpoint to Site Admins during
+		 * development process.
+		 *
+		 * @todo build a BP Attachments capacity management.
+		 */
+		if ( ! current_user_can( 'manage_options' ) ) {
 			$retval = new WP_Error(
 				'bp_rest_authorization_required',
 				__( 'Sorry, you are not allowed to create media.', 'bp-attachments' ),

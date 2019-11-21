@@ -81,7 +81,7 @@ function bp_attachments_admin_menu() {
 	add_media_page(
 		__( 'BuddyPress Media', 'bp-attachments' ),
 		__( 'BuddyPress Media', 'bp-attachments' ),
-		'upload_files',
+		'manage_options', // Restrict the menu to Site Admins during development process.
 		'bp-user-media',
 		'bp_attachments_admin_media'
 	);
