@@ -435,13 +435,39 @@ function bp_attachments_list_member_root_objects( $user_id = 0, $object_dir = ''
 		// Get the directory types for the member.
 		if ( 'groups' !== $object_dir ) {
 			$list = bp_attachments_get_directory_types();
+
+			// Get the groups the user is a member of.
 		} else {
-			/**
-			 * Get the list of groups the current user is a member of.
-			 *
-			 * @todo
-			 */
-			$list = array();
+			$user_groups = groups_get_groups(
+				array(
+					'user_id'     => $user_id,
+					'show_hidden' => true,
+					'per_page'    => false,
+				)
+			);
+
+			foreach ( $user_groups['groups'] as $group ) {
+				$list[ 'group' . $group->id ] = (object) array_merge(
+					array(
+						'id'            => 'group-' . $group->id,
+						'title'         => $group->name,
+						'media_type'    => 'avatar',
+						'object'        => 'groups',
+						'name'          => $group->slug,
+						'last_modified' => $group->date_created,
+						'description'   => __( 'This directory contains the media directories attached to this group', 'bp-attachments' ),
+						'icon'          => bp_core_fetch_avatar(
+							array(
+								'item_id' => $group->id,
+								'object'  => 'group',
+								'type'    => 'full',
+								'html'    => false,
+							)
+						),
+					),
+					$common_props
+				);
+			}
 		}
 	} else {
 		$list['groups'] = (object) array_merge(
@@ -449,6 +475,7 @@ function bp_attachments_list_member_root_objects( $user_id = 0, $object_dir = ''
 				'id'            => 'groups-' . $user_id,
 				'title'         => __( 'My Groups', 'bp-attachments' ),
 				'media_type'    => 'groups',
+				'object'        => 'groups',
 				'name'          => 'groups',
 				'last_modified' => $current_time,
 				'description'   => __( 'This directory contains the media directories of the groups you are a member of.', 'bp-attachments' ),

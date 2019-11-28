@@ -95,6 +95,10 @@ async function getJsonResponse( response, relativePath ) {
 function * requestMedia( args ) {
 	let path = '/buddypress/v1/attachments?context=edit';
 
+	if ( args && args.object ) {
+		path += '&object=' + args.object;
+	}
+
 	if ( args && args.directory ) {
 		path += '&directory=';
 

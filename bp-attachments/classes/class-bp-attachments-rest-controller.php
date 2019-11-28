@@ -116,28 +116,53 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		$basedir = bp_attachments_uploads_dir_get()['basedir'];
 
 		$parent  = $request->get_param( 'directory' );
+		$object  = $request->get_param( 'object' );
 		$user_id = $request->get_param( 'user_id' );
+		$group   = null;
 
 		if ( $parent && ! in_array( $parent, array( 'member', 'groups' ), true ) ) {
-			$object     = $request->get_param( 'object' );
 			$visibility = 'private';
 
 			if ( ! $user_id ) {
 				$user_id = get_current_user_id();
 			}
 
+			// The object ID defaults to the user ID.
+			$object_id = $user_id;
+
 			if ( 'private' === $parent || 'public' === $parent ) {
 				$visibility = $parent;
 				$parent     = '';
 			} else {
 				$parse_parent = explode( '/', trim( $parent, '/' ) );
-				$visibility   = $parse_parent[0];
+
+				if ( 'groups' === $object ) {
+					$group_slug = reset( $parse_parent );
+					$object_id  = (int) BP_Groups_Group::get_id_from_slug( $group_slug );
+					$group      = groups_get_group( $object_id );
+
+					if ( ! isset( $group->status ) || ! groups_is_user_member( $user_id, $group->id ) ) {
+						return new WP_Error(
+							'rest_bp_attachments_missing_group',
+							__( 'The group does not exist or the user is not a member of this group.', 'bp_attachments' ),
+							array(
+								'status' => 500,
+							)
+						);
+					}
+
+					if ( ! in_array( $group->status, array( 'hidden', 'private' ), true ) ) {
+						$visibility = 'public';
+					}
+				} else {
+					$visibility = $parse_parent[0];
+				}
 
 				array_splice( $parse_parent, 0, 3 );
 				$parent = implode( '/', $parse_parent );
 			}
 
-			$dir   = bp_attachments_get_media_uploads_dir( $visibility )['path'] . '/' . $object . '/' . $user_id;
+			$dir   = bp_attachments_get_media_uploads_dir( $visibility )['path'] . '/' . $object . '/' . $object_id;
 			$dir   = trailingslashit( $dir ) . $parent;
 			$media = bp_attachments_list_media_in_directory( $dir );
 		} else {
@@ -153,7 +178,16 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		}
 
 		$response = rest_ensure_response( $retval );
-		$response->header( 'X-BP-Attachments-Relative-Path', str_replace( $basedir, '', $dir ) );
+
+		// Set the default relative path.
+		$relative_path = str_replace( $basedir, '', $dir );
+
+		// Use the group's slug into the relative path.
+		if ( $group && $group instanceof BP_Groups_Group ) {
+			$relative_path = str_replace( $object . '/' . $object_id, $object . '/' . $group->slug, $relative_path );
+		}
+
+		$response->header( 'X-BP-Attachments-Relative-Path', $relative_path );
 		return $response;
 	}
 

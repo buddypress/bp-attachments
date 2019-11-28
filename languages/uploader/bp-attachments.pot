@@ -3,22 +3,10 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "X-Generator: babel-plugin-makepot\n"
 
-#: bp-attachments/js/src/uploader/elements/media-toolbar.js:51
-msgid "Display list"
+#: bp-attachments/js/src/uploader/elements/media-item.js:69
+msgid "Details for: %s"
 msgstr ""
 
-#: bp-attachments/js/src/uploader/elements/media-toolbar.js:54
-msgid "Display grid"
-msgstr ""
-
-#: bp-attachments/js/src/uploader/elements/media-toolbar.js:60
-msgid "Delete selection"
-msgstr ""
-
-#: bp-attachments/js/src/uploader/elements/media-toolbar.js:64
-msgid "Bulk Select"
-msgstr ""
-
-#: bp-attachments/js/src/uploader/elements/media-toolbar.js:64
-msgid "Cancel"
+#: bp-attachments/js/src/uploader/elements/media-item.js:77
+msgid "@todo Fetch the Media properties."
 msgstr ""

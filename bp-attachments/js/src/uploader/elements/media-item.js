@@ -35,7 +35,7 @@ class MediaItem extends Component {
 	}
 
 	onMediaClick() {
-		const { mediaOpen, toggleMediaSelection, mimeType, name, path, isSelectable, id } = this.props;
+		const { mediaOpen, toggleMediaSelection, mimeType, name, path, isSelectable, id, object } = this.props;
 		const { isSelected } = this.state;
 
 		if ( isSelectable ) {
@@ -44,7 +44,7 @@ class MediaItem extends Component {
 		}
 
 		if ( 'inode/directory' === mimeType ) {
-			return mediaOpen( { name: name, path: path } );
+			return mediaOpen( { name: name, path: path, object: object } );
 		}
 
 		return this.openModal();
@@ -94,7 +94,7 @@ export default compose( [
 	} ),
 	withDispatch( ( dispatch ) => ( {
 		mediaOpen( media ) {
-			dispatch( 'bp-attachments' ).requestMedia( { directory: media.name, path: media.path } );
+			dispatch( 'bp-attachments' ).requestMedia( { directory: media.name, path: media.path, object: media.object } );
 		},
 		toggleMediaSelection( id, isSelected ) {
 			dispatch( 'bp-attachments' ).toggleMediaSelection( id, isSelected );

@@ -112,6 +112,7 @@ class BP_Media_Uploader extends Component {
 						vignette={ file.vignette }
 						orientation={ file.orientation }
 						isSelected= { file.selected || false }
+						object= { file.object || 'members' }
 					/>
 				);
 			} );

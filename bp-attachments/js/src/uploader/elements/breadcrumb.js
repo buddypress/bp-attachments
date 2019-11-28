@@ -34,7 +34,11 @@ class BreadCrumb extends Component {
 	render() {
 		const { path, user } = this.props;
 		const crumbs = trim( path, '/' ).split( '/' );
-		const objectPath = '/' + crumbs[0] + '/' + crumbs[1] + '/' + user.id + '/';
+		let objectPath = '/' + crumbs[0] + '/' + crumbs[1] + '/' + user.id + '/';
+
+		if ( 'groups' === crumbs[1] ) {
+			objectPath = '/' + crumbs[0] + '/' + crumbs[1] + '/' + crumbs[2] + '/';
+		}
 
 		if ( ! path ) {
 			return null;
@@ -42,26 +46,37 @@ class BreadCrumb extends Component {
 
 		let currentCrumb = last( crumbs ), crumbsList = crumbs, crumbItems;
 
-		// HardCoded for development purpose.
-		// @todo Make it completely variable!
+		// Set the current crumb and list of available ones.
 		if ( path === objectPath ) {
 			currentCrumb = crumbs[0];
 			crumbsList = [];
+
+			if ( 'groups' === crumbs[1] ) {
+				currentCrumb = crumbs[2];
+				crumbsList = [ crumbs[1] ];
+			}
 		} else {
 			crumbsList = drop( crumbsList, 3 );
 			crumbsList = dropRight( crumbsList, 1 );
-			crumbsList.unshift( crumbs[0] );
+
+			if ( 'groups' === crumbs[1] ) {
+				crumbsList.unshift( crumbs[1] );
+			} else {
+				crumbsList.unshift( crumbs[0] );
+			}
 		}
 
-		/**
-		 * @todo: remove the last crumb then loop on each
-		 * to attach a link
-		 */
+		// Build the BreadCrumb items.
 		if ( crumbsList.length ) {
 			crumbItems = crumbsList.map( ( crumb ) => {
 				let slug = crumb + '/';
 				if ( crumb === crumbs[0] ) {
 					slug = '';
+				}
+
+				if ( 'groups' === crumbs[1] && crumb === crumbs[1] ) {
+					slug = '';
+					objectPath = crumbs[1];
 				}
 
 				return (
@@ -99,7 +114,18 @@ export default compose( [
 	} ),
 	withDispatch( ( dispatch ) => ( {
 		changeDirectory( crumbItem ) {
-			dispatch( 'bp-attachments' ).requestMedia( { directory: crumbItem } );
+			let object = 'members';
+
+			/**
+			 * This needs to be improved.
+			 *
+			 * @todo
+			 */
+			if ( 'groups' === crumbItem ) {
+				object = 'groups';
+			}
+
+			dispatch( 'bp-attachments' ).requestMedia( { directory: crumbItem, object: object } );
 		},
 	} ) ),
 ] )( BreadCrumb );
