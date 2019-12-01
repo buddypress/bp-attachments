@@ -296,10 +296,11 @@ function bp_attachments_list_dir_media( $dir = '' ) {
  *
  * @since 1.0.0
  *
- * @param string $dir Absolute path to the directory to list media items for.
- * @return array      The list of media items found.
+ * @param string $dir    Absolute path to the directory to list media items for.
+ * @param string $object The type of object being listed. Possible values are `members` or `groups`.
+ * @return array         The list of media items found.
  */
-function bp_attachments_list_media_in_directory( $dir = '' ) {
+function bp_attachments_list_media_in_directory( $dir = '', $object = 'members' ) {
 	$list = array();
 
 	if ( ! is_dir( $dir ) ) {
@@ -344,6 +345,9 @@ function bp_attachments_list_media_in_directory( $dir = '' ) {
 				$media_data->orientation = 'portrait';
 			}
 		}
+
+		// Set the object type of the media.
+		$media_data->object = $object;
 
 		// Merge all JSON data of the directory.
 		$list[] = $media_data;

@@ -137,7 +137,13 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 				$parse_parent = explode( '/', trim( $parent, '/' ) );
 
 				if ( 'groups' === $object ) {
-					$group_slug = reset( $parse_parent );
+					$parse_group = $parse_parent;
+
+					if ( isset( $parse_group[1] ) && 'groups' === $parse_group[1] && in_array( $parse_group[0], array( 'private', 'public' ), true ) ) {
+						$parse_group = array_slice( $parse_group, 2 );
+					}
+
+					$group_slug = reset( $parse_group );
 					$object_id  = (int) BP_Groups_Group::get_id_from_slug( $group_slug );
 					$group      = groups_get_group( $object_id );
 
@@ -164,7 +170,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 
 			$dir   = bp_attachments_get_media_uploads_dir( $visibility )['path'] . '/' . $object . '/' . $object_id;
 			$dir   = trailingslashit( $dir ) . $parent;
-			$media = bp_attachments_list_media_in_directory( $dir );
+			$media = bp_attachments_list_media_in_directory( $dir, $object );
 		} else {
 			$media = bp_attachments_list_member_root_objects( $user_id, $parent );
 			unset( $parent );

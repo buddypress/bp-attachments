@@ -21,14 +21,19 @@ class BreadCrumb extends Component {
 	onCrumbClick( event ) {
 		event.preventDefault();
 
-		const { changeDirectory } = this.props;
+		const { changeDirectory, path } = this.props;
 		let crumbItem = event.currentTarget.getAttribute( 'data-path' );
+		let object = 'members';
 
 		if ( 'root' === crumbItem ) {
 			crumbItem = '';
 		}
 
-		return changeDirectory( crumbItem );
+		if ( 'groups' === trim( path, '/' ).split( '/' )[1] ) {
+			object = 'groups';
+		}
+
+		return changeDirectory( crumbItem, object );
 	}
 
 	render() {
@@ -37,7 +42,7 @@ class BreadCrumb extends Component {
 		let objectPath = '/' + crumbs[0] + '/' + crumbs[1] + '/' + user.id + '/';
 
 		if ( 'groups' === crumbs[1] ) {
-			objectPath = '/' + crumbs[0] + '/' + crumbs[1] + '/' + crumbs[2] + '/';
+			objectPath = '/' + crumbs[0] + '/' + crumbs[1] + '/';
 		}
 
 		if ( ! path ) {
@@ -56,12 +61,13 @@ class BreadCrumb extends Component {
 				crumbsList = [ crumbs[1] ];
 			}
 		} else {
-			crumbsList = drop( crumbsList, 3 );
 			crumbsList = dropRight( crumbsList, 1 );
 
 			if ( 'groups' === crumbs[1] ) {
+				crumbsList = drop( crumbsList, 2 );
 				crumbsList.unshift( crumbs[1] );
 			} else {
+				crumbsList = drop( crumbsList, 3 );
 				crumbsList.unshift( crumbs[0] );
 			}
 		}
@@ -70,19 +76,21 @@ class BreadCrumb extends Component {
 		if ( crumbsList.length ) {
 			crumbItems = crumbsList.map( ( crumb ) => {
 				let slug = crumb + '/';
+				let relPath = objectPath;
+
 				if ( crumb === crumbs[0] ) {
 					slug = '';
 				}
 
 				if ( 'groups' === crumbs[1] && crumb === crumbs[1] ) {
 					slug = '';
-					objectPath = crumbs[1];
+					relPath = crumbs[1];
 				}
 
 				return (
 					<Fragment key={ crumb }>
 						<Dashicon icon="arrow-right"/>
-						<a href={ '#' + crumb } data-path={ objectPath + slug } onClick={ ( e ) => this.onCrumbClick( e ) }>
+						<a href={ '#' + crumb } data-path={ relPath + slug } onClick={ ( e ) => this.onCrumbClick( e ) }>
 							<span>{ crumb }</span>
 						</a>
 					</Fragment>
@@ -113,18 +121,7 @@ export default compose( [
 		};
 	} ),
 	withDispatch( ( dispatch ) => ( {
-		changeDirectory( crumbItem ) {
-			let object = 'members';
-
-			/**
-			 * This needs to be improved.
-			 *
-			 * @todo
-			 */
-			if ( 'groups' === crumbItem ) {
-				object = 'groups';
-			}
-
+		changeDirectory( crumbItem, object ) {
 			dispatch( 'bp-attachments' ).requestMedia( { directory: crumbItem, object: object } );
 		},
 	} ) ),

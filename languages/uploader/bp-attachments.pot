@@ -3,34 +3,22 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "X-Generator: babel-plugin-makepot\n"
 
-#: bp-attachments/js/src/uploader/elements/directory-form.js:52
-msgid "Create a new directory"
+#: bp-attachments/js/src/uploader/elements/media-toolbar.js:51
+msgid "Display list"
 msgstr ""
 
-#: bp-attachments/js/src/uploader/elements/directory-form.js:54
-msgid "Type a name for your directory"
+#: bp-attachments/js/src/uploader/elements/media-toolbar.js:54
+msgid "Display grid"
 msgstr ""
 
-#: bp-attachments/js/src/uploader/elements/directory-form.js:59
-msgid "Select a type for your directory"
+#: bp-attachments/js/src/uploader/elements/media-toolbar.js:60
+msgid "Delete selection"
 msgstr ""
 
-#: bp-attachments/js/src/uploader/elements/directory-form.js:62
-msgid "File directory"
+#: bp-attachments/js/src/uploader/elements/media-toolbar.js:64
+msgid "Bulk Select"
 msgstr ""
 
-#: bp-attachments/js/src/uploader/elements/directory-form.js:63
-msgid "Photo Album"
-msgstr ""
-
-#: bp-attachments/js/src/uploader/elements/directory-form.js:64
-msgid "Audio Playlist"
-msgstr ""
-
-#: bp-attachments/js/src/uploader/elements/directory-form.js:65
-msgid "Video Playlist"
-msgstr ""
-
-#: bp-attachments/js/src/uploader/elements/directory-form.js:70
-msgid "Save directory"
+#: bp-attachments/js/src/uploader/elements/media-toolbar.js:64
+msgid "Cancel"
 msgstr ""
