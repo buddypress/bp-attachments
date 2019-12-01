@@ -75,7 +75,7 @@ export default compose( [
 
 		return {
 			selectable: bpAttachmentsStore.isSelectable(),
-			media: bpAttachmentsStore.getFiles(),
+			media: bpAttachmentsStore.getMedia(),
 		};
 	} ),
 	withDispatch( ( dispatch ) => ( {

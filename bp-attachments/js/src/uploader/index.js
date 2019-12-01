@@ -169,7 +169,7 @@ const BP_Media_UI = compose( [
 			isUploading: bpAttachmentsStore.isUploading(),
 			hasUploaded: bpAttachmentsStore.hasUploaded(),
 			uploaded: bpAttachmentsStore.getUploadedFiles(),
-			files: bpAttachmentsStore.getFiles(),
+			files: bpAttachmentsStore.getMedia(),
 			errored: bpAttachmentsStore.getErroredFiles(),
 			isSelectable: bpAttachmentsStore.isSelectable(),
 		};
@@ -177,7 +177,7 @@ const BP_Media_UI = compose( [
 	withDispatch( ( dispatch ) => ( {
 		onFilesDropped( files ) {
 			files.forEach( file => {
-				dispatch( 'bp-attachments' ).saveAttachment( file );
+				dispatch( 'bp-attachments' ).insertMedium( file );
 			} );
 		},
 	} ) ),

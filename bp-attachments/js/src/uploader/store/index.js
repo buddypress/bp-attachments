@@ -9,7 +9,7 @@ const { registerStore, dispatch } = wp.data;
  */
 const { get, hasIn, reject, uniqueId, trimEnd, trim } = lodash;
 
-function getMediaDestinationData( state ) {
+function getMediumDestinationData( state ) {
 	const { relativePath } = state;
 
 	if ( ! relativePath ) {
@@ -27,7 +27,7 @@ function getMediaDestinationData( state ) {
 	}
 }
 
-function * saveAttachment( file ) {
+function * insertMedium( file ) {
 	let uploading = true, uploaded;
 	const parentDir = store.getState().relativePath;
 
@@ -43,7 +43,7 @@ function * saveAttachment( file ) {
 
 	uploading = false;
 	try {
-		uploaded = yield actions.createMedia( '/buddypress/v1/attachments', formData );
+		uploaded = yield actions.createMedium( '/buddypress/v1/attachments', formData );
 		yield { type: 'UPLOAD_END', uploading, uploaded };
 		uploaded.uploaded = true;
 
@@ -67,7 +67,7 @@ function * createDirectory( directory ) {
 		type: directory.directoryType,
 	};
 	const currentState = store.getState();
-	const { object, item, status } = getMediaDestinationData( currentState );
+	const { object, item, status } = getMediumDestinationData( currentState );
 	const parentDir = currentState.relativePath;
 
 	yield { type: 'UPLOAD_START', uploading, file };
@@ -94,7 +94,7 @@ function * createDirectory( directory ) {
 
 	uploading = false;
 	try {
-		uploaded = yield actions.createMedia( '/buddypress/v1/attachments', formData );
+		uploaded = yield actions.createMedium( '/buddypress/v1/attachments', formData );
 		yield { type: 'UPLOAD_END', uploading, uploaded };
 		uploaded.uploaded = true;
 
@@ -118,7 +118,7 @@ async function getJsonResponse( response, relativePath ) {
 	} );
 
 	store.dispatch(
-		actions.getFiles( files, relativePath )
+		actions.getMedia( files, relativePath )
 	);
 }
 
@@ -176,9 +176,9 @@ const actions = {
 	},
 
 	requestMedia,
-	getFiles( files, relativePath ) {
+	getMedia( files, relativePath ) {
 		return {
-			type: 'GET_FILES',
+			type: 'GET_MEDIA',
 			files,
 			relativePath,
 		};
@@ -192,11 +192,11 @@ const actions = {
 		};
 	},
 
-	saveAttachment,
+	insertMedium,
 	createDirectory,
-	createMedia( path, formData ) {
+	createMedium( path, formData ) {
 		return {
-			type: 'CREATE_MEDIA',
+			type: 'CREATE_MEDIUM',
 			path,
 			formData,
 		};
@@ -247,7 +247,7 @@ const store = registerStore( 'bp-attachments', {
 					user: action.user,
 				};
 
-			case 'GET_FILES':
+			case 'GET_MEDIA':
 				return {
 					...state,
 					files: action.files,
@@ -344,7 +344,7 @@ const store = registerStore( 'bp-attachments', {
 			return errored;
 		},
 
-		getFiles( state ) {
+		getMedia( state ) {
 			const { files } = state;
 			return files;
 		},
@@ -366,7 +366,7 @@ const store = registerStore( 'bp-attachments', {
 	},
 
 	controls: {
-		CREATE_MEDIA( action ) {
+		CREATE_MEDIUM( action ) {
 			return apiFetch( { path: action.path, method: 'POST', body: action.formData } );
 		},
 
@@ -382,10 +382,10 @@ const store = registerStore( 'bp-attachments', {
 			yield actions.getLoggedInUser( user );
 		},
 
-		* getFiles() {
+		* getMedia() {
 			const path = '/buddypress/v1/attachments?context=edit';
 			const files = yield actions.fetchFromAPI( path, true );
-			return actions.getFiles( files, '' );
+			return actions.getMedia( files, '' );
 		},
 	},
 } );

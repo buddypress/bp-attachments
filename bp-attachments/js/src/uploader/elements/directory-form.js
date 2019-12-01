@@ -76,7 +76,7 @@ class DirectoryForm extends Component {
 
 export default compose( [
 	withSelect( ( select ) => ( {
-		files: select( 'bp-attachments' ).getFiles(),
+		files: select( 'bp-attachments' ).getMedia(),
 	} ) ),
 	withDispatch( ( dispatch ) => ( {
 		onDirectoryCreate( directory ) {
