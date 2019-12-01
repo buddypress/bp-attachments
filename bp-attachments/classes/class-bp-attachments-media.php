@@ -53,6 +53,9 @@ class BP_Attachments_Media extends BP_Attachment {
 					13 => __( 'A file with this name already exists but the revisions directory is missing.', 'bp-attachments' ),
 					14 => __( 'A file with this name already exists but the data describing this existing file are missing.', 'bp-attachments' ),
 					15 => __( 'Unexpected error, please contact the administrator of the site.', 'bp-attachments' ),
+					16 => __( 'The destination directory is missing.', 'bp-attachments' ),
+					17 => __( 'Unknown group. Please try again', 'bp-attachments' ),
+					18 => __( 'Unknown user. Please try again', 'bp-attachments' ),
 				),
 			)
 		);
@@ -143,10 +146,11 @@ class BP_Attachments_Media extends BP_Attachment {
 		$media_args = wp_parse_args(
 			array_map( 'wp_unslash', $_POST ), // phpcs:ignore
 			array(
-				'status'     => 'private',
-				'object'     => 'members',
-				'object_id'  => 0,
-				'parent_dir' => '',
+				'status'      => 'private',
+				'object'      => 'members',
+				'object_id'   => 0,
+				'object_slug' => '',
+				'parent_dir'  => '',
 			)
 		);
 
@@ -155,8 +159,8 @@ class BP_Attachments_Media extends BP_Attachment {
 			$subdir     = '/' . trim( $media_args['parent_dir'], '/' );
 
 			if ( ! is_dir( $bp_uploads['basedir'] . $subdir ) ) {
-				$subdir              = '';
-				$upload_dir['error'] = __( 'Please select an existing directory.', 'bp-attachments' );
+				$subdir                                  = '';
+				$upload_dir['bp_attachments_error_code'] = 16;
 			} else {
 				$upload_dir = array_merge(
 					$upload_dir,
@@ -172,12 +176,13 @@ class BP_Attachments_Media extends BP_Attachment {
 			$public_uploads  = bp_attachments_get_public_uploads_dir();
 
 			if ( 'groups' === $media_args['object'] && bp_is_active( 'groups' ) ) {
-				$group_id = (int) $media_args['object_id'];
-				$group    = groups_get_group( $group_id );
+				$group_slug = $media_args['object_slug'];
+				$group_id   = (int) BP_Groups_Group::get_id_from_slug( $group_slug );
+				$group      = groups_get_group( $group_id );
 
-				if ( $group_id !== (int) $group->id ) {
-					$subdir              = '';
-					$upload_dir['error'] = __( 'Unknown group. Please try again', 'bp-attachments' );
+				if ( ! $group_id || $group_id !== (int) $group->id ) {
+					$subdir                                  = '';
+					$upload_dir['bp_attachments_error_code'] = 17;
 				} else {
 					if ( 'public' === $group->status ) {
 						$upload_dir = $public_uploads;
@@ -207,8 +212,8 @@ class BP_Attachments_Media extends BP_Attachment {
 				}
 
 				if ( ! $user_id ) {
-					$subdir              = '';
-					$upload_dir['error'] = __( 'Unknown user. Please try again', 'bp-attachments' );
+					$subdir                                  = '';
+					$upload_dir['bp_attachments_error_code'] = 18;
 				} else {
 					$upload_dir = $private_uploads;
 					if ( $media_args['status'] && 'private' !== $media_args['status'] ) {
@@ -262,7 +267,9 @@ class BP_Attachments_Media extends BP_Attachment {
 		// Check for an existing file with the same name to eventually create a revision.
 		$upload_data = $this->upload_dir_filter( bp_upload_dir() );
 
-		if ( isset( $upload_data['error'] ) && $upload_data['error'] ) {
+		if ( isset( $upload_data['bp_attachments_error_code'] ) && $upload_data['bp_attachments_error_code'] ) {
+			$file['error'] = $upload_data['bp_attachments_error_code'];
+		} elseif ( isset( $upload_data['error'] ) && $upload_data['error'] ) {
 			$file['error'] = 15;
 		} else {
 			$dir      = trailingslashit( $upload_data['path'] );
@@ -328,8 +335,12 @@ class BP_Attachments_Media extends BP_Attachment {
 		// Restore WordPress Uploads data.
 		remove_filter( 'upload_dir', array( $this, 'upload_dir_filter' ), 10, 1 );
 
+		if ( isset( $destination_data['bp_attachments_error_code'] ) && $destination_data['bp_attachments_error_code'] ) {
+			return new WP_Error( 'bp_attachments_error', $this->upload_error_strings[ $destination_data['bp_attachments_error_code'] ] );
+		}
+
 		if ( isset( $destination_data['error'] ) && $destination_data['error'] ) {
-			return new WP_Error( 'missing_destination', __( 'The destination for your directory was not found.', 'bp-attachments' ) );
+			return new WP_Error( 'unexpected_error', $destination_data['error'] );
 		}
 
 		$path = trailingslashit( $destination_data['path'] ) . $directory_name;

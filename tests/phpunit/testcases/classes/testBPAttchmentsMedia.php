@@ -50,7 +50,7 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 		$result = array_intersect_key( $public_member_uploads, $expected );
 
 		$this->assertSame( $expected, $result );
-		$this->assertFalse( $public_member_uploads['error'] );
+		$this->assertTrue( ! isset( $public_member_uploads['bp_attachments_error_code'] ) );
 	}
 
 	public function test_bp_attachments_media_upload_dir_filter_member_private() {
@@ -72,7 +72,7 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 		$result = array_intersect_key( $private_member_uploads, $expected );
 
 		$this->assertSame( $expected, $result );
-		$this->assertFalse( $private_member_uploads['error'] );
+		$this->assertTrue( ! isset( $private_member_uploads['bp_attachments_error_code'] ) );
 	}
 
 	public function test_bp_attachments_media_upload_dir_filter_member_error() {
@@ -85,7 +85,7 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 
 		$error_member_uploads = $media->upload_dir_filter();
 
-		$this->assertTrue( false !== $error_member_uploads['error'] );
+		$this->assertTrue( 18 === $error_member_uploads['bp_attachments_error_code'] );
 	}
 
 	public function mmdir( $path ) {
@@ -118,7 +118,7 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 
 		$missing_parent_dir_uploads = $media->upload_dir_filter();
 
-		$this->assertTrue( false !== $missing_parent_dir_uploads['error'] );
+		$this->assertTrue( 16 === $missing_parent_dir_uploads['bp_attachments_error_code'] );
 	}
 
 	public function test_bp_attachments_media_upload_dir_filter_parent_dir() {
@@ -142,21 +142,21 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 		$result = array_intersect_key( $parent_dir_member_uploads, $expected );
 
 		$this->assertSame( $expected, $result );
-		$this->assertFalse( $parent_dir_member_uploads['error'] );
+		$this->assertTrue( ! isset( $parent_dir_member_uploads['bp_attachments_error_code'] ) );
 
 		$this->rrmdir( $this->bp_uploads['basedir'] . '/public' );
 	}
 
 	public function test_bp_attachments_media_upload_dir_filter_group_public() {
 		$media = new BP_Attachments_Media();
-		$group_id = self::factory()->group->create();
+		$group = self::factory()->group->create_and_get();
 
 		$_POST = array(
-			'object'    => 'groups',
-			'object_id' => $group_id,
+			'object'      => 'groups',
+			'object_slug' => $group->slug,
 		);
 
-		$subdir = '/public/groups/' . $group_id;
+		$subdir = '/public/groups/' . $group->id;
 
 		$public_group_uploads = $media->upload_dir_filter();
 		$expected = array(
@@ -167,19 +167,19 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 		$result = array_intersect_key( $public_group_uploads, $expected );
 
 		$this->assertSame( $expected, $result );
-		$this->assertFalse( $public_group_uploads['error'] );
+		$this->assertTrue( ! isset( $public_group_uploads['bp_attachments_error_code'] ) );
 	}
 
 	public function test_bp_attachments_media_upload_dir_filter_group_private() {
 		$media = new BP_Attachments_Media();
-		$group_id = self::factory()->group->create( array( 'status' => 'private' ) );
+		$group = self::factory()->group->create_and_get( array( 'status' => 'private' ) );
 
 		$_POST = array(
-			'object'    => 'groups',
-			'object_id' => $group_id,
+			'object'      => 'groups',
+			'object_slug' => $group->slug,
 		);
 
-		$subdir = '/private/groups/' . $group_id;
+		$subdir = '/private/groups/' . $group->id;
 
 		$private_group_uploads = $media->upload_dir_filter();
 		$expected = array(
@@ -190,20 +190,19 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 		$result = array_intersect_key( $private_group_uploads, $expected );
 
 		$this->assertSame( $expected, $result );
-		$this->assertFalse( $private_group_uploads['error'] );
+		$this->assertTrue( ! isset( $private_group_uploads['bp_attachments_error_code'] ) );
 	}
 
 	public function test_bp_attachments_media_upload_dir_filter_group_error() {
 		$media = new BP_Attachments_Media();
-		$group_id = 9999999;
 
 		$_POST = array(
-			'object'    => 'groups',
-			'object_id' => $group_id,
+			'object'      => 'groups',
+			'object_slug' => 'unexisting-slug',
 		);
 
 		$error_group_uploads = $media->upload_dir_filter();
 
-		$this->assertTrue( false !== $error_group_uploads['error'] );
+		$this->assertTrue( 17 === $error_group_uploads['bp_attachments_error_code'] );
 	}
 }

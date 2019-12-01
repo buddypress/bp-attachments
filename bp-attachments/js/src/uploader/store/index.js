@@ -7,7 +7,25 @@ const { registerStore, dispatch } = wp.data;
 /**
  * External dependencies
  */
-const { get, hasIn, reject, uniqueId, trimEnd } = lodash;
+const { get, hasIn, reject, uniqueId, trimEnd, trim } = lodash;
+
+function getMediaDestinationData( state ) {
+	const { relativePath } = state;
+
+	if ( ! relativePath ) {
+		return {
+			object: 'members',
+		}
+	}
+
+	const destinationData = trim( relativePath, '/' ).split( '/' );
+
+	return {
+		status: destinationData[0] ? destinationData[0] : 'private',
+		object: 'groups' === destinationData[1] ? 'groups' : 'members',
+		item: destinationData[2] ? destinationData[2] : '',
+	}
+}
 
 function * saveAttachment( file ) {
 	let uploading = true, uploaded;
@@ -48,7 +66,9 @@ function * createDirectory( directory ) {
 		name: directory.directoryName,
 		type: directory.directoryType,
 	};
-	const parentDir = store.getState().relativePath;
+	const currentState = store.getState();
+	const { object, item, status } = getMediaDestinationData( currentState );
+	const parentDir = currentState.relativePath;
 
 	yield { type: 'UPLOAD_START', uploading, file };
 
@@ -57,7 +77,18 @@ function * createDirectory( directory ) {
 	formData.append( 'directory_type', file.type );
 	formData.append( 'action', 'bp_attachments_make_directory' );
 
-	if ( parentDir ) {
+	if ( 'groups' === object ) {
+		formData.append( 'object', object );
+		formData.append( 'object_slug', item );
+	} else {
+		formData.append( 'object_id', item );
+	}
+
+	if ( status ) {
+		formData.append( 'status', status );
+	}
+
+	if ( trim( parentDir, '/' ) !== status + '/' + object + '/' + item ) {
 		formData.append( 'parent_dir', parentDir );
 	}
 

@@ -122,7 +122,7 @@ class BP_attachments_REST_controller_UnitTestCase extends WP_Test_REST_Controlle
 		$media_file  = BP_ATTACHMENTS_TESTS_DIR . '/assets/file-examples.com/file_example_JPG_100kB.jpg';
 
 		$u = $this->factory->user->create( array(
-			'role'       => 'subscriber',
+			'role'       => 'administrator',
 			'user_email' => 'subscriber@example.com',
 		) );
 
@@ -169,7 +169,7 @@ class BP_attachments_REST_controller_UnitTestCase extends WP_Test_REST_Controlle
 	public function test_create_item_directory() {
 		$reset_post  = $_POST;
 		$u = $this->factory->user->create( array(
-			'role'       => 'subscriber',
+			'role'       => 'administrator',
 			'user_email' => 'subscriber@example.com',
 		) );
 
