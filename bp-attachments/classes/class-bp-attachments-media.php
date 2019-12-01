@@ -158,6 +158,19 @@ class BP_Attachments_Media extends BP_Attachment {
 			$bp_uploads = bp_attachments_uploads_dir_get();
 			$subdir     = '/' . trim( $media_args['parent_dir'], '/' );
 
+			if ( 'groups' === $media_args['object'] && bp_is_active( 'groups' ) ) {
+				$group_slug = $media_args['object_slug'];
+				$group_id   = (int) BP_Groups_Group::get_id_from_slug( $group_slug );
+
+				if ( $group_id && ( current_user_can( 'bp_moderate' ) || groups_is_user_member( bp_loggedin_user_id(), $group_id ) ) ) {
+					$subdir = str_replace(
+						$media_args['status'] . '/groups/' . $media_args['object_slug'],
+						$media_args['status'] . '/groups/' . $group_id,
+						$subdir
+					);
+				}
+			}
+
 			if ( ! is_dir( $bp_uploads['basedir'] . $subdir ) ) {
 				$subdir                                  = '';
 				$upload_dir['bp_attachments_error_code'] = 16;

@@ -29,7 +29,9 @@ function getMediumDestinationData( state ) {
 
 function * insertMedium( file ) {
 	let uploading = true, uploaded;
-	const parentDir = store.getState().relativePath;
+	const currentState = store.getState();
+	const { object, item, status } = getMediumDestinationData( currentState );
+	const parentDir = currentState.relativePath;
 
 	yield { type: 'UPLOAD_START', uploading, file };
 
@@ -37,7 +39,18 @@ function * insertMedium( file ) {
 	formData.append( 'file', file );
 	formData.append( 'action', 'bp_attachments_media_upload' );
 
-	if ( parentDir ) {
+	if ( 'groups' === object ) {
+		formData.append( 'object', object );
+		formData.append( 'object_slug', item );
+	} else {
+		formData.append( 'object_id', item );
+	}
+
+	if ( status ) {
+		formData.append( 'status', status );
+	}
+
+	if ( trim( parentDir, '/' ) !== status + '/' + object + '/' + item ) {
 		formData.append( 'parent_dir', parentDir );
 	}
 
