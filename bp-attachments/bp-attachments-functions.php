@@ -183,6 +183,11 @@ function bp_attachments_create_media( $media = null ) {
 	$media->id            = md5( $media->name );
 	$media->last_modified = $media_data->getMTime();
 
+	// Set the owner ID.
+	if ( ! isset( $media->owner_id ) || ! $media->owner_id ) {
+		$media->owner_id = bp_loggedin_user_id();
+	}
+
 	// Set the title.
 	if ( ! isset( $media->title ) || ! $media->title ) {
 		$media->title = $media->name;
