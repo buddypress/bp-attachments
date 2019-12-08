@@ -96,8 +96,9 @@ class BP_attachments_REST_controller_UnitTestCase extends WP_Test_REST_Controlle
 		$routes = rest_get_server()->get_routes();
 		$this->assertArrayHasKey( $this->endpoint_url, $routes );
 		$this->assertCount( 2, $routes[ $this->endpoint_url ] );
-		//$this->assertArrayHasKey( $this->endpoint_url . '/(?P<id>[\d]+)', $routes );
-		//$this->assertCount( 3, $routes[$this->endpoint_url . '/(?P<id>[\d]+)'] );
+
+		$this->assertArrayHasKey( $this->endpoint_url . '/(?P<id>[\S]+)', $routes );
+		$this->assertCount( 1, $routes[$this->endpoint_url . '/(?P<id>[\S]+)'] );
 	}
 
 	public function test_context_param() {
@@ -249,8 +250,59 @@ class BP_attachments_REST_controller_UnitTestCase extends WP_Test_REST_Controlle
 		$this->markTestSkipped();
 	}
 
+	public function delete_tests_upload_dir( $uploads = array() ) {
+		$private_uploads = bp_attachments_get_private_uploads_dir();
+
+		foreach ( array_keys( $private_uploads ) as $key ) {
+			if ( in_array( $key, array( 'error', 'basedir', 'baseurl' ), true ) ) {
+				continue;
+			}
+
+			$private_uploads[ $key ] .= '/members/' . get_current_user_id();
+		}
+
+		return array_merge( $uploads, $private_uploads );
+	}
+
+	/**
+	 * @group rest_delete_item
+	 */
 	public function test_delete_item() {
-		$this->markTestSkipped();
+		$media      = new stdClass();
+		$media_file = BP_ATTACHMENTS_TESTS_DIR . '/assets/file-examples.com/file_example_XLS_10.xls';
+
+		$u = $this->factory->user->create( array(
+			'role'       => 'administrator',
+			'user_email' => 'subscriber@example.com',
+		) );
+
+		$this->bp_testcase->set_current_user( $u );
+
+		add_filter( 'upload_dir', array( $this, 'delete_tests_upload_dir' ), 10, 1 );
+
+		$uploads = wp_upload_dir( null, true );
+		$media->path = $uploads['path'] . '/file_example_XLS_10.xls';
+
+		remove_filter( 'upload_dir', array( $this, 'delete_tests_upload_dir' ), 10, 1 );
+
+		copy( $media_file, $media->path );
+		$delete = bp_attachments_create_media( $media );
+
+		add_filter( 'bp_attachments_uploads_dir_get', array( $this, 'filter_bp_attachments_uploads_dir' ), 100, 1 );
+
+		$request = new WP_REST_Request( 'DELETE', sprintf( $this->endpoint_url . '/%s/', $delete->id ) );
+		$request->set_param( 'context', 'edit' );
+		$request->set_param( 'path', $uploads['subdir'] );
+		$response = $this->server->dispatch( $request );
+
+		remove_filter( 'bp_attachments_uploads_dir_get', array( $this, 'filter_bp_attachments_uploads_dir' ), 100, 1 );
+
+		$this->assertNotInstanceOf( 'WP_Error', $response );
+		$this->assertEquals( 200, $response->get_status() );
+
+		$del_data = $response->get_data();
+		$this->assertSame( 'file_example_XLS_10.xls', $del_data['previous']['name'] );
+		$this->assertTrue( $del_data['deleted'] );
 	}
 
 	public function test_prepare_item() {

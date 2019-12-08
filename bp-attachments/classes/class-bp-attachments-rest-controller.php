@@ -64,6 +64,30 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 				'schema' => array( $this, 'get_public_item_schema' ),
 			)
 		);
+
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\S]+)/',
+			array(
+				'args'   => array(
+					'id'   => array(
+						'description' => __( 'An alphanumeric ID for the BP Medium object.', 'bp-attachments' ),
+						'type'        => 'string',
+					),
+					'path' => array(
+						'description' => __( 'Relative path to the BP Medium object.', 'bp-attachments' ),
+						'type'        => 'string',
+						'required'    => true,
+					),
+				),
+				array(
+					'methods'             => WP_REST_Server::DELETABLE,
+					'callback'            => array( $this, 'delete_item' ),
+					'permission_callback' => array( $this, 'delete_item_permissions_check' ),
+				),
+				'schema' => array( $this, 'get_item_schema' ),
+			)
+		);
 	}
 
 	/**
@@ -198,7 +222,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	}
 
 	/**
-	 * Check if the user can create new BP Attachments media.
+	 * Check if the user can create new BP Attachments Medium.
 	 *
 	 * @since 1.0.0
 	 *
@@ -236,7 +260,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	}
 
 	/**
-	 * Creates a BP Attachments Media.
+	 * Creates a BP Attachments Medium.
 	 *
 	 * @since 1.0.0
 	 *
@@ -352,6 +376,84 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 
 		// Return the response.
 		return rest_ensure_response( $media );
+	}
+
+	/**
+	 * Check if the user can delete a BP Attachments medium.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 * @return bool|WP_Error
+	 */
+	public function delete_item_permissions_check( $request ) {
+		$retval = true;
+
+		/**
+		 * Restrict the endpoint to Site Admins during
+		 * development process.
+		 *
+		 * @todo build a BP Attachments capacity management.
+		 */
+		if ( ! current_user_can( 'manage_options' ) ) {
+			$retval = new WP_Error(
+				'bp_rest_authorization_required',
+				__( 'Sorry, you are not allowed to delete media.', 'bp-attachments' ),
+				array(
+					'status' => rest_authorization_required_code(),
+				)
+			);
+		}
+
+		/**
+		 * Filter the BP Attachments media `delete_item` permissions check.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param bool|WP_Error   $retval  Returned value.
+		 * @param WP_REST_Request $request The request sent to the API.
+		 */
+		return apply_filters( 'bp_attachments_delete_item_rest_permissions_check', $retval, $request );
+	}
+
+	/**
+	 * Deletes a BP Attachments Medium.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param WP_REST_Request $request Full details about the request.
+	 * @return WP_Error|WP_REST_Response Response object on success, WP_Error object on failure.
+	 */
+	public function delete_item( $request ) {
+		$id   = trim( $request->get_param( 'id' ), '/' );
+		$path = $request->get_param( 'path' );
+
+		// Set the context of the request.
+		$request->set_param( 'context', 'edit' );
+
+		$basedir     = bp_attachments_uploads_dir_get()['basedir'];
+		$subdir      = '/' . trim( $path, '/' );
+		$medium_data = $basedir . $subdir . '/' . $id . '.json';
+
+		$data     = json_decode( wp_unslash( file_get_contents( $medium_data ) ) ); // phpcs:ignore
+		$previous = $this->prepare_item_for_response( $data, $request );
+
+		/**
+		 * Delete the medium
+		 *
+		 * @todo
+		 */
+
+		// Build the response.
+		$response = new WP_REST_Response();
+		$response->set_data(
+			array(
+				'deleted'  => true,
+				'previous' => $previous->get_data(),
+			)
+		);
+
+		return $response;
 	}
 
 	/**
