@@ -303,6 +303,7 @@ class BP_attachments_REST_controller_UnitTestCase extends WP_Test_REST_Controlle
 		$del_data = $response->get_data();
 		$this->assertSame( 'file_example_XLS_10.xls', $del_data['previous']['name'] );
 		$this->assertTrue( $del_data['deleted'] );
+		$this->assertFalse( file_exists( $uploads['path'] . '/' . $delete->name ) );
 	}
 
 	public function test_prepare_item() {

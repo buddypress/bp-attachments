@@ -595,3 +595,36 @@ function bp_attachments_get_directory_icon( $type = 'folder' ) {
 
 	return trailingslashit( buddypress()->attachments->assets_url ) . 'images/' . $svg . '.svg';
 }
+
+/**
+ * Deletes a directory and its content.
+ *
+ * @since 1.0.0
+ *
+ * @param string $path The absolute path of the directory.
+ * @return boolean     True on success. False otherwise.
+ */
+function bp_attachments_delete_directory( $path = '' ) {
+	$result = false;
+
+	if ( ! is_dir( $path ) ) {
+		return $result;
+	}
+
+	$result    = true;
+	$directory = new RecursiveDirectoryIterator( $path, FilesystemIterator::SKIP_DOTS );
+	$iterator  = new RecursiveIteratorIterator( $directory, RecursiveIteratorIterator::CHILD_FIRST );
+	foreach ( $iterator as $item ) {
+		if ( false === $result ) {
+			break;
+		}
+
+		if ( $item->isDir() ) {
+			$result = rmdir( $item->getRealPath() );
+		} else {
+			$result = unlink( $item->getRealPath() );
+		}
+	}
+
+	return $result;
+}

@@ -437,18 +437,56 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 
 		$data     = json_decode( wp_unslash( file_get_contents( $medium_data ) ) ); // phpcs:ignore
 		$previous = $this->prepare_item_for_response( $data, $request );
+		$deleted  = true;
 
 		/**
-		 * Delete the medium
-		 *
-		 * @todo
+		 * The medium is a a file. We need to delete:
+		 * - the file,
+		 * - its json data file,
+		 * - its revisions.
 		 */
+		if ( 'file' === $data->type ) {
+			// Delete the json file data.
+			if ( file_exists( $medium_data ) ) {
+				$deleted = unlink( $medium_data );
+			}
+
+			if ( true === $deleted ) {
+				// Delete revisions folder.
+				$deleted = bp_attachments_delete_directory( $basedir . $subdir . '/._revisions_' . $id );
+			}
+
+			if ( true === $deleted && file_exists( $basedir . $subdir . '/' . $data->name ) ) {
+				$deleted = unlink( $basedir . $subdir . '/' . $data->name );
+			}
+		} else {
+			/**
+			 * Delete a directory.
+			 */
+			return new WP_Error(
+				'bp_rest_delete_directory_failed',
+				__( 'Sorry, deleting a directory is not yet supported.', 'bp-attachments' ),
+				array(
+					'status' => 404,
+				)
+			);
+		}
+
+		if ( ! $deleted ) {
+			return new WP_Error(
+				'bp_rest_delete_media_failed',
+				__( 'Sorry, we were not able to delete the media.', 'bp-attachments' ),
+				array(
+					'status' => 500,
+				)
+			);
+		}
 
 		// Build the response.
 		$response = new WP_REST_Response();
 		$response->set_data(
 			array(
-				'deleted'  => true,
+				'deleted'  => $deleted,
 				'previous' => $previous->get_data(),
 			)
 		);
