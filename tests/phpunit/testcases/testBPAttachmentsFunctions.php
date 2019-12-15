@@ -49,4 +49,102 @@ class BP_Attachments_Functions_UnitTestCase extends BP_UnitTestCase {
 
 		$this->assertFalse( bp_attachments_is_file_type_allowed( $file, $filename ) );
 	}
+
+	public function get_public_uploads() {
+		add_filter( 'upload_dir', 'bp_attachments_get_public_uploads_dir', 10, 1 );
+		$directory = wp_upload_dir( 'delete_directory_test', true, true );
+		remove_filter( 'upload_dir', 'bp_attachments_get_public_uploads_dir', 10, 1 );
+
+		return $directory;
+	}
+
+	/**
+	 * @group delete_directory
+	 */
+	public function test_bp_attachments_delete_directory() {
+		$directory = $this->get_public_uploads();
+
+		$this->assertFalse( bp_attachments_delete_directory( $directory['path'] ) );
+
+		$object_dir = trailingslashit( $directory['path'] ) . 'members';
+		if ( ! is_dir( $object_dir ) ) {
+			mkdir( $object_dir );
+		}
+
+		$this->assertFalse( bp_attachments_delete_directory( $object_dir ) );
+
+		$item_dir = trailingslashit( $object_dir ) . '99';
+		if ( ! is_dir( $item_dir ) ) {
+			mkdir( $item_dir );
+		}
+
+		$this->assertFalse( bp_attachments_delete_directory( $item_dir ) );
+
+		$sub_dir = trailingslashit( $item_dir ) . 'random';
+		if ( ! is_dir( $sub_dir ) ) {
+			mkdir( $sub_dir );
+		}
+
+		$this->assertTrue( bp_attachments_delete_directory( $sub_dir ) );
+		$this->assertFalse( is_dir( $sub_dir ) );
+
+		// Clean
+		rmdir( $item_dir );
+		rmdir( $object_dir );
+		rmdir( $directory['path'] );
+	}
+
+	/**
+	 * @group delete_directory
+	 */
+	public function test_bp_attachments_delete_directory_multiple_files() {
+		$directory = $this->get_public_uploads();
+
+		$type_dir = $directory['path'];
+		if ( ! is_dir( $type_dir ) ) {
+			mkdir( $type_dir );
+		}
+
+		$object_dir = trailingslashit( $type_dir ) . 'members';
+		if ( ! is_dir( $object_dir ) ) {
+			mkdir( $object_dir );
+		}
+
+		$item_dir = trailingslashit( $object_dir ) . '999';
+		if ( ! is_dir( $item_dir ) ) {
+			mkdir( $item_dir );
+		}
+
+		$sub_dir = trailingslashit( $item_dir ) . 'foobar';
+		if ( ! is_dir( $sub_dir ) ) {
+			mkdir( $sub_dir );
+		}
+
+		$media_files = array(
+			BP_ATTACHMENTS_TESTS_DIR . '/assets/file-examples.com/file_example_XLSX_10.xlsx',
+			BP_ATTACHMENTS_TESTS_DIR . '/assets/file-examples.com/file-sample_100kB.docx',
+		);
+
+		$media = array();
+
+		foreach ( $media_files as $media_file ) {
+			$media_item           = new stdClass();
+			$media_item->path     = $sub_dir . '/' . wp_basename( $media_file );
+			$media_item->owner_id = 999;
+
+			copy( $media_file, $media_item->path );
+			$media[] = bp_attachments_create_media( $media_item );
+		}
+
+		$revisions_dir = '._revisions_' . $media[0]->id;
+		copy( $media_files[0], $sub_dir . '/' . $revisions_dir . '/' . wp_basename( $media_files[0] ) );
+
+		$this->assertTrue( bp_attachments_delete_directory( $sub_dir ) );
+		$this->assertFalse( is_dir( $sub_dir ) );
+
+		// Clean
+		rmdir( $item_dir );
+		rmdir( $object_dir );
+		rmdir( $directory['path'] );
+	}
 }

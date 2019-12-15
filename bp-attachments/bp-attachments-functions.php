@@ -605,9 +605,23 @@ function bp_attachments_get_directory_icon( $type = 'folder' ) {
  * @return boolean     True on success. False otherwise.
  */
 function bp_attachments_delete_directory( $path = '' ) {
-	$result = false;
+	$result     = false;
+	$bp_uploads = bp_attachments_uploads_dir_get();
 
-	if ( ! is_dir( $path ) ) {
+	// Make sure the directory exists and that we are deleting a subdirectory of the BP Uploads.
+	if ( ! is_dir( $path ) || 0 !== strpos( $path, $bp_uploads['basedir'] ) ) {
+		return $result;
+	}
+
+	// Make sure the path to delete is safe.
+	$relative_path  = trim( str_replace( $bp_uploads['basedir'], '', $path ), '/' );
+	$path_parts     = explode( '/', $relative_path );
+	$has_type_dir   = isset( $path_parts[0] ) && in_array( $path_parts[0], array( 'public', 'private' ), true );
+	$has_object_dir = isset( $path_parts[1] ) && in_array( $path_parts[1], array( 'members', 'groups' ), true );
+	$has_item_dir   = isset( $path_parts[2] ) && !! (int) $path_parts[2]; // phpcs:ignore
+	$has_subdir     = isset( $path_parts[3] ) && $path_parts[3];
+
+	if ( ! $has_type_dir || ! $has_object_dir || ! $has_item_dir || ! $has_subdir ) {
 		return $result;
 	}
 
@@ -626,5 +640,5 @@ function bp_attachments_delete_directory( $path = '' ) {
 		}
 	}
 
-	return $result;
+	return rmdir( $path );
 }

@@ -439,18 +439,17 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		$previous = $this->prepare_item_for_response( $data, $request );
 		$deleted  = true;
 
+		// Delete the json file data.
+		if ( file_exists( $medium_data ) ) {
+			$deleted = unlink( $medium_data );
+		}
+
 		/**
 		 * The medium is a a file. We need to delete:
 		 * - the file,
-		 * - its json data file,
 		 * - its revisions.
 		 */
 		if ( 'file' === $data->type ) {
-			// Delete the json file data.
-			if ( file_exists( $medium_data ) ) {
-				$deleted = unlink( $medium_data );
-			}
-
 			if ( true === $deleted ) {
 				// Delete revisions folder.
 				$deleted = bp_attachments_delete_directory( $basedir . $subdir . '/._revisions_' . $id );
@@ -460,16 +459,10 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 				$deleted = unlink( $basedir . $subdir . '/' . $data->name );
 			}
 		} else {
-			/**
-			 * Delete a directory.
-			 */
-			return new WP_Error(
-				'bp_rest_delete_directory_failed',
-				__( 'Sorry, deleting a directory is not yet supported.', 'bp-attachments' ),
-				array(
-					'status' => 404,
-				)
-			);
+			if ( true === $deleted ) {
+				// Delete the folder and its content.
+				$deleted = bp_attachments_delete_directory( $basedir . $subdir . '/' . $data->name );
+			}
 		}
 
 		if ( ! $deleted ) {
