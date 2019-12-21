@@ -213,7 +213,10 @@ class BP_Attachments_Media extends BP_Attachment {
 					);
 				}
 			} else {
-				$user_id = (int) $media_args['object_id'];
+				$user_id = 0;
+				if ( ctype_digit( $media_args['object_id'] ) || is_int( $media_args['object_id'] ) ) {
+					$user_id = (int) $media_args['object_id'];
+				}
 
 				if ( ! $user_id ) {
 					$user_id = (int) bp_loggedin_user_id();
