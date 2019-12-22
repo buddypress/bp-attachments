@@ -419,7 +419,7 @@ a.file-item {
 	margin-bottom: 0;
 	white-space: nowrap;
 	-webkit-appearance: none;
-	line-height: normal;
+	line-height: 20px;
 	height: auto;
 	padding: 4px 8px;
 	text-decoration: none;
@@ -428,7 +428,6 @@ a.file-item {
 	text-shadow: none;
 	font-weight: 600;
 	font-size: 13px;
-	line-height: normal;
 	color: #0071a1;
 	background: #f3f5f6;
 	cursor: pointer;
@@ -460,8 +459,13 @@ a.file-item {
 }
 
 #bp-media-admin-page-title-actions .split-button-toggle i {
+	line-height: 25px;
 	margin-bottom: 1px;
 	padding: 3.5px;
+}
+
+#bp-media-admin-page-title-actions .split-button-toggle i.dashicons-arrow-up-alt2{
+	line-height: 20px;
 }
 
 #bp-media-admin-page-title-actions .split-button-primary:hover,
