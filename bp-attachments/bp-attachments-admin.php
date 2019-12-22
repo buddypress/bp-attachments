@@ -79,8 +79,8 @@ add_action( 'admin_init', 'bp_attachments_version_updater', 1001 );
  */
 function bp_attachments_admin_menu() {
 	add_media_page(
-		__( 'BuddyPress Media', 'bp-attachments' ),
-		__( 'BuddyPress Media', 'bp-attachments' ),
+		__( 'BuddyPress Media Library', 'bp-attachments' ),
+		__( 'BuddyPress Library', 'bp-attachments' ),
 		'manage_options', // Restrict the menu to Site Admins during development process.
 		'bp-user-media',
 		'bp_attachments_admin_media'
@@ -149,7 +149,7 @@ function bp_attachments_admin_media() {
 	?>
 
 	<div class="wrap">
-		<h1 class="wp-heading-inline"><?php esc_html_e( 'BuddyPress Media', 'bp-attachments' ); ?></h1>
+		<h1 class="wp-heading-inline"><?php esc_html_e( 'BuddyPress Media Library', 'bp-attachments' ); ?></h1>
 		<div id="bp-media-admin-page-title-actions"></div>
 		<hr class="wp-header-end">
 
