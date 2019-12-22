@@ -26,16 +26,16 @@ class MediaToolbar extends Component {
 
 	deleteSelected( event ) {
 		event.preventDefault();
+		const { onRemoveMedium, onToggleSelectable, media } = this.props;
+		const toDelete = filter( media, [ 'selected', true ] );
 
-		const { media } = this.props;
-		const toDelete = filter( media, ['selected', true] );
-
-		// @todo handle deletion.
+		onRemoveMedium( toDelete );
+		return onToggleSelectable( false );
 	}
 
 	render() {
 		const { selectable, media } = this.props;
-		const selection = filter( media, ['selected', true] );
+		const selection = filter( media, [ 'selected', true ] );
 		let isDisabled = true;
 
 		if ( selectable && selection.length ) {
@@ -81,6 +81,11 @@ export default compose( [
 	withDispatch( ( dispatch ) => ( {
 		onToggleSelectable( selectable ) {
 			dispatch( 'bp-attachments' ).toggleSelectable( selectable );
+		},
+		onRemoveMedium( media ) {
+			media.forEach( medium => {
+				dispatch( 'bp-attachments' ).removeMedium( medium );
+			} );
 		},
 	} ) ),
 ] )( MediaToolbar );

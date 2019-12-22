@@ -292,7 +292,7 @@ class BP_attachments_REST_controller_UnitTestCase extends WP_Test_REST_Controlle
 
 		$request = new WP_REST_Request( 'DELETE', sprintf( $this->endpoint_url . '/%s/', $delete->id ) );
 		$request->set_param( 'context', 'edit' );
-		$request->set_param( 'path', $uploads['subdir'] );
+		$request->set_param( 'relative_path', $uploads['subdir'] );
 		$response = $this->server->dispatch( $request );
 
 		remove_filter( 'bp_attachments_uploads_dir_get', array( $this, 'filter_bp_attachments_uploads_dir' ), 100, 1 );
@@ -345,7 +345,7 @@ class BP_attachments_REST_controller_UnitTestCase extends WP_Test_REST_Controlle
 
 		$request = new WP_REST_Request( 'DELETE', sprintf( $this->endpoint_url . '/%s/', $delete->id ) );
 		$request->set_param( 'context', 'edit' );
-		$request->set_param( 'path', $uploads['subdir'] );
+		$request->set_param( 'relative_path', $uploads['subdir'] );
 		$response = $this->server->dispatch( $request );
 
 		remove_filter( 'bp_attachments_uploads_dir_get', array( $this, 'filter_bp_attachments_uploads_dir' ), 100, 1 );

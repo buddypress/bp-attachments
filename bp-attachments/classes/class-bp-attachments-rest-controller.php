@@ -70,11 +70,11 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 			'/' . $this->rest_base . '/(?P<id>[\S]+)/',
 			array(
 				'args'   => array(
-					'id'   => array(
+					'id'            => array(
 						'description' => __( 'An alphanumeric ID for the BP Medium object.', 'bp-attachments' ),
 						'type'        => 'string',
 					),
-					'path' => array(
+					'relative_path' => array(
 						'description' => __( 'Relative path to the BP Medium object.', 'bp-attachments' ),
 						'type'        => 'string',
 						'required'    => true,
@@ -425,14 +425,14 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	 * @return WP_Error|WP_REST_Response Response object on success, WP_Error object on failure.
 	 */
 	public function delete_item( $request ) {
-		$id   = trim( $request->get_param( 'id' ), '/' );
-		$path = $request->get_param( 'path' );
+		$id            = trim( $request->get_param( 'id' ), '/' );
+		$relative_path = $request->get_param( 'relative_path' );
 
 		// Set the context of the request.
 		$request->set_param( 'context', 'edit' );
 
 		$basedir     = bp_attachments_uploads_dir_get()['basedir'];
-		$subdir      = '/' . trim( $path, '/' );
+		$subdir      = '/' . trim( $relative_path, '/' );
 		$medium_data = $basedir . $subdir . '/' . $id . '.json';
 
 		$data     = json_decode( wp_unslash( file_get_contents( $medium_data ) ) ); // phpcs:ignore

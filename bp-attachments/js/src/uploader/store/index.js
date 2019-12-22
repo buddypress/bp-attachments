@@ -169,6 +169,22 @@ function * requestMedia( args ) {
 	return getJsonResponse( response, relativePathHeader );
 }
 
+function * removeMedium( medium ) {
+	const currentState = store.getState();
+	const relativePath = currentState.relativePath;
+	let deleted;
+
+	try {
+		deleted = yield actions.deleteMedium( '/buddypress/v1/attachments/' + medium.id + '/', relativePath );
+
+		return actions.destroyMedium( deleted.previous.id );
+	} catch ( error ) {
+		medium.error = error.message;
+
+		return actions.traceError( medium );
+	}
+}
+
 const DEFAULT_STATE = {
 	user: {},
 	files: [],
@@ -215,6 +231,14 @@ const actions = {
 		};
 	},
 
+	removeMedium,
+	deleteMedium( path, relativePath ) {
+		return {
+			type: 'DELETE_MEDIUM',
+			path,
+			relativePath,
+		};
+	},
 	reset() {
 		return {
 			type: 'RESET_UPLOADS',
@@ -248,6 +272,13 @@ const actions = {
 			id,
 			isSelected,
 		};
+	},
+
+	destroyMedium( id ) {
+		return {
+			type:  'DESTROY_MEDIUM',
+			id,
+		}
 	},
 };
 
@@ -329,6 +360,14 @@ const store = registerStore( 'bp-attachments', {
 						return file;
 					} ),
 				};
+
+			case 'DESTROY_MEDIUM':
+				return {
+					...state,
+					files: [
+						...reject( state.files, [ 'id', action.id ] )
+					],
+				};
 		}
 
 		return state;
@@ -381,6 +420,12 @@ const store = registerStore( 'bp-attachments', {
 	controls: {
 		CREATE_MEDIUM( action ) {
 			return apiFetch( { path: action.path, method: 'POST', body: action.formData } );
+		},
+
+		DELETE_MEDIUM( action ) {
+			return apiFetch( { path: action.path, method: 'DELETE', data: {
+				relative_path: action.relativePath
+			} } );
 		},
 
 		FETCH_FROM_API( action ) {
