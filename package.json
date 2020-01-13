@@ -29,6 +29,7 @@
   },
   "version": "1.0.0-alpha",
   "devDependencies": {
+    "core-js": "^3.6.2",
     "@babel/core": "^7.6.4",
     "@wordpress/babel-plugin-makepot": "^3.2.1",
     "@wordpress/babel-preset-default": "^4.6.2",

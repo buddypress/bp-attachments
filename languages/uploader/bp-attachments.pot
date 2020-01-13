@@ -3,22 +3,14 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "X-Generator: babel-plugin-makepot\n"
 
-#: bp-attachments/js/src/uploader/elements/media-toolbar.js:51
-msgid "Display list"
+#: bp-attachments/js/src/uploader/elements/split-button.js:49
+msgid "Upload new"
 msgstr ""
 
-#: bp-attachments/js/src/uploader/elements/media-toolbar.js:54
-msgid "Display grid"
+#: bp-attachments/js/src/uploader/elements/split-button.js:53
+msgid "More actions"
 msgstr ""
 
-#: bp-attachments/js/src/uploader/elements/media-toolbar.js:60
-msgid "Delete selection"
-msgstr ""
-
-#: bp-attachments/js/src/uploader/elements/media-toolbar.js:64
-msgid "Bulk Select"
-msgstr ""
-
-#: bp-attachments/js/src/uploader/elements/media-toolbar.js:64
-msgid "Cancel"
+#: bp-attachments/js/src/uploader/elements/split-button.js:59
+msgid "Add new directory"
 msgstr ""
