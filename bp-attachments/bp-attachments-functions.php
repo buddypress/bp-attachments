@@ -1,503 +1,644 @@
 <?php
 /**
- * BP Attachments functions
+ * BP Attachments Functions.
  *
  * @package BP Attachments
- * @subpackage Functions
+ * @subpackage \bp-attachments\bp-attachments-functions
+ *
+ * @since 1.0.0
  */
 
-// Exit if accessed directly
-if ( !defined( 'ABSPATH' ) ) exit;
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit;
 
 /**
- * Get a single attachment
+ * Get the plugin version.
  *
- * @since BP Attachments (1.0.0)
+ * @since 1.0.0
  *
- * @param  integer $attachment_id
- * @return BP_Attachments
+ * @return string The plugin version.
  */
-function bp_attachments_plugin_get_attachment( $attachment_id = 0 ) {
-	if ( empty( $attachment_id ) )
-		return false;
-
-	$attachment = new BP_Attachments( $attachment_id );
-
-	return apply_filters( 'bp_attachments_plugin_get_attachment', $attachment );
+function bp_attachments_get_version() {
+	return buddypress()->attachments->version;
 }
 
 /**
- * Get a single attachment
+ * Is this a plugin install?
  *
- * @since BP Attachments (1.0.0)
+ * @since 1.0.0
  *
- * @param  array $args
- * @return array of BP_Attachments
+ * @return boolean True if it's an install. False otherwise.
  */
-function bp_attachments_get_attachments( $args = array() ) {
+function bp_attachments_is_install() {
+	return ! bp_get_option( '_bp_attachments_version' );
+}
 
-	$defaults = array(
-		'item_ids'        => array(), // one or more item ids regarding the component (eg group_ids, message_ids )
-		'component'	      => false,   // groups / messages / blogs / xprofile...
-		'show_private'    => false,   // wether to include private attachment
-		'user_id'	      => false,   // the author id of the attachment
-		'per_page'	      => 20,
-		'page'		      => 1,
-		'search'          => false,
-		'exclude'		  => false,   // comma separated list or array of attachment ids.
-		'orderby' 		  => 'ID',
-		'order'           => 'DESC',
+/**
+ * Is this a plugin update?
+ *
+ * @since 1.0.0
+ *
+ * @return boolean True if it's an update. False otherwise.
+ */
+function bp_attachments_is_update() {
+	$db_version = bp_get_option( '_bp_attachments_version' );
+	$version    = bp_attachments_get_version();
+
+	return version_compare( $version, $db_version, '<' );
+}
+
+/**
+ * Get the media uploads dir for the requested visibility type.
+ *
+ * @since 1.0.0
+ *
+ * @param string $type `public` ou `private`.
+ * @return array       The uploads dir data.
+ */
+function bp_attachments_get_media_uploads_dir( $type = 'public' ) {
+	if ( 'public' !== $type && 'private' !== $type ) {
+		$type = 'public';
+	}
+
+	$bp_uploads_dir = bp_attachments_uploads_dir_get();
+	$subdir         = '/' . $type;
+
+	$uploads = array_merge(
+		$bp_uploads_dir,
+		array(
+			'path'   => $bp_uploads_dir['basedir'] . $subdir,
+			'url'    => $bp_uploads_dir['baseurl'] . $subdir,
+			'subdir' => $subdir,
+			'error'  => false,
+		)
 	);
 
-	$r = bp_parse_args( $args, $defaults, 'attachments_get_args' );
-
-	$attachments = wp_cache_get( 'bp_attachments_attachments', 'bp' );
-
-	if ( empty( $attachments ) ) {
-		$attachments = BP_Attachments::get( array(
-			'item_ids'        => (array) $r['item_ids'],
-			'component'	      => $r['component'],
-			'show_private'    => (bool) $r['show_private'],
-			'user_id'	      => $r['user_id'],
-			'per_page'	      => $r['per_page'],
-			'page'		      => $r['page'],
-			'search'          => $r['search'],
-			'exclude'		  => $r['exclude'],
-			'orderby' 		  => $r['orderby'],
-			'order'           => $r['order'],
-		) );
-
-		wp_cache_set( 'bp_attachments_attachments', $attachments, 'bp' );
-	}
-
-	return apply_filters_ref_array( 'bp_attachments_get_attachments', array( &$attachments, &$r ) );
+	unset( $uploads['dir'] );
+	return $uploads;
 }
 
 /**
- * Upload attachment
+ * Get the root folder for private media.
  *
- * @since BP Attachments (1.0.0)
- *
- * @param  array $args
- * @return int the id of the created attachment
+ * @since 1.0.0
  */
-function bp_attachments_handle_upload( $args = array() ) {
-
-	$r = bp_parse_args( $args, array(
-		'item_id'         => 0,
-		'component'       => '',
-		'item_type'       => 'attachment',
-		'action'          => 'bp_attachments_upload',
-		'file_id'         => 'bp_attachment_file',
-	), 'attachments_handle_upload_args' );
-
-	$attachment_upload = BP_Attachments_Upload::start( $r );
-
-	return $attachment_upload->attachment_id;
+function bp_attachments_get_private_uploads_dir() {
+	return bp_attachments_get_media_uploads_dir( 'private' );
 }
 
 /**
- * Delete attachment
+ * Get the root folder for public media.
  *
- * @since BP Attachments (1.0.0)
- *
- * @param  int the id of the attachment
- * @return mixed false/title of the deleted attachment
+ * @since 1.0.0
  */
-function bp_attachments_delete_attachment( $attachment_id = 0 ) {
-	if ( empty( $attachment_id ) ) {
-		return false;
+function bp_attachments_get_public_uploads_dir() {
+	return bp_attachments_get_media_uploads_dir( 'public' );
+}
+
+/**
+ * Get translated BP Attachment stati.
+ *
+ * @since 1.0.0
+ *
+ * @return array The available attachment stati.
+ */
+function bp_attachments_get_item_stati() {
+	return array(
+		'public'  => sanitize_title( _x( 'public', 'public status slug', 'bp-attachments' ) ),
+		'private' => sanitize_title( _x( 'private', 'private status slug', 'bp-attachments' ) ),
+	);
+}
+
+/**
+ * Get translated BP Attachment objects.
+ *
+ * @since 1.0.0
+ *
+ * @return array The available attachment objects.
+ */
+function bp_attachments_get_item_objects() {
+	return array(
+		'members' => sanitize_title( _x( 'members', 'member object slug', 'bp-attachments' ) ),
+		'groups'  => sanitize_title( _x( 'groups', 'group object slug', 'bp-attachments' ) ),
+	);
+}
+
+/**
+ * Get translated BP Attachment actions.
+ *
+ * @since 1.0.0
+ *
+ * @return array The available attachment actions.
+ */
+function bp_attachments_get_item_actions() {
+	return array(
+		'download' => sanitize_title( _x( 'download', 'download action slug', 'bp-attachments' ) ),
+		'view'     => sanitize_title( _x( 'view', 'view action slug', 'bp-attachments' ) ),
+	);
+}
+
+/**
+ * Get the BP Attachment URI out of its path.
+ *
+ * @since 1.0.0
+ *
+ * @param string $filename The name of the BP Attachment item.
+ * @param string $path     The absolute path to the BP Attachment item.
+ * @return string          The BP Attachment URI.
+ */
+function bp_attachments_get_media_uri( $filename = '', $path = '' ) {
+	$uploads   = bp_upload_dir();
+	$file_path = trailingslashit( $path ) . $filename;
+
+	if ( ! file_exists( $file_path ) ) {
+		return '';
 	}
 
-	if ( ! bp_attachments_loggedin_user_can( 'delete_bp_attachment', $attachment_id ) ) {
-		return false;
+	return str_replace( $uploads['basedir'], $uploads['baseurl'], $file_path );
+}
+
+/**
+ * Create a Media Item.
+ *
+ * @since 1.0.0
+ *
+ * @param object $media Media Data to create the Media Item.
+ * @return object       The created Media Item.
+ */
+function bp_attachments_create_media( $media = null ) {
+	if ( ! is_object( $media ) || ! isset( $media->path ) || ! $media->path ) {
+		return new WP_Error( 'bp_attachments_missing_media_path', __( 'The path to your media file is missing.', 'bp_attachments' ) );
 	}
 
-	$deleted = BP_Attachments::delete( $attachment_id );
+	$media_data = new SplFileInfo( $media->path );
 
-	if ( ! empty( $deleted->post_title ) ) {
-		return $deleted->post_title;
+	if ( ! $media_data->isFile() && ! $media_data->isDir() ) {
+		return new WP_Error( 'bp_attachments_missing_media_path', __( 'The path to your media does not exist.', 'bp_attachments' ) );
+	}
+
+	$parent_dir = trailingslashit( dirname( $media->path ) );
+	$revisions  = '';
+
+	$media->name          = wp_basename( $media->path );
+	$media->id            = md5( $media->name );
+	$media->last_modified = $media_data->getMTime();
+
+	// Set the owner ID.
+	if ( ! isset( $media->owner_id ) || ! $media->owner_id ) {
+		$media->owner_id = bp_loggedin_user_id();
+	}
+
+	// Set the title.
+	if ( ! isset( $media->title ) || ! $media->title ) {
+		$media->title = $media->name;
+	}
+
+	// Set the description.
+	if ( ! isset( $media->description ) ) {
+		$media->description = '';
+	}
+
+	$media->size        = '';
+	$media->icon        = '';
+	$media->vignette    = '';
+	$media->extension   = '';
+	$media->orientation = null;
+
+	if ( ! isset( $media->mime_type ) || ! $media->mime_type ) {
+		$media->mime_type = '';
+	}
+
+	if ( $media_data->isFile() ) {
+		$media->type      = 'file';
+		$media->extension = $media_data->getExtension();
+
+		if ( $media->title === $media->name ) {
+			$media->title = wp_basename( $media->name, ".{$media->extension}" );
+		}
+
+		$media->media_type = wp_ext2type( $media->extension );
+		$media->size       = $media_data->getSize();
+
+		if ( 'image' === $media->media_type ) {
+			$media->vignette        = bp_attachments_get_media_uri( $media->name, untrailingslashit( $parent_dir ) );
+			list( $width, $height ) = getimagesize( trailingslashit( $parent_dir ) . $media->name );
+
+			if ( $width > $height ) {
+				$media->orientation = 'landscape';
+			} else {
+				$media->orientation = 'portrait';
+			}
+		}
+
+		$revisions = $parent_dir . '._revisions_' . $media->id;
 	} else {
-		return false;
+		$media->type      = 'directory';
+		$media->mime_type = 'inode/directory';
+
+		if ( ! isset( $media->media_type ) || ! $media->media_type ) {
+			$media->media_type = 'folder';
+		}
 	}
+
+	unset( $media->path );
+	$media = bp_attachments_sanitize_media( $media );
+
+	// Create the JSON data file.
+	if ( ! file_exists( $parent_dir . $media->id . '.json' ) ) {
+		file_put_contents( $parent_dir . $media->id . '.json', wp_json_encode( $media ) ); // phpcs:ignore
+	}
+
+	// Create the revisions directory.
+	if ( $revisions && ! is_dir( $revisions ) ) {
+		mkdir( $revisions );
+	}
+
+	return $media;
 }
 
 /**
- * Delete attachment
+ * List all media items (including sub-directories) of a directory.
  *
- * @since BP Attachments (1.0.0)
+ * Not Used anymore.
  *
- * @param  array $args
- * @return mixed false/title of the updated attachment
+ * @todo delete.
+ *
+ * @since 1.0.0
+ *
+ * @param string $dir Absolute path to the directory to list media items for.
+ * @return array      The list of media items found.
  */
-function bp_attachments_update_attachment( $args = array() ) {
-	$r = bp_parse_args( $args, array(
-		'id'          => 0,
-		'title'       => '',
-		'description' => '',
-		'privacy'     => 'inherit',
-		'component'   => array(),
-		'terms'       => array(),
-		'ajax'        => false
-	), 'attachments_update_attachment_args' );
+function bp_attachments_list_dir_media( $dir = '' ) {
+	$list = array();
 
-	extract( $r, EXTR_SKIP );
+	if ( ! is_dir( $dir ) ) {
+		return $list;
+	}
 
-	if ( empty( $id ) )
-		return false;
+	$iterator = new FilesystemIterator( $dir, FilesystemIterator::SKIP_DOTS );
 
-	if ( ! bp_attachments_loggedin_user_can( 'edit_bp_attachment', $id ) )
-			return false;
+	foreach ( new BP_Attachments_Filter_Iterator( $iterator ) as $media ) {
+		$media_name = $media->getfilename();
+		$path       = $media->getPathname();
+		$id         = md5( $media_name );
+		$list[]     = (object) array(
+			'id'                 => $id,
+			'path'               => $path,
+			'name'               => $media_name,
+			'size'               => $media->getSize(),
+			'type'               => $media->getType(),
+			'mime_type'          => mime_content_type( $path ),
+			'last_modified'      => $media->getMTime(),
+			'latest_access_date' => $media->getATime(),
+		);
+	}
 
-	$attachment = new BP_Attachments( $id );
+	return $list;
+}
 
-	if ( empty( $attachment ) )
-		return false;
+/**
+ * List all media items (including sub-directories) of a directory.
+ *
+ * @since 1.0.0
+ *
+ * @param string $dir    Absolute path to the directory to list media items for.
+ * @param string $object The type of object being listed. Possible values are `members` or `groups`.
+ * @return array         The list of media items found.
+ */
+function bp_attachments_list_media_in_directory( $dir = '', $object = 'members' ) {
+	$list = array();
 
-	if ( empty( $title ) )
-		$title = $attachment->title;
+	if ( ! is_dir( $dir ) ) {
+		return $list;
+	}
 
-	$attachment->title       = $title;
-	$attachment->description = $description;
-	$attachment->status      = $privacy;
+	$iterator = new FilesystemIterator( $dir, FilesystemIterator::SKIP_DOTS );
 
-	if ( empty( $ajax ) ) {
+	/**
+	 * Some of the properties should have been created during the upload/make dir process.
+	 *
+	 * @todo Add checks to avoid running some functions when not necessary.
+	 */
+	foreach ( new BP_Attachments_Filter_Iterator( $iterator ) as $media ) {
+		$json_data                 = file_get_contents( $media ); // phpcs:ignore
+		$media_data                = json_decode( $json_data );
+		$media_data->last_modified = $media->getMTime();
+		$media_data->extension     = preg_replace( '/^.+?\.([^.]+)$/', '$1', $media_data->name );
 
-		$prev_item_ids = ! empty( $attachment->item_ids ) ? $attachment->item_ids : false;
+		if ( ! isset( $media_data->media_type ) || ! $media_data->media_type ) {
+			$media_data->media_type = wp_ext2type( $media_data->extension );
+		}
 
-		if ( ! empty( $terms ) ) {
-			$terms = explode( ',', $terms );
-			// Let's handle the item ids here
-			foreach ( $terms as $key => $term ) {
-				if ( empty( $component[ $term ] ) ) {
-					// delete all !
-					delete_post_meta( $id, "_bp_{$term}_id" );
-					unset( $terms[ $key ] );
-				} else {
-					if ( empty( $prev_item_ids->{$term} ) ) {
-						foreach( $component[ $term ] as $item_id )
-							add_post_meta( $id, "_bp_{$term}_id", $item_id );
-
-					} else {
-						$to_delete = array_diff( $prev_item_ids->{$term}, $component[ $term ] );
-						$to_add    = array_diff( $component[ $term ], $prev_item_ids->{$term} );
-
-						if ( ! empty( $to_delete ) ){
-							// Delete item ids
-							foreach ( $to_delete as $item_id )
-								delete_post_meta( $id, "_bp_{$term}_id", $item_id );
-						}
-
-						if ( ! empty( $to_add ) ){
-							// Delete item ids
-							foreach ( $to_add as $item_id )
-								add_post_meta( $id, "_bp_{$term}_id", $item_id );
-						}
-					}
-				}
-			}
-
-			if ( empty( $terms ) )
-				$terms = null;
-
-			wp_set_object_terms( $id, $terms, 'bp_component' );
-
+		// Add the icon.
+		if ( 'inode/directory' !== $media_data->mime_type ) {
+			$media_data->icon = wp_mime_type_icon( $media_data->media_type );
 		} else {
-			wp_set_object_terms( $id, null, 'bp_component' );
+			$media_data->icon = bp_attachments_get_directory_icon( $media_data->media_type );
 		}
 
-	}
+		// Vignette & orientation are only used for images.
+		$media_data->vignette    = '';
+		$media_data->orientation = null;
 
-	return $attachment->update();
-}
+		if ( 'image' === $media_data->media_type ) {
+			$media_data->vignette   = bp_attachments_get_media_uri( $media_data->name, $dir );
+			list( $width, $height ) = getimagesize( trailingslashit( $dir ) . $media_data->name );
 
-/**
- * Launch the BP Media Editor
- *
- * @since BP Attachments (1.0.0)
- */
-function bp_attachments_browser( $browser_id, $settings = array() ) {
-	BP_Attachments_Browser::browser( $browser_id, $settings );
-}
-
-/**
- * Retrieve the URL for an attachment.
- *
- * This is an adapted version of wp_get_attachment_url()
- *
- * @since BP Attachments (1.0.0)
- *
- * @param int $post_id Attachment ID.
- * @return string
- */
-function bp_attachments_get_attachment_url( $post_id = 0 ) {
-	$post_id = (int) $post_id;
-	if ( !$post = get_post( $post_id ) )
-		return false;
-
-	if ( 'bp_attachment' != $post->post_type )
-		return false;
-
-	$url = '';
-	if ( $file = get_post_meta( $post->ID, '_wp_attached_file', true) ) { //Get attached file
-		if ( ($uploads = wp_upload_dir()) && false === $uploads['error'] ) { //Get upload directory
-			if ( 0 === strpos($file, $uploads['basedir']) ) //Check that the upload base exists in the file location
-				$url = str_replace($uploads['basedir'], $uploads['baseurl'], $file); //replace file location with url location
-			elseif ( false !== strpos($file, 'wp-content/uploads') )
-				$url = $uploads['baseurl'] . substr( $file, strpos($file, 'wp-content/uploads') + 18 );
-			else
-				$url = $uploads['baseurl'] . "/$file"; //Its a newly uploaded file, therefor $file is relative to the basedir.
+			if ( $width > $height ) {
+				$media_data->orientation = 'landscape';
+			} else {
+				$media_data->orientation = 'portrait';
+			}
 		}
+
+		// Set the object type of the media.
+		$media_data->object = $object;
+
+		// Merge all JSON data of the directory.
+		$list[] = $media_data;
 	}
 
-	if ( empty($url) ) //If any of the above options failed, Fallback on the GUID as used pre-2.7, not recommended to rely upon this.
-		$url = get_the_guid( $post->ID );
-
-	$url = apply_filters( 'bp_attachments_get_attachment_url', $url, $post->ID );
-
-	if ( empty( $url ) )
-		return false;
-
-	return $url;
+	return $list;
 }
 
 /**
- * Prepare an attachment to be displayed in the BP Media Editor
+ * Returns the common properties of a directory.
  *
- * this is an adapted copy of wp_prepare_attachment_for_js()
+ * @since 1.0.0
  *
- * @since BP Attachments (1.0.0)
+ * @return array The common properties of a directory.
  */
-function bp_attachments_prepare_attachment_for_js( $attachment ) {
-	if ( empty( $attachment ) )
-		return;
+function bp_attachments_get_directory_common_props() {
+	return array(
+		'size'        => '',
+		'vignette'    => '',
+		'extension'   => '',
+		'orientation' => null,
+		'mime_type'   => 'inode/directory',
+		'type'        => 'directory',
+	);
+}
 
-	if ( ! is_a( $attachment, 'WP_Post' ) && is_numeric( $attachment ) ) {
-		$get_attachment = bp_attachments_plugin_get_attachment( $attachment );
+/**
+ * Returns the list of supported directory types.
+ *
+ * @since 1.0.0
+ *
+ * @return array The list of supported directory types.
+ */
+function bp_attachments_get_directory_types() {
+	$current_time = bp_core_current_time( true, 'timestamp' );
+	$common_props = bp_attachments_get_directory_common_props();
 
-		if ( ! empty( $get_attachment->attachment ) )
-			$attachment = $get_attachment->attachment;
-
-	/** return if already ready for js */
-	} elseif ( is_array( $attachment ) && ! empty( $attachment['attachment_id'] ) ) {
-		return $attachment;
-	}
-
-	if ( 'bp_attachment' != $attachment->post_type ) {
-		return;
-	}
-
-	$meta = wp_get_attachment_metadata( $attachment->ID );
-	if ( false !== strpos( $attachment->post_mime_type, '/' ) )
-		list( $type, $subtype ) = explode( '/', $attachment->post_mime_type );
-	else
-		list( $type, $subtype ) = array( $attachment->post_mime_type, '' );
-
-	$attachment_url = bp_attachments_get_attachment_url( $attachment->ID );
-
-	$response = array(
-		'id'          => $attachment->ID,
-		'title'       => $attachment->post_title,
-		'filename'    => wp_basename( $attachment->guid ),
-		'url'         => $attachment_url,
-		'link'        => get_attachment_link( $attachment->ID ),
-		'alt'         => get_post_meta( $attachment->ID, '_wp_attachment_image_alt', true ),
-		'author'      => $attachment->post_author,
-		'description' => $attachment->post_content,
-		'caption'     => $attachment->post_excerpt,
-		'name'        => $attachment->post_name,
-		'status'      => $attachment->post_status,
-		'uploadedTo'  => $attachment->post_parent,
-		'date'        => strtotime( $attachment->post_date_gmt ) * 1000,
-		'modified'    => strtotime( $attachment->post_modified_gmt ) * 1000,
-		'menuOrder'   => $attachment->menu_order,
-		'mime'        => $attachment->post_mime_type,
-		'type'        => $type,
-		'subtype'     => $subtype,
-		'icon'        => wp_mime_type_icon( $attachment->ID ),
-		'dateFormatted' => mysql2date( get_option('date_format'), $attachment->post_date ),
-		'nonces'      => array(
-			'update' => false,
-			'delete' => false,
+	$private_dir = (object) array_merge(
+		array(
+			'id'            => 'private-' . $user_id,
+			'title'         => __( 'Private', 'bp-attachments' ),
+			'media_type'    => 'private',
+			'name'          => 'private',
+			'last_modified' => $current_time,
+			'description'   => __( 'This Private directory and its children are only visible to logged in users.', 'bp-attachments' ),
+			'icon'          => bp_attachments_get_directory_icon( 'private' ),
 		),
-		'editLink'    => false,
-		'is_activity' => bp_attachments_is_activity(),
+		$common_props
 	);
 
-	if ( current_user_can( 'edit_bp_attachment', $attachment->ID ) ) {
-		$response['nonces']['update'] = wp_create_nonce( 'update_bp_attachment_' . $attachment->ID );
-		$response['editLink'] = bp_attachments_get_edit_link( $attachment->ID, $attachment->post_author );
+	$public_dir = (object) array_merge(
+		array(
+			'id'            => 'public-' . $user_id,
+			'title'         => __( 'Public', 'bp-attachments' ),
+			'media_type'    => 'public',
+			'name'          => 'public',
+			'last_modified' => $current_time,
+			'description'   => __( 'This Public directory and its children are visible to everyone.', 'bp-attachments' ),
+			'icon'          => bp_attachments_get_directory_icon( 'public' ),
+		),
+		$common_props
+	);
+
+	return array( $private_dir, $public_dir );
+}
+
+/**
+ * Returns the user's root directories.
+ *
+ * @since 1.0.0
+ *
+ * @param integer $user_id    The ID of the user.
+ * @param integer $object_dir The requested object directory.
+ *                            Possible values are `groups` & `member`.
+ * @return array The user's root directories.
+ */
+function bp_attachments_list_member_root_objects( $user_id = 0, $object_dir = '' ) {
+	$list         = array();
+	$current_time = bp_core_current_time( true, 'timestamp' );
+	$common_props = bp_attachments_get_directory_common_props();
+
+	if ( ! $user_id ) {
+		$user_id = bp_loggedin_user_id();
 	}
 
-	if ( current_user_can( 'delete_bp_attachment', $attachment->ID ) ) {
-		$response['nonces']['delete'] = wp_create_nonce( 'delete_bp_attachment_' . $attachment->ID );
-	}
+	$user_id = (int) $user_id;
 
-	if ( $meta && 'image' === $type ) {
-		$sizes = array();
-		/** This filter is documented in wp-admin/includes/media.php */
-		$possible_sizes = apply_filters( 'image_size_names_choose', array(
-			'thumbnail' => __('Thumbnail'),
-			'medium'    => __('Medium'),
-			'large'     => __('Large'),
-			'full'      => __('Full Size'),
-		) );
-		unset( $possible_sizes['full'] );
+	if ( ! bp_is_active( 'groups' ) || in_array( $object_dir, array( 'member', 'groups' ), true ) ) {
+		// Get the directory types for the member.
+		if ( 'groups' !== $object_dir ) {
+			$list = bp_attachments_get_directory_types();
 
-		// Loop through all potential sizes that may be chosen. Try to do this with some efficiency.
-		// First: run the image_downsize filter. If it returns something, we can use its data.
-		// If the filter does not return something, then image_downsize() is just an expensive
-		// way to check the image metadata, which we do second.
-		foreach ( $possible_sizes as $size => $label ) {
-			if ( $downsize = apply_filters( 'image_downsize', false, $attachment->ID, $size ) ) {
-				if ( ! $downsize[3] )
-					continue;
-				$sizes[ $size ] = array(
-					'height'      => $downsize[2],
-					'width'       => $downsize[1],
-					'url'         => $downsize[0],
-					'orientation' => $downsize[2] > $downsize[1] ? 'portrait' : 'landscape',
-				);
-			} elseif ( isset( $meta['sizes'][ $size ] ) ) {
-				if ( ! isset( $base_url ) )
-					$base_url = str_replace( wp_basename( $attachment_url ), '', $attachment_url );
+			// Get the groups the user is a member of.
+		} else {
+			$user_groups = groups_get_groups(
+				array(
+					'user_id'     => $user_id,
+					'show_hidden' => true,
+					'per_page'    => false,
+				)
+			);
 
-				// Nothing from the filter, so consult image metadata if we have it.
-				$size_meta = $meta['sizes'][ $size ];
-
-				// We have the actual image size, but might need to further constrain it if content_width is narrower.
-				// Thumbnail, medium, and full sizes are also checked against the site's height/width options.
-				list( $width, $height ) = image_constrain_size_for_editor( $size_meta['width'], $size_meta['height'], $size, 'edit' );
-
-				$sizes[ $size ] = array(
-					'height'      => $height,
-					'width'       => $width,
-					'url'         => $base_url . $size_meta['file'],
-					'orientation' => $height > $width ? 'portrait' : 'landscape',
+			foreach ( $user_groups['groups'] as $group ) {
+				$list[ 'group' . $group->id ] = (object) array_merge(
+					array(
+						'id'            => 'group-' . $group->id,
+						'title'         => $group->name,
+						'media_type'    => 'avatar',
+						'object'        => 'groups',
+						'name'          => $group->slug,
+						'last_modified' => $group->date_created,
+						'description'   => __( 'This directory contains the media directories attached to this group', 'bp-attachments' ),
+						'icon'          => bp_core_fetch_avatar(
+							array(
+								'item_id' => $group->id,
+								'object'  => 'group',
+								'type'    => 'full',
+								'html'    => false,
+							)
+						),
+					),
+					$common_props
 				);
 			}
 		}
+	} else {
+		$list['groups'] = (object) array_merge(
+			array(
+				'id'            => 'groups-' . $user_id,
+				'title'         => __( 'My Groups', 'bp-attachments' ),
+				'media_type'    => 'groups',
+				'object'        => 'groups',
+				'name'          => 'groups',
+				'last_modified' => $current_time,
+				'description'   => __( 'This directory contains the media directories of the groups you are a member of.', 'bp-attachments' ),
+				'icon'          => bp_attachments_get_directory_icon( 'groups' ),
+			),
+			$common_props
+		);
 
-		$sizes['full'] = array( 'url' => $attachment_url );
+		$list['member'] = (object) array_merge(
+			array(
+				'id'            => 'member-' . $user_id,
+				'title'         => __( 'My Media', 'bp-attachments' ),
+				'media_type'    => 'avatar',
+				'name'          => 'member',
+				'last_modified' => $current_time,
+				'description'   => __( 'This directory contains all your personal media.', 'bp-attachments' ),
+				'icon'          => bp_core_fetch_avatar(
+					array(
+						'item_id' => $user_id,
+						'object'  => 'user',
+						'type'    => 'full',
+						'html'    => false,
+					)
+				),
+			),
+			$common_props
+		);
+	}
 
-		if ( isset( $meta['height'], $meta['width'] ) ) {
-			$sizes['full']['height'] = $meta['height'];
-			$sizes['full']['width'] = $meta['width'];
-			$sizes['full']['orientation'] = $meta['height'] > $meta['width'] ? 'portrait' : 'landscape';
+	return $list;
+}
+
+/**
+ * Sanitize a BP Attachment media.
+ *
+ * @since 1.0.0
+ *
+ * @param object $media The BP Attachment media to sanitize.
+ * @return object|null  The sanitized BP Attachment media.
+ */
+function bp_attachments_sanitize_media( $media = null ) {
+	if ( ! is_object( $media ) ) {
+		return null;
+	}
+
+	if ( ! isset( $media->id ) ) {
+		return null;
+	}
+
+	foreach ( array_keys( get_object_vars( $media ) ) as $property ) {
+		if ( in_array( $property, array( 'id', 'title', 'type' ), true ) ) {
+			$media->{$property} = sanitize_text_field( $media->{$property} );
+		} elseif ( 'description' === $property ) {
+			$media->{$property} = sanitize_textarea_field( $media->{$property} );
+		} elseif ( 'mime_type' === $property ) {
+			$media->{$property} = sanitize_mime_type( $media->{$property} );
+		} elseif ( 'name' === $property ) {
+			$media->{$property} = sanitize_file_name( $media->{$property} );
+		}
+	}
+
+	return $media;
+}
+
+/**
+ * Checks if a file type is allowed.
+ *
+ * @since 1.0.0
+ *
+ * @param string $file     Full path to the file.
+ * @param string $filename The name of the file (may differ from $file due to $file being
+ *                         in a tmp directory).
+ * @return boolean         True if allowed. False otherwise.
+ */
+function bp_attachments_is_file_type_allowed( $file, $filename ) {
+	$allowed_types = bp_attachments_get_allowed_types( '' );
+	$wp_filetype   = wp_check_filetype_and_ext( $file, $filename );
+
+	if ( ! isset( $wp_filetype['ext'] ) || ! $wp_filetype['ext'] ) {
+		return false;
+	}
+
+	return in_array( $wp_filetype['ext'], $allowed_types, true );
+}
+
+/**
+ * Get the directory icon according to its type.
+ *
+ * @since 1.0.0
+ *
+ * @param string $type The type of the directory. Defauts to `folder`.
+ *                     Possible values are: `folder`, `album`, `audio_playlist`, `video_playlist`,
+ *                     `groups`, `members`, `public`, `private`.
+ * @return string      The URL to the icon.
+ */
+function bp_attachments_get_directory_icon( $type = 'folder' ) {
+	$svg = 'default';
+
+	if ( 'album' === $type ) {
+		$svg = 'photo';
+	} elseif ( 'audio_playlist' === $type ) {
+		$svg = 'audio';
+	} elseif ( 'video_playlist' === $type ) {
+		$svg = 'video';
+	} elseif ( in_array( $type, array( 'groups', 'members', 'public', 'private' ), true ) ) {
+		$svg = $type;
+	}
+
+	return trailingslashit( buddypress()->attachments->assets_url ) . 'images/' . $svg . '.svg';
+}
+
+/**
+ * Deletes a directory and its content.
+ *
+ * @since 1.0.0
+ *
+ * @param string $path The absolute path of the directory.
+ * @return boolean     True on success. False otherwise.
+ */
+function bp_attachments_delete_directory( $path = '' ) {
+	$result     = false;
+	$bp_uploads = bp_attachments_uploads_dir_get();
+
+	// Make sure the directory exists and that we are deleting a subdirectory of the BP Uploads.
+	if ( ! is_dir( $path ) || 0 !== strpos( $path, $bp_uploads['basedir'] ) ) {
+		return $result;
+	}
+
+	// Make sure the path to delete is safe.
+	$relative_path  = trim( str_replace( $bp_uploads['basedir'], '', $path ), '/' );
+	$path_parts     = explode( '/', $relative_path );
+	$has_type_dir   = isset( $path_parts[0] ) && in_array( $path_parts[0], array( 'public', 'private' ), true );
+	$has_object_dir = isset( $path_parts[1] ) && in_array( $path_parts[1], array( 'members', 'groups' ), true );
+	$has_item_dir   = isset( $path_parts[2] ) && !! (int) $path_parts[2]; // phpcs:ignore
+	$has_subdir     = isset( $path_parts[3] ) && $path_parts[3];
+
+	if ( ! $has_type_dir || ! $has_object_dir || ! $has_item_dir || ! $has_subdir ) {
+		return $result;
+	}
+
+	$result    = true;
+	$directory = new RecursiveDirectoryIterator( $path, FilesystemIterator::SKIP_DOTS );
+	$iterator  = new RecursiveIteratorIterator( $directory, RecursiveIteratorIterator::CHILD_FIRST );
+	foreach ( $iterator as $item ) {
+		if ( false === $result ) {
+			break;
 		}
 
-		$response = array_merge( $response, array( 'sizes' => $sizes ), $sizes['full'] );
-	} elseif ( $meta && 'video' === $type ) {
-		if ( isset( $meta['width'] ) )
-			$response['width'] = (int) $meta['width'];
-		if ( isset( $meta['height'] ) )
-			$response['height'] = (int) $meta['height'];
+		if ( $item->isDir() ) {
+			$result = rmdir( $item->getRealPath() );
+		} else {
+			$result = unlink( $item->getRealPath() );
+		}
 	}
 
-	if ( $meta && ( 'audio' === $type || 'video' === $type ) ) {
-		if ( isset( $meta['length_formatted'] ) )
-			$response['fileLength'] = $meta['length_formatted'];
-	}
-
-	return apply_filters( 'bp_attachments_prepare_attachment_for_js', $response, $attachment, $meta );
-}
-
-/**
- * bp_attachment post type caps
- *
- * @since BP Attachments (1.0.0)
- */
-function bp_attachments_get_attachment_caps() {
-	return apply_filters( 'bp_attachments_get_attachment_caps', array (
-		'edit_posts'          => 'edit_bp_attachments',
-		'edit_others_posts'   => 'edit_others_bp_attachments',
-		'publish_posts'       => 'publish_bp_attachments',
-		'read_private_posts'  => 'read_private_bp_attachments',
-		'delete_posts'        => 'delete_bp_attachments',
-		'delete_others_posts' => 'delete_others_bp_attachments'
-	) );
-}
-
-/**
- * bp_component taxonomy caps
- *
- * @since BP Attachments (1.0.0)
- */
-function bp_attachments_get_component_caps() {
-	return apply_filters( 'bp_attachments_get_component_caps', array (
-		'manage_terms' => 'manage_bp_components',
-		'edit_terms'   => 'edit_bp_components',
-		'delete_terms' => 'delete_bp_components',
-		'assign_terms' => 'assign_bp_components'
-	) );
-}
-
-/**
- * Specific function to check a user's capability
- *
- * @since BP Attachments (1.0.0)
- *
- * @uses BP_Attachments_Can to create the argument to check upon
- * such as :
- * - component
- * - single item id
- * - attachment id
- */
-function bp_attachments_loggedin_user_can( $capability = '', $args = false ) {
-	if ( ! empty( $args ) && is_array( $args ) )
-		$args = new BP_Attachments_Can( $args );
-
-	$blog_id = bp_get_root_blog_id();
-	$args = array( $blog_id, $capability, $args );
-
-	$retval = call_user_func_array( 'current_user_can_for_blog', $args );
-
-	return (bool) apply_filters( 'bp_attachments_loggedin_user_can', $retval, $args );
-}
-
-/**
- * Build the edit link of an attachement
- *
- * @since BP Attachments (1.0.0)
- */
-function bp_attachments_get_edit_link( $attachment_id = 0, $user_id = 0 ) {
-	if ( empty( $attachment_id ) )
-		return false;
-
-	if ( empty( $user_id ) )
-		$user_id = bp_loggedin_user_id();
-
-	$edit_link = trailingslashit( bp_core_get_user_domain( $user_id ) . buddypress()->attachments->slug );
-	$edit_link = add_query_arg( array( 'attachment' => $attachment_id, 'action' => 'edit' ), $edit_link );
-
-	return apply_filters( 'bp_attachments_get_edit_link', $edit_link, $attachment_id, $user_id );
-}
-
-/**
- * Build the delete link of an attachement
- *
- * @since BP Attachments (1.0.0)
- */
-function bp_attachments_get_delete_link( $attachment_id = 0, $user_id = 0 ) {
-	if ( empty( $attachment_id ) )
-		return false;
-
-	if ( empty( $user_id ) )
-		$user_id = bp_loggedin_user_id();
-
-	$delete_link = trailingslashit( bp_core_get_user_domain( $user_id ) . buddypress()->attachments->slug );
-	$delete_link = add_query_arg( array( 'attachment' => $attachment_id, 'action' => 'delete' ), $delete_link );
-
-	return apply_filters( 'bp_attachments_get_delete_link', $delete_link, $attachment_id, $user_id );
-}
-
-/**
- * Are we in an activity area (Group/User/Directory)
- *
- * @since 1.1.0
- *
- * @return bool True if in an activity area, false otherwise
- */
-function bp_attachments_is_activity() {
-	return bp_attachments_loader()->is_activity();
+	return rmdir( $path );
 }

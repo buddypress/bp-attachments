@@ -1,0 +1,11 @@
+{
+    "presets": ["@wordpress/default"],
+    "plugins": [
+		[
+            "@wordpress/babel-plugin-makepot",
+            {
+                "output": "languages/uploader/bp-attachments.pot"
+            }
+        ]
+    ]
+  }

@@ -1,0 +1,38 @@
+{
+  "author": "buddypress",
+  "bugs": {
+    "url": "https://github.com/buddypress/bp-attachments/issues"
+  },
+  "description": "BP Attachments is a BuddyPress component to manage user media.",
+  "engines": {
+    "node": "10.13.0",
+    "npm": "6.12.0"
+  },
+  "scripts": {
+    "start": "parcel watch bp-attachments/js/src/*/* -d bp-attachments/js/dist",
+    "build": "parcel build bp-attachments/js/src/*/* -d bp-attachments/js/dist",
+    "wpcs": "./vendor/bin/phpcs class-bp-attachments.php bp-attachments/*.php bp-attachments/*/*.php --standard=WordPress",
+    "pot": "./vendor/bin/wp i18n make-pot . languages/bp-attachments.pot",
+    "win:wpcs": ".\\vendor\\bin\\phpcs class-bp-attachments.php .\\bp-attachments --extensions=php --standard=WordPress",
+    "win:pot": ".\\vendor\\bin\\wp i18n make-pot . languages/bp-attachments.pot"
+  },
+  "keywords": [
+    "buddypress",
+    "attachments"
+  ],
+  "homepage": "https://github.com/buddypress/bp-attachments",
+  "license": "GPL-2.0+",
+  "name": "bp-attachments",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/buddypress/bp-attachments.git"
+  },
+  "version": "1.0.0-alpha",
+  "devDependencies": {
+    "core-js": "^3.6.2",
+    "@babel/core": "^7.6.4",
+    "@wordpress/babel-plugin-makepot": "^3.2.1",
+    "@wordpress/babel-preset-default": "^4.6.2",
+    "parcel-bundler": "^1.12.4"
+  }
+}
