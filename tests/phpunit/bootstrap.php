@@ -2,17 +2,43 @@
 /**
  * PHPUnit bootstrap file
  *
- * @package BP Attachments
- * @subpackage \tests\phpunit\bootstrap
+ * @package BP Attachments\tests\phpunit\bootstrap
  *
  * @since 1.0.0
  */
 
-$_tests_dir = getenv( 'WP_TESTS_DIR' );
+// If we're running in WP's build directory, ensure that WP knows that, too.
+if ( 'build' === getenv( 'LOCAL_DIR' ) ) {
+	define( 'WP_RUN_CORE_TESTS', true );
+}
+
+$_tests_dir = null;
+
+// Should we use wp-phpunit?
+if ( getenv( 'WP_PHPUNIT__TESTS_CONFIG' ) ) {
+	require_once dirname( __FILE__, 3 ) . '/vendor/autoload.php';
+
+	if ( getenv( 'WP_PHPUNIT__DIR' ) ) {
+		$_tests_dir = getenv( 'WP_PHPUNIT__DIR' );
+	}
+}
+
+// Defines WP_TEST_DIR & WP_DEVELOP_DIR if not already defined.
+if ( is_null( $_tests_dir ) ) {
+	$wp_develop_dir = getenv( 'WP_DEVELOP_DIR' );
+	if ( ! $wp_develop_dir ) {
+		if ( defined( 'WP_DEVELOP_DIR' ) ) {
+			$wp_develop_dir = WP_DEVELOP_DIR;
+		} else {
+			$wp_develop_dir = dirname( __FILE__, 7 );
+		}
+	}
+
+	$_tests_dir = $wp_develop_dir . '/tests/phpunit';
+}
 
 if ( ! file_exists( $_tests_dir . '/includes/functions.php' ) ) {
-	echo "Could not find $_tests_dir/includes/functions.php." . PHP_EOL;
-	exit( 1 );
+	die( "The WordPress PHPUnit test suite could not be found.\n" );
 }
 
 // Give access to tests_add_filter() function.
