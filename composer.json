@@ -1,14 +1,22 @@
 {
   "name": "buddypress/bp-attachments",
   "description": "BP Attachments is a BuddyPress component to manage user media.",
-  "type": "wordpress-plugin",
+	"type": "buddypress-plugin",
+	"homepage": "https://buddypress.org",
+	"license": "GPL-2.0-or-later",
+	"authors": [ {
+		"name": "BuddyPress Community",
+		"homepage": "https://buddypress.org/about/"
+	} ],
   "require": {
-    "squizlabs/php_codesniffer" : "^3.3.1",
-    "wp-cli/wp-cli-bundle": "*"
+    "composer/installers": "^1.10.0",
+		"php": ">=5.6.0"
   },
   "require-dev": {
-    "dealerdirect/phpcodesniffer-composer-installer": "*",
-    "phpcompatibility/phpcompatibility-wp" : "*",
-    "wp-coding-standards/wpcs": "*"
+    "phpcompatibility/phpcompatibility-wp": "^2.1.0",
+    "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1",
+		"wp-coding-standards/wpcs": "^2.3",
+    "wp-phpunit/wp-phpunit": "^5.6",
+		"phpunit/phpunit": "^7.5"
   }
 }
