@@ -2,14 +2,15 @@
 /**
  * BP Attachments Component.
  *
- * @package BP Attachments
- * @subpackage \bp-attachments\classes\class-bp-attachments-component
+ * @package \bp-attachments\classes\class-bp-attachments-component
  *
  * @since 1.0.0
  */
 
 // Exit if accessed directly.
-defined( 'ABSPATH' ) || exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * BP Attachments Component Class.
@@ -62,6 +63,7 @@ class BP_Attachments_Component extends BP_Component {
 
 		if ( is_admin() ) {
 			$includes[] = 'admin';
+			$includes[] = 'settings';
 		}
 
 		parent::includes( $includes );

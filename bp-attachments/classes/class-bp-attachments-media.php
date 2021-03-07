@@ -2,14 +2,15 @@
 /**
  * BP Attachments Media.
  *
- * @package BP Attachments
- * @subpackage \bp-attachments\classes\class-bp-attachments-media
+ * @package \bp-attachments\classes\class-bp-attachments-media
  *
  * @since 1.0.0
  */
 
 // Exit if accessed directly.
-defined( 'ABSPATH' ) || exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * BP Attachments Media Class.
@@ -146,7 +147,7 @@ class BP_Attachments_Media extends BP_Attachment {
 		$media_args = wp_parse_args(
 			array_map( 'wp_unslash', $_POST ), // phpcs:ignore
 			array(
-				'status'      => 'private',
+				'status'      => 'public',
 				'object'      => 'members',
 				'object_id'   => 0,
 				'object_slug' => '',
@@ -231,9 +232,9 @@ class BP_Attachments_Media extends BP_Attachment {
 					$subdir                                  = '';
 					$upload_dir['bp_attachments_error_code'] = 18;
 				} else {
-					$upload_dir = $private_uploads;
-					if ( $media_args['status'] && 'private' !== $media_args['status'] ) {
-						$upload_dir = $public_uploads;
+					$upload_dir = $public_uploads;
+					if ( $media_args['status'] && 'public' !== $media_args['status'] ) {
+						$upload_dir = $private_uploads;
 					}
 
 					$subdir     = '/members/' . $user_id;

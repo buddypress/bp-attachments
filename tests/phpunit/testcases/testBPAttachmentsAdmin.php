@@ -2,8 +2,7 @@
 /**
  * BP Attachments Admin tests.
  *
- * @package BP Attachments
- * @subpackage \tests\phpunit\admin\testBPAttachmentsAdmin
+ * @package \tests\phpunit\testcases\testBPAttachmentsAdmin
  *
  * @since 1.0.0
  */
@@ -45,8 +44,6 @@ class BP_Attachments_Admin_UnitTestCase extends BP_UnitTestCase {
 			return;
 		}
 
-		unlink( $test_dir . '/private/.htaccess' );
-
 		$this->rrmdir( $test_dir );
 	}
 
@@ -55,9 +52,6 @@ class BP_Attachments_Admin_UnitTestCase extends BP_UnitTestCase {
 
 		add_filter( 'bp_attachments_uploads_dir_get', array( $this, 'filter_bp_attachments_uploads_dir' ), 0, 1 );
 		bp_attachments_install();
-
-		$private_uploads = bp_attachments_get_private_uploads_dir();
-		$this->assertTrue( file_exists( $private_uploads['basedir'] . '/' . $private_uploads['subdir'] . '/' . '.htaccess' ) );
 
 		$public_uploads = bp_attachments_get_public_uploads_dir();
 		$this->assertTrue( is_dir( $public_uploads['basedir'] . '/' . $public_uploads['subdir'] ) );

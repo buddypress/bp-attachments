@@ -2,14 +2,15 @@
 /**
  * BP Attachments Functions.
  *
- * @package BP Attachments
- * @subpackage \bp-attachments\bp-attachments-functions
+ * @package \bp-attachments\bp-attachments-functions
  *
  * @since 1.0.0
  */
 
 // Exit if accessed directly.
-defined( 'ABSPATH' ) || exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Get the plugin version.
@@ -48,6 +49,99 @@ function bp_attachments_is_update() {
 }
 
 /**
+ * Checks whether users can upload private attachments.
+ *
+ * @since 1.0.0
+ *
+ * @return boolean True if users can upload private attachments. False otherwise.
+ */
+function bp_attachments_can_do_private_uploads() {
+	return (bool) bp_get_option( '_bp_attachments_can_upload_privately', false );
+}
+
+/**
+ * Returns the server's document root.
+ *
+ * @since 1.0.0
+ *
+ * @return string The server's document root.
+ */
+function bp_attachments_get_document_root() {
+	$document_root = '';
+	if ( isset( $_SERVER['DOCUMENT_ROOT'] ) ) {
+		$document_root = realpath( wp_unslash( $_SERVER['DOCUMENT_ROOT'] ) ); // phpcs:ignore
+	}
+
+	return $document_root;
+}
+
+/**
+ * Gets the root directory of private uploads.
+ *
+ * @since 1.0.0
+ *
+ * @param boolean $upload_checks True to perform upload checks. False otherwise.
+ * @return string|WP_Error The private root directory if it exists a WP Error object otherwise.
+ */
+function bp_attachments_get_private_root_dir( $upload_checks = true ) {
+	$document_root = bp_attachments_get_document_root();
+
+	if ( ! $document_root ) {
+		return new WP_Error(
+			'missing_document_root_information',
+			__( 'The server’s document root is missing.', 'bp-attachments' )
+		);
+	}
+
+	$private_dir = trailingslashit( dirname( $document_root ) ) . 'buddypress-private';
+
+	if ( ! is_dir( $private_dir ) ) {
+		return new WP_Error(
+			'missing_private_root_directory',
+			__( 'The private root directory is missing.', 'bp-attachments' )
+		);
+	}
+
+	if ( ! $upload_checks ) {
+		if ( ! is_writeable( $private_dir ) ) {
+			return new WP_Error(
+				'private_root_directory_not_writeable',
+				__( 'The private root directory is not writeable.', 'bp-attachments' )
+			);
+		}
+
+		return $private_dir;
+	}
+
+	// Get the Uploads directory information.
+	$wp_uploads      = wp_get_upload_dir();
+	$upload_dir_info = array(
+		'gid'   => filegroup( $wp_uploads['path'] ),
+		'uid'   => fileowner( $wp_uploads['path'] ),
+		'perms' => fileperms( $wp_uploads['path'] ),
+	);
+
+	// Get the private root dir information.
+	$private_dir_info = array(
+		'gid'   => filegroup( $private_dir ),
+		'uid'   => fileowner( $private_dir ),
+		'perms' => fileperms( $private_dir ),
+	);
+
+	$diff = array_diff( $upload_dir_info, $private_dir_info );
+
+	if ( $diff ) {
+		return new WP_Error(
+			'private_root_directory_wrong_permissions',
+			__( 'The private root directory is not set the right way.', 'bp-attachments' ),
+			$diff
+		);
+	}
+
+	return $private_dir;
+}
+
+/**
  * Get the media uploads dir for the requested visibility type.
  *
  * @since 1.0.0
@@ -62,6 +156,18 @@ function bp_attachments_get_media_uploads_dir( $type = 'public' ) {
 
 	$bp_uploads_dir = bp_attachments_uploads_dir_get();
 	$subdir         = '/' . $type;
+
+	if ( 'private' === $type && bp_attachments_can_do_private_uploads() ) {
+		$private_dir = bp_attachments_get_private_root_dir( false );
+
+		if ( is_wp_error( $private_dir ) ) {
+			$subdir = '/public';
+		} else {
+			$bp_uploads_dir['basedir'] = $private_dir;
+			$bp_uploads_dir['baseurl'] = '';
+			$subdir                    = '';
+		}
+	}
 
 	$uploads = array_merge(
 		$bp_uploads_dir,
@@ -138,7 +244,7 @@ function bp_attachments_get_item_actions() {
 }
 
 /**
- * Get the BP Attachment URI out of its path.
+ * Get the vignette URI of an image attachment out of its path.
  *
  * @since 1.0.0
  *
@@ -146,12 +252,12 @@ function bp_attachments_get_item_actions() {
  * @param string $path     The absolute path to the BP Attachment item.
  * @return string          The BP Attachment URI.
  */
-function bp_attachments_get_media_uri( $filename = '', $path = '' ) {
+function bp_attachments_get_vignette_uri( $filename = '', $path = '' ) {
 	$uploads   = bp_upload_dir();
 	$file_path = trailingslashit( $path ) . $filename;
 
-	if ( ! file_exists( $file_path ) ) {
-		return '';
+	if ( ! file_exists( $file_path ) || 0 !== strpos( $file_path, WP_CONTENT_DIR ) ) {
+		return trailingslashit( buddypress()->attachments->assets_url ) . 'images/image.png';
 	}
 
 	return str_replace( $uploads['basedir'], $uploads['baseurl'], $file_path );
@@ -220,7 +326,7 @@ function bp_attachments_create_media( $media = null ) {
 		$media->size       = $media_data->getSize();
 
 		if ( 'image' === $media->media_type ) {
-			$media->vignette        = bp_attachments_get_media_uri( $media->name, untrailingslashit( $parent_dir ) );
+			$media->vignette        = bp_attachments_get_vignette_uri( $media->name, untrailingslashit( $parent_dir ) );
 			list( $width, $height ) = getimagesize( trailingslashit( $parent_dir ) . $media->name );
 
 			if ( $width > $height ) {
@@ -341,7 +447,7 @@ function bp_attachments_list_media_in_directory( $dir = '', $object = 'members' 
 		$media_data->orientation = null;
 
 		if ( 'image' === $media_data->media_type ) {
-			$media_data->vignette   = bp_attachments_get_media_uri( $media_data->name, $dir );
+			$media_data->vignette   = bp_attachments_get_vignette_uri( $media_data->name, $dir );
 			list( $width, $height ) = getimagesize( trailingslashit( $dir ) . $media_data->name );
 
 			if ( $width > $height ) {
@@ -384,26 +490,15 @@ function bp_attachments_get_directory_common_props() {
  *
  * @since 1.0.0
  *
+ * @param integer $user_id The user ID.
  * @return array The list of supported directory types.
  */
-function bp_attachments_get_directory_types() {
-	$current_time = bp_core_current_time( true, 'timestamp' );
-	$common_props = bp_attachments_get_directory_common_props();
+function bp_attachments_get_directory_types( $user_id = 0 ) {
+	$current_time    = bp_core_current_time( true, 'timestamp' );
+	$common_props    = bp_attachments_get_directory_common_props();
+	$directory_types = array();
 
-	$private_dir = (object) array_merge(
-		array(
-			'id'            => 'private-' . $user_id,
-			'title'         => __( 'Private', 'bp-attachments' ),
-			'media_type'    => 'private',
-			'name'          => 'private',
-			'last_modified' => $current_time,
-			'description'   => __( 'This Private directory and its children are only visible to logged in users.', 'bp-attachments' ),
-			'icon'          => bp_attachments_get_directory_icon( 'private' ),
-		),
-		$common_props
-	);
-
-	$public_dir = (object) array_merge(
+	$directory_types[] = (object) array_merge(
 		array(
 			'id'            => 'public-' . $user_id,
 			'title'         => __( 'Public', 'bp-attachments' ),
@@ -416,7 +511,29 @@ function bp_attachments_get_directory_types() {
 		$common_props
 	);
 
-	return array( $private_dir, $public_dir );
+	if ( bp_attachments_can_do_private_uploads() ) {
+		$directory_types[] = (object) array_merge(
+			array(
+				'id'            => 'private-' . $user_id,
+				'title'         => __( 'Private', 'bp-attachments' ),
+				'media_type'    => 'private',
+				'name'          => 'private',
+				'last_modified' => $current_time,
+				'description'   => __( 'This Private directory and its children are only visible to logged in users.', 'bp-attachments' ),
+				'icon'          => bp_attachments_get_directory_icon( 'private' ),
+			),
+			$common_props
+		);
+	}
+
+	/**
+	 * Filter here to add/remove directory types.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $directory_types The list of directory type objects.
+	 */
+	return apply_filters( 'bp_attachments_get_directory_types', $directory_types );
 }
 
 /**
@@ -443,7 +560,7 @@ function bp_attachments_list_member_root_objects( $user_id = 0, $object_dir = ''
 	if ( ! bp_is_active( 'groups' ) || in_array( $object_dir, array( 'member', 'groups' ), true ) ) {
 		// Get the directory types for the member.
 		if ( 'groups' !== $object_dir ) {
-			$list = bp_attachments_get_directory_types();
+			$list = bp_attachments_get_directory_types( $user_id );
 
 			// Get the groups the user is a member of.
 		} else {
@@ -601,22 +718,29 @@ function bp_attachments_get_directory_icon( $type = 'folder' ) {
  *
  * @since 1.0.0
  *
- * @param string $path The absolute path of the directory.
- * @return boolean     True on success. False otherwise.
+ * @param string $path       The absolute path of the directory.
+ * @param string $visibility The file visibility. Default `public`.
+ * @return boolean True on success. False otherwise.
  */
-function bp_attachments_delete_directory( $path = '' ) {
-	$result     = false;
-	$bp_uploads = bp_attachments_uploads_dir_get();
+function bp_attachments_delete_directory( $path = '', $visibility = 'public' ) {
+	$result  = false;
+	$uploads = bp_attachments_get_media_uploads_dir( $visibility );
 
 	// Make sure the directory exists and that we are deleting a subdirectory of the BP Uploads.
-	if ( ! is_dir( $path ) || 0 !== strpos( $path, $bp_uploads['basedir'] ) ) {
+	if ( ! is_dir( $path ) || 0 !== strpos( $path, $uploads['path'] ) ) {
 		return $result;
 	}
 
 	// Make sure the path to delete is safe.
-	$relative_path  = trim( str_replace( $bp_uploads['basedir'], '', $path ), '/' );
-	$path_parts     = explode( '/', $relative_path );
-	$has_type_dir   = isset( $path_parts[0] ) && in_array( $path_parts[0], array( 'public', 'private' ), true );
+	$relative_path = trim( str_replace( $uploads['basedir'], '', $path ), '/' );
+	$path_parts    = explode( '/', $relative_path );
+
+	// The Private root directory has no visibility/type subdirectory.
+	if ( 'private' === $visibility ) {
+		array_unshift( $path_parts, 'buddypress-private' );
+	}
+
+	$has_type_dir   = isset( $path_parts[0] ) && in_array( $path_parts[0], array( 'public', 'buddypress-private' ), true );
 	$has_object_dir = isset( $path_parts[1] ) && in_array( $path_parts[1], array( 'members', 'groups' ), true );
 	$has_item_dir   = isset( $path_parts[2] ) && !! (int) $path_parts[2]; // phpcs:ignore
 	$has_subdir     = isset( $path_parts[3] ) && $path_parts[3];

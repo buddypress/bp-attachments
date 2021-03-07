@@ -2,14 +2,15 @@
 /**
  * BP Attachments Entry JavaScript Template.
  *
- * @package BP Attachments
- * @subpackage \templates\buddypress\common\js-templates\attachments\media-item
+ * @package \templates\buddypress\common\js-templates\attachments\media-item
  *
  * @since 1.0.0
  */
 
 // Exit if accessed directly.
-defined( 'ABSPATH' ) || exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <script type="html/template" id="tmpl-bp-attachments-media-item">

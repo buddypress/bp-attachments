@@ -2,8 +2,7 @@
 /**
  * BP Attachments Component tests.
  *
- * @package BP Attachments
- * @subpackage \tests\phpunit\testcases\classes\testBPAttachmentsComponent
+ * @package \tests\phpunit\testcases\classes\testBPAttachmentsComponent
  *
  * @since 1.0.0
  */

@@ -2,8 +2,7 @@
 /**
  * BP Attachments Media tests.
  *
- * @package BP Attachments
- * @subpackage \tests\phpunit\testcases\classes\testBPAttachmentsMedia
+ * @package \tests\phpunit\testcases\classes\testBPAttachmentsMedia
  *
  * @since 1.0.0
  */
@@ -31,6 +30,8 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 	}
 
 	public function test_bp_attachments_media_upload_dir_filter_member_public() {
+		$this->markTestSkipped();
+
 		$media = new BP_Attachments_Media();
 		$user_id = get_current_user_id();
 
@@ -54,6 +55,8 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 	}
 
 	public function test_bp_attachments_media_upload_dir_filter_member_private() {
+		$this->markTestSkipped();
+
 		$media = new BP_Attachments_Media();
 		$user_id = get_current_user_id();
 
@@ -76,6 +79,8 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 	}
 
 	public function test_bp_attachments_media_upload_dir_filter_member_error() {
+		$this->markTestSkipped();
+
 		$media = new BP_Attachments_Media();
 		$user_id = 9999999;
 
@@ -107,6 +112,8 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 	}
 
 	public function test_bp_attachments_media_upload_dir_filter_missing_parent_dir() {
+		$this->markTestSkipped();
+
 		$media      = new BP_Attachments_Media();
 		$user_id    = get_current_user_id();
 		$parent_dir = '/public/members/' . $user_id . '/foobar';
@@ -122,6 +129,8 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 	}
 
 	public function test_bp_attachments_media_upload_dir_filter_parent_dir() {
+		$this->markTestSkipped();
+
 		$media      = new BP_Attachments_Media();
 		$user_id    = get_current_user_id();
 		$parent_dir = '/public/members/' . $user_id . '/foobar';
@@ -148,6 +157,8 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 	}
 
 	public function test_bp_attachments_media_upload_dir_filter_group_public() {
+		$this->markTestSkipped();
+
 		$media = new BP_Attachments_Media();
 		$group = self::factory()->group->create_and_get();
 
@@ -171,6 +182,8 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 	}
 
 	public function test_bp_attachments_media_upload_dir_filter_group_private() {
+		$this->markTestSkipped();
+
 		$media = new BP_Attachments_Media();
 		$group = self::factory()->group->create_and_get( array( 'status' => 'private' ) );
 
@@ -194,6 +207,8 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 	}
 
 	public function test_bp_attachments_media_upload_dir_filter_group_error() {
+		$this->markTestSkipped();
+
 		$media = new BP_Attachments_Media();
 
 		$_POST = array(

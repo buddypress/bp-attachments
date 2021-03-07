@@ -2,14 +2,15 @@
 /**
  * BP Attachments Loader.
  *
- * @package BP Attachments
- * @subpackage \bp-attachments\bp-attachments-loader
+ * @package \bp-attachments\bp-attachments-loader
  *
  * @since 1.0.0
  */
 
 // Exit if accessed directly.
-defined( 'ABSPATH' ) || exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Set up the BP Attachments component.

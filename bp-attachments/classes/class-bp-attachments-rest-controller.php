@@ -2,14 +2,15 @@
 /**
  * BP Attachments REST Controller.
  *
- * @package BP Attachments
- * @subpackage \bp-attachments\classes\class-bp-attachments-rest-controller
+ * @package \bp-attachments\classes\class-bp-attachments-rest-controller
  *
  * @since 1.0.0
  */
 
 // Exit if accessed directly.
-defined( 'ABSPATH' ) || exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * BP Attachments REST Controller Class.
@@ -137,19 +138,22 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	 * @return WP_REST_Response List of BP Attachments Media response data.
 	 */
 	public function get_items( $request ) {
-		$basedir = bp_attachments_uploads_dir_get()['basedir'];
+		$public_basedir = bp_attachments_uploads_dir_get()['basedir'];
+		$parent         = $request->get_param( 'directory' );
+		$object         = $request->get_param( 'object' );
+		$user_id        = $request->get_param( 'user_id' );
+		$group          = null;
 
-		$parent  = $request->get_param( 'directory' );
-		$object  = $request->get_param( 'object' );
-		$user_id = $request->get_param( 'user_id' );
-		$group   = null;
+		if ( ! $user_id ) {
+			$user_id = bp_loggedin_user_id();
+		}
 
+		/*
+		 * @todo check why I use "member" instead of "members"??
+		 * @see bp_attachments_list_member_root_objects() $list['member'] at line 589
+		 */
 		if ( $parent && ! in_array( $parent, array( 'member', 'groups' ), true ) ) {
-			$visibility = 'private';
-
-			if ( ! $user_id ) {
-				$user_id = get_current_user_id();
-			}
+			$visibility = 'public';
 
 			// The object ID defaults to the user ID.
 			$object_id = $user_id;
@@ -210,7 +214,19 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		$response = rest_ensure_response( $retval );
 
 		// Set the default relative path.
-		$relative_path = str_replace( $basedir, '', $dir );
+		$relative_path = '';
+
+		if ( bp_attachments_can_do_private_uploads() ) {
+			$private_basedir = bp_attachments_get_private_root_dir();
+
+			if ( ! is_wp_error( $private_basedir ) ) {
+				$relative_path = str_replace( array( $public_basedir, $private_basedir ), array( '', '/private' ), $dir );
+			}
+		}
+
+		if ( ! $relative_path ) {
+			$relative_path = str_replace( $public_basedir, '', $dir );
+		}
 
 		// Use the group's slug into the relative path.
 		if ( $group && $group instanceof BP_Groups_Group ) {
@@ -427,13 +443,31 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	public function delete_item( $request ) {
 		$id            = trim( $request->get_param( 'id' ), '/' );
 		$relative_path = $request->get_param( 'relative_path' );
+		$error         = new WP_Error(
+			'bp_rest_delete_media_failed',
+			__( 'Sorry, we were not able to delete the media.', 'bp-attachments' ),
+			array(
+				'status' => 500,
+			)
+		);
+
+		$relative_path_parts = explode( '/', $relative_path );
+		$relative_path_parts = array_filter( $relative_path_parts );
+		$visibility          = reset( $relative_path_parts );
+
+		if ( 'private' !== $visibility && 'public' !== $visibility ) {
+			return $error;
+		}
+
+		// Remove visibility from private path.
+		$relative_path = str_replace( '/' . $visibility, '', $relative_path );
 
 		// Set the context of the request.
 		$request->set_param( 'context', 'edit' );
 
-		$basedir     = bp_attachments_uploads_dir_get()['basedir'];
+		$path        = bp_attachments_get_media_uploads_dir( $visibility )['path'];
 		$subdir      = '/' . trim( $relative_path, '/' );
-		$medium_data = $basedir . $subdir . '/' . $id . '.json';
+		$medium_data = $path . $subdir . '/' . $id . '.json';
 
 		$data     = json_decode( wp_unslash( file_get_contents( $medium_data ) ) ); // phpcs:ignore
 		$previous = $this->prepare_item_for_response( $data, $request );
@@ -452,27 +486,21 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		if ( 'file' === $data->type ) {
 			if ( true === $deleted ) {
 				// Delete revisions folder.
-				$deleted = bp_attachments_delete_directory( $basedir . $subdir . '/._revisions_' . $id );
+				$deleted = bp_attachments_delete_directory( $path . $subdir . '/._revisions_' . $id, $visibility );
 			}
 
-			if ( true === $deleted && file_exists( $basedir . $subdir . '/' . $data->name ) ) {
-				$deleted = unlink( $basedir . $subdir . '/' . $data->name );
+			if ( true === $deleted && file_exists( $path . $subdir . '/' . $data->name ) ) {
+				$deleted = unlink( $path . $subdir . '/' . $data->name );
 			}
 		} else {
 			if ( true === $deleted ) {
 				// Delete the folder and its content.
-				$deleted = bp_attachments_delete_directory( $basedir . $subdir . '/' . $data->name );
+				$deleted = bp_attachments_delete_directory( $path . $subdir . '/' . $data->name, $visibility );
 			}
 		}
 
 		if ( ! $deleted ) {
-			return new WP_Error(
-				'bp_rest_delete_media_failed',
-				__( 'Sorry, we were not able to delete the media.', 'bp-attachments' ),
-				array(
-					'status' => 500,
-				)
-			);
+			return $error;
 		}
 
 		// Build the response.

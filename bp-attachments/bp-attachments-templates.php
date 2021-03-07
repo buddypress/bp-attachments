@@ -2,14 +2,15 @@
 /**
  * BP Attachments Templates.
  *
- * @package BP Attachments
- * @subpackage \bp-attachments\bp-attachments-templates
+ * @package \bp-attachments\bp-attachments-templates
  *
  * @since 1.0.0
  */
 
 // Exit if accessed directly.
-defined( 'ABSPATH' ) || exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Get Attachments Templates directory.

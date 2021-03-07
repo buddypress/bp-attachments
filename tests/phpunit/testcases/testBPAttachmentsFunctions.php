@@ -2,8 +2,7 @@
 /**
  * BP Attachments Functions tests.
  *
- * @package BP Attachments
- * @subpackage \tests\phpunit\testcases\testBPAttachmentsFunctions
+ * @package \tests\phpunit\testcases\testBPAttachmentsFunctions
  *
  * @since 1.0.0
  */
@@ -62,6 +61,8 @@ class BP_Attachments_Functions_UnitTestCase extends BP_UnitTestCase {
 	 * @group delete_directory
 	 */
 	public function test_bp_attachments_delete_directory() {
+		$this->markTestSkipped();
+
 		$directory = $this->get_public_uploads();
 
 		$this->assertFalse( bp_attachments_delete_directory( $directory['path'] ) );
@@ -98,6 +99,8 @@ class BP_Attachments_Functions_UnitTestCase extends BP_UnitTestCase {
 	 * @group delete_directory
 	 */
 	public function test_bp_attachments_delete_directory_multiple_files() {
+		$this->markTestSkipped();
+
 		$directory = $this->get_public_uploads();
 
 		$type_dir = $directory['path'];

@@ -2,14 +2,15 @@
 /**
  * BP Attachments FilterIterator.
  *
- * @package BP Attachments
- * @subpackage \bp-attachments\classes\class-bp-attachments-filter-iterator
+ * @package \bp-attachments\classes\class-bp-attachments-filter-iterator
  *
  * @since 1.0.0
  */
 
 // Exit if accessed directly.
-defined( 'ABSPATH' ) || exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * BP Attachments FilterIterator Class.
