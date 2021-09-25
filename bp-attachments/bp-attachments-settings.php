@@ -60,7 +60,7 @@ function bp_attachments_enable_private_uploads_callback() {
 					/* translators: 1. is The private root directory absolute path. 2. is the uploads relative path. */
 					esc_html__( 'The %s directory needs to be owned by the same user than the WordPress uploads one.', 'bp-attachments' ),
 					$private_dir_path,
-					$uploads_dir,
+					$uploads_dir
 				);
 
 				if ( function_exists( 'posix_getpwuid' ) ) {

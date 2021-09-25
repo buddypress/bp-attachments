@@ -1,34 +1,35 @@
 {
-  "author": "buddypress",
-  "bugs": {
-    "url": "https://github.com/buddypress/bp-attachments/issues"
-  },
-  "description": "BP Attachments is a BuddyPress component to manage user media.",
-  "engines": {
-    "node": ">=14.15.3",
-    "npm": ">=6.14.9"
-  },
-  "scripts": {
-    "start": "parcel watch bp-attachments/js/src/*/* -d bp-attachments/js/dist",
-    "build": "parcel build bp-attachments/js/src/*/* -d bp-attachments/js/dist",
-    "wpcs": "./vendor/bin/phpcs class-bp-attachments.php bp-attachments/*.php bp-attachments/*/*.php --standard=WordPress",
-    "pot": "wp i18n make-pot . --exclude=\".cache,node_modules,tests,bp-attachments/js/*.js\" languages/bp-attachments.pot"
-  },
-  "keywords": [
-    "buddypress",
-    "attachments"
-  ],
-  "homepage": "https://github.com/buddypress/bp-attachments",
-  "license": "GPL-2.0+",
-  "name": "bp-attachments",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/buddypress/bp-attachments.git"
-  },
-  "version": "1.0.0-alpha",
-  "devDependencies": {
-    "@babel/core": "^7.13.15",
-    "@wordpress/babel-preset-default": "^5.0.1",
-    "parcel-bundler": "^1.12.5"
-  }
+	"author": "buddypress",
+	"bugs": {
+		"url": "https://github.com/buddypress/bp-attachments/issues"
+	},
+	"description": "BP Attachments is a BuddyPress component to manage your community media.",
+	"engines": {
+		"node": ">=14.15.3",
+		"npm": ">=6.14.9"
+	},
+	"scripts": {
+		"start": "parcel watch bp-attachments/js/src/*/* -d bp-attachments/js/dist",
+		"build": "parcel build bp-attachments/js/src/*/* -d bp-attachments/js/dist",
+		"pot": "wp i18n make-pot . --exclude=\".cache,node_modules,tests,bp-attachments/js/*.js\" languages/bp-attachments.pot"
+	},
+	"keywords": [
+		"buddypress",
+		"community",
+		"attachments",
+		"media"
+	],
+	"homepage": "https://github.com/buddypress/bp-attachments",
+	"license": "GPL-2.0+",
+	"name": "bp-attachments",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/buddypress/bp-attachments.git"
+	},
+	"version": "1.0.0-alpha",
+	"devDependencies": {
+		"@babel/core": "^7.15.5",
+		"@wordpress/babel-preset-default": "^6.3.2",
+		"parcel-bundler": "^1.12.5"
+	}
 }
