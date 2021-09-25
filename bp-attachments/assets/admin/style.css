@@ -51,12 +51,21 @@
 	z-index: 1;
 }
 
+#bp-media-uploader .enabled .close:before {
+    font: normal 30px/1 dashicons !important;
+    color: #50575e;
+    display: inline-block;
+    content: "\f335";
+    font-weight: 300;
+    margin-top: 1px;
+}
+
 #bp-media-uploader .uploader-container.disabled,
 #bp-media-directory-form.disabled {
 	display: none;
 }
 
-#bp-media-uploader  .components-drop-zone.enabled.is-dragging-over-element {
+#bp-media-uploader .components-drop-zone.enabled.is-dragging-over-element {
 	display: table;
 }
 
@@ -68,6 +77,28 @@
 
 #bp-media-uploader .components-drop-zone.enabled.is-dragging-over-element .components-drop-zone__content .components-drop-zone__content-icon {
 	vertical-align: middle;
+}
+
+#bp-media-uploader .enabled .dropzone-label {
+	font-weight: 600;
+	position: absolute;
+	top: 30%;
+	left: 0;
+	right: 0;
+	transform: translateY(-50%);
+	margin: 2em 40%;
+	text-align: center;
+}
+
+#bp-media-uploader .enabled .dropzone-label h2 {
+    font-size: 20px;
+    line-height: 1.4;
+    font-weight: 400;
+    margin: 0;
+}
+
+#bp-media-uploader .enabled .dropzone-label .components-form-file-upload {
+	margin-top: 1em;
 }
 
 .bp-uploading:before,
@@ -109,6 +140,7 @@
 #bp-media-uploader .media-toolbar-secondary .media-button {
 	margin: 10px 0;
 	margin-right: 10px;
+	max-height: 30px;
 }
 
 #bp-media-uploader .media-items.mode-select .vignette {

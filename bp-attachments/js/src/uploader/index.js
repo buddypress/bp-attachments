@@ -2,7 +2,7 @@
  * WordPress dependencies
  */
 const { Component, render, createElement, Fragment } = wp.element;
-const { DropZoneProvider, DropZone } = wp.components;
+const { DropZone, FormFileUpload } = wp.components;
 const { __ } = wp.i18n;
 const { withDispatch, withSelect, dispatch } = wp.data;
 const { compose } = wp.compose;
@@ -42,6 +42,19 @@ class BP_Media_Uploader extends Component {
 		dispatch( 'bp-attachments' ).reset();
 
 		this.setState( { uploadEnabled: isUpload, makedirEnabled: isMakeDir } );
+	}
+
+	submitUpload( e ) {
+		const { onFilesDropped } = this.props;
+		let files;
+
+		if ( e.currentTarget && e.currentTarget.files ) {
+			files = [ ...e.currentTarget.files ];
+		} else {
+			files = e;
+		}
+
+		onFilesDropped( files );
 	}
 
 	closeForm( event ) {
@@ -84,7 +97,7 @@ class BP_Media_Uploader extends Component {
 	}
 
 	render() {
-		const { onFilesDropped, isUploading, hasUploaded, uploaded, files, errored, user, isSelectable } = this.props;
+		const { isUploading, hasUploaded, uploaded, files, errored, user, isSelectable } = this.props;
 		const { uploadEnabled, makedirEnabled } = this.state;
 		let mediaItems, dzClass = 'disabled', dfClass = 'disabled', result = [];
 
@@ -122,16 +135,25 @@ class BP_Media_Uploader extends Component {
 			<Fragment>
 				<SplitButton onDoAction={ this.handleAction }/>
 				<div className={ 'uploader-container ' + dzClass }>
+					<DropZone
+						label={ __( 'Drop your files here.', 'bp-attachments' ) }
+						onFilesDrop={ ( e ) => this.submitUpload( e ) }
+						className="uploader-inline"
+					/>
 					<button className="close dashicons dashicons-no" onClick={ ( e ) => this.closeForm( e ) }>
 						<span className="screen-reader-text">{ __( 'Close the upload panel', 'bp-attachments' ) }</span>
 					</button>
-					<DropZoneProvider>
-						<DropZone
-							label={ __( 'Drop your files here.', 'bp-attachments' ) }
-							onFilesDrop={ onFilesDropped }
-							className="uploader-inline"
-						/>
-					</DropZoneProvider>
+					<div className="dropzone-label">
+						<h2 className="upload-instructions drop-instructions">{ __( 'Drop files to upload', 'bp-attachments' ) }</h2>
+						<p className="upload-instructions drop-instructions">{ __( 'or', 'bp-attachments' ) }</p>
+						<FormFileUpload
+							onChange={ ( e ) => this.submitUpload( e ) }
+							multiple={ true }
+							className="browser button button-hero"
+						>
+							{ __( 'Select Files', 'bp-attachments' ) }
+						</FormFileUpload>
+					</div>
 				</div>
 				<DirectoryForm className={ dfClass }>
 					<button className="close dashicons dashicons-no" onClick={ ( e ) => this.closeForm( e ) }>

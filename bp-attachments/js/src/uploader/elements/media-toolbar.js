@@ -56,11 +56,11 @@ class MediaToolbar extends Component {
 						</div>
 					) }
 					{ selectable && (
-						<Button isPrimary={ true } disabled={ isDisabled } isLarge={ true } className="media-button delete-selected-button" onClick={ ( e ) => this.deleteSelected( e ) }>
+						<Button disabled={ isDisabled } className="button button-primary button-large media-button delete-selected-button" onClick={ ( e ) => this.deleteSelected( e ) }>
 							{ __( 'Delete selection', 'bp-attachments' ) }
 						</Button>
 					) }
-					<Button isLarge={ true } className="media-button select-mode-toggle-button" onClick={ ( e ) => this.toggleSelectable( e ) }>
+					<Button className="button button-secondary media-button select-mode-toggle-button" onClick={ ( e ) => this.toggleSelectable( e ) }>
 						{ ! selectable ? __( 'Bulk Select', 'bp-attachments' ) : __( 'Cancel', 'bp-attachments' ) }
 					</Button>
 				</div>

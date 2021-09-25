@@ -66,7 +66,7 @@ class DirectoryForm extends Component {
 					] }
 					onChange={ ( directoryType ) => this.handleChange( { directoryType: directoryType } ) }
 				/>
-				<Button isPrimary={ true } isLarge={ true } onClick={ ( e ) => this.submitForm( e ) }>
+				<Button onClick={ ( e ) => this.submitForm( e ) }>
 					{ __( 'Save directory', 'bp-attachments' ) }
 				</Button>
 			</form>
