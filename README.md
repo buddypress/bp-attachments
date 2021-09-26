@@ -8,7 +8,7 @@ For the "once upon a time": see [ticket 5429](https://buddypress.trac.wordpress.
 Targeted Configuration
 ----------------------
 
-+ WordPress 5.0.0
-+ BuddyPress 5.0.0
++ WordPress 5.9.0
++ BuddyPress 10.0.0
 
 **NB: A complete rewrite of the plugin is in progress. More informations about it soon!**
