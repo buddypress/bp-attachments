@@ -176,6 +176,9 @@ class BP_Media_Uploader extends Component {
 				<BreadCrumb />
 				<div className={ isSelectable ? 'media-items mode-select' : 'media-items' }>
                     { mediaItems }
+					{ ! files.length && (
+						<p className="no-media">{ __( 'No community media items found.', 'bp-attachments' ) }</p>
+					) }
                 </div>
 			</Fragment>
 		);

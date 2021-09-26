@@ -46,7 +46,7 @@ class SplitButton extends Component {
 				<div className={ toggleClass }>
 					<div className="split-button-head">
 						<a href="#new-bp-media-upload" className="button split-button-primary" aria-live="polite" onClick={ ( e ) => this.doAction( 'upload', e ) }>
-							{ __( 'Upload new', 'bp-attachments' ) }
+							{ __( 'Add new', 'bp-attachments' ) }
 						</a>
 						<button type="button" className="split-button-toggle" aria-haspopup="true" aria-expanded={ is_open } onClick={ this.toggleClass }>
 							<i className={ dashiconClass }></i>
