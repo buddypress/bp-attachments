@@ -95,6 +95,21 @@ function bp_attachments_admin_register_scripts() {
 add_action( 'bp_admin_enqueue_scripts', 'bp_attachments_admin_register_scripts', 1 );
 
 /**
+ * Inline styles for the settings page.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_admin_enqueue_common_scripts() {
+	wp_add_inline_style(
+		'bp-admin-common-css',
+		'.settings_page_bp-components tr.attachments td.plugin-title span:before {
+			content: "\f104";
+		}'
+	);
+}
+add_action( 'bp_admin_enqueue_scripts', 'bp_attachments_admin_enqueue_common_scripts', 20 );
+
+/**
  * Display the BuddyPress Media Admin screen.
  *
  * @since 1.0.0

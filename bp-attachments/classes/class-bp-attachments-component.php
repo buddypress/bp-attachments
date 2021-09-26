@@ -66,6 +66,8 @@ class BP_Attachments_Component extends BP_Component {
 			$includes[] = 'settings';
 		}
 
+		$includes[] = 'filters';
+
 		parent::includes( $includes );
 	}
 
