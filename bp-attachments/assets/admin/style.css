@@ -9,11 +9,6 @@
 	border: 4px dashed #b4b9be;
 }
 
-#bp-media-uploader .enabled .uploader-inline {
-	min-height: 150px;
-	position: static;
-}
-
 #bp-media-directory-form {
 	position: relative;
 	width: 400px;
@@ -81,12 +76,7 @@
 
 #bp-media-uploader .enabled .dropzone-label {
 	font-weight: 600;
-	position: absolute;
-	top: 30%;
-	left: 0;
-	right: 0;
-	transform: translateY(-50%);
-	margin: 2em 40%;
+	margin: 2em;
 	text-align: center;
 }
 
@@ -325,8 +315,14 @@ a.file-item {
 	max-height: 100%;
 }
 
-#bp-media-uploader .media-item .vignette img.landscape {
+#bp-media-uploader .media-item .vignette img.landscape,
+#bp-media-uploader .media-item .vignette img.icon {
 	max-width: 100%;
+}
+
+#bp-media-uploader .media-item .vignette img.icon {
+	height: calc(100% - 32px);
+	padding-bottom: 24px;
 }
 
 #bp-media-uploader .media-item .vignette .centered img {
@@ -339,11 +335,14 @@ a.file-item {
 	right: 0;
 	bottom: 0;
 	overflow: hidden;
-	max-height: 28px;
-	line-height: 28px;
+	height: 24px;
+	line-height: 1;
 	word-wrap: break-word;
 	text-align: center;
 	font-weight: 600;
+	background: rgba(255, 255, 255, 0.8);
+	box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+	box-sizing: border-box;
 }
 
 .components-modal__content img.mediaDetails {
@@ -352,8 +351,8 @@ a.file-item {
 }
 
 #bp-media-uploader .media-item .media-name div {
-	padding: 2px 5px 10px;
-	max-height: 28px;
+	padding: 5px 2px;
+	height: 24px;
 	max-width: 100%;
 	white-space: nowrap;
 	overflow: hidden;
