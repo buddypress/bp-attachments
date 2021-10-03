@@ -2,7 +2,7 @@
  * WordPress dependencies
  */
 const { apiFetch } = wp;
-const { registerStore, dispatch } = wp.data;
+const { registerStore, dispatch, select } = wp.data;
 
 /**
  * External dependencies
@@ -130,14 +130,13 @@ async function getJsonResponse( response, relativePath ) {
 		return data;
 	} );
 
-	store.dispatch(
-		actions.getMedia( files, relativePath )
-	);
+	dispatch( 'bp-attachments' ).getMedia( files, relativePath );
 }
 
 // This needs improvements too.
 function * requestMedia( args ) {
 	let path = '/buddypress/v1/attachments?context=edit';
+	const parse = false;
 
 	if ( args && args.object ) {
 		path += '&object=' + args.object;
@@ -154,7 +153,11 @@ function * requestMedia( args ) {
 		path += args.directory;
 	}
 
-	const response = yield actions.fetchFromAPI( path, false );
+	const response = yield {
+		type: 'FETCH_FROM_API',
+		path,
+		parse,
+	}
 	let relativePathHeader = '';
 	if ( hasIn( response, [ 'headers', 'get' ] ) ) {
 		// If the request is fetched using the fetch api, the header can be
@@ -165,6 +168,8 @@ function * requestMedia( args ) {
 		// preloading middleware, the header will be a simple property.
 		relativePathHeader = get( response, [ 'headers', 'X-BP-Attachments-Relative-Path' ], '' );
 	}
+
+	console.log( response );
 
 	return getJsonResponse( response, relativePathHeader );
 }

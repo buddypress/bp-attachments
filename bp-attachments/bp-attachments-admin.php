@@ -70,15 +70,17 @@ function bp_attachments_admin_register_scripts() {
 	$bp_attachments = buddypress()->attachments;
 
 	wp_register_script(
-		'bp-attachments-uploader',
-		$bp_attachments->js_url . 'uploader/index.js',
+		'bp-attachments-media-library',
+		$bp_attachments->js_url . 'media-library/index.js',
 		array(
 			'wp-element',
 			'wp-components',
 			'wp-compose',
 			'wp-i18n',
+			'wp-dom-ready',
 			'wp-data',
 			'wp-api-fetch',
+			'wp-url',
 			'lodash',
 		),
 		$bp_attachments->version,
@@ -119,7 +121,7 @@ function bp_attachments_admin_media() {
 	wp_enqueue_style( 'bp-attachments-admin' );
 
 	// JavaScript.
-	wp_enqueue_script( 'bp-attachments-uploader' );
+	wp_enqueue_script( 'bp-attachments-media-library' );
 
 	// Preload the current user's data.
 	$preload_logged_in_user = array_reduce(
@@ -134,17 +136,7 @@ function bp_attachments_admin_media() {
 		sprintf( 'wp.apiFetch.use( wp.apiFetch.createPreloadingMiddleware( %s ) );', wp_json_encode( $preload_logged_in_user ) ),
 		'after'
 	);
-	?>
 
-	<div class="wrap">
-		<h1 class="wp-heading-inline"><?php esc_html_e( 'Community Media Library', 'bp-attachments' ); ?></h1>
-		<div id="bp-media-admin-page-title-actions"></div>
-		<hr class="wp-header-end">
-
-		<div id="bp-media-uploader"></div>
-
-		<?php bp_attachments_get_javascript_templates(); ?>
-	</div>
-
-	<?php
+	echo ( '<div class="wrap" id="bp-media-library"></div>' );
+	bp_attachments_get_javascript_templates();
 }
