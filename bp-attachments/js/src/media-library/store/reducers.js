@@ -23,6 +23,7 @@ const DEFAULT_STATE = {
 	ended: false,
 	isSelectable: false,
 	isGrid: true,
+	settings: {},
 };
 
 /**
@@ -35,6 +36,12 @@ const DEFAULT_STATE = {
  */
  const reducer = ( state = DEFAULT_STATE, action ) => {
 	switch ( action.type ) {
+		case types.SET_SETTINGS:
+			return {
+				...state,
+				settings: action.settings,
+			};
+
 		case types.GET_LOGGED_IN_USER:
 			return {
 				...state,

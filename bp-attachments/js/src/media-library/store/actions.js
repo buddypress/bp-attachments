@@ -28,6 +28,19 @@ import { TYPES as types } from './action-types';
 import { STORE_KEY } from './constants';
 
 /**
+ * Returns an action to set the BP attachments Media Library settings.
+ *
+ * @param {Object} settings The settings to use.
+ * @return {Object} Object for action.
+ */
+export function setSettings( settings ) {
+	return {
+		type: types.SET_SETTINGS,
+		settings,
+	};
+}
+
+/**
  * Returns an action object used to fetch media from the API.
  *
  * @param {string} path Endpoint path.
@@ -263,7 +276,7 @@ export function * requestMedia( args = {} ) {
 	let relativePathHeader = '';
 
 	if ( ! args.context ) {
-		args.context = 'edit';
+		args.context = select( STORE_KEY ).getRequestsContext();
 	}
 
 	if ( args.directory && args.path ) {

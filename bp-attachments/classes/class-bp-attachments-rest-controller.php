@@ -143,6 +143,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		$object         = $request->get_param( 'object' );
 		$user_id        = $request->get_param( 'user_id' );
 		$group          = null;
+		$dir            = '';
 
 		if ( ! $user_id ) {
 			$user_id = bp_loggedin_user_id();

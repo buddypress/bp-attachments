@@ -123,9 +123,18 @@ function bp_attachments_admin_media() {
 	// JavaScript.
 	wp_enqueue_script( 'bp-attachments-media-library' );
 
+	$is_admin_screen = ! defined( 'IFRAME_REQUEST' ) && is_admin();
+	$context         = 'edit';
+	if ( ! $is_admin_screen ) {
+		$context = 'view';
+	}
+
 	// Preload the current user's data.
 	$preload_logged_in_user = array_reduce(
-		array( '/buddypress/v1/members/me?context=edit' ),
+		array(
+			sprintf( '/buddypress/v1/members/me?context=%s', $context ),
+			sprintf( '/buddypress/v1/attachments?context=%s', $context ),
+		),
 		'rest_preload_api_request',
 		array()
 	);
@@ -135,6 +144,21 @@ function bp_attachments_admin_media() {
 		'wp-api-fetch',
 		sprintf( 'wp.apiFetch.use( wp.apiFetch.createPreloadingMiddleware( %s ) );', wp_json_encode( $preload_logged_in_user ) ),
 		'after'
+	);
+
+	/**
+	 * Add a setting to inform whether the Media Library is used form
+	 * the Community Media Library Admin screen or not.
+	 */
+	$settings = apply_filters( 'bp_attachments_media_library_admin',
+		array(
+			'isAdminScreen' => $is_admin_screen,
+		)
+	);
+
+	wp_add_inline_script(
+		'bp-attachments-media-library',
+		'window.bpAttachmentsMediaLibrarySettings = ' . wp_json_encode( $settings ) . ';'
 	);
 
 	echo ( '<div class="wrap" id="bp-media-library"></div>' );

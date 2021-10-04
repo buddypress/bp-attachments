@@ -5,6 +5,39 @@ const {
 	trim,
 } = lodash;
 
+/**
+ * Returns the Community Media Library settings.
+ *
+ * @param {Object} state
+ * @returns {Object} The Community Media Library settings.
+ */
+export const getSettings = ( state ) => {
+	const { settings } = state;
+	return settings;
+}
+
+/**
+ * Returns the requests context.
+ *
+ * @param {Object} state
+ * @returns {string} The requests context (`edit` or `view`).
+ */
+export const getRequestsContext = ( state ) => {
+	const {
+		settings: {
+			isAdminScreen,
+		}
+	} = state;
+
+	return true === isAdminScreen ? 'edit' : 'view';
+}
+
+/**
+ * Returns whether the display mode is Grid or not.
+ *
+ * @param {Object} state The current state.
+ * @return {boolean} True if the display mode is Grid. False otherwise.
+ */
 export const isGridDisplayMode = ( state ) => {
 	const { isGrid } = state;
 	return isGrid;
