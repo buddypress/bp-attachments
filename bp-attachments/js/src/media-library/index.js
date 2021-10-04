@@ -13,6 +13,7 @@ const {
 	},
 	data: {
 		useSelect,
+		useDispatch,
 	},
 } = wp;
 
@@ -24,10 +25,19 @@ import MediaLibraryHeader from './elements/header';
 import MediaLibraryToolbar from './elements/toolbar';
 import MediaLibraryMain from './elements/main';
 
-const MediaLibrary = () => {
-	const isGrid = useSelect( ( select ) => {
-		return select( BP_ATTACHMENTS_STORE_KEY ).isGridDisplayMode();
+const MediaLibrary = ( { settings } ) => {
+	const { isGrid, globalSettings } = useSelect( ( select ) => {
+		const store = select( BP_ATTACHMENTS_STORE_KEY );
+		return {
+			isGrid: store.isGridDisplayMode(),
+			globalSettings: store.getSettings(),
+		};
 	}, [] );
+
+	if ( ! Object.keys( globalSettings ).length ) {
+		const { setSettings } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
+		setSettings( settings );
+	}
 
 	return (
 		<Fragment>
@@ -39,5 +49,6 @@ const MediaLibrary = () => {
 };
 
 domReady( function() {
-	render( <MediaLibrary/>, document.querySelector( '#bp-media-library' ) );
+	const settings = window.bpAttachmentsMediaLibrarySettings || {};
+	render( <MediaLibrary settings={ settings }/>, document.querySelector( '#bp-media-library' ) );
 } );
