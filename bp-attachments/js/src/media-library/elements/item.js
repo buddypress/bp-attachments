@@ -46,7 +46,7 @@ const MediaItem = ( props ) => {
 		}
 
 		if ( 'inode/directory' === mimeType ) {
-			return requestMedia( { directory: name, path: getRelativePath, object: object } );
+			return requestMedia( { directory: name, path: getRelativePath, object: object, parent: id } );
 		}
 
 		toggleModal( true );

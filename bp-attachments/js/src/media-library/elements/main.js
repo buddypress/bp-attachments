@@ -11,6 +11,7 @@ const {
 	},
 	data: {
 		useSelect,
+		useDispatch,
 	},
 } = wp;
 
@@ -23,7 +24,7 @@ import MediaItem from './item';
 /**
  * Main element.
  */
-const MediaLibraryMain = ( { gridDisplay } ) => {
+const MediaLibraryMain = ( { gridDisplay, tree } ) => {
 	const { items, isSelectable } = useSelect( ( select ) => {
 		const store = select( BP_ATTACHMENTS_STORE_KEY );
 
@@ -50,6 +51,7 @@ const MediaLibraryMain = ( { gridDisplay } ) => {
 					isSelected= { item.selected || false }
 					object= { item.object || 'members' }
 					isSelectable = { isSelectable }
+					tree = { tree }
 				/>
 			);
 		} );
