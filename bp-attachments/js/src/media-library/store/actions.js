@@ -6,6 +6,8 @@
 	hasIn,
 	trim,
 	trimEnd,
+	find,
+	filter,
 } = lodash;
 
 /**
@@ -132,6 +134,13 @@ export function addMedia( file ) {
 	return {
 		type: 'ADD_MEDIA',
 		file,
+	};
+};
+
+export function addItemTree( item ) {
+	return {
+		type: 'FILL_TREE',
+		item,
 	};
 };
 
@@ -263,17 +272,35 @@ export function * createDirectory( directory ) {
 	}
 }
 
-export const parseResponseMedia = async ( response, relativePath ) => {
-	const files = await response.json().then( ( data ) => {
+export const parseResponseMedia = async ( response, relativePath, parent = 0 ) => {
+	const items = await response.json().then( ( data ) => {
+		data.forEach( ( item ) => {
+			item.parent = parent;
+		} );
+
 		return data;
 	} );
 
-	dispatch( STORE_KEY ).getMedia( files, relativePath );
+	dispatch( STORE_KEY ).getMedia( items, relativePath );
+
+	const tree = select( STORE_KEY ).getTree();
+	if ( tree.length ) {
+		let rootParent = find( tree, { id: parent } );
+
+		if ( rootParent ) {
+			const children = filter( items, { 'mime_type': 'inode/directory', parent: parent } );
+			rootParent = { ...rootParent, children: children };
+			dispatch( STORE_KEY ).addItemTree( rootParent );
+		}
+
+		// @todo look into all children.
+	}
 }
 
 export function * requestMedia( args = {} ) {
 	const path = '/buddypress/v1/attachments';
 	let relativePathHeader = '';
+	let parent = '';
 
 	if ( ! args.context ) {
 		args.context = select( STORE_KEY ).getRequestsContext();
@@ -281,6 +308,11 @@ export function * requestMedia( args = {} ) {
 
 	if ( args.directory && args.path ) {
 		args.directory = trimEnd( args.path, '/' ) + '/' + args.directory;
+	}
+
+	if ( args.parent ) {
+		parent = args.parent;
+		delete args.parent;
 	}
 
 	delete args.path;
@@ -297,7 +329,7 @@ export function * requestMedia( args = {} ) {
 		relativePathHeader = get( response, [ 'headers', 'X-BP-Attachments-Relative-Path' ], '' );
 	}
 
-	return parseResponseMedia( response, relativePathHeader );
+	return parseResponseMedia( response, relativePathHeader, parent );
 }
 
 export function destroyMedium( id ) {

@@ -15,6 +15,7 @@ import { TYPES as types } from './action-types';
  */
 const DEFAULT_STATE = {
 	user: {},
+	tree: [],
 	files: [],
 	relativePath: '',
 	uploaded: [],
@@ -53,6 +54,15 @@ const DEFAULT_STATE = {
 				...state,
 				files: action.files,
 				relativePath: action.relativePath,
+			};
+
+		case types.FILL_TREE:
+			return {
+				...state,
+				tree: [
+					...reject( state.tree, [ 'id', action.item.id ] ),
+					action.item,
+				],
 			};
 
 		case types.ADD_MEDIA:

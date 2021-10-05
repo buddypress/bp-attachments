@@ -26,11 +26,12 @@ import MediaLibraryToolbar from './elements/toolbar';
 import MediaLibraryMain from './elements/main';
 
 const MediaLibrary = ( { settings } ) => {
-	const { isGrid, globalSettings } = useSelect( ( select ) => {
+	const { isGrid, globalSettings, tree } = useSelect( ( select ) => {
 		const store = select( BP_ATTACHMENTS_STORE_KEY );
 		return {
 			isGrid: store.isGridDisplayMode(),
 			globalSettings: store.getSettings(),
+			tree: store.getTree(),
 		};
 	}, [] );
 
@@ -42,8 +43,8 @@ const MediaLibrary = ( { settings } ) => {
 	return (
 		<Fragment>
 			<MediaLibraryHeader/>
-			<MediaLibraryToolbar gridDisplay={ isGrid } />
-			<MediaLibraryMain gridDisplay={ isGrid } />
+			<MediaLibraryToolbar gridDisplay={ isGrid } tree={ tree }/>
+			<MediaLibraryMain gridDisplay={ isGrid } tree={ tree }/>
 		</Fragment>
 	);
 };

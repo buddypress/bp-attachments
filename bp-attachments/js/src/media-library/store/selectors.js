@@ -110,6 +110,17 @@ export const getMedia = ( state ) => {
 };
 
 /**
+ * Returns The directories Tree.
+ *
+ * @param {Object} state The current state.
+ * @return {array} The directories Tree.
+ */
+ export const getTree = ( state ) => {
+	const { tree } = state;
+	return tree;
+};
+
+/**
  * Returns whether a media/directory item is selectable.
  *
  * @param {Object} state The current state.

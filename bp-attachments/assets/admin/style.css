@@ -47,12 +47,12 @@
 }
 
 #bp-media-library .enabled .close:before {
-    font: normal 30px/1 dashicons !important;
-    color: #50575e;
-    display: inline-block;
-    content: "\f335";
-    font-weight: 300;
-    margin-top: 1px;
+	font: normal 30px/1 dashicons !important;
+	color: #50575e;
+	display: inline-block;
+	content: "\f335";
+	font-weight: 300;
+	margin-top: 1px;
 }
 
 #bp-media-library .uploader-container.disabled,
@@ -81,10 +81,10 @@
 }
 
 #bp-media-library .enabled .dropzone-label h2 {
-    font-size: 20px;
-    line-height: 1.4;
-    font-weight: 400;
-    margin: 0;
+	font-size: 20px;
+	line-height: 1.4;
+	font-weight: 400;
+	margin: 0;
 }
 
 #bp-media-library .enabled .dropzone-label .components-form-file-upload {
@@ -127,10 +127,32 @@
 	background: #fff;
 }
 
+#bp-media-library .media-toolbar-secondary {
+	max-width: 66%;
+	float: left;
+	height: 100%;
+}
+
 #bp-media-library .media-toolbar-secondary .media-button {
 	margin: 10px 0;
 	margin-right: 10px;
 	max-height: 30px;
+}
+
+#bp-media-library .media-toolbar-primary {
+	display: flex;
+	align-items: center;
+	float: right;
+	margin: 10px 0;
+	max-width: 33%;
+}
+
+#bp-media-library .media-toolbar-primary .components-base-control__field {
+	margin: 0;
+}
+
+#bp-media-library .media-toolbar-primary .components-select-control__input {
+	width: 280px;
 }
 
 #bp-media-library .media-items.mode-select .vignette {
@@ -360,12 +382,12 @@ a.file-item {
 }
 
 #bp-media-library .media-items .no-media {
-    color: #646970;
-    font-size: 18px;
-    font-style: normal;
-    margin: 0;
-    padding: 100px 0 0;
-    text-align: center;
+	color: #646970;
+	font-size: 18px;
+	font-style: normal;
+	margin: 0;
+	padding: 100px 0 0;
+	text-align: center;
 }
 
 #bp-media-admin-page-title-actions {
