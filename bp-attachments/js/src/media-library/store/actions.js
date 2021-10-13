@@ -6,7 +6,7 @@
 	hasIn,
 	trim,
 	trimEnd,
-	find,
+	pick,
 	filter,
 } = lodash;
 
@@ -114,11 +114,12 @@ export function getLoggedInUser( user ) {
  * @param {String} relativePath The relative path.
  * @return {Object} Object for action.
  */
-export function getMedia( files, relativePath ) {
+export function getMedia( files, relativePath, currentDirectory ) {
 	return {
 		type: 'GET_MEDIA',
 		files,
 		relativePath,
+		currentDirectory,
 	};
 };
 
@@ -272,29 +273,44 @@ export function * createDirectory( directory ) {
 	}
 }
 
-export const parseResponseMedia = async ( response, relativePath, parent = 0 ) => {
+export const parseResponseMedia = async ( response, relativePath, parent = '' ) => {
 	const items = await response.json().then( ( data ) => {
 		data.forEach( ( item ) => {
 			item.parent = parent;
+
+			if ( 'inode/directory' === item.mime_type ) {
+				dispatch( STORE_KEY ).addItemTree(
+					pick(
+						item,
+						['id', 'name', 'title', 'parent', 'object']
+					)
+				);
+			}
 		} );
 
 		return data;
 	} );
 
-	dispatch( STORE_KEY ).getMedia( items, relativePath );
-
-	const tree = select( STORE_KEY ).getTree();
-	if ( tree.length ) {
-		let rootParent = find( tree, { id: parent } );
-
-		if ( rootParent ) {
-			const children = filter( items, { 'mime_type': 'inode/directory', parent: parent } );
-			rootParent = { ...rootParent, children: children };
-			dispatch( STORE_KEY ).addItemTree( rootParent );
+	if ( ! relativePath && ! parent ) {
+		/**
+		 * @todo this part is also used into the resolvers. Create a function to avoid
+		 * code duplication.
+		 */
+		const tree = select( STORE_KEY ).getTree();
+		const directories = filter( items, { 'mime_type': 'inode/directory' } );
+		if ( ! tree.length ) {
+			directories.forEach( ( item ) => {
+				dispatch( STORE_KEY ).addItemTree( {
+					id: item.id,
+					name: item.name,
+					title: item.title,
+					parent: 0,
+				} );
+			} );
 		}
-
-		// @todo look into all children.
 	}
+
+	dispatch( STORE_KEY ).getMedia( items, relativePath, parent );
 }
 
 export function * requestMedia( args = {} ) {

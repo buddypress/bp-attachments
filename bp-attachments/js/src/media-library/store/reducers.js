@@ -16,6 +16,7 @@ import { TYPES as types } from './action-types';
 const DEFAULT_STATE = {
 	user: {},
 	tree: [],
+	currentDirectory: '',
 	files: [],
 	relativePath: '',
 	uploaded: [],
@@ -54,11 +55,15 @@ const DEFAULT_STATE = {
 				...state,
 				files: action.files,
 				relativePath: action.relativePath,
+				currentDirectory: action.currentDirectory,
 			};
 
 		case types.FILL_TREE:
 			return {
 				...state,
+				/**
+				 * @todo needs improvements to avoid a directory to list 2nd level subdirectory.
+				 */
 				tree: [
 					...reject( state.tree, [ 'id', action.item.id ] ),
 					action.item,

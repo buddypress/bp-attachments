@@ -46,7 +46,7 @@ export function* getLoggedInUser() {
 };
 
 /**
- * Resolver for retrieving the media.
+ * Resolver for retrieving the media root directories.
  */
 export function* getMedia() {
 	const path = '/buddypress/v1/attachments?context=' + _requetsContext();
@@ -60,7 +60,7 @@ export function* getMedia() {
 				id: item.id,
 				name: item.name,
 				title: item.title,
-				children: [],
+				parent: 0,
 			} );
 		} );
 	}
