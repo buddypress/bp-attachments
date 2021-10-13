@@ -3,6 +3,7 @@
  */
 const {
 	trim,
+	groupBy,
 } = lodash;
 
 /**
@@ -110,14 +111,43 @@ export const getMedia = ( state ) => {
 };
 
 /**
- * Returns The directories Tree.
+ * Returns the directories Tree.
  *
  * @param {Object} state The current state.
  * @return {array} The directories Tree.
  */
  export const getTree = ( state ) => {
 	const { tree } = state;
-	return tree;
+	const groupedTree = groupBy( tree, 'parent' );
+	const fillWithChildren = ( items ) => {
+		return items.map( ( item ) => {
+			const children = groupedTree[ item.id ];
+			return {
+				...item,
+				children: children && children.length ?
+					fillWithChildren( children ) :
+					[],
+			};
+		} );
+	};
+
+	return fillWithChildren( groupedTree[0] || [] );
+};
+
+/**
+ * Returns the directory flat list.
+ *
+ * @param {Object} state The current state.
+ * @return {array} The directory flat list.
+ */
+ export const getFlatTree = ( state ) => {
+	const { tree } = state;
+	return tree || [];
+};
+
+export const getCurrentDirectory = ( state ) => {
+	const { currentDirectory } = state;
+	return currentDirectory || '';
 };
 
 /**
