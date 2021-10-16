@@ -6,24 +6,14 @@ const {
 } = lodash;
 
 /**
- * WordPress dependencies.
- */
-const {
-	data: {
-		dispatch,
-		select,
-	},
-} = wp;
-
-/**
  * Internal dependencies.
  */
 import {
 	fetchFromAPI,
+	initTree,
 	getLoggedInUser as getLoggedInUserAction,
 	getMedia as getMediaAction,
 } from './actions';
-import { STORE_KEY } from './constants';
 
 /**
  * Returns the requests context.
@@ -52,18 +42,8 @@ export function* getMedia() {
 	const path = '/buddypress/v1/attachments?context=' + _requetsContext();
 	const files = yield fetchFromAPI( path, true );
 
-	const tree = select( STORE_KEY ).getTree();
-	const directories = filter( files, { 'mime_type': 'inode/directory' } );
-	if ( ! tree.length ) {
-		directories.forEach( ( item ) => {
-			dispatch( STORE_KEY ).addItemTree( {
-				id: item.id,
-				name: item.name,
-				title: item.title,
-				parent: 0,
-			} );
-		} );
-	}
+	// Init the Directories tree.
+	initTree( files );
 
 	yield getMediaAction( files, '' );
 }

@@ -138,6 +138,26 @@ export function addMedia( file ) {
 	};
 };
 
+/**
+ * Init the directories Tree.
+ *
+ * @param {array} items The list of media.
+ */
+export function initTree( items ) {
+	const tree = select( STORE_KEY ).getTree();
+	const directories = filter( items, { 'mime_type': 'inode/directory' } );
+	if ( ! tree.length ) {
+		directories.forEach( ( item ) => {
+			dispatch( STORE_KEY ).addItemTree( {
+				id: item.id,
+				name: item.name,
+				title: item.title,
+				parent: 0,
+			} );
+		} );
+	}
+}
+
 export function addItemTree( item ) {
 	return {
 		type: 'FILL_TREE',
@@ -291,23 +311,9 @@ export const parseResponseMedia = async ( response, relativePath, parent = '' ) 
 		return data;
 	} );
 
+	// Init the Tree when needed.
 	if ( ! relativePath && ! parent ) {
-		/**
-		 * @todo this part is also used into the resolvers. Create a function to avoid
-		 * code duplication.
-		 */
-		const tree = select( STORE_KEY ).getTree();
-		const directories = filter( items, { 'mime_type': 'inode/directory' } );
-		if ( ! tree.length ) {
-			directories.forEach( ( item ) => {
-				dispatch( STORE_KEY ).addItemTree( {
-					id: item.id,
-					name: item.name,
-					title: item.title,
-					parent: 0,
-				} );
-			} );
-		}
+		initTree( items );
 	}
 
 	dispatch( STORE_KEY ).getMedia( items, relativePath, parent );

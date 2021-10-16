@@ -4,6 +4,8 @@
 const {
 	trim,
 	groupBy,
+	filter,
+	indexOf,
 } = lodash;
 
 /**
@@ -111,14 +113,57 @@ export const getMedia = ( state ) => {
 };
 
 /**
+ * Returns the current directory.
+ *
+ * @param {Object} state The current state.
+ * @return {string} The current directory.
+ */
+export const getCurrentDirectory = ( state ) => {
+	const { currentDirectory } = state;
+	return currentDirectory || '';
+};
+
+/**
  * Returns the directories Tree.
  *
  * @param {Object} state The current state.
  * @return {array} The directories Tree.
  */
  export const getTree = ( state ) => {
-	const { tree } = state;
+	const { tree, currentDirectory } = state;
 	const groupedTree = groupBy( tree, 'parent' );
+	const currentChildrenIds = filter( tree, { 'parent': currentDirectory || 0 } ).map( ( child ) => child.id );
+
+	// Makes sure to only list current directory children.
+	if ( currentChildrenIds && currentChildrenIds.length ) {
+		currentChildrenIds.forEach( ( childId ) => {
+			if ( groupedTree[ childId ] ) {
+				delete groupedTree[ childId ];
+			}
+		} );
+	}
+
+	// Makes sure to avoid listing children of directories that are not an ancestor of the currentDirectory one.
+	if ( currentDirectory ) {
+		const getCurrentAncestors = ( parentID ) => {
+			let parents = filter( tree, { id: parentID } );
+
+			parents.forEach( ( parent ) => {
+				const grandParents = getCurrentAncestors( parent.parent );
+				parents = [ ...parents, ...grandParents ];
+			} );
+
+			return parents;
+		}
+		const currentAncestors = getCurrentAncestors( currentDirectory ).map( ( ancestor ) => ancestor.id );
+
+		Object.keys( groupedTree ).forEach( ( treeIndex ) => {
+			if ( 0 !== parseInt( treeIndex, 10 ) && -1 === indexOf( currentAncestors, treeIndex ) ) {
+				delete groupedTree[ treeIndex ];
+			}
+		} );
+	}
+
 	const fillWithChildren = ( items ) => {
 		return items.map( ( item ) => {
 			const children = groupedTree[ item.id ];
@@ -143,11 +188,6 @@ export const getMedia = ( state ) => {
  export const getFlatTree = ( state ) => {
 	const { tree } = state;
 	return tree || [];
-};
-
-export const getCurrentDirectory = ( state ) => {
-	const { currentDirectory } = state;
-	return currentDirectory || '';
 };
 
 /**
