@@ -169,8 +169,6 @@ function * requestMedia( args ) {
 		relativePathHeader = get( response, [ 'headers', 'X-BP-Attachments-Relative-Path' ], '' );
 	}
 
-	console.log( response );
-
 	return getJsonResponse( response, relativePathHeader );
 }
 
