@@ -9,6 +9,11 @@ const {
 } = lodash;
 
 /**
+ * Internal dependencies.
+ */
+import getDirectoryAncestors from '../utils/tree-functions';
+
+/**
  * Returns the Community Media Library settings.
  *
  * @param {Object} state
@@ -145,17 +150,10 @@ export const getCurrentDirectory = ( state ) => {
 
 	// Makes sure to avoid listing children of directories that are not an ancestor of the currentDirectory one.
 	if ( currentDirectory ) {
-		const getCurrentAncestors = ( parentID ) => {
-			let parents = filter( tree, { id: parentID } );
-
-			parents.forEach( ( parent ) => {
-				const grandParents = getCurrentAncestors( parent.parent );
-				parents = [ ...parents, ...grandParents ];
-			} );
-
-			return parents;
-		}
-		const currentAncestors = getCurrentAncestors( currentDirectory ).map( ( ancestor ) => ancestor.id );
+		const currentAncestors = getDirectoryAncestors(
+			tree,
+			currentDirectory
+		).map( ( ancestor ) => ancestor.id );
 
 		Object.keys( groupedTree ).forEach( ( treeIndex ) => {
 			if ( 0 !== parseInt( treeIndex, 10 ) && -1 === indexOf( currentAncestors, treeIndex ) ) {

@@ -3,6 +3,7 @@
  */
 const {
 	find,
+	reverse,
 } = lodash;
 
 /**
@@ -29,6 +30,7 @@ const {
  * Internal dependencies.
  */
 import { BP_ATTACHMENTS_STORE_KEY } from '../store';
+import getDirectoryAncestors from '../utils/tree-functions';
 
 /**
  * Toolbar element.
@@ -39,11 +41,11 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 		e.preventDefault();
 		switchDisplayMode( isGrid );
 	};
-	const { currentDirectory, path, flatTree } = useSelect( ( select ) => {
+	const { user, currentDirectory, flatTree } = useSelect( ( select ) => {
 		const store = select( BP_ATTACHMENTS_STORE_KEY )
 		return {
+			user: store.getLoggedInUser(),
 			currentDirectory: store.getCurrentDirectory(),
-			path: store.getRelativePath(), // @todo check we really need this.
 			flatTree: store.getFlatTree(),
 		}
 	}, [] );
@@ -63,8 +65,23 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 			args.directory = directoryItem.name;
 			args.parent = directoryItem.id;
 
-			if ( directoryItem.parent ) {
-				args.path = path.split( directoryItem.name )[0]
+			if ( directoryItem.parent && directoryItem.object ) {
+				let chunks = reverse(
+					getDirectoryAncestors(
+						flatTree,
+						directoryItem.parent
+					).map( ( parent ) => parent.name )
+				);
+
+				if ( 'members' === directoryItem.object ) {
+					chunks.splice( 1, 0, directoryItem.object, user.id );
+				}
+
+				/**
+				 * @todo handle Groups object.
+				 */
+
+				args.path = '/' + chunks.join( '/' );
 			}
 
 			if ( directoryItem.object ) {
