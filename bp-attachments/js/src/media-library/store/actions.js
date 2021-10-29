@@ -87,6 +87,12 @@ export function deleteFromAPI( path, relativePath ) {
 	};
 }
 
+/**
+ * Returns an action object used to switch between Grid & Liste mode.
+ *
+ * @param {Boolean} isGrid
+ * @returns {Object} Object for action.
+ */
 export function switchDisplayMode( isGrid ) {
 	return {
 		type: types.SWITCH_DISPLAY_MODE,
@@ -110,7 +116,7 @@ export function getLoggedInUser( user ) {
 /**
  * Returns an action object used to get media.
  *
- * @param {Array} files The lise to files.
+ * @param {Array} files The list of files.
  * @param {String} relativePath The relative path.
  * @return {Object} Object for action.
  */
@@ -158,6 +164,12 @@ export function initTree( items ) {
 	}
 }
 
+/**
+ * Returns an action object used to add a directory item to the Items tree.
+ *
+ * @param {Object} item A media item.
+ * @return {Object} Object for action.
+ */
 export function addItemTree( item ) {
 	return {
 		type: 'FILL_TREE',
