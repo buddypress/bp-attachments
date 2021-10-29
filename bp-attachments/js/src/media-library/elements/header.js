@@ -6,6 +6,7 @@ const {
 		Popover,
 	},
 	data: {
+		useDispatch,
 		useSelect,
 	},
 	element: {
@@ -27,6 +28,7 @@ import { BP_ATTACHMENTS_STORE_KEY } from '../store';
  * Header element.
  */
 const MediaLibraryHeader = () => {
+	const { updateFormState } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
 	const currentDirectory = useSelect( ( select ) => {
 		return select( BP_ATTACHMENTS_STORE_KEY ).getCurrentDirectory();
 	}, [] );
@@ -37,7 +39,12 @@ const MediaLibraryHeader = () => {
 	const showUploadForm = ( e ) => {
 		e.preventDefault();
 
-		console.log( 'showUploadForm' );
+		return updateFormState(
+			{
+				parentDirectory: currentDirectory,
+				action: 'upload',
+			}
+		);
 	};
 
 	const showCreateDirForm = ( e ) => {

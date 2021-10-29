@@ -129,6 +129,19 @@ export function getMedia( files, relativePath, currentDirectory ) {
 	};
 };
 
+/**
+ * Returns an action object used to update the Upload/Directory Form state.
+ *
+ * @param {Object} params
+ * @returns {Object} Object for action.
+ */
+export function updateFormState( params ) {
+	return {
+		type: types.UPDATE_FORM_STATE,
+		params,
+	};
+}
+
 export function createMedium( path, formData ) {
 	return {
 		type: 'CREATE_FROM_API',
