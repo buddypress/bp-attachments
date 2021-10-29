@@ -63,6 +63,17 @@ export const getLoggedInUser = ( state ) => {
 };
 
 /**
+ * Returns whether the display mode is Grid or not.
+ *
+ * @param {Object} state The current state.
+ * @return {boolean} True if the display mode is Grid. False otherwise.
+ */
+export const getFormState = ( state ) => {
+	const { formState } = state;
+	return formState;
+}
+
+/**
  * Returns whether an upload is being processed.
  *
  * @param {Object} state The current state.

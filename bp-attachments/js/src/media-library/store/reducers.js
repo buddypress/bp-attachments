@@ -26,6 +26,7 @@ const DEFAULT_STATE = {
 	isSelectable: false,
 	isGrid: true,
 	settings: {},
+	formState: {},
 };
 
 /**
@@ -61,13 +62,16 @@ const DEFAULT_STATE = {
 		case types.FILL_TREE:
 			return {
 				...state,
-				/**
-				 * @todo needs improvements to avoid a directory to list 2nd level subdirectory.
-				 */
 				tree: [
 					...reject( state.tree, [ 'id', action.item.id ] ),
 					action.item,
 				],
+			};
+
+		case types.UPDATE_FORM_STATE:
+			return {
+				...state,
+				formState: action.params,
 			};
 
 		case types.ADD_MEDIA:
