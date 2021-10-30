@@ -343,8 +343,13 @@ a.file-item {
 }
 
 #bp-media-library .media-item .vignette img.icon {
-	height: calc(100% - 32px);
+	width: auto;
+	height: auto;
 	padding-bottom: 24px;
+}
+
+#bp-media-library .media-item .vignette img[src$='.svg'].icon {
+	height: calc(100% - 32px);
 }
 
 #bp-media-library .media-item .vignette .centered img {

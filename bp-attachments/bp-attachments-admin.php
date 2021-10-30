@@ -56,7 +56,7 @@ function bp_attachments_admin_menu() {
 		'manage_options', // Restrict the menu to Site Admins during development process.
 		'community-library',
 		'bp_attachments_admin_media',
-		1
+		10
 	);
 }
 add_action( 'admin_menu', 'bp_attachments_admin_menu' );
@@ -150,9 +150,11 @@ function bp_attachments_admin_media() {
 	 * Add a setting to inform whether the Media Library is used form
 	 * the Community Media Library Admin screen or not.
 	 */
-	$settings = apply_filters( 'bp_attachments_media_library_admin',
+	$settings = apply_filters(
+		'bp_attachments_media_library_admin',
 		array(
-			'isAdminScreen' => $is_admin_screen,
+			'isAdminScreen'     => $is_admin_screen,
+			'maxUploadFileSize' => wp_max_upload_size(),
 		)
 	);
 

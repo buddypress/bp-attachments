@@ -34,9 +34,7 @@ const MediaLibraryUploader = () => {
 
 	const closeForm = ( e ) => {
 		e.preventDefault();
-
 		formState.action = '';
-
 		return updateFormState( formState );
 	};
 

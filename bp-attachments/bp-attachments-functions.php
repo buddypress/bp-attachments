@@ -687,6 +687,37 @@ function bp_attachments_sanitize_media( $media = null ) {
 }
 
 /**
+ * Translates the media types.
+ *
+ * @since 1.0.0
+ *
+ * @param string $media_type A specific Media Type.
+ * @return string|array      A translated Media Type or a translated list of Media Types.
+ */
+function bp_attachments_get_i18n_media_type( $media_type = '' ) {
+	$i18n_media_types = array(
+		'image'       => __( 'Image', 'bp-attachments' ),
+		'video'       => __( 'Movie', 'bp-attachments' ),
+		'audio'       => __( 'Sound', 'bp-attachments' ),
+		'document'    => __( 'Document', 'bp-attachments' ),
+		'spreadsheet' => __( 'Spreadsheet', 'bp-attachments' ),
+		'interactive' => __( 'Presentation', 'bp-attachments' ),
+		'text'        => __( 'Text', 'bp-attachments' ),
+		'archive'     => __( 'Archive', 'bp-attachments' ),
+	);
+
+	if ( is_array( $media_type ) ) {
+		return array_intersect_key( $i18n_media_types, $media_type );
+	}
+
+	if ( isset( $i18n_media_types[ $media_type ] ) ) {
+		return $i18n_media_types[ $media_type ];
+	}
+
+	return $media_type;
+}
+
+/**
  * Checks if a file type is allowed.
  *
  * @since 1.0.0

@@ -109,11 +109,101 @@ function bp_attachments_enable_private_uploads_callback() {
 }
 
 /**
+ * Displays the option to select the allowed media types.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_allowed_media_types_callback() {
+	$types         = wp_get_ext_types();
+	$allowed_types = array();
+
+	foreach ( array_keys( $types ) as $type ) {
+		$allowed_types[ $type ] = bp_attachments_get_allowed_types( $type );
+	}
+
+	$i18n_types    = bp_attachments_get_i18n_media_type( $allowed_types );
+	$allowed_mimes = bp_attachments_get_allowed_mimes( '' );
+	$setting       = bp_get_option( '_bp_attachments_allowed_media_types', array() );
+	$printed_mime  = array();
+
+	foreach ( $i18n_types as $k_type => $i18n_type ) {
+		?>
+		<fieldset>
+			<legend>
+				<label for="bp-attachments-selectall-<?php echo esc_attr( $k_type ); ?>">
+					<input id="bp-attachments-selectall-<?php echo esc_attr( $k_type ); ?>" type="checkbox" class="bp-attachments-selectall" data-mime-type="<?php echo esc_attr( $k_type ); ?>"> <?php echo esc_html( $i18n_type ); ?>
+				</label>
+			</legend>
+
+			<ul>
+			<?php
+			foreach ( $allowed_types[ $k_type ] as $bp_type ) {
+				if ( isset( $allowed_mimes[ $bp_type ] ) && ! in_array( $allowed_mimes[ $bp_type ], $printed_mime, true ) ) {
+					array_push( $printed_mime, $allowed_mimes[ $bp_type ] );
+					$sub_type_id = str_replace( $k_type . '/', '', $allowed_mimes[ $bp_type ] );
+					?>
+					<li>
+						<label for="bp-attachments_mime_type-<?php echo esc_attr( $sub_type_id ); ?>">
+							<input
+								id="bp-attachments_mime_type-<?php echo esc_attr( $sub_type_id ); ?>"
+								type="checkbox"
+								name="_bp_attachments_allowed_media_types[<?php echo esc_attr( $k_type ); ?>][]"
+								data-mime-type="<?php echo esc_attr( $k_type ); ?>"
+								value="<?php echo esc_attr( $allowed_mimes[ $bp_type ] ); ?>"
+								<?php isset( $setting[ $k_type ] ) ? checked( true, in_array( $allowed_mimes[ $bp_type ], $setting[ $k_type ], true ) ) : ''; ?>
+							>
+							<?php echo esc_html( $allowed_mimes[ $bp_type ] ); ?>
+						</label>
+					</li>
+					<?php
+				}
+			}
+			?>
+			</ul>
+
+		</fieldset>
+		<?php
+	}
+}
+
+/**
+ * Allowed media types setting sanitize callback.
+ *
+ * @since 1.0.0
+ *
+ * @param array $types The submitted mime types.
+ */
+function bp_attachments_sanitize_allowed_media_types( $types = array() ) {
+	if ( ! $types || ! is_array( $types ) ) {
+		return array();
+	}
+
+	foreach ( array_keys( $types ) as $type ) {
+		$allowed_types[ $type ] = array_unique( array_values( bp_attachments_get_allowed_mimes( $type ) ) );
+		$types[ $type ]         = array_intersect( $types[ $type ], $allowed_types[ $type ] );
+	}
+
+	return $types;
+}
+
+/**
  * Registers BP Attachments settings into BuddyPress Options page.
  *
  * @since 1.0.0
  */
 function bp_attachments_register_settings() {
+	register_setting(
+		'buddypress',
+		'_bp_attachments_allowed_media_types',
+		array(
+			'type'              => 'array',
+			'description'       => __( 'BP Attachments settings to store the allowed media types.', 'bp-attachments' ),
+			'sanitize_callback' => 'bp_attachments_sanitize_allowed_media_types',
+			'show_in_rest'      => false,
+			'default'           => array(),
+		)
+	);
+
 	register_setting(
 		'buddypress',
 		'_bp_attachments_can_upload_privately',
@@ -134,8 +224,16 @@ function bp_attachments_register_settings() {
 	);
 
 	add_settings_field(
+		'_bp_attachments_allowed_media_types',
+		__( 'Allowed media types', 'bp-attachments' ),
+		'bp_attachments_allowed_media_types_callback',
+		'buddypress',
+		'bp_attachments_settings_section'
+	);
+
+	add_settings_field(
 		'_bp_attachments_can_upload_privately',
-		__( 'Private Uploads', 'bp-attachments' ),
+		__( 'Private media', 'bp-attachments' ),
 		'bp_attachments_enable_private_uploads_callback',
 		'buddypress',
 		'bp_attachments_settings_section'
