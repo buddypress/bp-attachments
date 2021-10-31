@@ -6,6 +6,8 @@ const {
 	groupBy,
 	filter,
 	indexOf,
+	find,
+	defaultTo,
 } = lodash;
 
 /**
@@ -137,6 +139,26 @@ export const getMedia = ( state ) => {
 export const getCurrentDirectory = ( state ) => {
 	const { currentDirectory } = state;
 	return currentDirectory || '';
+};
+
+/**
+ * Returns the current directory object.
+ *
+ * @param {Object} state The current state.
+ * @return {Object} The current directory object.
+ */
+ export const getCurrentDirectoryObject = ( state ) => {
+	const { currentDirectory, tree } = state;
+	const defaultValue = { readonly: true };
+
+	if ( '' !== currentDirectory ) {
+		return defaultTo(
+			find( tree, { id: currentDirectory } ),
+			defaultValue
+		);
+	}
+
+	return defaultValue;
 };
 
 /**

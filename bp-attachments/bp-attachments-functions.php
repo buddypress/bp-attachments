@@ -459,7 +459,8 @@ function bp_attachments_list_media_in_directory( $dir = '', $object = 'members' 
 		if ( 'inode/directory' !== $media_data->mime_type ) {
 			$media_data->icon = wp_mime_type_icon( $media_data->media_type );
 		} else {
-			$media_data->icon = bp_attachments_get_directory_icon( $media_data->media_type );
+			$media_data->icon     = bp_attachments_get_directory_icon( $media_data->media_type );
+			$media_data->readonly = false;
 		}
 
 		// Vignette & orientation are only used for images.
@@ -527,6 +528,7 @@ function bp_attachments_get_directory_types( $user_id = 0 ) {
 			'last_modified' => $current_time,
 			'description'   => __( 'This Public directory and its children are visible to everyone.', 'bp-attachments' ),
 			'icon'          => bp_attachments_get_directory_icon( 'public' ),
+			'readonly'      => false,
 		),
 		$common_props
 	);
@@ -541,6 +543,7 @@ function bp_attachments_get_directory_types( $user_id = 0 ) {
 				'last_modified' => $current_time,
 				'description'   => __( 'This Private directory and its children are only visible to logged in users.', 'bp-attachments' ),
 				'icon'          => bp_attachments_get_directory_icon( 'private' ),
+				'readonly'      => false,
 			),
 			$common_props
 		);
@@ -610,6 +613,7 @@ function bp_attachments_list_member_root_objects( $user_id = 0, $object_dir = ''
 								'html'    => false,
 							)
 						),
+						'readonly'      => false,
 					),
 					$common_props
 				);
@@ -626,6 +630,7 @@ function bp_attachments_list_member_root_objects( $user_id = 0, $object_dir = ''
 				'last_modified' => $current_time,
 				'description'   => __( 'This directory contains the media directories of the groups you are a member of.', 'bp-attachments' ),
 				'icon'          => bp_attachments_get_directory_icon( 'groups' ),
+				'readonly'      => true,
 			),
 			$common_props
 		);
@@ -638,14 +643,8 @@ function bp_attachments_list_member_root_objects( $user_id = 0, $object_dir = ''
 				'name'          => 'member',
 				'last_modified' => $current_time,
 				'description'   => __( 'This directory contains all your personal media.', 'bp-attachments' ),
-				'icon'          => bp_core_fetch_avatar(
-					array(
-						'item_id' => $user_id,
-						'object'  => 'user',
-						'type'    => 'full',
-						'html'    => false,
-					)
-				),
+				'icon'          => bp_attachments_get_directory_icon( 'member' ),
+				'readonly'      => true,
 			),
 			$common_props
 		);
@@ -757,7 +756,7 @@ function bp_attachments_get_directory_icon( $type = 'folder' ) {
 		$svg = 'audio';
 	} elseif ( 'video_playlist' === $type ) {
 		$svg = 'video';
-	} elseif ( in_array( $type, array( 'groups', 'members', 'public', 'private' ), true ) ) {
+	} elseif ( in_array( $type, array( 'groups', 'member', 'members', 'friends', 'public', 'private' ), true ) ) {
 		$svg = $type;
 	}
 

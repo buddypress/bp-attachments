@@ -62,7 +62,7 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 		let args = {};
 
 		if ( directoryItem ) {
-			args.directory = directoryItem.name;
+			args.directory = directoryItem.slug;
 			args.parent = directoryItem.id;
 
 			if ( directoryItem.parent && directoryItem.object ) {
@@ -70,7 +70,7 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 					getDirectoryAncestors(
 						flatTree,
 						directoryItem.parent
-					).map( ( parent ) => parent.name )
+					).map( ( parent ) => parent.slug )
 				);
 
 				if ( 'members' === directoryItem.object ) {

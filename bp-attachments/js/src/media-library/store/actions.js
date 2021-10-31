@@ -6,7 +6,6 @@
 	hasIn,
 	trim,
 	trimEnd,
-	pick,
 	filter,
 } = lodash;
 
@@ -169,9 +168,11 @@ export function initTree( items ) {
 		directories.forEach( ( item ) => {
 			dispatch( STORE_KEY ).addItemTree( {
 				id: item.id,
-				name: item.name,
-				title: item.title,
+				slug: item.name,
+				name: item.title,
 				parent: 0,
+				object: item.object ? item.object : 'members',
+				readonly: item.readonly ? item.readonly : false,
 			} );
 		} );
 	}
@@ -324,12 +325,14 @@ export const parseResponseMedia = async ( response, relativePath, parent = '' ) 
 			item.parent = parent;
 
 			if ( 'inode/directory' === item.mime_type ) {
-				dispatch( STORE_KEY ).addItemTree(
-					pick(
-						item,
-						['id', 'name', 'title', 'parent', 'object']
-					)
-				);
+				dispatch( STORE_KEY ).addItemTree( {
+					id: item.id,
+					slug: item.name,
+					name: item.title,
+					parent: item.parent,
+					object: item.object ? item.object : 'members',
+					readonly: item.readonly ? item.readonly : false,
+				} );
 			}
 		} );
 
