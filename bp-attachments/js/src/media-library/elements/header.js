@@ -29,19 +29,20 @@ import { BP_ATTACHMENTS_STORE_KEY } from '../store';
  */
 const MediaLibraryHeader = () => {
 	const { updateFormState } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
-	const currentDirectory = useSelect( ( select ) => {
-		return select( BP_ATTACHMENTS_STORE_KEY ).getCurrentDirectory();
+	const currentDirectoryObject = useSelect( ( select ) => {
+		return select( BP_ATTACHMENTS_STORE_KEY ).getCurrentDirectoryObject();
 	}, [] );
 	const [ isOpen, setOpen ] = useState( false );
 	const toggleClass = true === isOpen ? 'split-button is-open' : 'split-button';
 	const dashiconClass = true === isOpen ? 'dashicons dashicons-arrow-up-alt2' : 'dashicons dashicons-arrow-down-alt2';
+	const canUpload = true !== currentDirectoryObject.readonly;
 
 	const showUploadForm = ( e ) => {
 		e.preventDefault();
 
 		return updateFormState(
 			{
-				parentDirectory: currentDirectory,
+				parentDirectory: currentDirectoryObject.id,
 				action: 'upload',
 			}
 		);
@@ -58,7 +59,7 @@ const MediaLibraryHeader = () => {
 			<h1 className="wp-heading-inline">
 				{ __( 'Community Media Library', 'bp-attachments' ) }
 			</h1>
-			{ !! currentDirectory && (
+			{ !! canUpload && (
 				<div className={ toggleClass }>
 					<div className="split-button-head">
 						<a href="#new-bp-media-upload" className="button split-button-primary" aria-live="polite" onClick={ ( e ) => showUploadForm( e ) }>
