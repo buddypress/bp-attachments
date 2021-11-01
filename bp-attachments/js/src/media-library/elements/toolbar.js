@@ -30,7 +30,7 @@ const {
  * Internal dependencies.
  */
 import { BP_ATTACHMENTS_STORE_KEY } from '../store';
-import getDirectoryAncestors from '../utils/tree-functions';
+import { getDirectoryAncestors } from '../utils/functions';
 
 /**
  * Toolbar element.

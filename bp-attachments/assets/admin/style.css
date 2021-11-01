@@ -74,10 +74,14 @@
 	vertical-align: middle;
 }
 
-#bp-media-library .enabled .dropzone-label {
-	font-weight: 600;
+#bp-media-library .enabled .dropzone-label,
+#bp-media-library .enabled .upload-restrictions {
 	margin: 2em;
 	text-align: center;
+}
+
+#bp-media-library .enabled .dropzone-label {
+	font-weight: 600;
 }
 
 #bp-media-library .enabled .dropzone-label h2 {

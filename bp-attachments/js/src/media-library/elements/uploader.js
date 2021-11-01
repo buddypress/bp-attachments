@@ -15,6 +15,7 @@
 	},
 	i18n: {
 		__,
+		sprintf,
 	},
 } = wp;
 
@@ -22,11 +23,12 @@
  * Internal dependencies.
  */
 import { BP_ATTACHMENTS_STORE_KEY } from '../store';
+import { bytesToSize } from '../utils/functions';
 
 /**
  * File Uploader element.
  */
-const MediaLibraryUploader = () => {
+const MediaLibraryUploader = ( { settings } ) => {
 	const { updateFormState } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
 	const formState = useSelect( ( select ) => {
 		return select( BP_ATTACHMENTS_STORE_KEY ).getFormState();
@@ -66,6 +68,9 @@ const MediaLibraryUploader = () => {
 				>
 					{ __( 'Select Files', 'bp-attachments' ) }
 				</FormFileUpload>
+			</div>
+			<div className="upload-restrictions">
+				<p>{ sprintf( __( 'Maximum upload file size: %s.', 'bp-attachments' ), bytesToSize( settings.maxUploadFileSize ) ) }</p>
 			</div>
 		</div>
 	);
