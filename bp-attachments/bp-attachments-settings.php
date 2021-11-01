@@ -123,15 +123,24 @@ function bp_attachments_allowed_media_types_callback() {
 
 	$i18n_types    = bp_attachments_get_i18n_media_type( $allowed_types );
 	$allowed_mimes = bp_attachments_get_allowed_mimes( '' );
-	$setting       = bp_get_option( '_bp_attachments_allowed_media_types', array() );
-	$printed_mime  = array();
+	/**
+	 * `bp_get_option()` does not include the default value set during the settings registration.
+	 */
+	$setting      = get_option( '_bp_attachments_allowed_media_types' );
+	$printed_mime = array();
 
 	foreach ( $i18n_types as $k_type => $i18n_type ) {
 		?>
 		<fieldset>
 			<legend>
 				<label for="bp-attachments-selectall-<?php echo esc_attr( $k_type ); ?>">
-					<input id="bp-attachments-selectall-<?php echo esc_attr( $k_type ); ?>" type="checkbox" class="bp-attachments-selectall" data-mime-type="<?php echo esc_attr( $k_type ); ?>"> <?php echo esc_html( $i18n_type ); ?>
+					<input
+						id="bp-attachments-selectall-<?php echo esc_attr( $k_type ); ?>"
+						type="checkbox" class="bp-attachments-selectall"
+						data-mime-type="<?php echo esc_attr( $k_type ); ?>"
+						<?php checked( true, isset( $setting[ $k_type ] ) ); ?>
+					>
+					<?php echo esc_html( $i18n_type ); ?>
 				</label>
 			</legend>
 
@@ -200,7 +209,28 @@ function bp_attachments_register_settings() {
 			'description'       => __( 'BP Attachments settings to store the allowed media types.', 'bp-attachments' ),
 			'sanitize_callback' => 'bp_attachments_sanitize_allowed_media_types',
 			'show_in_rest'      => false,
-			'default'           => array(),
+			'default'           => array(
+				'image'    => array(
+					'image/jpeg',
+					'image/gif',
+					'image/png',
+				),
+				'video'    => array(
+					'video/mp4',
+					'video/ogg',
+				),
+				'audio'    => array(
+					'audio/mpeg',
+					'audio/ogg',
+				),
+				'document' => array(
+					'application/pdf',
+					'application/rtf',
+				),
+				'archive'  => array(
+					'application/zip',
+				),
+			),
 		)
 	);
 

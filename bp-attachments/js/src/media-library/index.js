@@ -43,7 +43,7 @@ const MediaLibrary = ( { settings } ) => {
 
 	return (
 		<Fragment>
-			<MediaLibraryHeader />
+			<MediaLibraryHeader settings={ globalSettings } />
 			<MediaLibraryUploader settings={ globalSettings } />
 			<MediaLibraryToolbar gridDisplay={ isGrid } tree={ tree } />
 			<MediaLibraryMain gridDisplay={ isGrid } tree={ tree } />
