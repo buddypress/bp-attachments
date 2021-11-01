@@ -155,6 +155,7 @@ function bp_attachments_admin_media() {
 		array(
 			'isAdminScreen'     => $is_admin_screen,
 			'maxUploadFileSize' => wp_max_upload_size(),
+			'allowedMediaTypes' => get_option( '_bp_attachments_allowed_media_types' ),
 		)
 	);
 

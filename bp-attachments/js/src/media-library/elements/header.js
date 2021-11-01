@@ -27,7 +27,7 @@ import { BP_ATTACHMENTS_STORE_KEY } from '../store';
 /**
  * Header element.
  */
-const MediaLibraryHeader = () => {
+const MediaLibraryHeader = ( { settings } ) => {
 	const { updateFormState } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
 	const currentDirectoryObject = useSelect( ( select ) => {
 		return select( BP_ATTACHMENTS_STORE_KEY ).getCurrentDirectoryObject();
@@ -36,6 +36,7 @@ const MediaLibraryHeader = () => {
 	const toggleClass = true === isOpen ? 'split-button is-open' : 'split-button';
 	const dashiconClass = true === isOpen ? 'dashicons dashicons-arrow-up-alt2' : 'dashicons dashicons-arrow-down-alt2';
 	const canUpload = true !== currentDirectoryObject.readonly;
+	const { allowedMediaTypes } = settings;
 
 	const showUploadForm = ( e ) => {
 		e.preventDefault();
@@ -48,11 +49,55 @@ const MediaLibraryHeader = () => {
 		);
 	};
 
-	const showCreateDirForm = ( e ) => {
+	const showCreateDirForm = ( e, type ) => {
 		e.preventDefault();
 
-		console.log( 'showCreateDirForm' );
+		console.log( type );
 	};
+
+	let dirOptions = [
+		{
+			id: 'directory',
+			text: __( 'Add new directory', 'bp-attachments' ),
+		}
+	];
+
+	if ( allowedMediaTypes ) {
+		Object.keys( allowedMediaTypes ).forEach( ( directoryType ) => {
+			if ( 'image' === directoryType ) {
+				dirOptions.push(
+					{
+						id: 'album',
+						text: __( 'Add new photo album', 'bp-attachments' ),
+					}
+				);
+			} else if ( 'audio' === directoryType ) {
+				dirOptions.push(
+					{
+						id: 'audioPlaylist',
+						text: __( 'Add new audio playlist', 'bp-attachments' ),
+					}
+				);
+			} else if ( 'video' === directoryType ) {
+				dirOptions.push(
+					{
+						id: 'videoPlaylist',
+						text: __( 'Add new video playlist', 'bp-attachments' ),
+					}
+				);
+			}
+		} );
+	}
+
+	const dirList = dirOptions.map( ( dirOption ) => {
+		return (
+			<li key={ 'type-' + dirOption.id }>
+				<a href="#new-bp-media-directory" className="button-link directory-button split-button-option" onClick={ ( e ) => showCreateDirForm( e, dirOption.id ) }>
+					{ dirOption.text }
+				</a>
+			</li>
+		);
+	} );
 
 	return (
 		<Fragment>
@@ -76,11 +121,7 @@ const MediaLibraryHeader = () => {
 												{ __( 'Upload media', 'bp-attachments' ) }
 											</a>
 										</li>
-										<li>
-											<a href="#new-bp-media-directory" className="button-link directory-button split-button-option" onClick={ ( e ) => showCreateDirForm( e ) }>
-												{ __( 'Add new directory', 'bp-attachments' ) }
-											</a>
-										</li>
+										{ dirList }
 									</ul>
 								</Popover>
 							) }
