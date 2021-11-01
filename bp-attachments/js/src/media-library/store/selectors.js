@@ -13,7 +13,7 @@ const {
 /**
  * Internal dependencies.
  */
-import getDirectoryAncestors from '../utils/tree-functions';
+import { getDirectoryAncestors } from '../utils/functions';
 
 /**
  * Returns the Community Media Library settings.
