@@ -451,7 +451,7 @@ a.file-item {
 #bp-media-library .split-button .split-button-primary,
 #bp-media-library .split-button .split-button-toggle {
 	display: block;
-	margin-bottom: 0;
+	margin: 0;
 	white-space: nowrap;
 	-webkit-appearance: none;
 	line-height: 20px;
