@@ -11,4 +11,4 @@ Thumbs.db
 node_modules
 npm-debug.log
 vendor
-.cache
+.parcel-cache
