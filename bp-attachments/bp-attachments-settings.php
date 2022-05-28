@@ -22,7 +22,7 @@ function bp_attachments_enable_private_uploads_callback() {
 	$private_dir      = bp_attachments_get_private_root_dir();
 	$private_dir_path = sprintf(
 		'<code>%s</code>',
-		trailingslashit( bp_attachments_get_document_root() ) . 'buddypress-private'
+		trailingslashit( dirname( bp_attachments_get_document_root() ) ) . 'buddypress-private'
 	);
 	$uploads_dir      = '<code>/wp-content/uploads</code>';
 
