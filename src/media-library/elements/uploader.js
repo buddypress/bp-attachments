@@ -29,19 +29,35 @@ import { bytesToSize } from '../utils/functions';
  * File Uploader element.
  */
 const MediaLibraryUploader = ( { settings } ) => {
-	const { updateFormState } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
+	const { updateFormState, createMedium } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
 	const formState = useSelect( ( select ) => {
 		return select( BP_ATTACHMENTS_STORE_KEY ).getFormState();
 	}, [] );
 
-	const closeForm = ( e ) => {
-		e.preventDefault();
+	const resetFormState = () => {
 		formState.action = '';
 		return updateFormState( formState );
+	}
+
+	const closeForm = ( e ) => {
+		e.preventDefault();
+		resetFormState();
 	};
 
-	const uploadMedia = ( e ) => {
-		e.preventDefault();
+	const uploadMedia = ( files ) => {
+		let media;
+
+		if ( files.currentTarget && files.currentTarget.files ) {
+			media = [ ...files.currentTarget.files ];
+		} else {
+			media = files;
+		}
+
+		media.forEach( ( medium ) => {
+			createMedium( medium );
+		} );
+
+		resetFormState();
 	};
 
 	if ( ! formState.action || 'upload' !== formState.action ) {
@@ -52,7 +68,7 @@ const MediaLibraryUploader = ( { settings } ) => {
 		<div className="uploader-container enabled">
 			<DropZone
 				label={ __( 'Drop your files here.', 'bp-attachments' ) }
-				onFilesDrop={ ( e ) => uploadMedia( e ) }
+				onFilesDrop={ ( files ) => uploadMedia( files ) }
 				className="uploader-inline"
 			/>
 			<button className="close dashicons dashicons-no" onClick={ ( e ) => closeForm( e ) }>
@@ -62,7 +78,7 @@ const MediaLibraryUploader = ( { settings } ) => {
 				<h2 className="upload-instructions drop-instructions">{ __( 'Drop files to upload', 'bp-attachments' ) }</h2>
 				<p className="upload-instructions drop-instructions">{ __( 'or', 'bp-attachments' ) }</p>
 				<FormFileUpload
-					onChange={ ( e ) => uploadMedia( e ) }
+					onChange={ ( files ) => uploadMedia( files ) }
 					multiple={ true }
 					className="browser button button-hero"
 				>

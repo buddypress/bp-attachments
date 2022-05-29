@@ -16,7 +16,13 @@ export const controls = {
 		return apiFetch( { path, parse } );
 	},
 	CREATE_FROM_API( { path, data } ) {
-		return apiFetch( { path, method: 'POST', data } );
+		return apiFetch(
+			{
+				path: path,
+				method: 'POST',
+				body: data
+			}
+		);
 	},
 	DELETE_FROM_API( { path, relativePath } ) {
 		return apiFetch( { path: path, method: 'DELETE', data: {

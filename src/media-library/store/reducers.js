@@ -19,8 +19,8 @@ const DEFAULT_STATE = {
 	currentDirectory: '',
 	files: [],
 	relativePath: '',
-	uploaded: [],
-	errored: [],
+	uploads: [],
+	errors: [],
 	uploading: false,
 	ended: false,
 	isSelectable: false,
@@ -74,7 +74,7 @@ const DEFAULT_STATE = {
 				formState: action.params,
 			};
 
-		case types.ADD_MEDIA:
+		case types.ADD_MEDIUM:
 			return {
 				...state,
 				files: [
@@ -87,8 +87,8 @@ const DEFAULT_STATE = {
 			return {
 				...state,
 				uploading: action.uploading,
-				uploaded: [
-					...state.uploaded,
+				uploads: [
+					...state.uploads,
 					action.file,
 				],
 			};
@@ -96,9 +96,9 @@ const DEFAULT_STATE = {
 		case types.ADD_ERROR:
 			return {
 				...state,
-				errored: [
-					...state.errored,
-					action.file,
+				errors: [
+					...state.errors,
+					action.error,
 				],
 			};
 
@@ -106,7 +106,7 @@ const DEFAULT_STATE = {
 			return {
 				...state,
 				uploading: action.uploading,
-				uploaded: reject( state.uploaded, ( u ) => { return u.name === action.uploaded.name || u.name === action.uploaded.title; } ),
+				uploads: reject( state.uploads, ( u ) => { return u.name === action.upload.name || u.name === action.upload.title; } ),
 				ended: true,
 			};
 
@@ -114,8 +114,8 @@ const DEFAULT_STATE = {
 			return {
 				...state,
 				uploading: false,
-				uploaded: [],
-				errored:[],
+				uploads: [],
+				errors:[],
 				ended: false,
 			};
 

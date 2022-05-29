@@ -60,6 +60,23 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 								'sanitize_callback' => 'sanitize_key',
 							),
 						),
+						'object' => array(
+							'description' => __( 'The object the media is uploaded for.', 'bp-attachments' ),
+							'type'        => 'string',
+							'enum'        => array( 'members', 'groups' ),
+							'default'     => 'members',
+							'arg_options' => array(
+								'sanitize_callback' => 'sanitize_key',
+							),
+						),
+						'object_id' => array(
+							'description' => __( 'The object single item the media is uploaded for.', 'bp-attachments' ),
+							'type'        => 'integer',
+							'default'     => 0,
+							'arg_options' => array(
+								'sanitize_callback' => 'intval',
+							),
+						),
 					),
 				),
 				'schema' => array( $this, 'get_public_item_schema' ),
@@ -292,6 +309,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 
 		// Upload a file.
 		if ( 'bp_attachments_make_directory' !== $action ) {
+
 			// Get the file via $_FILES or raw data.
 			$files = $request->get_file_params();
 
@@ -301,6 +319,28 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 					__( 'No data supplied.', 'bp-attachments' ),
 					array(
 						'status' => 400,
+					)
+				);
+			}
+
+			$object          = $request->get_param( 'object' );
+			$object_id       = $request->get_param( 'object_id' );
+			$can_upload      = false;
+			$forbidden_error = __( 'You cannot access to this user uploads.', 'bp-attachments' );
+
+			if ( $object_id && 'members' === $object ) {
+				$can_upload = ( (int) bp_loggedin_user_id() === (int) $object_id ) || current_user_can( 'bp_moderate' );
+			} elseif ( 'groups' === $object ) {
+				// @todo check the user is a member of the group.
+				$forbidden_error = __( 'You cannot access to this group uploads.', 'bp-attachments' );
+			}
+
+			if ( ! $can_upload ) {
+				return new WP_Error(
+					'rest_upload_forbidden',
+					$forbidden_error,
+					array(
+						'status' => 403,
 					)
 				);
 			}

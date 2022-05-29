@@ -21,7 +21,7 @@ import {
  * @access private
  * @returns {string} The requests context (view or edit).
  */
-const _requetsContext = () => {
+const _requestContext = () => {
 	const { isAdminScreen } = window.bpAttachmentsMediaLibrarySettings || {};
 	return isAdminScreen && true === isAdminScreen ? 'edit' : 'view';
 }
@@ -39,7 +39,7 @@ export function* getLoggedInUser() {
  * Resolver for retrieving the media root directories.
  */
 export function* getMedia() {
-	const path = '/buddypress/v1/attachments?context=' + _requetsContext();
+	const path = '/buddypress/v1/attachments?context=' + _requestContext();
 	const files = yield fetchFromAPI( path, true );
 
 	// Init the Directories tree.

@@ -57,7 +57,7 @@ export function fetchFromAPI( path, parse ) {
 }
 
 /**
- * Returns an action object used to create a medium via the API.
+ * Returns an action object used to create media via the API.
  *
  * @param {string} path Endpoint path.
  * @param {Object} data The data to be created.
@@ -72,7 +72,7 @@ export function createFromAPI( path, data ) {
 }
 
 /**
- * Returns an action object used to delete a medium via the API.
+ * Returns an action object used to delete a media via the API.
  *
  * @param {string} path Endpoint path.
  * @param {Object} data The data to be created.
@@ -117,11 +117,12 @@ export function getLoggedInUser( user ) {
  *
  * @param {Array} files The list of files.
  * @param {String} relativePath The relative path.
+ * @param {Object} currentDirectory The current directory.
  * @return {Object} Object for action.
  */
 export function getMedia( files, relativePath, currentDirectory ) {
 	return {
-		type: 'GET_MEDIA',
+		type: types.GET_MEDIA,
 		files,
 		relativePath,
 		currentDirectory,
@@ -140,21 +141,6 @@ export function updateFormState( params ) {
 		params,
 	};
 }
-
-export function createMedium( path, formData ) {
-	return {
-		type: 'CREATE_FROM_API',
-		path,
-		formData,
-	};
-};
-
-export function addMedia( file ) {
-	return {
-		type: 'ADD_MEDIA',
-		file,
-	};
-};
 
 /**
  * Init the directories Tree.
@@ -186,46 +172,74 @@ export function initTree( items ) {
  */
 export function addItemTree( item ) {
 	return {
-		type: 'FILL_TREE',
+		type: types.FILL_TREE,
 		item,
 	};
 };
 
-export function deleteMedium( path, relativePath ) {
-	return {
-		type: 'DELETE_FROM_API',
-		path,
-		relativePath,
-	};
-};
-
-export function addMediaError( file ) {
-	return {
-		type: 'ADD_ERROR',
-		file,
-	};
-};
-
+/**
+ * @todo
+ * @param {*} isSelectable
+ * @returns {Object} Object for action.
+ */
 export function toggleSelectable( isSelectable ) {
 	return {
-		type: 'TOGGLE_SELECTABLE',
+		type: types.TOGGLE_SELECTABLE,
 		isSelectable,
 	};
 };
 
+/**
+ * @todo
+ * @param {*} id
+ * @param {*} isSelected
+ * @returns {Object} Object for action.
+ */
 export function toggleMediaSelection( id, isSelected ) {
 	return {
-		type: 'TOGGLE_MEDIA_SELECTION',
+		type: types.TOGGLE_MEDIA_SELECTION,
 		id,
 		isSelected,
 	};
 };
 
-export function * insertMedium( file ) {
-	let uploading = true, uploaded;
-	const currentState = select( STORE_KEY ).getState();
-	const { object, item, status } = getMediumDestinationData( currentState );
-	const parentDir = currentState.relativePath;
+/**
+ * Adds a new file to the Media list.
+ *
+ * @param {object} file The uploaded medium.
+ * @returns {Object} Object for action.
+ */
+export function addMedium( file ) {
+	return {
+		type: types.ADD_MEDIUM,
+		file,
+	};
+};
+
+/**
+ * Adds a new error.
+ *
+ * @param {object} error The uploaded file which errored.
+ * @returns {Object} Object for action.
+ */
+export function addMediumError( error ) {
+	return {
+		type: types.ADD_ERROR,
+		error,
+	};
+};
+
+/**
+ * Creates a Medium uploading a file.
+ *
+ * @param {Object} file The file object to upload.
+ * @returns {Object} Object for action.
+ */
+export function * createMedium( file ) {
+	let uploading = true, upload;
+	const store = select( STORE_KEY );
+	const { object, item, status } = store.getDestinationData();
+	const relativePath = store.getRelativePath();
 
 	yield { type: 'UPLOAD_START', uploading, file };
 
@@ -244,30 +258,36 @@ export function * insertMedium( file ) {
 		formData.append( 'status', status );
 	}
 
-	if ( trim( parentDir, '/' ) !== status + '/' + object + '/' + item ) {
-		formData.append( 'parent_dir', parentDir );
+	if ( trim( relativePath, '/' ) !== status + '/' + object + '/' + item ) {
+		formData.append( 'parent_dir', relativePath );
 	}
 
 	uploading = false;
 	try {
-		uploaded = yield createMedium( '/buddypress/v1/attachments', formData );
-		yield { type: 'UPLOAD_END', uploading, uploaded };
-		uploaded.uploaded = true;
+		upload = yield createFromAPI( '/buddypress/v1/attachments', formData );
+		yield { type: 'UPLOAD_END', uploading, upload };
+		upload.uploaded = true;
 
-		return addMedia( uploaded );
+		return addMedium( upload );
 	} catch ( error ) {
-		uploaded = {
+		upload = {
 			id: uniqueId(),
 			name: file.name,
 			error: error.message,
+			uploaded: false,
 		};
 
-		yield { type: 'UPLOAD_END', uploading, uploaded };
+		yield { type: 'UPLOAD_END', uploading, upload };
 
-		return addMediaError( uploaded );
+		return addMediumError( upload );
 	}
 }
 
+/**
+ * @todo
+ * @param {*} directory
+ * @returns
+ */
 export function * createDirectory( directory ) {
 	let uploading = true, uploaded, file = {
 		name: directory.directoryName,
@@ -305,7 +325,7 @@ export function * createDirectory( directory ) {
 		yield { type: 'UPLOAD_END', uploading, uploaded };
 		uploaded.uploaded = true;
 
-		return addMedia( uploaded );
+		return addMedium( uploaded );
 	} catch ( error ) {
 		uploaded = {
 			id: uniqueId(),
@@ -315,10 +335,18 @@ export function * createDirectory( directory ) {
 
 		yield { type: 'UPLOAD_END', uploading, uploaded };
 
-		return addMediaError( uploaded );
+		return addMediumError( uploaded );
 	}
 }
 
+/**
+ * Parses the request response and edit Media store.
+ *
+ * @param {Object} response The request response.
+ * @param {String} relativePath The relative path of the medium.
+ * @param {String} parent The parent directory.
+ * @returns {void}
+ */
 export const parseResponseMedia = async ( response, relativePath, parent = '' ) => {
 	const items = await response.json().then( ( data ) => {
 		data.forEach( ( item ) => {
@@ -347,6 +375,12 @@ export const parseResponseMedia = async ( response, relativePath, parent = '' ) 
 	dispatch( STORE_KEY ).getMedia( items, relativePath, parent );
 }
 
+/**
+ * Requests media according to specific arguments.
+ *
+ * @param {Object} args The Media request arguments.
+ * @returns {void}
+ */
 export function * requestMedia( args = {} ) {
 	const path = '/buddypress/v1/attachments';
 	let relativePathHeader = '';
@@ -382,6 +416,11 @@ export function * requestMedia( args = {} ) {
 	return parseResponseMedia( response, relativePathHeader, parent );
 }
 
+/**
+ * @todo
+ * @param {*} id
+ * @returns
+ */
 export function destroyMedium( id ) {
 	return {
 		type: 'DESTROY_MEDIUM',
@@ -389,6 +428,25 @@ export function destroyMedium( id ) {
 	}
 };
 
+/**
+ * @todo
+ * @param {*} path
+ * @param {*} relativePath
+ * @returns
+ */
+ export function deleteMedium( path, relativePath ) {
+	return {
+		type: 'DELETE_FROM_API',
+		path,
+		relativePath,
+	};
+};
+
+/**
+ * @todo
+ * @param {*} medium
+ * @returns
+ */
 export function * removeMedium( medium ) {
 	const currentState = select( STORE_KEY ).getState();
 	const { relativePath } = currentState;
@@ -401,6 +459,6 @@ export function * removeMedium( medium ) {
 	} catch ( error ) {
 		medium.error = error.message;
 
-		return addMediaError( medium );
+		return addMediumError( medium );
 	}
 }

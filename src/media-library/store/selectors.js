@@ -103,20 +103,20 @@ export const isUploading = ( state ) => {
  * @param {Object} state The current state.
  * @return {array} The list of uploaded file Objects.
  */
-export const getUploadedFiles = ( state ) => {
-	const { uploaded } = state;
-	return uploaded;
+export const getUploads = ( state ) => {
+	const { uploads } = state;
+	return uploads;
 };
 
 /**
- * Returns the list of errored file Objects.
+ * Returns the list of errors.
  *
  * @param {Object} state The current state.
- * @return {array} The list of errored file Objects.
+ * @return {array} The list of errors.
  */
-export const getErroredFiles = ( state ) => {
-	const { errored } = state;
-	return errored;
+export const getErrors = ( state ) => {
+	const { errors } = state;
+	return errors;
 };
 
 /**
@@ -244,12 +244,12 @@ export const getRelativePath = ( state ) => {
 };
 
 /**
- * Returns the destination data for a medium.
+ * Returns the destination data for media.
  *
  * @param {Object} state The current state.
- * @return {Object} The destination data for a medium.
+ * @return {Object} The destination data for media.
  */
-export const getMediumDestinationData = ( state ) => {
+export const getDestinationData = ( state ) => {
 	const { relativePath } = state;
 
 	if ( ! relativePath ) {
@@ -261,7 +261,7 @@ export const getMediumDestinationData = ( state ) => {
 	const destinationData = trim( relativePath, '/' ).split( '/' );
 
 	return {
-		status: destinationData[0] ? destinationData[0] : 'private',
+		status: destinationData[0] ? destinationData[0] : 'public',
 		object: 'groups' === destinationData[1] ? 'groups' : 'members',
 		item: destinationData[2] ? destinationData[2] : '',
 	}

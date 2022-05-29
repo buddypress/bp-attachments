@@ -20,6 +20,7 @@ const {
  */
 import { BP_ATTACHMENTS_STORE_KEY } from '../store';
 import MediaItem from './item';
+import MediaLibraryNotices from './notices';
 
 /**
  * Main element.
@@ -58,12 +59,15 @@ const MediaLibraryMain = ( { gridDisplay, tree } ) => {
 	}
 
 	return (
-		<div className={ isSelectable ? 'media-items mode-select' : 'media-items' }>
-			{ mediaItems }
-			{ ! items.length && (
-				<p className="no-media">{ __( 'No community media items found.', 'bp-attachments' ) }</p>
-			) }
-		</div>
+		<main className="bp-user-media">
+			<MediaLibraryNotices />
+			<div className={ isSelectable ? 'media-items mode-select' : 'media-items' }>
+				{ mediaItems }
+				{ ! items.length && (
+					<p className="no-media">{ __( 'No community media items found.', 'bp-attachments' ) }</p>
+				) }
+			</div>
+		</main>
 	);
 };
 
