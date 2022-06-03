@@ -3,8 +3,9 @@
  */
 const {
 	components: {
-		Notice,
+		Animate,
 		Dashicon,
+		Notice,
 	},
 	element: {
 		createElement,
@@ -67,8 +68,41 @@ const MediaLibraryNotices = () => {
 		} );
 	}
 
+	let loadingNotice = null;
+	const numberUploads = uploads && uploads.length ? uploads.length : 0;
+
+	if ( !! numberUploads ) {
+		// Looks like WP CLI can't find _n() usage.
+		let uploadingMedia = __( 'Uploading the media, please wait.', 'bp-attachments' );
+		if ( numberUploads > 1 ) {
+			/* translators: %d: number of media being uploaded. */
+			uploadingMedia = sprintf( __( 'Uploading %d media, please wait.', 'bp-attachments' ), numberUploads );
+		}
+
+		loadingNotice = (
+			<div className="chargement-de-documents">
+				<Animate
+					type="loading"
+				>
+					{ ( { className } ) => (
+						<Notice
+							status="warning"
+							isDismissible={ false }
+						>
+							<p className={ className }>
+								<Dashicon icon="update" />
+								{ uploadingMedia }
+							</p>
+						</Notice>
+					) }
+				</Animate>
+			</div>
+		);
+	}
+
 	return (
 		<div className="bp-attachments-notices">
+			{ loadingNotice }
 			{ errorNotices }
 		</div>
 	);
