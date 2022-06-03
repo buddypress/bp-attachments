@@ -95,6 +95,14 @@
 	margin-top: 1em;
 }
 
+#bp-media-library .bp-attachments-notices .components-notice {
+	margin: 5px 0;
+}
+
+#bp-media-library .bp-attachments-notices .components-notice.is-dismissible {
+	padding-right: 0;
+}
+
 .bp-uploading:before,
 .bp-uploaded:before,
 .bp-errored:before {
