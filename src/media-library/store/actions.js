@@ -462,3 +462,16 @@ export function * removeMedium( medium ) {
 		return addMediumError( medium );
 	}
 }
+
+/**
+ * Removes an error.
+ *
+ * @param {integer} errorID The error ID.
+ * @returns {Object} Object for action.
+ */
+export function removeMediumError( errorID ) {
+	return {
+		type: types.REMOVE_ERROR,
+		errorID,
+	};
+}

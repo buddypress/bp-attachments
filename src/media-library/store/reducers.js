@@ -102,6 +102,12 @@ const DEFAULT_STATE = {
 				],
 			};
 
+		case types.REMOVE_ERROR:
+			return {
+				...state,
+				errors: reject( state.errors, [ 'id', action.errorID ] ),
+			};
+
 		case types.UPLOAD_END:
 			return {
 				...state,

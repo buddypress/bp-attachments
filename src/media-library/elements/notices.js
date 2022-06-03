@@ -37,9 +37,9 @@ const MediaLibraryNotices = () => {
 			errors: store.getErrors(),
 		};
 	}, [] );
+	const { removeMediumError } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
 	const onRemoveError = ( errorID ) => {
-		// @todo handle errors removal.
-		console.log( errorID );
+		return removeMediumError( errorID );
 	};
 
 	let errorNotices = [];
