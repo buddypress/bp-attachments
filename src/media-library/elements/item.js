@@ -28,21 +28,30 @@ import setTemplate from '../utils/set-template';
 
 const MediaItem = ( props ) => {
 	const Template = setTemplate( 'bp-attachments-media-item' );
-	const { title, vignette } = props;
-	const [ isOpen, toggleModal ] = useState( false );
-	const [ isSelected, selectMedia ] = useState( false );
-	const getRelativePath = useSelect( ( select ) => {
-		return select( BP_ATTACHMENTS_STORE_KEY ).getRelativePath();
-	}, [] );
+	const { title, vignette, selected } = props;
 	const { toggleMediaSelection, requestMedia } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
-	const classes = isSelected ? 'media-item selected' : 'media-item';
+	const [ isOpen, toggleModal ] = useState( false );
+	const [ isSelected, selectMedia ] = useState( selected );
+	const { getRelativePath, isSelectable } = useSelect( ( select ) => {
+		const store = select( BP_ATTACHMENTS_STORE_KEY );
 
+		return {
+			getRelativePath: store.getRelativePath(),
+			isSelectable: store.isSelectable(),
+		};
+	}, [] );
+
+	if ( ! isSelectable && ! selected && isSelected ) {
+		selectMedia( false );
+	}
+
+	const classes = isSelected ? 'media-item selected' : 'media-item';
 	const onMediaClick = () => {
 		const { mimeType, name, isSelectable, id, object } = props;
 
 		if ( isSelectable ) {
 			selectMedia( ! isSelected );
-			return toggleMediaSelection( id, ! isSelected );
+			return toggleMediaSelection( [ id ], ! isSelected );
 		}
 
 		if ( 'inode/directory' === mimeType ) {

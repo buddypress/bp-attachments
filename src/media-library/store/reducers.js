@@ -135,8 +135,8 @@ const DEFAULT_STATE = {
 			return {
 				...state,
 				files: state.files.map( file => {
-					if ( action.id === file.id ) {
-						file.selected = action.isSelected
+					if ( ( 'all' === action.ids[0] && ! action.isSelected ) || ( -1 !== action.ids.indexOf( file.id ) ) ) {
+						file.selected = action.isSelected;
 					}
 
 					return file;

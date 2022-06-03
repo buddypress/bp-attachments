@@ -15,6 +15,7 @@ const {
 		useState,
 	},
 	components: {
+		Button,
 		TreeSelect,
 	},
 	i18n: {
@@ -36,24 +37,28 @@ import { getDirectoryAncestors } from '../utils/functions';
  * Toolbar element.
  */
 const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
-	const { switchDisplayMode, requestMedia } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
-	const switchMode = ( e, isGrid ) => {
-		e.preventDefault();
-		switchDisplayMode( isGrid );
-	};
-	const { user, currentDirectory, flatTree } = useSelect( ( select ) => {
+	const { switchDisplayMode, requestMedia, toggleSelectable, toggleMediaSelection } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
+	const { user, currentDirectory, currentDirectoryObject, flatTree, isSelectable } = useSelect( ( select ) => {
 		const store = select( BP_ATTACHMENTS_STORE_KEY )
 		return {
 			user: store.getLoggedInUser(),
 			currentDirectory: store.getCurrentDirectory(),
+			currentDirectoryObject: store.getCurrentDirectoryObject(),
 			flatTree: store.getFlatTree(),
+			isSelectable: store.isSelectable(),
 		}
 	}, [] );
-
 	const [ page, setPage ] = useState( currentDirectory );
+	const canSelect = true !== currentDirectoryObject.readonly;
+
 	if ( currentDirectory !== page ) {
 		setPage( currentDirectory );
 	}
+
+	const switchMode = ( e, isGrid ) => {
+		e.preventDefault();
+		switchDisplayMode( isGrid );
+	};
 
 	const changeDirectory = ( directory ) => {
 		setPage( directory );
@@ -90,7 +95,18 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 		}
 
 		return requestMedia( args );
-	}
+	};
+
+	const onToggleSectable = ( event ) => {
+		event.preventDefault();
+		const toggle = ! isSelectable;
+
+		if ( ! toggle ) {
+			toggleMediaSelection( ['all'], toggle );
+		}
+
+		return toggleSelectable( toggle );
+	};
 
 	return (
 		<div className="media-toolbar wp-filter">
@@ -103,6 +119,11 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 						<span className="screen-reader-text">{ __( 'Display grid', 'bp-attachments' ) }</span>
 					</a>
 				</div>
+				{ canSelect && (
+					<Button variant="secondary" className="media-button select-mode-toggle-button" onClick={ ( e ) => onToggleSectable( e ) }>
+						{ ! isSelectable ? __( 'Select', 'bp-attachments' ) : __( 'Cancel Selection', 'bp-attachments' ) }
+					</Button>
+				) }
 			</div>
 			{ !! tree.length && (
 				<div className="media-toolbar-primary">

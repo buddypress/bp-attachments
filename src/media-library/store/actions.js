@@ -87,7 +87,7 @@ export function deleteFromAPI( path, relativePath ) {
 }
 
 /**
- * Returns an action object used to switch between Grid & Liste mode.
+ * Returns an action object used to switch between Grid & List mode.
  *
  * @param {Boolean} isGrid
  * @returns {Object} Object for action.
@@ -178,8 +178,9 @@ export function addItemTree( item ) {
 };
 
 /**
- * @todo
- * @param {*} isSelectable
+ * Returns an action object used to switch between Selectable & Regular mode.
+ *
+ * @param {boolean} isSelectable True to switch to Selectable mode. False otherwise.
  * @returns {Object} Object for action.
  */
 export function toggleSelectable( isSelectable ) {
@@ -190,15 +191,16 @@ export function toggleSelectable( isSelectable ) {
 };
 
 /**
- * @todo
- * @param {*} id
- * @param {*} isSelected
+ * Returns an action object used to switch between Selectable & Regular mode.
+ *
+ * @param {array} ids The list of media ID.
+ * @param {boolean} isSelected True if the media is selected. False otherwise.
  * @returns {Object} Object for action.
  */
-export function toggleMediaSelection( id, isSelected ) {
+export function toggleMediaSelection( ids, isSelected ) {
 	return {
 		type: types.TOGGLE_MEDIA_SELECTION,
-		id,
+		ids,
 		isSelected,
 	};
 };
