@@ -1,7 +1,7 @@
 /**
  * WordPress dependencies
  */
- const {
+const {
 	components: {
 		DropZone,
 		FormFileUpload,
@@ -90,6 +90,6 @@ const MediaLibraryUploader = ( { settings } ) => {
 			</div>
 		</div>
 	);
- };
+};
 
- export default MediaLibraryUploader;
+export default MediaLibraryUploader;

@@ -52,12 +52,18 @@ const MediaLibraryHeader = ( { settings } ) => {
 	const showCreateDirForm = ( e, type ) => {
 		e.preventDefault();
 
-		console.log( type );
+		return updateFormState(
+			{
+				parentDirectory: currentDirectoryObject.id,
+				action: 'createDirectory',
+				directoryType: type,
+			}
+		);
 	};
 
 	let dirOptions = [
 		{
-			id: 'directory',
+			id: 'folder',
 			text: __( 'Add new directory', 'bp-attachments' ),
 		}
 	];
@@ -74,14 +80,14 @@ const MediaLibraryHeader = ( { settings } ) => {
 			} else if ( 'audio' === directoryType ) {
 				dirOptions.push(
 					{
-						id: 'audioPlaylist',
+						id: 'audio_playlist',
 						text: __( 'Add new audio playlist', 'bp-attachments' ),
 					}
 				);
 			} else if ( 'video' === directoryType ) {
 				dirOptions.push(
 					{
-						id: 'videoPlaylist',
+						id: 'video_playlist',
 						text: __( 'Add new video playlist', 'bp-attachments' ),
 					}
 				);

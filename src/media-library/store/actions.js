@@ -206,7 +206,7 @@ export function toggleMediaSelection( ids, isSelected ) {
 };
 
 /**
- * Adds a new file to the Media list.
+ * Returns an action object used to add a new file to the Media list.
  *
  * @param {object} file The uploaded medium.
  * @returns {Object} Object for action.
@@ -219,7 +219,7 @@ export function addMedium( file ) {
 };
 
 /**
- * Adds a new error.
+ * Returns an action object used to add a new error.
  *
  * @param {object} error The uploaded file which errored.
  * @returns {Object} Object for action.
@@ -286,18 +286,26 @@ export function * createMedium( file ) {
 }
 
 /**
- * @todo
- * @param {*} directory
- * @returns
+ * Creates a new directory, photo album, audio or video playluist.
+ *
+ * @todo to avoid too much code duplication, createDirectory & createMedium should probably be
+ *       gathered into one function.
+ *
+ * @param {Object} directory The data to use create the directory
+ * @returns {Object} Object for action.
  */
 export function * createDirectory( directory ) {
-	let uploading = true, uploaded, file = {
+	let uploading = true, upload;
+
+	// A directory is handled as a file having the inode/directory mime type.
+	let file = {
 		name: directory.directoryName,
 		type: directory.directoryType,
 	};
-	const currentState = select( STORE_KEY ).getState();
-	const { object, item, status } = getMediumDestinationData( currentState );
-	const parentDir = currentState.relativePath;
+
+	const store = select( STORE_KEY );
+	const { object, item, status } = store.getDestinationData();
+	const relativePath = store.getRelativePath();
 
 	yield { type: 'UPLOAD_START', uploading, file };
 
@@ -317,27 +325,28 @@ export function * createDirectory( directory ) {
 		formData.append( 'status', status );
 	}
 
-	if ( trim( parentDir, '/' ) !== status + '/' + object + '/' + item ) {
-		formData.append( 'parent_dir', parentDir );
+	if ( trim( relativePath, '/' ) !== status + '/' + object + '/' + item ) {
+		formData.append( 'parent_dir', relativePath );
 	}
 
 	uploading = false;
 	try {
-		uploaded = yield createMedium( '/buddypress/v1/attachments', formData );
-		yield { type: 'UPLOAD_END', uploading, uploaded };
-		uploaded.uploaded = true;
+		upload = yield createFromAPI( '/buddypress/v1/attachments', formData );
+		yield { type: 'UPLOAD_END', uploading, upload };
+		upload.uploaded = true;
 
-		return addMedium( uploaded );
+		return addMedium( upload );
 	} catch ( error ) {
-		uploaded = {
+		upload = {
 			id: uniqueId(),
 			name: file.name,
 			error: error.message,
+			uploaded: false,
 		};
 
-		yield { type: 'UPLOAD_END', uploading, uploaded };
+		yield { type: 'UPLOAD_END', uploading, upload };
 
-		return addMediumError( uploaded );
+		return addMediumError( upload );
 	}
 }
 
@@ -466,7 +475,7 @@ export function * removeMedium( medium ) {
 }
 
 /**
- * Removes an error.
+ * Returns an action object used to remove an error.
  *
  * @param {integer} errorID The error ID.
  * @returns {Object} Object for action.

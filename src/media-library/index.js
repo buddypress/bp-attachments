@@ -23,6 +23,7 @@ const {
 import { BP_ATTACHMENTS_STORE_KEY } from './store';
 import MediaLibraryHeader from './elements/header';
 import MediaLibraryUploader from './elements/uploader';
+import MediaLibraryDirectoryCreator from './elements/directory-creator';
 import MediaLibraryToolbar from './elements/toolbar';
 import MediaLibraryMain from './elements/main';
 
@@ -45,6 +46,7 @@ const MediaLibrary = ( { settings } ) => {
 		<Fragment>
 			<MediaLibraryHeader settings={ globalSettings } />
 			<MediaLibraryUploader settings={ globalSettings } />
+			<MediaLibraryDirectoryCreator settings={ globalSettings } />
 			<MediaLibraryToolbar gridDisplay={ isGrid } tree={ tree } />
 			<MediaLibraryMain gridDisplay={ isGrid } tree={ tree } />
 		</Fragment>
