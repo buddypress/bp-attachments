@@ -233,6 +233,18 @@ export const isSelectable = ( state ) => {
 };
 
 /**
+ * Returns the selected media.
+ *
+ * @param {Object} state The current state.
+ * @return {array} The list of selected media.
+ */
+export const selectedMedia = ( state ) => {
+	const { files } = state;
+
+	return filter( files, [ 'selected', true ] );
+}
+
+/**
  * Returns the current relative path.
  *
  * @param {Object} state The current state.

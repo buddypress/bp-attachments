@@ -37,8 +37,22 @@ import { getDirectoryAncestors } from '../utils/functions';
  * Toolbar element.
  */
 const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
-	const { switchDisplayMode, requestMedia, toggleSelectable, toggleMediaSelection } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
-	const { user, currentDirectory, currentDirectoryObject, flatTree, isSelectable } = useSelect( ( select ) => {
+	const {
+		switchDisplayMode,
+		requestMedia,
+		toggleSelectable,
+		toggleMediaSelection,
+		deleteMedium,
+	} = useDispatch( BP_ATTACHMENTS_STORE_KEY );
+
+	const {
+		user,
+		currentDirectory,
+		currentDirectoryObject,
+		flatTree,
+		isSelectable,
+		selectedMedia,
+	} = useSelect( ( select ) => {
 		const store = select( BP_ATTACHMENTS_STORE_KEY )
 		return {
 			user: store.getLoggedInUser(),
@@ -46,10 +60,12 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 			currentDirectoryObject: store.getCurrentDirectoryObject(),
 			flatTree: store.getFlatTree(),
 			isSelectable: store.isSelectable(),
+			selectedMedia: store.selectedMedia(),
 		}
 	}, [] );
 	const [ page, setPage ] = useState( currentDirectory );
 	const canSelect = true !== currentDirectoryObject.readonly;
+	const hasSelectedMedia = isSelectable && selectedMedia.length !== 0;
 
 	if ( currentDirectory !== page ) {
 		setPage( currentDirectory );
@@ -108,20 +124,37 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 		return toggleSelectable( toggle );
 	};
 
+	const onDeleteSelected = ( event ) => {
+		event.preventDefault();
+
+		selectedMedia.forEach( medium => {
+			deleteMedium( medium );
+		} );
+
+		return toggleSelectable( false );
+	}
+
 	return (
 		<div className="media-toolbar wp-filter">
 			<div className="media-toolbar-secondary">
-				<div className="view-switch media-grid-view-switch">
-					<a href="#view-list" onClick={ ( e ) => switchMode( e, false ) } className={ gridDisplay ? 'view-list' : 'view-list current' }>
-						<span className="screen-reader-text">{ __( 'Display list', 'bp-attachments' ) }</span>
-					</a>
-					<a href="#view-grid" onClick={ ( e ) => switchMode( e, true ) } className={ gridDisplay ? 'view-grid current' : 'view-grid' }>
-						<span className="screen-reader-text">{ __( 'Display grid', 'bp-attachments' ) }</span>
-					</a>
-				</div>
+				{ ! isSelectable && (
+					<div className="view-switch media-grid-view-switch">
+						<a href="#view-list" onClick={ ( e ) => switchMode( e, false ) } className={ gridDisplay ? 'view-list' : 'view-list current' }>
+							<span className="screen-reader-text">{ __( 'Display list', 'bp-attachments' ) }</span>
+						</a>
+						<a href="#view-grid" onClick={ ( e ) => switchMode( e, true ) } className={ gridDisplay ? 'view-grid current' : 'view-grid' }>
+							<span className="screen-reader-text">{ __( 'Display grid', 'bp-attachments' ) }</span>
+						</a>
+					</div>
+				) }
 				{ canSelect && (
 					<Button variant="secondary" className="media-button select-mode-toggle-button" onClick={ ( e ) => onToggleSectable( e ) }>
 						{ ! isSelectable ? __( 'Select', 'bp-attachments' ) : __( 'Cancel Selection', 'bp-attachments' ) }
+					</Button>
+				) }
+				{ canSelect && hasSelectedMedia && (
+					<Button variant="primary" className="media-button delete-selected-button" onClick={ ( e ) => onDeleteSelected( e ) }>
+						{ __( 'Delete selection', 'bp-attachments' ) }
 					</Button>
 				) }
 			</div>

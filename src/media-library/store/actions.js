@@ -428,49 +428,37 @@ export function * requestMedia( args = {} ) {
 }
 
 /**
- * @todo
- * @param {*} id
- * @returns
+ * Returns an action object used to remove a medium from the state.
+ *
+ * @param {integer} id The medium ID.
+ * @returns {Object} Object for action.
  */
-export function destroyMedium( id ) {
+export function removeMedium( id ) {
 	return {
-		type: 'DESTROY_MEDIUM',
+		type: 'REMOVE_MEDIUM',
 		id,
 	}
 };
 
 /**
- * @todo
- * @param {*} path
- * @param {*} relativePath
- * @returns
+ * Deletes a Medium removing the file from the server's filesystem.
+ *
+ * @param {Object} file The file object to upload.
+ * @returns {Object} Object for action.
  */
- export function deleteMedium( path, relativePath ) {
-	return {
-		type: 'DELETE_FROM_API',
-		path,
-		relativePath,
-	};
-};
-
-/**
- * @todo
- * @param {*} medium
- * @returns
- */
-export function * removeMedium( medium ) {
-	const currentState = select( STORE_KEY ).getState();
-	const { relativePath } = currentState;
+export function * deleteMedium( file ) {
+	const store = select( STORE_KEY );
+	const relativePath = store.getRelativePath();
 	let deleted;
 
 	try {
-		deleted = yield deleteMedium( '/buddypress/v1/attachments/' + medium.id + '/', relativePath );
+		deleted = yield deleteFromAPI( '/buddypress/v1/attachments/' + file.id + '/', relativePath );
 
-		return destroyMedium( deleted.previous.id );
+		return removeMedium( deleted.previous.id );
 	} catch ( error ) {
-		medium.error = error.message;
+		file.error = error.message;
 
-		return addMediumError( medium );
+		return addMediumError( file );
 	}
 }
 

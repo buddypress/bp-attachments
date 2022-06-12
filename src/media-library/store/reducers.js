@@ -149,7 +149,7 @@ const DEFAULT_STATE = {
 				isGrid: action.isGrid,
 			};
 
-		case types.DESTROY_MEDIUM:
+		case types.REMOVE_MEDIUM:
 			return {
 				...state,
 				files: [
