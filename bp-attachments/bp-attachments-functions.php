@@ -438,6 +438,15 @@ function bp_attachments_list_media_in_directory( $dir = '', $object = 'members' 
 		return $list;
 	}
 
+	$visibility = 'public';
+	if ( bp_attachments_can_do_private_uploads() ) {
+		$private_basedir = bp_attachments_get_private_root_dir();
+
+		if ( 0 === strpos( $dir, $private_basedir ) ) {
+			$visibility = 'private';
+		}
+	}
+
 	$iterator = new FilesystemIterator( $dir, FilesystemIterator::SKIP_DOTS );
 
 	/**
@@ -480,6 +489,9 @@ function bp_attachments_list_media_in_directory( $dir = '', $object = 'members' 
 
 		// Set the object type of the media.
 		$media_data->object = $object;
+
+		// Set the visibility of the media.
+		$media_data->visibility = $visibility;
 
 		// Merge all JSON data of the directory.
 		$list[] = $media_data;
@@ -529,6 +541,7 @@ function bp_attachments_get_directory_types( $user_id = 0 ) {
 			'description'   => __( 'This Public directory and its children are visible to everyone.', 'bp-attachments' ),
 			'icon'          => bp_attachments_get_directory_icon( 'public' ),
 			'readonly'      => false,
+			'visibility'    => 'public',
 		),
 		$common_props
 	);
@@ -544,6 +557,7 @@ function bp_attachments_get_directory_types( $user_id = 0 ) {
 				'description'   => __( 'This Private directory and its children are only visible to logged in users.', 'bp-attachments' ),
 				'icon'          => bp_attachments_get_directory_icon( 'private' ),
 				'readonly'      => false,
+				'visibility'    => 'private',
 			),
 			$common_props
 		);
@@ -614,6 +628,7 @@ function bp_attachments_list_member_root_objects( $user_id = 0, $object_dir = ''
 							)
 						),
 						'readonly'      => false,
+						'visibility'    => 'public' === $group->status ? 'public' : 'private',
 					),
 					$common_props
 				);
@@ -631,6 +646,7 @@ function bp_attachments_list_member_root_objects( $user_id = 0, $object_dir = ''
 				'description'   => __( 'This directory contains the media directories of the groups you are a member of.', 'bp-attachments' ),
 				'icon'          => bp_attachments_get_directory_icon( 'groups' ),
 				'readonly'      => true,
+				'visibility'    => 'public',
 			),
 			$common_props
 		);
@@ -645,6 +661,7 @@ function bp_attachments_list_member_root_objects( $user_id = 0, $object_dir = ''
 				'description'   => __( 'This directory contains all your personal media.', 'bp-attachments' ),
 				'icon'          => bp_attachments_get_directory_icon( 'member' ),
 				'readonly'      => true,
+				'visibility'    => 'public',
 			),
 			$common_props
 		);

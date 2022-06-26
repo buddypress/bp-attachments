@@ -155,9 +155,16 @@ class BP_Attachments_Media extends BP_Attachment {
 			)
 		);
 
+		$private_uploads = bp_attachments_get_private_uploads_dir();
+		$public_uploads  = bp_attachments_get_public_uploads_dir();
+
+		$upload_dir = $public_uploads;
+		if ( $media_args['status'] && 'public' !== $media_args['status'] ) {
+			$upload_dir = $private_uploads;
+		}
+
 		if ( $media_args['parent_dir'] ) {
-			$bp_uploads = bp_attachments_uploads_dir_get();
-			$subdir     = '/' . trim( $media_args['parent_dir'], '/' );
+			$subdir = '/' . trim( $media_args['parent_dir'], '/' );
 
 			if ( 'groups' === $media_args['object'] && bp_is_active( 'groups' ) ) {
 				$group_slug = $media_args['object_slug'];
@@ -165,29 +172,27 @@ class BP_Attachments_Media extends BP_Attachment {
 
 				if ( $group_id && ( current_user_can( 'bp_moderate' ) || groups_is_user_member( bp_loggedin_user_id(), $group_id ) ) ) {
 					$subdir = str_replace(
-						$media_args['status'] . '/groups/' . $media_args['object_slug'],
-						$media_args['status'] . '/groups/' . $group_id,
+						'/groups/' . $media_args['object_slug'],
+						'/groups/' . $group_id,
 						$subdir
 					);
 				}
 			}
 
-			if ( ! is_dir( $bp_uploads['basedir'] . $subdir ) ) {
+			if ( ! is_dir( $upload_dir['basedir'] . $subdir ) ) {
 				$subdir                                  = '';
 				$upload_dir['bp_attachments_error_code'] = 16;
 			} else {
 				$upload_dir = array_merge(
 					$upload_dir,
 					array(
-						'path'  => $bp_uploads['basedir'] . $subdir,
-						'url'   => $bp_uploads['baseurl'] . $subdir,
+						'path'  => $upload_dir['basedir'] . $subdir,
+						'url'   => $upload_dir['baseurl'] . $subdir,
 						'error' => false,
 					)
 				);
 			}
 		} else {
-			$private_uploads = bp_attachments_get_private_uploads_dir();
-			$public_uploads  = bp_attachments_get_public_uploads_dir();
 
 			if ( 'groups' === $media_args['object'] && bp_is_active( 'groups' ) ) {
 				$group_slug = $media_args['object_slug'];
@@ -195,8 +200,8 @@ class BP_Attachments_Media extends BP_Attachment {
 				$group      = groups_get_group( $group_id );
 
 				if ( ! $group_id || $group_id !== (int) $group->id ) {
-					$subdir                                  = '';
-					$upload_dir['bp_attachments_error_code'] = 17;
+					$subdir     = '';
+					$upload_dir = array( 'bp_attachments_error_code' => 17 );
 				} else {
 					if ( 'public' === $group->status ) {
 						$upload_dir = $public_uploads;
@@ -229,14 +234,9 @@ class BP_Attachments_Media extends BP_Attachment {
 				}
 
 				if ( ! $user_id ) {
-					$subdir                                  = '';
-					$upload_dir['bp_attachments_error_code'] = 18;
+					$subdir     = '';
+					$upload_dir = array( 'bp_attachments_error_code' => 18 );
 				} else {
-					$upload_dir = $public_uploads;
-					if ( $media_args['status'] && 'public' !== $media_args['status'] ) {
-						$upload_dir = $private_uploads;
-					}
-
 					$subdir     = '/members/' . $user_id;
 					$upload_dir = array_merge(
 						$upload_dir,

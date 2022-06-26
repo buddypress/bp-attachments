@@ -159,6 +159,7 @@ export function initTree( items ) {
 				parent: 0,
 				object: item.object ? item.object : 'members',
 				readonly: item.readonly ? item.readonly : false,
+				visibility: item.visibility ? item.visibility : 'public',
 			} );
 		} );
 	}
@@ -261,7 +262,14 @@ export function * createMedium( file ) {
 	}
 
 	if ( trim( relativePath, '/' ) !== status + '/' + object + '/' + item ) {
-		formData.append( 'parent_dir', relativePath );
+		let uploadRelativePath = relativePath;
+
+		// Private uploads are stored out of the site's uploads dir.
+		if ( 'private' === status ) {
+			uploadRelativePath = relativePath.replace( '/private', '' );
+		}
+
+		formData.append( 'parent_dir', uploadRelativePath );
 	}
 
 	uploading = false;
@@ -371,6 +379,7 @@ export const parseResponseMedia = async ( response, relativePath, parent = '' ) 
 					parent: item.parent,
 					object: item.object ? item.object : 'members',
 					readonly: item.readonly ? item.readonly : false,
+					visibility: item.visibility ? item.visibility : 'public',
 				} );
 			}
 		} );

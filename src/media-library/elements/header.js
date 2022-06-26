@@ -68,7 +68,7 @@ const MediaLibraryHeader = ( { settings } ) => {
 		}
 	];
 
-	if ( allowedMediaTypes ) {
+	if ( allowedMediaTypes && 'private' !== currentDirectoryObject.visibility ) {
 		Object.keys( allowedMediaTypes ).forEach( ( directoryType ) => {
 			if ( 'image' === directoryType ) {
 				dirOptions.push(
