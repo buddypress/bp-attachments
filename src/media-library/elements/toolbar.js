@@ -3,7 +3,6 @@
  */
 const {
 	find,
-	reverse,
 } = lodash;
 
 /**
@@ -87,15 +86,25 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 			args.parent = directoryItem.id;
 
 			if ( directoryItem.parent && directoryItem.object ) {
-				let chunks = reverse(
-					getDirectoryAncestors(
-						flatTree,
-						directoryItem.parent
-					).map( ( parent ) => parent.slug )
-				);
+				let chunks = getDirectoryAncestors(
+					flatTree,
+					directoryItem.parent
+				).map( ( parent ) => parent.slug );
 
 				if ( 'members' === directoryItem.object ) {
-					chunks.splice( 1, 0, directoryItem.object, user.id );
+					/**
+					 * Why do we have this member chunk?
+					 *
+					 * @todo find why!
+					 */
+					const memberIndex = chunks.indexOf( 'member' );
+					if ( -1 !== memberIndex ) {
+						chunks.splice( memberIndex, 1 );
+					}
+
+					if ( chunks.length ) {
+						chunks.splice( 1, 0, directoryItem.object, user.id );
+					}
 				}
 
 				/**
