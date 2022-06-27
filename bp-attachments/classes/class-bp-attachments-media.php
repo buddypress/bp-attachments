@@ -42,6 +42,7 @@ class BP_Attachments_Media extends BP_Attachment {
 				'original_max_filesize' => $max_upload_file_size,
 				'base_dir'              => bp_attachments_uploads_dir_get( 'dir' ),
 				'required_wp_files'     => array( 'file' ),
+				'allowed_mime_types'    => bp_attachments_get_allowed_media_exts(),
 
 				// Specific errors for media uploads.
 				'upload_error_strings'  => array(
@@ -109,20 +110,6 @@ class BP_Attachments_Media extends BP_Attachment {
 		}
 
 		return new BP_Attachments_Media( $media );
-	}
-
-	/**
-	 * Gets the available media types.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param array $allowed_types Array of allowed avatar types.
-	 * @return string comma separated list of allowed avatar types.
-	 */
-	public static function get_media_types( $allowed_types = array() ) {
-		$types = array_map( 'strtoupper', $allowed_types );
-		$comma = _x( ',', 'avatar types separator', 'buddypress' );
-		return join( $comma . ' ', $types );
 	}
 
 	/**

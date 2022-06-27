@@ -209,28 +209,7 @@ function bp_attachments_register_settings() {
 			'description'       => __( 'BP Attachments settings to store the allowed media types.', 'bp-attachments' ),
 			'sanitize_callback' => 'bp_attachments_sanitize_allowed_media_types',
 			'show_in_rest'      => false,
-			'default'           => array(
-				'image'    => array(
-					'image/jpeg',
-					'image/gif',
-					'image/png',
-				),
-				'video'    => array(
-					'video/mp4',
-					'video/ogg',
-				),
-				'audio'    => array(
-					'audio/mpeg',
-					'audio/ogg',
-				),
-				'document' => array(
-					'application/pdf',
-					'application/rtf',
-				),
-				'archive'  => array(
-					'application/zip',
-				),
-			),
+			'default'           => bp_attachments_get_default_allowed_media_types(),
 		)
 	);
 

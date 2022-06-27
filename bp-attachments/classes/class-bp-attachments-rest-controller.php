@@ -51,7 +51,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 					'callback'            => array( $this, 'create_item' ),
 					'permission_callback' => array( $this, 'create_item_permissions_check' ),
 					'args'                => array(
-						'action' => array(
+						'action'    => array(
 							'description' => __( 'Whether to upload a media or create a directory.', 'bp-attachments' ),
 							'type'        => 'string',
 							'enum'        => array( 'bp_attachments_media_upload', 'bp_attachments_make_directory' ),
@@ -60,7 +60,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 								'sanitize_callback' => 'sanitize_key',
 							),
 						),
-						'object' => array(
+						'object'    => array(
 							'description' => __( 'The object the media is uploaded for.', 'bp-attachments' ),
 							'type'        => 'string',
 							'enum'        => array( 'members', 'groups' ),

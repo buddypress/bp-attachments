@@ -29,6 +29,7 @@ import { bytesToSize } from '../utils/functions';
  * File Uploader element.
  */
 const MediaLibraryUploader = ( { settings } ) => {
+	const { maxUploadFileSize, allowedExtTypes } = settings;
 	const { updateFormState, createMedium } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
 	const formState = useSelect( ( select ) => {
 		return select( BP_ATTACHMENTS_STORE_KEY ).getFormState();
@@ -80,13 +81,14 @@ const MediaLibraryUploader = ( { settings } ) => {
 				<FormFileUpload
 					onChange={ ( files ) => uploadMedia( files ) }
 					multiple={ true }
+					accept={ allowedExtTypes }
 					className="browser button button-hero"
 				>
 					{ __( 'Select Files', 'bp-attachments' ) }
 				</FormFileUpload>
 			</div>
 			<div className="upload-restrictions">
-				<p>{ sprintf( __( 'Maximum upload file size: %s.', 'bp-attachments' ), bytesToSize( settings.maxUploadFileSize ) ) }</p>
+				<p>{ sprintf( __( 'Maximum upload file size: %s.', 'bp-attachments' ), bytesToSize( maxUploadFileSize ) ) }</p>
 			</div>
 		</div>
 	);

@@ -49,6 +49,100 @@ function bp_attachments_is_update() {
 }
 
 /**
+ * Retuns the default list of allowed mime types for each media type.
+ *
+ * @since 1.0.0
+ *
+ * @return array The default list of allowed mime types for each media type.
+ */
+function bp_attachments_get_default_allowed_media_types() {
+	return array(
+		'image'    => array(
+			'image/jpeg',
+			'image/gif',
+			'image/png',
+		),
+		'video'    => array(
+			'video/mp4',
+			'video/ogg',
+		),
+		'audio'    => array(
+			'audio/mpeg',
+			'audio/ogg',
+		),
+		'document' => array(
+			'application/pdf',
+			'application/rtf',
+		),
+		'archive'  => array(
+			'application/zip',
+		),
+	);
+}
+
+/**
+ * Returns the list of allowed mime types (`image/jpeg`, `video/mp4`, etc.) for each media type (`image`, `video`, etc.).
+ *
+ * @since 1.0.0
+ *
+ * @return array The list of allowed mime types for each media type.
+ */
+function bp_attachments_get_allowed_media_types() {
+	return get_option( '_bp_attachments_allowed_media_types', bp_attachments_get_default_allowed_media_types() );
+}
+
+/**
+ * Returns the list of allowed media extensions.
+ *
+ * @since 1.0.0
+ *
+ * @return array The list of allowed media extensions.
+ */
+function bp_attachments_get_allowed_media_exts() {
+	$exts_list                = array();
+	$wp_ext_types             = wp_get_ext_types();
+	$wp_mimes                 = wp_get_mime_types();
+	$allowed_media_mime_types = bp_attachments_get_allowed_media_types();
+
+	foreach ( $allowed_media_mime_types as $mime_key => $mime_types ) {
+		if ( ! isset( $wp_ext_types[ $mime_key ] ) ) {
+			continue;
+		}
+
+		$mimes = array_intersect( $wp_mimes, $mime_types );
+		foreach ( $wp_ext_types[ $mime_key ] as $ext ) {
+			$ext_type = wp_check_filetype( 'name.' . $ext, $mimes );
+
+			if ( ! isset( $ext_type['ext'] ) || ! $ext_type['ext'] ) {
+				continue;
+			}
+
+			$exts_list[] = $ext_type['ext'];
+		}
+	}
+
+	return $exts_list;
+}
+
+/**
+ * Returns the list of allowed media mime types.
+ *
+ * @since 1.0.0
+ *
+ * @return array The list of allowed media mime types.
+ */
+function bp_attachments_get_allowed_media_mimes() {
+	$mimes_list               = array();
+	$allowed_media_mime_types = bp_attachments_get_allowed_media_types();
+
+	foreach ( $allowed_media_mime_types as $mime_types ) {
+		$mimes_list = array_merge( $mimes_list, $mime_types );
+	}
+
+	return $mimes_list;
+}
+
+/**
  * Checks whether users can upload private attachments.
  *
  * @since 1.0.0
