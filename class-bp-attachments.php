@@ -41,11 +41,38 @@ class BP_Attachments {
 	protected static $instance = null;
 
 	/**
+	 * Checks whether BuddyPress is active.
+	 *
+	 * @since 1.0.0
+	 */
+	public static function is_buddypress_active() {
+		$bp_plugin_basename   = 'buddypress/bp-loader.php';
+		$is_buddypress_active = false;
+		$sitewide_plugins     = (array) get_site_option( 'active_sitewide_plugins', array() );
+
+		if ( $sitewide_plugins ) {
+			$is_buddypress_active = isset( $sitewide_plugins[ $bp_plugin_basename ] );
+		}
+
+		if ( ! $is_buddypress_active ) {
+			$plugins              = (array) get_option( 'active_plugins', array() );
+			$is_buddypress_active = in_array( $bp_plugin_basename, $plugins, true );
+		}
+
+		return $is_buddypress_active;
+	}
+
+	/**
 	 * Return an instance of this class.
 	 *
 	 * @since 1.0.0
 	 */
 	public static function start() {
+		// This plugin is only usable with the genuine BuddyPress.
+		if ( ! self::is_buddypress_active() ) {
+			return false;
+		}
+
 		// If the single instance hasn't been set, set it now.
 		if ( null === self::$instance ) {
 			self::$instance = new self();
@@ -128,6 +155,28 @@ class BP_Attachments {
 
 		bp_update_option( 'bp-active-components', $active_components );
 	}
+
+	/**
+	 * Displays an admin notice to explain how to activate BP Attachments.
+	 *
+	 * @since 1.0.0
+	 */
+	public static function admin_notice() {
+		if ( self::is_buddypress_active() ) {
+			return false;
+		}
+
+		$bp_plugin_link = sprintf( '<a href="%s">BuddyPress</a>', esc_url( _x( 'https://wordpress.org/plugins/buddypress', 'BuddyPress WP plugin directory URL', 'bp-attachments' ) ) );
+
+		printf(
+			'<div class="notice notice-error is-dismissible"><p>%s</p></div>',
+			sprintf(
+				/* translators: 1. is the link to the BuddyPress plugin on the WordPress.org plugin directory. */
+				esc_html__( 'BP Attachments requires the %1$s plugin to be active. Please deactivate BP Attachments, activate %1$s and only then, reactivate BP Attachments.', 'bp-attachments' ),
+				$bp_plugin_link // phpcs:ignore
+			)
+		);
+	}
 }
 
 /**
@@ -146,3 +195,6 @@ add_action( 'bp_loaded', 'bp_attachments', 0 );
  */
 register_activation_hook( __FILE__, array( 'BP_Attachments', 'activate' ) );
 register_deactivation_hook( __FILE__, array( 'BP_Attachments', 'deactivate' ) );
+
+// Displays a notice to inform BP Attachments needs to be activated after BuddyPress.
+add_action( 'admin_notices', array( '\BP_Attachments', 'admin_notice' ) );
