@@ -347,6 +347,26 @@ class BP_Attachments_Media extends BP_Attachment {
 			return new WP_Error( 'unexpected_error', $destination_data['error'] );
 		}
 
+		if ( isset( $_POST['parent_dir'] ) ) { // phpcs:ignore
+			$parent_path    = explode( '/', wp_unslash( $_POST['parent_dir'] ) ); // phpcs:ignore
+			$parent_dir     = sanitize_file_name( end( $parent_path ) );
+			$parent_dir_id  = md5( $parent_dir );
+			$dirname_parent = dirname( $destination_data['path'] );
+			$medium_path    = trailingslashit( $dirname_parent ) . $parent_dir_id . '.json';
+
+			$medium = bp_attachments_get_medium( array( 'medium' => $medium_path ) );
+
+			if ( is_null( $medium ) || 'folder' !== $medium->media_type ) {
+				return new WP_Error(
+					'unsupported_directory_type',
+					__( 'Creating sub-directories into the current directory is not allowed.', 'bp-attachments' ),
+					array(
+						'status' => 403,
+					)
+				);
+			}
+		}
+
 		$path = trailingslashit( $destination_data['path'] ) . $directory_name;
 		if ( is_dir( $path ) ) {
 			return new WP_Error( 'directory_exists', __( 'There is already a directory with this name into the requested destination.', 'bp-attachments' ) );

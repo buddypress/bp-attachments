@@ -382,6 +382,8 @@ function bp_attachments_get_vignette_uri( $filename = '', $path = '' ) {
  *
  * @since 1.0.0
  *
+ * @todo this function should use `bp_attachments_get_medium()` to be sure to set all medium properties.
+ *
  * @param object $media Media Data to create the Media Item.
  * @return object       The created Media Item.
  */
@@ -517,6 +519,127 @@ function bp_attachments_list_dir_media( $dir = '' ) {
 }
 
 /**
+ * Use the medium's parent dir to set its visibility.
+ *
+ * @since 1.0.0
+ *
+ * @param string $parent_dir The absolute path of the medium’s parent directory.
+ * @return string The medium's visibility (`public` or  `private`).
+ */
+function bp_attachments_get_medium_visibility( $parent_dir = '' ) {
+	$visibility = 'public';
+
+	if ( ! is_dir( $parent_dir ) ) {
+		return $visibility;
+	}
+
+	if ( bp_attachments_can_do_private_uploads() ) {
+		$private_basedir = bp_attachments_get_private_root_dir();
+
+		if ( 0 === strpos( $parent_dir, $private_basedir ) ) {
+			$visibility = 'private';
+		}
+	}
+
+	return $visibility;
+}
+
+/**
+ * Get a Medium.
+ *
+ * @since 1.0.0
+ *
+ * @param array $args {
+ *     Associative array of arguments list used to get a medium.
+ *
+ *     @type string|SplFileInfo $medium     The absolute path or SplFileInfo object for the medium. Required.
+ *     @type string             $dir        The absolute path of the medium’s parent directory.
+ *     @type string             $visibility The medium visibility, it can be `public` or `private`. Defaults to `public`.
+ *     @type string             $object     The BuddyPress object the medium relates to. Defaults to `members`.
+ * }
+ * @return object The medium.
+ */
+function bp_attachments_get_medium( $args = array() ) {
+	$r = bp_parse_args(
+		$args,
+		array(
+			'medium'     => '',
+			'dir'        => '',
+			'visibility' => 'public',
+			'object'     => 'members',
+		)
+	);
+
+	$medium = $r['medium'];
+	if ( ! $medium ) {
+		return null;
+	}
+
+	$is_spl_file_info = $medium instanceof SplFileInfo;
+	if ( ! $is_spl_file_info && ! file_exists( $medium ) ) {
+		return null;
+	}
+
+	if ( ! $is_spl_file_info ) {
+		$medium_info = new SplFileInfo( $medium );
+	} else {
+		$medium_info = $medium;
+	}
+
+	if ( ! $r['dir'] ) {
+		$dir = dirname( $medium_info );
+	} else {
+		$dir = $r['dir'];
+	}
+
+	if ( ! $r['visibility'] ) {
+		$visibility = bp_attachments_get_medium_visibility( $dir );
+	} else {
+		$visibility = $r['visibility'];
+	}
+
+	$json_data             = file_get_contents( $medium_info ); // phpcs:ignore
+	$medium                = json_decode( $json_data );
+	$medium->last_modified = $medium_info->getMTime();
+	$medium->extension     = preg_replace( '/^.+?\.([^.]+)$/', '$1', $medium->name );
+
+	if ( ! isset( $medium->media_type ) || ! $medium->media_type ) {
+		$medium->media_type = wp_ext2type( $medium->extension );
+	}
+
+	// Add the icon.
+	if ( 'inode/directory' !== $medium->mime_type ) {
+		$medium->icon = wp_mime_type_icon( $medium->media_type );
+	} else {
+		$medium->icon     = bp_attachments_get_directory_icon( $medium->media_type );
+		$medium->readonly = false;
+	}
+
+	// Vignette & orientation are only used for images.
+	$medium->vignette    = '';
+	$medium->orientation = null;
+
+	if ( 'image' === $medium->media_type ) {
+		$medium->vignette       = bp_attachments_get_vignette_uri( $medium->name, $dir );
+		list( $width, $height ) = getimagesize( trailingslashit( $dir ) . $medium->name );
+
+		if ( $width > $height ) {
+			$medium->orientation = 'landscape';
+		} else {
+			$medium->orientation = 'portrait';
+		}
+	}
+
+	// Set the object type of the media.
+	$medium->object = $r['object'];
+
+	// Set the visibility of the media.
+	$medium->visibility = $visibility;
+
+	return $medium;
+}
+
+/**
  * List all media items (including sub-directories) of a directory.
  *
  * @since 1.0.0
@@ -532,63 +655,24 @@ function bp_attachments_list_media_in_directory( $dir = '', $object = 'members' 
 		return $list;
 	}
 
-	$visibility = 'public';
-	if ( bp_attachments_can_do_private_uploads() ) {
-		$private_basedir = bp_attachments_get_private_root_dir();
-
-		if ( 0 === strpos( $dir, $private_basedir ) ) {
-			$visibility = 'private';
-		}
-	}
-
-	$iterator = new FilesystemIterator( $dir, FilesystemIterator::SKIP_DOTS );
+	$visibility = bp_attachments_get_medium_visibility( $dir );
+	$iterator   = new FilesystemIterator( $dir, FilesystemIterator::SKIP_DOTS );
 
 	/**
 	 * Some of the properties should have been created during the upload/make dir process.
 	 *
 	 * @todo Add checks to avoid running some functions when not necessary.
 	 */
-	foreach ( new BP_Attachments_Filter_Iterator( $iterator ) as $media ) {
-		$json_data                 = file_get_contents( $media ); // phpcs:ignore
-		$media_data                = json_decode( $json_data );
-		$media_data->last_modified = $media->getMTime();
-		$media_data->extension     = preg_replace( '/^.+?\.([^.]+)$/', '$1', $media_data->name );
-
-		if ( ! isset( $media_data->media_type ) || ! $media_data->media_type ) {
-			$media_data->media_type = wp_ext2type( $media_data->extension );
-		}
-
-		// Add the icon.
-		if ( 'inode/directory' !== $media_data->mime_type ) {
-			$media_data->icon = wp_mime_type_icon( $media_data->media_type );
-		} else {
-			$media_data->icon     = bp_attachments_get_directory_icon( $media_data->media_type );
-			$media_data->readonly = false;
-		}
-
-		// Vignette & orientation are only used for images.
-		$media_data->vignette    = '';
-		$media_data->orientation = null;
-
-		if ( 'image' === $media_data->media_type ) {
-			$media_data->vignette   = bp_attachments_get_vignette_uri( $media_data->name, $dir );
-			list( $width, $height ) = getimagesize( trailingslashit( $dir ) . $media_data->name );
-
-			if ( $width > $height ) {
-				$media_data->orientation = 'landscape';
-			} else {
-				$media_data->orientation = 'portrait';
-			}
-		}
-
-		// Set the object type of the media.
-		$media_data->object = $object;
-
-		// Set the visibility of the media.
-		$media_data->visibility = $visibility;
-
-		// Merge all JSON data of the directory.
-		$list[] = $media_data;
+	foreach ( new BP_Attachments_Filter_Iterator( $iterator ) as $medium ) {
+		// Merge all medium into the directory.
+		$list[] = bp_attachments_get_medium(
+			array(
+				'medium'     => $medium,
+				'dir'        => $dir,
+				'visibility' => $visibility,
+				'object'     => $object,
+			)
+		);
 	}
 
 	return $list;

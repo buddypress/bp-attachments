@@ -160,6 +160,7 @@ export function initTree( items ) {
 				object: item.object ? item.object : 'members',
 				readonly: item.readonly ? item.readonly : false,
 				visibility: item.visibility ? item.visibility : 'public',
+				type: item.media_type ? item.media_type : 'folder',
 			} );
 		} );
 	}
@@ -380,6 +381,7 @@ export const parseResponseMedia = async ( response, relativePath, parent = '' ) 
 					object: item.object ? item.object : 'members',
 					readonly: item.readonly ? item.readonly : false,
 					visibility: item.visibility ? item.visibility : 'public',
+					type: item.media_type ? item.media_type : 'folder',
 				} );
 			}
 		} );

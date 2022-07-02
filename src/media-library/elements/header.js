@@ -61,38 +61,43 @@ const MediaLibraryHeader = ( { settings } ) => {
 		);
 	};
 
-	let dirOptions = [
-		{
-			id: 'folder',
-			text: __( 'Add new directory', 'bp-attachments' ),
-		}
-	];
+	let dirOptions = [];
+	const directoryTypes = [ 'album', 'audio_playlist', 'video_playlist' ];
 
-	if ( allowedMediaTypes && 'private' !== currentDirectoryObject.visibility ) {
-		Object.keys( allowedMediaTypes ).forEach( ( directoryType ) => {
-			if ( 'image' === directoryType ) {
-				dirOptions.push(
-					{
-						id: 'album',
-						text: __( 'Add new photo album', 'bp-attachments' ),
-					}
-				);
-			} else if ( 'audio' === directoryType ) {
-				dirOptions.push(
-					{
-						id: 'audio_playlist',
-						text: __( 'Add new audio playlist', 'bp-attachments' ),
-					}
-				);
-			} else if ( 'video' === directoryType ) {
-				dirOptions.push(
-					{
-						id: 'video_playlist',
-						text: __( 'Add new video playlist', 'bp-attachments' ),
-					}
-				);
+	if ( ! currentDirectoryObject.type || -1 === directoryTypes.indexOf( currentDirectoryObject.type ) ) {
+		dirOptions = [
+			{
+				id: 'folder',
+				text: __( 'Add new directory', 'bp-attachments' ),
 			}
-		} );
+		];
+
+		if ( allowedMediaTypes && 'private' !== currentDirectoryObject.visibility ) {
+			Object.keys( allowedMediaTypes ).forEach( ( directoryType ) => {
+				if ( 'image' === directoryType ) {
+					dirOptions.push(
+						{
+							id: 'album',
+							text: __( 'Add new photo album', 'bp-attachments' ),
+						}
+					);
+				} else if ( 'audio' === directoryType ) {
+					dirOptions.push(
+						{
+							id: 'audio_playlist',
+							text: __( 'Add new audio playlist', 'bp-attachments' ),
+						}
+					);
+				} else if ( 'video' === directoryType ) {
+					dirOptions.push(
+						{
+							id: 'video_playlist',
+							text: __( 'Add new video playlist', 'bp-attachments' ),
+						}
+					);
+				}
+			} );
+		}
 	}
 
 	const dirList = dirOptions.map( ( dirOption ) => {
