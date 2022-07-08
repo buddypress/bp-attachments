@@ -56,8 +56,7 @@ class BP_Attachments_Media extends BP_Attachment {
 					14 => __( 'A file with this name already exists but the data describing this existing file are missing.', 'bp-attachments' ),
 					15 => __( 'Unexpected error, please contact the administrator of the site.', 'bp-attachments' ),
 					16 => __( 'The destination directory is missing.', 'bp-attachments' ),
-					17 => __( 'Unknown group. Please try again', 'bp-attachments' ),
-					18 => __( 'Unknown user. Please try again', 'bp-attachments' ),
+					17 => __( 'Unknown user, item or destination directory. Please try again', 'bp-attachments' ),
 				),
 			)
 		);
@@ -143,27 +142,39 @@ class BP_Attachments_Media extends BP_Attachment {
 
 		$private_uploads = bp_attachments_get_private_uploads_dir();
 		$public_uploads  = bp_attachments_get_public_uploads_dir();
+		$subdir          = '';
 
 		$upload_dir = $public_uploads;
 		if ( $media_args['status'] && 'public' !== $media_args['status'] ) {
 			$upload_dir = $private_uploads;
 		}
 
-		if ( $media_args['parent_dir'] ) {
+		if ( ! isset( $upload_dir['subdir'] ) ) {
+			$upload_dir['subdir'] = '';
+		}
+
+		if ( 'members' !== $media_args['object'] ) {
+			/**
+			 * Filter here to set the uploads directory for the requested object.
+			 *
+			 * @since 1.0.0
+			 *
+			 * @param array $upload_dir {@see `wp_upload_dir()`}.
+			 * @param array $media_args {
+			 *     An array of arguments.
+			 *
+			 *     @type string     $status      Whether the media being created is public or private.
+			 *                                   Default 'public'.
+			 *     @type string     $object      The name of the object the media being created is attached to.
+			 *                                   Default 'members'. Possible values are 'members', 'groups' or any
+			 *                                   custom BuddyPress component's name.
+			 *     @type string|int $object_item The unique identifier for the object's item. It can be the object's ID or slug.
+			 *     @type string     $parent_dir  The parent directory the media being created is attached to.
+			 * }
+			 */
+			return apply_filters( 'bp_attachments_media_uploads_dir', $upload_dir, $media_args );
+		} elseif ( $media_args['parent_dir'] ) {
 			$subdir = '/' . trim( $media_args['parent_dir'], '/' );
-
-			if ( 'groups' === $media_args['object'] && bp_is_active( 'groups' ) ) {
-				$group_slug = $media_args['object_slug'];
-				$group_id   = (int) BP_Groups_Group::get_id_from_slug( $group_slug );
-
-				if ( $group_id && ( current_user_can( 'bp_moderate' ) || groups_is_user_member( bp_loggedin_user_id(), $group_id ) ) ) {
-					$subdir = str_replace(
-						'/groups/' . $media_args['object_slug'],
-						'/groups/' . $group_id,
-						$subdir
-					);
-				}
-			}
 
 			if ( ! is_dir( $upload_dir['basedir'] . $subdir ) ) {
 				$subdir                                  = '';
@@ -179,67 +190,37 @@ class BP_Attachments_Media extends BP_Attachment {
 				);
 			}
 		} else {
+			$user_id = 0;
+			if ( ctype_digit( $media_args['object_item'] ) || is_int( $media_args['object_item'] ) ) {
+				$user_id = (int) $media_args['object_item'];
+			}
 
-			if ( 'groups' === $media_args['object'] && bp_is_active( 'groups' ) ) {
-				$group_slug = $media_args['object_item'];
-				$group_id   = (int) BP_Groups_Group::get_id_from_slug( $group_slug );
-				$group      = groups_get_group( $group_id );
-
-				if ( ! $group_id || $group_id !== (int) $group->id ) {
-					$subdir     = '';
-					$upload_dir = array( 'bp_attachments_error_code' => 17 );
-				} else {
-					if ( 'public' === $group->status ) {
-						$upload_dir = $public_uploads;
-					} else {
-						$upload_dir = $private_uploads;
-					}
-
-					$subdir     = '/groups/' . $group->id;
-					$upload_dir = array_merge(
-						$upload_dir,
-						array(
-							'path' => $upload_dir['path'] . $subdir,
-							'url'  => $upload_dir['url'] . $subdir,
-						)
-					);
-				}
+			if ( ! $user_id ) {
+				$user_id = (int) bp_loggedin_user_id();
 			} else {
-				$user_id = 0;
-				if ( ctype_digit( $media_args['object_item'] ) || is_int( $media_args['object_item'] ) ) {
-					$user_id = (int) $media_args['object_item'];
+				$user = get_user_by( 'id', $user_id );
+				if ( ! $user ) {
+					$user_id = 0;
 				}
+			}
 
-				if ( ! $user_id ) {
-					$user_id = (int) bp_loggedin_user_id();
-				} else {
-					$user = get_user_by( 'id', $user_id );
-					if ( ! $user ) {
-						$user_id = 0;
-					}
-				}
-
-				if ( ! $user_id ) {
-					$subdir     = '';
-					$upload_dir = array( 'bp_attachments_error_code' => 18 );
-				} else {
-					$subdir     = '/members/' . $user_id;
-					$upload_dir = array_merge(
-						$upload_dir,
-						array(
-							'path' => $upload_dir['path'] . $subdir,
-							'url'  => $upload_dir['url'] . $subdir,
-						)
-					);
-				}
+			if ( $user_id ) {
+				$subdir     = '/members/' . $user_id;
+				$upload_dir = array_merge(
+					$upload_dir,
+					array(
+						'path' => $upload_dir['path'] . $subdir,
+						'url'  => $upload_dir['url'] . $subdir,
+					)
+				);
+			} else {
+				$upload_dir['bp_attachments_error_code'] = 17;
 			}
 		}
 
-		if ( ! isset( $upload_dir['subdir'] ) ) {
-			$upload_dir['subdir'] = '';
+		if ( $subdir ) {
+			$upload_dir['subdir'] .= $subdir;
 		}
-
-		$upload_dir['subdir'] .= $subdir;
 
 		return $upload_dir;
 	}

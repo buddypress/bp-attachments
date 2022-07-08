@@ -394,7 +394,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 				 * @param string     $object          The requested object type eg: `groups`, `members`...
 				 * @param string|int $object_item     The slug or ID of the object (in case of a group it's a slug).
 				 */
-				$can_create_dir = apply_filters( 'bp_attachments_rest_can_upload_to_object', $can_create_dir, $dir_data['object'], $dir_data['object_item'] );
+				$can_create_dir = apply_filters( 'bp_attachments_rest_can_create_dir_to_object', $can_create_dir, $dir_data['object'], $dir_data['object_item'] );
 			}
 
 			if ( ! $can_create_dir ) {
