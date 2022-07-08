@@ -322,10 +322,11 @@ class BP_Attachments_Media extends BP_Attachment {
 	 *
 	 * @param string $directory_name The name of the directory.
 	 * @param string $directory_type The type of the directory.
+	 * @param string $parent         The potentiel parent directory.
 	 * @return WP_Error|array        A WP Error object in case of failure.
 	 *                               An array with created data otherwise.
 	 */
-	public function make_dir( $directory_name = '', $directory_type = '' ) {
+	public function make_dir( $directory_name = '', $directory_type = '', $parent = '' ) {
 		if ( ! $directory_name || ! in_array( $directory_type, array( 'folder', 'album', 'audio_playlist', 'video_playlist' ), true ) ) {
 			return new WP_Error( 'missing_parameter', __( 'The name of your directory or its type are missing or not supported.', 'bp-attachments' ) );
 		}
@@ -347,8 +348,8 @@ class BP_Attachments_Media extends BP_Attachment {
 			return new WP_Error( 'unexpected_error', $destination_data['error'] );
 		}
 
-		if ( isset( $_POST['parent_dir'] ) ) { // phpcs:ignore
-			$parent_path    = explode( '/', wp_unslash( $_POST['parent_dir'] ) ); // phpcs:ignore
+		if ( $parent ) {
+			$parent_path    = explode( '/', $parent );
 			$parent_dir     = sanitize_file_name( end( $parent_path ) );
 			$parent_dir_id  = md5( $parent_dir );
 			$dirname_parent = dirname( $destination_data['path'] );

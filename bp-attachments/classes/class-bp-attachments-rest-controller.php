@@ -368,6 +368,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 				array(
 					'directory_name' => '',
 					'directory_type' => 'folder',
+					'parent_dir'     => '',
 				)
 			);
 
@@ -383,7 +384,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 
 			$bp_dir_maker   = new BP_Attachments_Media();
 			$directory_name = sanitize_title( $dir_data['directory_name'] );
-			$made_dir       = $bp_dir_maker->make_dir( $directory_name, $dir_data['directory_type'] );
+			$made_dir       = $bp_dir_maker->make_dir( $directory_name, $dir_data['directory_type'], $dir_data['parent_dir'] );
 
 			if ( is_wp_error( $made_dir ) ) {
 				return new WP_Error(
