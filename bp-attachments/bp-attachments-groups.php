@@ -15,6 +15,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Get translated BP Attachments groups slug.
+ *
+ * @since 1.0.0
+ *
+ * @param array $slugs An assiociative array keyed with component names where the value is the object slug.
+ * @return array The available attachments objects slugs.
+ */
+function bp_attachments_get_item_groups_slug( $slugs = array() ) {
+	return array_merge(
+		$slugs,
+		array(
+			'groups' => sanitize_title( _x( 'groups', 'group object slug', 'bp-attachments' ) ),
+		)
+	);
+}
+add_filter( 'bp_attachments_get_item_object_slugs', 'bp_attachments_get_item_groups_slug', 10, 1 );
+
+/**
  * Checks if a user can create a media attached to the requested Group.
  *
  * @since 1.0.0

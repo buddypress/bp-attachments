@@ -264,7 +264,7 @@ class BP_Attachments_Component extends BP_Component {
 			$bp = buddypress();
 
 			if ( bp_is_my_profile() ) {
-				$bp->bp_options_title = __( 'My Sites', 'buddypress' );
+				$bp->bp_options_title = __( 'My Media', 'bp-attachments' );
 
 				/**
 				 * If we are not viewing the logged in user, set up the current
@@ -498,7 +498,7 @@ class BP_Attachments_Component extends BP_Component {
 		 */
 		if ( $parse_array['bp_attachments_item_action'] ) {
 			$status = array_search( $parse_array['bp_attachments_status'], bp_attachments_get_item_stati(), true );
-			$object = array_search( $parse_array['bp_attachments_object'], bp_attachments_get_item_objects(), true );
+			$object = array_search( $parse_array['bp_attachments_object'], bp_attachments_get_item_object_slugs(), true );
 			$action = array_search( $parse_array['bp_attachments_item_action'], bp_attachments_get_item_actions(), true );
 
 			if ( $action && $status && $object ) {

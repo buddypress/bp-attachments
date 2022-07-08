@@ -330,16 +330,25 @@ function bp_attachments_get_item_stati() {
 }
 
 /**
- * Get translated BP Attachment objects.
+ * Get translated BP Attachments objects slugs.
  *
  * @since 1.0.0
  *
- * @return array The available attachment objects.
+ * @return array The available attachments objects slugs.
  */
-function bp_attachments_get_item_objects() {
-	return array(
-		'members' => sanitize_title( _x( 'members', 'member object slug', 'bp-attachments' ) ),
-		'groups'  => sanitize_title( _x( 'groups', 'group object slug', 'bp-attachments' ) ),
+function bp_attachments_get_item_object_slugs() {
+	/**
+	 * Filter here to add custom objects slugs.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $value An assiociative array keyed with component names where the value is the object slug.
+	 */
+	return apply_filters(
+		'bp_attachments_get_item_object_slugs',
+		array(
+			'members' => sanitize_title( _x( 'members', 'member object slug', 'bp-attachments' ) ),
+		)
 	);
 }
 
