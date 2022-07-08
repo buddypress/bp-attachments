@@ -274,7 +274,7 @@ export const getDestinationData = ( state ) => {
 
 	return {
 		status: destinationData[0] ? destinationData[0] : 'public',
-		object: 'groups' === destinationData[1] ? 'groups' : 'members',
+		object: destinationData[1] ? destinationData[1] : 'members',
 		item: destinationData[2] ? destinationData[2] : '',
 	}
 };

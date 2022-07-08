@@ -136,8 +136,7 @@ class BP_Attachments_Media extends BP_Attachment {
 			array(
 				'status'      => 'public',
 				'object'      => 'members',
-				'object_id'   => 0,
-				'object_slug' => '',
+				'object_item' => '',
 				'parent_dir'  => '',
 			)
 		);
@@ -182,7 +181,7 @@ class BP_Attachments_Media extends BP_Attachment {
 		} else {
 
 			if ( 'groups' === $media_args['object'] && bp_is_active( 'groups' ) ) {
-				$group_slug = $media_args['object_slug'];
+				$group_slug = $media_args['object_item'];
 				$group_id   = (int) BP_Groups_Group::get_id_from_slug( $group_slug );
 				$group      = groups_get_group( $group_id );
 
@@ -207,8 +206,8 @@ class BP_Attachments_Media extends BP_Attachment {
 				}
 			} else {
 				$user_id = 0;
-				if ( ctype_digit( $media_args['object_id'] ) || is_int( $media_args['object_id'] ) ) {
-					$user_id = (int) $media_args['object_id'];
+				if ( ctype_digit( $media_args['object_item'] ) || is_int( $media_args['object_item'] ) ) {
+					$user_id = (int) $media_args['object_item'];
 				}
 
 				if ( ! $user_id ) {

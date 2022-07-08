@@ -316,29 +316,36 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 			if ( empty( $files ) ) {
 				return new WP_Error(
 					'bp_rest_upload_no_data',
-					__( 'No data supplied.', 'bp-attachments' ),
+					__( 'No files were provided.', 'bp-attachments' ),
 					array(
 						'status' => 400,
 					)
 				);
 			}
 
-			$object          = $request->get_param( 'object' );
-			$object_id       = $request->get_param( 'object_id' );
-			$can_upload      = false;
-			$forbidden_error = __( 'You cannot access to this user uploads.', 'bp-attachments' );
+			$object      = $request->get_param( 'object' );
+			$object_item = $request->get_param( 'object_item' );
+			$can_upload  = false;
 
-			if ( $object_id && 'members' === $object ) {
-				$can_upload = ( (int) bp_loggedin_user_id() === (int) $object_id ) || current_user_can( 'bp_moderate' );
-			} elseif ( 'groups' === $object ) {
-				// @todo check the user is a member of the group.
-				$forbidden_error = __( 'You cannot access to this group uploads.', 'bp-attachments' );
+			if ( $object_item && 'members' === $object ) {
+				$can_upload = ( (int) bp_loggedin_user_id() === (int) $object_item ) || current_user_can( 'bp_moderate' );
+			} else {
+				/**
+				 * Use this filter to control who can upload to a requested object.
+				 *
+				 * @since 1.0.0
+				 *
+				 * @param bool       $can_upload  True if the user can upload to the requested object. False otherwise.
+				 * @param string     $object      The requested object type eg: `groups`, `members`...
+				 * @param string|int $object_item The slug or ID of the object (in case of a group it's a slug).
+				 */
+				$can_upload = apply_filters( 'bp_attachments_rest_can_upload_to_object', $can_upload, $object, $object_item );
 			}
 
 			if ( ! $can_upload ) {
 				return new WP_Error(
 					'rest_upload_forbidden',
-					$forbidden_error,
+					__( 'You cannot upload files into the required destination', 'bp-attachments' ),
 					array(
 						'status' => 403,
 					)
@@ -363,19 +370,47 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 
 			// Make a new directory.
 		} else {
-			$dir_data = wp_parse_args(
+			$can_create_dir = false;
+			$dir_data       = wp_parse_args(
 				array_map( 'wp_unslash', $request->get_params() ),
 				array(
 					'directory_name' => '',
 					'directory_type' => 'folder',
 					'parent_dir'     => '',
+					'object'         => '',
+					'object_item'    => '',
 				)
 			);
 
+			if ( $dir_data['object_item'] && 'members' === $dir_data['object'] ) {
+				$can_create_dir = ( (int) bp_loggedin_user_id() === (int) $dir_data['object_item'] ) || current_user_can( 'bp_moderate' );
+			} else {
+				/**
+				 * Use this filter to control who can create a directory for a requested object.
+				 *
+				 * @since 1.0.0
+				 *
+				 * @param bool       $can_create_dir  True if the user can create a directory for the requested object. False otherwise.
+				 * @param string     $object          The requested object type eg: `groups`, `members`...
+				 * @param string|int $object_item     The slug or ID of the object (in case of a group it's a slug).
+				 */
+				$can_create_dir = apply_filters( 'bp_attachments_rest_can_upload_to_object', $can_create_dir, $dir_data['object'], $dir_data['object_item'] );
+			}
+
+			if ( ! $can_create_dir ) {
+				return new WP_Error(
+					'rest_create_dir_forbidden',
+					__( 'You cannot create directories into the required destination', 'bp-attachments' ),
+					array(
+						'status' => 403,
+					)
+				);
+			}
+
 			if ( ! $dir_data['directory_name'] || ! $dir_data['directory_type'] ) {
 				return new WP_Error(
-					'bp_rest_upload_no_data',
-					__( 'No data supplied.', 'bp-attachments' ),
+					'bp_rest_create_dir_no_data',
+					__( 'Some information are missing to be able to create the directory.', 'bp-attachments' ),
 					array(
 						'status' => 400,
 					)

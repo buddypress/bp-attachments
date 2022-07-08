@@ -250,13 +250,8 @@ export function * createMedium( file ) {
 	const formData = new FormData();
 	formData.append( 'file', file );
 	formData.append( 'action', 'bp_attachments_media_upload' );
-
-	if ( 'groups' === object ) {
-		formData.append( 'object', object );
-		formData.append( 'object_slug', item );
-	} else {
-		formData.append( 'object_id', item );
-	}
+	formData.append( 'object', object );
+	formData.append( 'object_item', item );
 
 	if ( status ) {
 		formData.append( 'status', status );
@@ -322,20 +317,22 @@ export function * createDirectory( directory ) {
 	formData.append( 'directory_name', file.name );
 	formData.append( 'directory_type', file.type );
 	formData.append( 'action', 'bp_attachments_make_directory' );
-
-	if ( 'groups' === object ) {
-		formData.append( 'object', object );
-		formData.append( 'object_slug', item );
-	} else {
-		formData.append( 'object_id', item );
-	}
+	formData.append( 'object', object );
+	formData.append( 'object_item', item );
 
 	if ( status ) {
 		formData.append( 'status', status );
 	}
 
 	if ( trim( relativePath, '/' ) !== status + '/' + object + '/' + item ) {
-		formData.append( 'parent_dir', relativePath );
+		let createDirRelativePath = relativePath;
+
+		// Private uploads are stored out of the site's uploads dir.
+		if ( 'private' === status ) {
+			createDirRelativePath = relativePath.replace( '/private', '' );
+		}
+
+		formData.append( 'parent_dir', createDirRelativePath );
 	}
 
 	uploading = false;
