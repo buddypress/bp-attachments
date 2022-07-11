@@ -654,7 +654,8 @@ function bp_attachments_get_medium( $args = array() ) {
  * @since 1.0.0
  *
  * @param string $dir    Absolute path to the directory to list media items for.
- * @param string $object The type of object being listed. Possible values are `members` or `groups`.
+ * @param string $object The type of object being listed.
+ *                       Default `members`.
  * @return array         The list of media items found.
  */
 function bp_attachments_list_media_in_directory( $dir = '', $object = 'members' ) {
@@ -781,63 +782,31 @@ function bp_attachments_list_member_root_objects( $user_id = 0, $object_dir = ''
 
 	$user_id = (int) $user_id;
 
-	if ( ! bp_is_active( 'groups' ) || in_array( $object_dir, array( 'member', 'groups' ), true ) ) {
-		// Get the directory types for the member.
-		if ( 'groups' !== $object_dir ) {
-			$list = bp_attachments_get_directory_types( $user_id );
-
-			// Get the groups the user is a member of.
-		} else {
-			$user_groups = groups_get_groups(
-				array(
-					'user_id'     => $user_id,
-					'show_hidden' => true,
-					'per_page'    => false,
-				)
-			);
-
-			foreach ( $user_groups['groups'] as $group ) {
-				$list[ 'group' . $group->id ] = (object) array_merge(
-					array(
-						'id'            => 'group-' . $group->id,
-						'title'         => $group->name,
-						'media_type'    => 'avatar',
-						'object'        => 'groups',
-						'name'          => $group->slug,
-						'last_modified' => $group->date_created,
-						'description'   => __( 'This directory contains the media directories attached to this group', 'bp-attachments' ),
-						'icon'          => bp_core_fetch_avatar(
-							array(
-								'item_id' => $group->id,
-								'object'  => 'group',
-								'type'    => 'full',
-								'html'    => false,
-							)
-						),
-						'readonly'      => false,
-						'visibility'    => 'public' === $group->status ? 'public' : 'private',
-					),
-					$common_props
-				);
-			}
-		}
-	} else {
-		$list['groups'] = (object) array_merge(
-			array(
-				'id'            => 'groups-' . $user_id,
-				'title'         => __( 'My Groups', 'bp-attachments' ),
-				'media_type'    => 'groups',
-				'object'        => 'groups',
-				'name'          => 'groups',
-				'last_modified' => $current_time,
-				'description'   => __( 'This directory contains the media directories of the groups you are a member of.', 'bp-attachments' ),
-				'icon'          => bp_attachments_get_directory_icon( 'groups' ),
-				'readonly'      => true,
-				'visibility'    => 'public',
-			),
-			$common_props
+	if ( 'member' !== $object_dir ) {
+		/**
+		 * Use this filter to define the object's directories to display.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param array  $list         An empty array. If the `$object_dir` is an empty string, return a single directory
+		 *                             to let the member access to their component items.
+		 * @param string $object_dir   An empty string or the ID you chose to list the member's component items.
+		 * @param array  $common_props Common properties for the directories.
+		 * @param int    $user_id      The user ID to return the list for.
+		 */
+		$list = apply_filters(
+			'bp_attachments_list_member_root_objects',
+			$list,
+			$object_dir,
+			$common_props,
+			$user_id
 		);
+	}
 
+	if ( ! $list || 'member' === $object_dir ) {
+		$list = bp_attachments_get_directory_types( $user_id );
+	} elseif ( ! $object_dir ) {
+		// Fake a directory to let the member access to their media.
 		$list['member'] = (object) array_merge(
 			array(
 				'id'            => 'member-' . $user_id,

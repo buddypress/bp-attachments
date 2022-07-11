@@ -128,3 +128,122 @@ function bp_attachments_groups_media_uploads_dir( $upload_dir, $media_args = arr
 	return $upload_dir;
 }
 add_filter( 'bp_attachments_media_uploads_dir', 'bp_attachments_groups_media_uploads_dir', 10, 2 );
+
+/**
+ * Include groups directories to the user's root directories.
+ *
+ * @since 1.0.0
+ *
+ * @param array  $list         An empty array.
+ * @param string $object_dir   An empty string or the `groups` ID to list the member's Groups Media.
+ * @param array  $common_props Common properties for the directories.
+ * @param int    $user_id      The user ID to return the list for.
+ * @return array The user's groups directories.
+ */
+function bp_attachments_groups_list_member_root_objects( $list = array(), $object_dir = '', $common_props = array(), $user_id = 0 ) {
+	// Fake a directory for each group the user is a member of.
+	if ( 'groups' === $object_dir ) {
+		$user_groups = groups_get_groups(
+			array(
+				'user_id'     => $user_id,
+				'show_hidden' => true,
+				'per_page'    => false,
+			)
+		);
+
+		foreach ( $user_groups['groups'] as $group ) {
+			$list[ 'group' . $group->id ] = (object) array_merge(
+				array(
+					'id'            => 'group-' . $group->id,
+					'title'         => $group->name,
+					'media_type'    => 'avatar',
+					'object'        => 'groups',
+					'name'          => $group->slug,
+					'last_modified' => $group->date_created,
+					'description'   => __( 'This directory contains the media directories attached to this group', 'bp-attachments' ),
+					'icon'          => bp_core_fetch_avatar(
+						array(
+							'item_id' => $group->id,
+							'object'  => 'group',
+							'type'    => 'full',
+							'html'    => false,
+						)
+					),
+					'readonly'      => false,
+					'visibility'    => 'public' === $group->status ? 'public' : 'private',
+				),
+				$common_props
+			);
+		}
+
+		// Return a single directory to let the member access to their Groups Media.
+	} else {
+		$list['groups'] = (object) array_merge(
+			array(
+				'id'            => 'groups-' . $user_id,
+				'title'         => __( 'My Groups Media', 'bp-attachments' ),
+				'media_type'    => 'groups',
+				'object'        => 'groups',
+				'name'          => 'groups',
+				'last_modified' => bp_core_current_time( true, 'timestamp' ),
+				'description'   => __( 'This directory contains the media directories of the groups you are a member of.', 'bp-attachments' ),
+				'icon'          => bp_attachments_get_directory_icon( 'groups' ),
+				'readonly'      => true,
+				'visibility'    => 'public',
+			),
+			$common_props
+		);
+	}
+
+	return $list;
+}
+add_filter( 'bp_attachments_list_member_root_objects', 'bp_attachments_groups_list_member_root_objects', 10, 4 );
+
+/**
+ * Setup a group’s directory visibility.
+ *
+ * @since 1.0.0
+ *
+ * @param array  $properties {
+ *     An array of arguments.
+ *
+ *     @type string $visibility    The directory visibility, it can be `public` or `private`. Defaults to `public`.
+ *     @type int    $object_id     The component's single item ID.
+ *     @type string $relative_path Relative path from the `$object` slug to the single item (it can be the object ID or slug).
+ * }
+ * @param string $object  The component's ID.
+ * @param int    $user_id The current user ID.
+ * @param array  $chunks  Parent's directory relative path chunks.
+ * @return array|WP_Error Properties for the Group's directory.
+ */
+function bp_attachments_groups_rest_directory_visibility( $properties = array(), $object = '', $user_id = 0, $chunks = array() ) {
+	if ( 'groups' !== $object || ! $user_id ) {
+		return $$properties;
+	}
+
+	if ( isset( $chunks[1] ) && 'groups' === $chunks[1] && in_array( $chunks[0], array( 'private', 'public' ), true ) ) {
+		$chunks = array_slice( $chunks, 2 );
+	}
+
+	$group_slug = reset( $chunks );
+	$object_id  = (int) BP_Groups_Group::get_id_from_slug( $group_slug );
+	$group      = groups_get_group( $object_id );
+
+	if ( ! isset( $group->status ) || ! groups_is_user_member( $user_id, $group->id ) ) {
+		return new WP_Error(
+			'rest_bp_attachments_missing_group',
+			__( 'The group does not exist or the user is not a member of this group.', 'bp_attachments' )
+		);
+	}
+
+	if ( in_array( $group->status, array( 'hidden', 'private' ), true ) ) {
+		$visibility = 'private';
+	}
+
+	return array(
+		'visibility'    => $visibility,
+		'object_id'     => $object_id,
+		'relative_path' => $group_slug,
+	);
+}
+add_filter( 'bp_attachments_rest_directory_visibility', 'bp_attachments_groups_rest_directory_visibility', 10, 3 );

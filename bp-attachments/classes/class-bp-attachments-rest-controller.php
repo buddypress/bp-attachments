@@ -159,7 +159,6 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		$parent         = $request->get_param( 'directory' );
 		$object         = $request->get_param( 'object' );
 		$user_id        = $request->get_param( 'user_id' );
-		$group          = null;
 		$dir            = '';
 
 		if ( ! $user_id ) {
@@ -182,29 +181,50 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 			} else {
 				$parse_parent = explode( '/', trim( $parent, '/' ) );
 
-				if ( 'groups' === $object ) {
-					$parse_group = $parse_parent;
+				// Handle other components than the `members` one's visibility.
+				if ( 'members' !== $object ) {
+					$default_props = array(
+						'visibility'    => $visibility,
+						'object_id'     => 0,
+						'relative_path' => '',
+					);
 
-					if ( isset( $parse_group[1] ) && 'groups' === $parse_group[1] && in_array( $parse_group[0], array( 'private', 'public' ), true ) ) {
-						$parse_group = array_slice( $parse_group, 2 );
-					}
+					$component_args = bp_parse_args(
+						/**
+						 * Filter here to set the directory visibility according to your component's logic.
+						 *
+						 * @since 1.0.0
+						 *
+						 * @param array $default_props {
+						 *     An array of arguments.
+						 *
+						 *     @type string $visibility    The directory visibility, it can be `public` or `private`. Defaults to `public`.
+						 *     @type int    $object_id     The component's single item ID.
+						 *     @type string $relative_path Relative path from the `$object` slug to the single item (it can be the object ID or slug).
+						 * }
+						 * @param string $object       The component's ID.
+						 * @param int    $user_id      The current user ID.
+						 * @param array  $parse_parent Parent's relative path chunks.
+						 */
+						apply_filters( 'bp_attachments_rest_directory_visibility', $default_props, $object, $user_id, $parse_parent ),
+						$default_props
+					);
 
-					$group_slug = reset( $parse_group );
-					$object_id  = (int) BP_Groups_Group::get_id_from_slug( $group_slug );
-					$group      = groups_get_group( $object_id );
-
-					if ( ! isset( $group->status ) || ! groups_is_user_member( $user_id, $group->id ) ) {
+					if ( is_wp_error( $component_args ) ) {
 						return new WP_Error(
-							'rest_bp_attachments_missing_group',
-							__( 'The group does not exist or the user is not a member of this group.', 'bp_attachments' ),
+							$visibility->get_error_code(),
+							$visibility->get_error_message(),
 							array(
 								'status' => 500,
 							)
 						);
 					}
 
-					if ( ! in_array( $group->status, array( 'hidden', 'private' ), true ) ) {
-						$visibility = 'public';
+					$visibility = $component_args['visibility'];
+					$object_id  = $component_args['object_id'];
+
+					if ( $component_args['relative_path'] ) {
+						$component_args['relative_path'] = trailingslashit( $object ) . trim( $component_args['relative_path'], '/' );
 					}
 				} else {
 					$visibility = $parse_parent[0];
@@ -246,9 +266,9 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 			$relative_path = str_replace( $public_basedir, '', $dir );
 		}
 
-		// Use the group's slug into the relative path.
-		if ( $group && $group instanceof BP_Groups_Group ) {
-			$relative_path = str_replace( $object . '/' . $object_id, $object . '/' . $group->slug, $relative_path );
+		// Use component's relative path if set.
+		if ( isset( $object_id ) && $object_id && isset( $component_args['relative_path'] ) && $component_args['relative_path'] ) {
+			$relative_path = str_replace( $object . '/' . $object_id, $component_args['relative_path'], $relative_path );
 		}
 
 		$response->header( 'X-BP-Attachments-Relative-Path', $relative_path );
