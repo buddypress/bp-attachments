@@ -3,6 +3,7 @@
  */
 const {
 	find,
+	reverse,
 } = lodash;
 
 /**
@@ -86,10 +87,10 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 			args.parent = directoryItem.id;
 
 			if ( directoryItem.parent && directoryItem.object ) {
-				let chunks = getDirectoryAncestors(
+				let chunks = reverse( getDirectoryAncestors(
 					flatTree,
 					directoryItem.parent
-				).map( ( parent ) => parent.slug );
+				).map( ( parent ) => parent.slug ) );
 
 				if ( 'members' === directoryItem.object ) {
 					/**
