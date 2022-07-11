@@ -82,6 +82,7 @@ function bp_attachments_admin_register_scripts() {
 			'wp-api-fetch',
 			'wp-url',
 			'lodash',
+			'wp-hooks',
 		),
 		$bp_attachments->version,
 		true

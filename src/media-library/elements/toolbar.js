@@ -10,20 +10,23 @@ const {
  * WordPress dependencies
  */
 const {
-	element: {
-		createElement,
-		useState,
-	},
 	components: {
 		Button,
 		TreeSelect,
 	},
-	i18n: {
-		__,
+	element: {
+		createElement,
+		useState,
 	},
 	data: {
 		useDispatch,
 		useSelect,
+	},
+	hooks: {
+		applyFilters,
+	},
+	i18n: {
+		__,
 	},
 } = wp;
 
@@ -94,9 +97,12 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 
 				if ( 'members' === directoryItem.object ) {
 					/**
-					 * Why do we have this member chunk?
+					 * In a future release, when Groups will be supported. The root directories will be:
+					 * - My Groups Media,
+					 * - My Media.
 					 *
-					 * @todo find why!
+					 * The "My Media" ID is 'member'. We need to remove this from chunks as files are stored in
+					 * `/uploads/buddypress/public/members/{userID}` or `../buddypress-private/members/{userID}`.
 					 */
 					const memberIndex = chunks.indexOf( 'member' );
 					if ( -1 !== memberIndex ) {
@@ -106,11 +112,15 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 					if ( chunks.length ) {
 						chunks.splice( 1, 0, directoryItem.object, user.id );
 					}
+				} else {
+					// Use this filter to customize the pathArray for other components (eg: groups).
+					chunks = applyFilters(
+						'buddypress.Attachments.toolbarTreeSelect.pathArray',
+						chunks,
+						directoryItem,
+						user.id
+					);
 				}
-
-				/**
-				 * @todo handle Groups object.
-				 */
 
 				args.path = '/' + chunks.join( '/' );
 			}
