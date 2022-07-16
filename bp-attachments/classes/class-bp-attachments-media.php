@@ -51,7 +51,7 @@ class BP_Attachments_Media extends BP_Attachment {
 						__( 'That media is too big. Please upload one smaller than %s', 'bp-attachments' ),
 						size_format( $max_upload_file_size )
 					),
-					12 => __( 'This file type is not allowed. Please use another one.', 'bp-attachments' ),
+					12 => __( 'This file type is not allowed into this directory. Please use another one.', 'bp-attachments' ),
 					13 => __( 'A file with this name already exists but the revisions directory is missing.', 'bp-attachments' ),
 					14 => __( 'A file with this name already exists but the data describing this existing file are missing.', 'bp-attachments' ),
 					15 => __( 'Unexpected error, please contact the administrator of the site.', 'bp-attachments' ),
@@ -226,6 +226,24 @@ class BP_Attachments_Media extends BP_Attachment {
 	}
 
 	/**
+	 * Get the Medium Object of the directory path.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $path The directory path.
+	 * @return object The medium.
+	 */
+	public function get_parent_dir_object( $path ) {
+		$parent_path    = explode( '/', rtrim( $path, '/' ) );
+		$parent_dir     = sanitize_file_name( end( $parent_path ) );
+		$parent_dir_id  = md5( $parent_dir );
+		$dirname_parent = dirname( $path );
+		$medium_path    = trailingslashit( $dirname_parent ) . $parent_dir_id . '.json';
+
+		return bp_attachments_get_medium( array( 'medium' => $medium_path ) );
+	}
+
+	/**
 	 * BP Attachments specific rules for media uploads.
 	 *
 	 * @since 1.0.0
@@ -242,21 +260,39 @@ class BP_Attachments_Media extends BP_Attachment {
 		// File size is too big.
 		if ( $file['size'] > $this->original_max_filesize ) {
 			$file['error'] = 11;
+			return $file;
+		}
 
-			// File is of invalid type.
-		} elseif ( ! bp_attachments_is_file_type_allowed( $file['tmp_name'], $file['name'] ) ) {
+		// Get upload data.
+		$upload_data = $this->upload_dir_filter( bp_upload_dir() );
+
+		// Check the parent dir type.
+		$dir                  = trailingslashit( $upload_data['path'] );
+		$parent_medium        = $this->get_parent_dir_object( $dir );
+		$media_type           = '';
+		$specific_media_types = array(
+			'album'          => 'image',
+			'audio_playlist' => 'audio',
+			'video_playlist' => 'video',
+		);
+
+		// Use the parent directory media type to make sure expected media types are added.
+		if ( isset( $parent_medium->media_type ) && isset( $specific_media_types[ $parent_medium->media_type ] ) ) {
+			$media_type = $specific_media_types[ $parent_medium->media_type ];
+		}
+
+		// File is of invalid type.
+		if ( ! bp_attachments_is_file_type_allowed( $file['tmp_name'], $file['name'], $media_type ) ) {
 			$file['error'] = 12;
+			return $file;
 		}
 
 		// Check for an existing file with the same name to eventually create a revision.
-		$upload_data = $this->upload_dir_filter( bp_upload_dir() );
-
 		if ( isset( $upload_data['bp_attachments_error_code'] ) && $upload_data['bp_attachments_error_code'] ) {
 			$file['error'] = $upload_data['bp_attachments_error_code'];
 		} elseif ( isset( $upload_data['error'] ) && $upload_data['error'] ) {
 			$file['error'] = 15;
 		} else {
-			$dir      = trailingslashit( $upload_data['path'] );
 			$filename = sanitize_file_name( $file['name'] );
 			$id       = md5( $filename );
 
@@ -329,6 +365,7 @@ class BP_Attachments_Media extends BP_Attachment {
 		}
 
 		if ( $parent ) {
+			// @todo update this part so that it uses `$this->get_parent_dir_object()`.
 			$parent_path    = explode( '/', $parent );
 			$parent_dir     = sanitize_file_name( end( $parent_path ) );
 			$parent_dir_id  = md5( $parent_dir );

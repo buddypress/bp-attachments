@@ -173,8 +173,8 @@ function bp_attachments_get_allowed_media_mimes( $media_type = '' ) {
  * @return boolean True if allowed. False otherwise.
  */
 function bp_attachments_is_file_type_allowed( $file, $filename, $media_type = '' ) {
-	$allowed_types = bp_attachments_get_allowed_media_exts();
-	$wp_filetype   = wp_check_filetype_and_ext( $file, $filename, $media_type );
+	$allowed_types = bp_attachments_get_allowed_media_exts( $media_type );
+	$wp_filetype   = wp_check_filetype_and_ext( $file, $filename );
 
 	if ( ! isset( $wp_filetype['ext'] ) || ! $wp_filetype['ext'] ) {
 		return false;

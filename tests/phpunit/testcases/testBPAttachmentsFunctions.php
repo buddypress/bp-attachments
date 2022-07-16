@@ -38,6 +38,8 @@ class BP_Attachments_Functions_UnitTestCase extends BP_UnitTestCase {
 		$filename = wp_basename( $file );
 
 		$this->assertTrue( bp_attachments_is_file_type_allowed( $file, $filename ) );
+		$this->assertTrue( bp_attachments_is_file_type_allowed( $file, $filename, 'image' ) );
+		$this->assertFalse( bp_attachments_is_file_type_allowed( $file, $filename, 'video' ) );
 
 		$file    = BP_ATTACHMENTS_TESTS_DIR . '/assets/file-examples.com/file-sample_100kB.doc';
 		$filename = wp_basename( $file );
