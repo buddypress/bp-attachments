@@ -69,7 +69,7 @@ class BP_Attachments {
 	 */
 	public static function start() {
 		// This plugin is only usable with the genuine BuddyPress.
-		if ( ! self::is_buddypress_active() ) {
+		if ( ! self::is_buddypress_active() && ! defined( 'BP_ATTACHMENTS_TESTS_DIR' ) ) {
 			return false;
 		}
 

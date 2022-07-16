@@ -96,13 +96,22 @@ function bp_attachments_get_allowed_media_types() {
  *
  * @since 1.0.0
  *
+ * @param string $media_type One of 'image', 'video', 'audio', 'document', 'archive'.
+ *                           Default to empty string (all media types). Optional.
  * @return array The list of allowed media extensions.
  */
-function bp_attachments_get_allowed_media_exts() {
+function bp_attachments_get_allowed_media_exts( $media_type = '' ) {
 	$exts_list                = array();
 	$wp_ext_types             = wp_get_ext_types();
 	$wp_mimes                 = wp_get_mime_types();
 	$allowed_media_mime_types = bp_attachments_get_allowed_media_types();
+
+	if ( $media_type && isset( $allowed_media_mime_types[ $media_type ] ) ) {
+		$allowed_media_mime_types = array_intersect_key(
+			$allowed_media_mime_types,
+			array( $media_type => array() )
+		);
+	}
 
 	foreach ( $allowed_media_mime_types as $mime_key => $mime_types ) {
 		if ( ! isset( $wp_ext_types[ $mime_key ] ) ) {
@@ -129,17 +138,49 @@ function bp_attachments_get_allowed_media_exts() {
  *
  * @since 1.0.0
  *
+ * @param string $media_type One of 'image', 'video', 'audio', 'document', 'archive'.
+ *                           Default to empty string (all media types). Optional.
  * @return array The list of allowed media mime types.
  */
-function bp_attachments_get_allowed_media_mimes() {
+function bp_attachments_get_allowed_media_mimes( $media_type = '' ) {
 	$mimes_list               = array();
 	$allowed_media_mime_types = bp_attachments_get_allowed_media_types();
+
+	if ( $media_type && isset( $allowed_media_mime_types[ $media_type ] ) ) {
+		$allowed_media_mime_types = array_intersect_key(
+			$allowed_media_mime_types,
+			array( $media_type => array() )
+		);
+	}
 
 	foreach ( $allowed_media_mime_types as $mime_types ) {
 		$mimes_list = array_merge( $mimes_list, $mime_types );
 	}
 
 	return $mimes_list;
+}
+
+/**
+ * Checks if a file type is allowed.
+ *
+ * @since 1.0.0
+ *
+ * @param string $file       Full path to the file.
+ * @param string $filename   The name of the file (may differ from $file due to $file being
+ *                           in a tmp directory).
+ * @param string $media_type One of 'image', 'video', 'audio', 'document', 'archive'.
+ *                           Default to empty string (all media types). Optional.
+ * @return boolean True if allowed. False otherwise.
+ */
+function bp_attachments_is_file_type_allowed( $file, $filename, $media_type = '' ) {
+	$allowed_types = bp_attachments_get_allowed_media_exts();
+	$wp_filetype   = wp_check_filetype_and_ext( $file, $filename, $media_type );
+
+	if ( ! isset( $wp_filetype['ext'] ) || ! $wp_filetype['ext'] ) {
+		return false;
+	}
+
+	return in_array( $wp_filetype['ext'], $allowed_types, true );
 }
 
 /**
@@ -887,27 +928,6 @@ function bp_attachments_get_i18n_media_type( $media_type = '' ) {
 	}
 
 	return $media_type;
-}
-
-/**
- * Checks if a file type is allowed.
- *
- * @since 1.0.0
- *
- * @param string $file     Full path to the file.
- * @param string $filename The name of the file (may differ from $file due to $file being
- *                         in a tmp directory).
- * @return boolean         True if allowed. False otherwise.
- */
-function bp_attachments_is_file_type_allowed( $file, $filename ) {
-	$allowed_types = bp_attachments_get_allowed_types( '' );
-	$wp_filetype   = wp_check_filetype_and_ext( $file, $filename );
-
-	if ( ! isset( $wp_filetype['ext'] ) || ! $wp_filetype['ext'] ) {
-		return false;
-	}
-
-	return in_array( $wp_filetype['ext'], $allowed_types, true );
 }
 
 /**

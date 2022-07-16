@@ -24,6 +24,12 @@ class BP_Attachments_Functions_UnitTestCase extends BP_UnitTestCase {
 		$this->assertEquals( $expected, wp_list_pluck( $media_items, 'type', 'name' ) );
 	}
 
+	public function override_allowed_media_types() {
+		return array(
+			'document' => array( 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ),
+		);
+	}
+
 	/**
 	 * @group checktype
 	 */
@@ -36,12 +42,16 @@ class BP_Attachments_Functions_UnitTestCase extends BP_UnitTestCase {
 		$file    = BP_ATTACHMENTS_TESTS_DIR . '/assets/file-examples.com/file-sample_100kB.doc';
 		$filename = wp_basename( $file );
 
-		$this->assertTrue( bp_attachments_is_file_type_allowed( $file, $filename ) );
+		$this->assertFalse( bp_attachments_is_file_type_allowed( $file, $filename ) );
+
+		add_filter( 'pre_option__bp_attachments_allowed_media_types', array( $this, 'override_allowed_media_types' ), 10, 0 );
 
 		$file    = BP_ATTACHMENTS_TESTS_DIR . '/assets/file-examples.com/file-sample_100kB.docx';
 		$filename = wp_basename( $file );
 
 		$this->assertTrue( bp_attachments_is_file_type_allowed( $file, $filename ) );
+
+		remove_filter( 'pre_option__bp_attachments_allowed_media_types', array( $this, 'override_allowed_media_types' ), 10, 0 );
 
 		$file    = BP_ATTACHMENTS_TESTS_DIR . '/assets/public/members/1/d266a54dd51dc74f25110130d3b363d5.json';
 		$filename = wp_basename( $file );
