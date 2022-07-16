@@ -51,3 +51,24 @@ function bp_attachments_get_javascript_templates() {
 	// Stop overridding the BuddyPress Template Stack.
 	remove_filter( 'bp_get_template_stack', 'bp_attachments_get_template_stack' );
 }
+
+/**
+ * Outputs the displayed user media library.
+ *
+ * @since 1.0.0
+ */
+function bp_attachements_output_personal_template() {
+	?>
+	<p>TBD</p>
+	<?php
+}
+
+/**
+ * Sets the hook to handle the display of the user media library.
+ *
+ * @since 1.0.0
+ */
+function bp_attachements_set_personal_template() {
+	add_action( 'bp_template_content', 'bp_attachements_output_personal_template' );
+}
+add_action( 'bp_attachments_personal_screen', 'bp_attachements_set_personal_template' );
