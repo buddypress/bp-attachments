@@ -29,10 +29,14 @@ import { bytesToSize } from '../utils/functions';
  * File Uploader element.
  */
 const MediaLibraryUploader = ( { settings } ) => {
-	const { maxUploadFileSize, allowedExtTypes } = settings;
+	const { maxUploadFileSize, allowedExtTypes, allowedExtByMediaList } = settings;
 	const { updateFormState, createMedium } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
-	const formState = useSelect( ( select ) => {
-		return select( BP_ATTACHMENTS_STORE_KEY ).getFormState();
+	const { formState, currentDirectoryObject } = useSelect( ( select ) => {
+		const store = select( BP_ATTACHMENTS_STORE_KEY )
+		return {
+			formState: store.getFormState(),
+			currentDirectoryObject: store.getCurrentDirectoryObject(),
+		}
 	}, [] );
 
 	const resetFormState = () => {
@@ -65,6 +69,13 @@ const MediaLibraryUploader = ( { settings } ) => {
 		return null;
 	}
 
+	let allowedExts = allowedExtTypes;
+	const directoryTypes = [ 'album', 'audio_playlist', 'video_playlist' ];
+
+	if ( currentDirectoryObject.type && -1 !== directoryTypes.indexOf( currentDirectoryObject.type ) ) {
+		allowedExts = allowedExtByMediaList[ currentDirectoryObject.type ];
+	}
+
 	return (
 		<div className="uploader-container enabled">
 			<DropZone
@@ -81,7 +92,7 @@ const MediaLibraryUploader = ( { settings } ) => {
 				<FormFileUpload
 					onChange={ ( files ) => uploadMedia( files ) }
 					multiple={ true }
-					accept={ allowedExtTypes }
+					accept={ allowedExts }
 					className="browser button button-hero"
 				>
 					{ __( 'Select Files', 'bp-attachments' ) }

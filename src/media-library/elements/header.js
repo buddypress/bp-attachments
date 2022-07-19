@@ -36,7 +36,7 @@ const MediaLibraryHeader = ( { settings } ) => {
 	const toggleClass = true === isOpen ? 'split-button is-open' : 'split-button';
 	const dashiconClass = true === isOpen ? 'dashicons dashicons-arrow-up-alt2' : 'dashicons dashicons-arrow-down-alt2';
 	const canUpload = true !== currentDirectoryObject.readonly;
-	const { allowedMediaTypes } = settings;
+	const { allowedExtByMediaList } = settings;
 
 	const showUploadForm = ( e ) => {
 		e.preventDefault();
@@ -72,23 +72,23 @@ const MediaLibraryHeader = ( { settings } ) => {
 			}
 		];
 
-		if ( allowedMediaTypes && 'private' !== currentDirectoryObject.visibility ) {
-			Object.keys( allowedMediaTypes ).forEach( ( directoryType ) => {
-				if ( 'image' === directoryType ) {
+		if ( allowedExtByMediaList && 'private' !== currentDirectoryObject.visibility ) {
+			Object.keys( allowedExtByMediaList ).forEach( ( directoryType ) => {
+				if ( 'album' === directoryType ) {
 					dirOptions.push(
 						{
 							id: 'album',
 							text: __( 'Add new photo album', 'bp-attachments' ),
 						}
 					);
-				} else if ( 'audio' === directoryType ) {
+				} else if ( 'audio_playlist' === directoryType ) {
 					dirOptions.push(
 						{
 							id: 'audio_playlist',
 							text: __( 'Add new audio playlist', 'bp-attachments' ),
 						}
 					);
-				} else if ( 'video' === directoryType ) {
+				} else if ( 'video_playlist' === directoryType ) {
 					dirOptions.push(
 						{
 							id: 'video_playlist',

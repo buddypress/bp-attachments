@@ -27,8 +27,7 @@ import { BP_ATTACHMENTS_STORE_KEY } from '../store';
 /**
  * Directory Creator element.
  */
-const MediaLibraryDirectoryCreator = ( { settings } ) => {
-	const { allowedMediaTypes } = settings;
+const MediaLibraryDirectoryCreator = () => {
 	const [ directoryName, setDirectoryName ] = useState( '' );
 	const { updateFormState, createDirectory } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
 	const formState = useSelect( ( select ) => {
@@ -62,8 +61,6 @@ const MediaLibraryDirectoryCreator = ( { settings } ) => {
 	if ( ! formState.action || 'createDirectory' !== formState.action ) {
 		return null;
 	}
-
-	// @todo allowedMediaTypes should be checked to make all directory types can be created.
 
 	let title = __( 'Create a new directory', 'bp-attachments' );
 	let nameLabel = __( 'Type a name for your directory', 'bp-attachments'  );

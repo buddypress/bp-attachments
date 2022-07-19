@@ -46,7 +46,7 @@ const MediaLibrary = ( { settings } ) => {
 		<Fragment>
 			<MediaLibraryHeader settings={ globalSettings } />
 			<MediaLibraryUploader settings={ globalSettings } />
-			<MediaLibraryDirectoryCreator settings={ globalSettings } />
+			<MediaLibraryDirectoryCreator />
 			<MediaLibraryToolbar gridDisplay={ isGrid } tree={ tree } />
 			<MediaLibraryMain gridDisplay={ isGrid } tree={ tree } />
 		</Fragment>

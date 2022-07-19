@@ -98,9 +98,10 @@ function bp_attachments_get_allowed_media_types() {
  *
  * @param string $media_type One of 'image', 'video', 'audio', 'document', 'archive'.
  *                           Default to empty string (all media types). Optional.
- * @return array The list of allowed media extensions.
+ * @param bool   $csv        True to get a comma separated list. False to get an array.
+ * @return array|string The list of allowed media extensions.
  */
-function bp_attachments_get_allowed_media_exts( $media_type = '' ) {
+function bp_attachments_get_allowed_media_exts( $media_type = '', $csv = false ) {
 	$exts_list                = array();
 	$wp_ext_types             = wp_get_ext_types();
 	$wp_mimes                 = wp_get_mime_types();
@@ -130,7 +131,59 @@ function bp_attachments_get_allowed_media_exts( $media_type = '' ) {
 		}
 	}
 
+	if ( $csv ) {
+		return '.' . implode( ',.', $exts_list );
+	}
+
 	return $exts_list;
+}
+
+/**
+ * Returns the list of media extensions by allowed types.
+ *
+ * @since 1.0.0
+ *
+ * @param bool $csv True to get a comma separated list. False to get an array.
+ * @return array The list of media extensions by allowed types.
+ */
+function bp_attachments_get_media_exts_by_allowed_types( $csv = false ) {
+	$types                 = array_keys( bp_attachments_get_allowed_media_types() );
+	$allowed_exts_by_types = array();
+
+	foreach ( $types as $type ) {
+		$allowed_exts_by_types[ $type ] = bp_attachments_get_allowed_media_exts( $type, $csv );
+	}
+
+	return $allowed_exts_by_types;
+}
+
+/**
+ * Returns the list of allowed media extensions by media list.
+ *
+ * @since 1.0.0
+ *
+ * @return array The list of allowed media extensions by media list.
+ */
+function bp_attachments_get_exts_by_medialist() {
+	$allowed_exts_by_types     = bp_attachments_get_media_exts_by_allowed_types( true );
+	$allowed_exts_by_medialist = array();
+
+	foreach ( $allowed_exts_by_types as $type => $allowed_exts ) {
+		if ( 'document' === $type || 'archive' === $type ) {
+			continue;
+		}
+
+		$medialist = '';
+		if ( 'image' === $type ) {
+			$medialist = 'album';
+		} else {
+			$medialist = $type . '_playlist';
+		}
+
+		$allowed_exts_by_medialist[ $medialist ] = $allowed_exts;
+	}
+
+	return $allowed_exts_by_medialist;
 }
 
 /**

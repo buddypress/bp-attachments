@@ -154,10 +154,10 @@ function bp_attachments_admin_media() {
 	$settings = apply_filters(
 		'bp_attachments_media_library_admin',
 		array(
-			'isAdminScreen'     => $is_admin_screen,
-			'maxUploadFileSize' => wp_max_upload_size(),
-			'allowedMediaTypes' => bp_attachments_get_allowed_media_types(),
-			'allowedExtTypes'   => '.' . implode( ',.', bp_attachments_get_allowed_media_exts() ),
+			'isAdminScreen'         => $is_admin_screen,
+			'maxUploadFileSize'     => wp_max_upload_size(),
+			'allowedExtByMediaList' => bp_attachments_get_exts_by_medialist(),
+			'allowedExtTypes'       => bp_attachments_get_allowed_media_exts( '', true ),
 		)
 	);
 
