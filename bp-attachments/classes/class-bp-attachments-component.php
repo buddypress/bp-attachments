@@ -492,7 +492,7 @@ class BP_Attachments_Component extends BP_Component {
 			$parse_array[ $rewrite_arg ] = $query->get( $rewrite_arg );
 		}
 
-		/**
+		/*
 		 * Set the queried object if a view or download action is requested
 		 * for an existing User Media.
 		 */
@@ -501,22 +501,63 @@ class BP_Attachments_Component extends BP_Component {
 			$object = array_search( $parse_array['bp_attachments_object'], bp_attachments_get_item_object_slugs(), true );
 			$action = array_search( $parse_array['bp_attachments_item_action'], bp_attachments_get_item_actions(), true );
 
+			$item_id = 0;
+			if ( $parse_array['bp_attachments_object_item'] ) {
+				if ( 'members' === $object ) {
+					$item = get_user_by( 'slug', $parse_array['bp_attachments_object_item'] );
+
+					if ( $item && isset( $item->ID ) ) {
+						$item_id = (int) $item->ID;
+					}
+				} else {
+					/**
+					 * Filter here to set other components item ID.
+					 *
+					 * @since 1.0.0
+					 *
+					 * @param array $parse_array {
+					 *     Associative array of arguments list used to get a medium.
+					 *
+					 *     @type string $bp_attachments                       "1" to inform the Attachments directory is displayed.
+					 *     @type string $bp_attachments_status                The medium status (eg: private or public).
+					 *     @type string $bp_attachments_object                The BuddyPress object the medium relates to. Defaults to `members`.
+					 *     @type string $bp_attachments_object_item           The BuddyPress object item slug the medium relates to.
+					 *     @type string $bp_attachments_item_action           Whether the `view` or `download` action is requested.
+					 *     @type string $bp_attachments_item_action_variables An array containing relative path chunks to the JSON filename containing the medium data.
+					 * }
+					 */
+					$item_id = apply_filters( 'bp_attachments_parse_querried_object_item', $parse_array );
+				}
+			}
+
 			if ( $action && $status && $object ) {
 				$relative_path = array_filter(
 					array(
 						$status,
 						$object,
-						$parse_array['bp_attachments_object_item'],
+						$item_id,
 						$parse_array['bp_attachments_item_action_variables'],
 					)
 				);
+				$id            = array_pop( $relative_path );
 
-				$id    = array_pop( $relative_path );
-				$media = BP_Attachments_Media::get_instance( $id, implode( '/', $relative_path ) );
+				/*
+				 * @todo check if still using this brings something interesting.
+				 * @todo caching Attachments should probably be done inside `bp_attachments_get_medium()`.
+				 */
+				$media_object = BP_Attachments_Media::get_instance( $id, implode( '/', $relative_path ) );
 
-				if ( $media ) {
-					$query->queried_object    = $media;
-					$query->queried_object_id = $media->id;
+				if ( $media_object && isset( $media_object->path_data ) ) {
+					$media = bp_attachments_get_medium(
+						array(
+							'medium' => $media_object,
+						)
+					);
+
+					if ( $media ) {
+						$query->queried_object    = $media;
+						$query->queried_object_id = $media->id;
+					}
 				}
 			}
 		}

@@ -105,6 +105,10 @@ class BP_Attachments_Media extends BP_Attachment {
 				return false;
 			}
 
+			if ( isset( $media->name ) && $media->name ) {
+				$media->path_data = $json_file;
+			}
+
 			wp_cache_add( $cache_key, $media, 'bp_attachments' );
 		}
 

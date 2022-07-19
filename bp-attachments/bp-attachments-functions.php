@@ -586,7 +586,7 @@ function bp_attachments_create_media( $media = null ) {
  *
  * Not Used anymore.
  *
- * @todo delete.
+ * @todo Check it can be used or not for search and eventually keep ot delete.
  *
  * @since 1.0.0
  *
@@ -606,13 +606,19 @@ function bp_attachments_list_dir_media( $dir = '' ) {
 		$media_name = $media->getfilename();
 		$path       = $media->getPathname();
 		$id         = md5( $media_name );
-		$list[]     = (object) array(
+		$mime_type  = bp_attachements_get_mime_type( $path );
+
+		if ( 'directory' === $mime_type ) {
+			$mime_type = 'inode/directory';
+		}
+
+		$list[] = (object) array(
 			'id'                 => $id,
 			'path'               => $path,
 			'name'               => $media_name,
 			'size'               => $media->getSize(),
 			'type'               => $media->getType(),
-			'mime_type'          => mime_content_type( $path ),
+			'mime_type'          => $mime_type,
 			'last_modified'      => $media->getMTime(),
 			'latest_access_date' => $media->getATime(),
 		);
@@ -678,16 +684,81 @@ function bp_attachments_get_medium( $args = array() ) {
 		return null;
 	}
 
-	$is_spl_file_info = $medium instanceof SplFileInfo;
-	if ( ! $is_spl_file_info && ! file_exists( $medium ) ) {
-		return null;
+	if ( $medium instanceof BP_Attachments_Media && isset( $medium->path_data ) ) {
+		$medium_info       = new SplFileInfo( $medium->path_data );
+		$attachment_medium = clone $medium;
+		$medium            = new stdClass();
+
+		foreach ( get_object_vars( $attachment_medium ) as $key => $value ) {
+			if ( in_array( $key, array( 'attachment', 'action', 'file_input', 'original_max_filesize', 'allowed_mime_types', 'base_dir', 'upload_error_strings', 'required_wp_files', 'upload_dir_filter_args', 'path_data', 'dfault_args' ), true ) ) {
+				continue;
+			}
+
+			$medium->{$key} = $value;
+		}
+	} else {
+		$is_spl_file_info = $medium instanceof SplFileInfo;
+		if ( ! $is_spl_file_info && ! file_exists( $medium ) ) {
+			return null;
+		}
+
+		if ( ! $is_spl_file_info ) {
+			$medium_info = new SplFileInfo( $medium );
+		} else {
+			$medium_info = $medium;
+		}
+
+		$json_data = file_get_contents( $medium_info ); // phpcs:ignore
+		$medium    = bp_attachments_sanitize_media( json_decode( $json_data ) );
 	}
 
-	if ( ! $is_spl_file_info ) {
-		$medium_info = new SplFileInfo( $medium );
-	} else {
-		$medium_info = $medium;
+	$is_medium_directory   = 'inode/directory' === $medium->mime_type;
+	$medium->last_modified = $medium_info->getMTime();
+
+	if ( ! $is_medium_directory && ( ! isset( $medium->extension ) || ! $medium->extension ) ) {
+		$medium->extension = preg_replace( '/^.+?\.([^.]+)$/', '$1', $medium->name );
 	}
+
+	if ( ! isset( $medium->media_type ) || ! $medium->media_type ) {
+		$medium->media_type = wp_ext2type( $medium->extension );
+	}
+
+	// Add the icon.
+	if ( ! isset( $medium->icon ) || ! $medium->icon ) {
+		if ( ! $is_medium_directory ) {
+			$medium->icon = wp_mime_type_icon( $medium->media_type );
+		} else {
+			$medium->icon = bp_attachments_get_directory_icon( $medium->media_type );
+		}
+	}
+
+	if ( $is_medium_directory ) {
+		$medium->readonly = false;
+	}
+
+	if ( 'image' === $medium->media_type ) {
+		if ( ! isset( $medium->vignette ) ) {
+			$medium->vignette = bp_attachments_get_vignette_uri( $medium->name, $dir );
+		}
+
+		if ( ! isset( $medium->orientation ) ) {
+			list( $width, $height ) = getimagesize( trailingslashit( $dir ) . $medium->name );
+
+			if ( $width > $height ) {
+				$medium->orientation = 'landscape';
+			} else {
+				$medium->orientation = 'portrait';
+			}
+		}
+
+		// Vignette & orientation are only used for images.
+	} else {
+		$medium->vignette    = '';
+		$medium->orientation = null;
+	}
+
+	// Set the object type of the media.
+	$medium->object = $r['object'];
 
 	if ( ! $r['dir'] ) {
 		$dir = dirname( $medium_info );
@@ -700,41 +771,6 @@ function bp_attachments_get_medium( $args = array() ) {
 	} else {
 		$visibility = $r['visibility'];
 	}
-
-	$json_data             = file_get_contents( $medium_info ); // phpcs:ignore
-	$medium                = json_decode( $json_data );
-	$medium->last_modified = $medium_info->getMTime();
-	$medium->extension     = preg_replace( '/^.+?\.([^.]+)$/', '$1', $medium->name );
-
-	if ( ! isset( $medium->media_type ) || ! $medium->media_type ) {
-		$medium->media_type = wp_ext2type( $medium->extension );
-	}
-
-	// Add the icon.
-	if ( 'inode/directory' !== $medium->mime_type ) {
-		$medium->icon = wp_mime_type_icon( $medium->media_type );
-	} else {
-		$medium->icon     = bp_attachments_get_directory_icon( $medium->media_type );
-		$medium->readonly = false;
-	}
-
-	// Vignette & orientation are only used for images.
-	$medium->vignette    = '';
-	$medium->orientation = null;
-
-	if ( 'image' === $medium->media_type ) {
-		$medium->vignette       = bp_attachments_get_vignette_uri( $medium->name, $dir );
-		list( $width, $height ) = getimagesize( trailingslashit( $dir ) . $medium->name );
-
-		if ( $width > $height ) {
-			$medium->orientation = 'landscape';
-		} else {
-			$medium->orientation = 'portrait';
-		}
-	}
-
-	// Set the object type of the media.
-	$medium->object = $r['object'];
 
 	// Set the visibility of the media.
 	$medium->visibility = $visibility;
