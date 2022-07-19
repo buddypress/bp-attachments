@@ -112,7 +112,7 @@ const DEFAULT_STATE = {
 			return {
 				...state,
 				uploading: action.uploading,
-				uploads: reject( state.uploads, ( u ) => { return u.name === action.upload.name || u.name === action.upload.title; } ),
+				uploads: reject( state.uploads, ( u ) => { return u.name === action.file.name; } ),
 				ended: true,
 			};
 

@@ -271,8 +271,7 @@ export function * createMedium( file ) {
 	uploading = false;
 	try {
 		upload = yield createFromAPI( '/buddypress/v1/attachments', formData );
-		yield { type: 'UPLOAD_END', uploading, upload };
-		upload.uploaded = true;
+		yield { type: 'UPLOAD_END', uploading, file };
 
 		return addMedium( upload );
 	} catch ( error ) {
@@ -283,7 +282,7 @@ export function * createMedium( file ) {
 			uploaded: false,
 		};
 
-		yield { type: 'UPLOAD_END', uploading, upload };
+		yield { type: 'UPLOAD_END', uploading, file };
 
 		return addMediumError( upload );
 	}
@@ -338,7 +337,7 @@ export function * createDirectory( directory ) {
 	uploading = false;
 	try {
 		upload = yield createFromAPI( '/buddypress/v1/attachments', formData );
-		yield { type: 'UPLOAD_END', uploading, upload };
+		yield { type: 'UPLOAD_END', uploading, file };
 		upload.uploaded = true;
 
 		return addMedium( upload );
@@ -350,7 +349,7 @@ export function * createDirectory( directory ) {
 			uploaded: false,
 		};
 
-		yield { type: 'UPLOAD_END', uploading, upload };
+		yield { type: 'UPLOAD_END', uploading, file };
 
 		return addMediumError( upload );
 	}
