@@ -43,6 +43,8 @@ class BP_Attachments_Component extends BP_Component {
 		if ( ! has_action( 'bp_rest_api_init', array( $this, 'rest_api_init' ), 10 ) ) {
 			add_action( 'bp_rest_api_init', array( $this, 'rest_api_init' ), 10 );
 		}
+
+		add_action( 'bp_' . $this->id . '_parse_query', array( $this, 'very_late_includes' ), 10, 0 );
 	}
 
 	/**
@@ -95,6 +97,12 @@ class BP_Attachments_Component extends BP_Component {
 			if ( bp_is_user() ) {
 				require $this->path . 'screens/personal.php';
 			}
+		}
+	}
+
+	public function very_late_includes() {
+		if ( bp_is_current_component( 'attachments' ) & ! bp_is_user() ) {
+			require $this->path . 'screens/directory.php';
 		}
 	}
 
@@ -153,6 +161,10 @@ class BP_Attachments_Component extends BP_Component {
 			$this->rewrite_ids           = $rewrite_args['rewrite_ids'];
 			$this->directory_permastruct = $this->root_slug . '/%' . $this->rewrite_ids['directory'] . '%';
 		}
+
+		// Use our own queried object to avoid conflicts with WordPress one.
+		$this->queried_object    = null;
+		$this->queried_object_id = 0;
 	}
 
 	/**
@@ -501,6 +513,8 @@ class BP_Attachments_Component extends BP_Component {
 			$object = array_search( $parse_array['bp_attachments_object'], bp_attachments_get_item_object_slugs(), true );
 			$action = array_search( $parse_array['bp_attachments_item_action'], bp_attachments_get_item_actions(), true );
 
+			$bp->current_action = $action;
+
 			$item_id = 0;
 			if ( $parse_array['bp_attachments_object_item'] ) {
 				if ( 'members' === $object ) {
@@ -555,8 +569,8 @@ class BP_Attachments_Component extends BP_Component {
 					);
 
 					if ( $media ) {
-						$query->queried_object    = $media;
-						$query->queried_object_id = $media->id;
+						$this->queried_object    = $media;
+						$this->queried_object_id = $media->id;
 					}
 				}
 			}
