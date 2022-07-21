@@ -520,6 +520,72 @@ function bp_attachments_get_vignette_uri( $filename = '', $path = '' ) {
 }
 
 /**
+ * Builds the Attachments medium URL.
+ *
+ * @since 1.0.0
+ *
+ * @param array $args {
+ *     Associative array of arguments list used to buil a medium action URL.
+ *
+ *     @type string $status                The medium visibility, it can be `public` or `private`. Defaults to `public`.
+ *     @type string $object                The BuddyPress object the medium relates to. Defaults to `members`.
+ *     @type string $object_item           The object item slug (eg: the user's user_nicename).
+ *     @type string $item_action           The needed action. One of the slugs for the `view `, `embed`, `download` action keys.
+ *     @type array  $item_action_variables An array of relative path chunks.
+ * }
+ * @return string URL for the Attachments medium.
+ */
+function bp_attachments_get_medium_url( $args = array() ) {
+	$bp   = buddypress();
+	$link = '#';
+
+	$r = wp_parse_args(
+		$args,
+		array(
+			'status'                => 'public',
+			'object'                => '',
+			'object_item'           => '',
+			'item_action'           => '',
+			'item_action_variables' => array(),
+		)
+	);
+
+	$are_urls_plain = ! get_option( 'permalink_structure', '' );
+	$r              = array_filter( $r );
+
+	// Using plain links.
+	if ( $are_urls_plain ) {
+		$qv = array();
+
+		foreach ( $bp->attachments->rewrite_ids as $rewrite_id ) {
+			$key = str_replace( 'bp_attachments_', '', $rewrite_id );
+
+			if ( ! isset( $r[ $key ] ) ) {
+				continue;
+			}
+
+			$qv[ $rewrite_id ] = $r[ $key ];
+		}
+
+		$qv   = array_merge( array( 'bp_attachments' => 1 ), $qv );
+		$link = add_query_arg( $qv, home_url( '/' ) );
+
+		// Using pretty URLs.
+	} else {
+		$link = str_replace( '%' . $bp->attachments->rewrite_ids['directory'] . '%', $r['status'], $bp->attachments->directory_permastruct );
+
+		$item_action_variables = (array) $r['item_action_variables'];
+		unset( $r['status'], $r['item_action_variables'] );
+
+		$r = array_merge( $r, $item_action_variables );
+
+		$link = home_url( user_trailingslashit( '/' . rtrim( $link, '/' ) . '/' . join( '/', $r ) ) );
+	}
+
+	return $link;
+}
+
+/**
  * Create a Media Item.
  *
  * @since 1.0.0
@@ -813,6 +879,37 @@ function bp_attachments_get_medium( $args = array() ) {
 
 	// Set the visibility of the media.
 	$medium->visibility = $visibility;
+
+	if ( isset( $medium->owner_id ) && $medium->owner_id ) {
+		$owner_id      = (int) $medium->owner_id;
+		$uploads_dir   = bp_attachments_get_media_uploads_dir( $visibility );
+		$relative_path = trim( str_replace( trailingslashit( $uploads_dir['path'] ) . $medium->object . '/' . $owner_id, '', $dir ), '/' );
+
+		$item_action_variables = array( $medium->id );
+		if ( $relative_path ) {
+			$item_action_variables = array_merge( explode( '/', $relative_path ), $item_action_variables );
+		}
+
+		$link_args = array(
+			'status'                => $visibility,
+			'object'                => $medium->object,
+			'object_item'           => bp_core_get_username( $owner_id ),
+			'item_action'           => bp_attachments_get_item_action_slug( 'view' ),
+			'item_action_variables' => $item_action_variables,
+		);
+
+		$medium->links = array(
+			'view' => bp_attachments_get_medium_url( $link_args ),
+		);
+
+		$link_args['item_action'] = bp_attachments_get_item_action_slug( 'embed' );
+		$medium->links['embed']   = bp_attachments_get_medium_url( $link_args );
+
+		if ( ! $is_medium_directory ) {
+			$link_args['item_action']  = bp_attachments_get_item_action_slug( 'download' );
+			$medium->links['download'] = bp_attachments_get_medium_url( $link_args );
+		}
+	}
 
 	return $medium;
 }
