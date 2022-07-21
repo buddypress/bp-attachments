@@ -63,7 +63,7 @@ class BP_Attachments_Media extends BP_Attachment {
 	}
 
 	/**
-	 * Retrieves a BP Attachment media from the file system.
+	 * Retrieves a BP Attachments media from the file system.
 	 *
 	 * @since 1.0.0
 	 *

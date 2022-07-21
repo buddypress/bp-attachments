@@ -410,11 +410,11 @@ function bp_attachments_get_public_uploads_dir() {
 }
 
 /**
- * Get translated BP Attachment stati.
+ * Get translated BP Attachments stati.
  *
  * @since 1.0.0
  *
- * @return array The available attachment stati.
+ * @return array The available attachments stati.
  */
 function bp_attachments_get_item_stati() {
 	return array(
@@ -447,17 +447,56 @@ function bp_attachments_get_item_object_slugs() {
 }
 
 /**
- * Get translated BP Attachment actions.
+ * Get translated BP Attachments actions.
  *
  * @since 1.0.0
  *
- * @return array The available attachment actions.
+ * @return array The available attachments actions.
  */
 function bp_attachments_get_item_actions() {
 	return array(
 		'download' => sanitize_title( _x( 'download', 'download action slug', 'bp-attachments' ) ),
 		'view'     => sanitize_title( _x( 'view', 'view action slug', 'bp-attachments' ) ),
+		'embed'    => sanitize_title( _x( 'embed', 'embed action slug', 'bp-attachments' ) ),
 	);
+}
+
+/**
+ * Get a translated BP Attachments action slug.
+ *
+ * @since 1.0.0
+ *
+ * @param string $action_key The BP Attachments action key.
+ * @return string The translated BP Attachments action slug.
+ */
+function bp_attachments_get_item_action_slug( $action_key = '' ) {
+	$slug    = '';
+	$actions = bp_attachments_get_item_actions();
+
+	if ( isset( $actions[ $action_key ] ) ) {
+		$slug = $actions[ $action_key ];
+	}
+
+	return $slug;
+}
+
+/**
+ * Get a BP Attachments action key.
+ *
+ * @since 1.0.0
+ *
+ * @param string $action_slug The BP Attachments action slug.
+ * @return string The translated BP Attachments action key.
+ */
+function bp_attachments_get_item_action_key( $action_slug = '' ) {
+	$key     = '';
+	$actions = array_flip( bp_attachments_get_item_actions() );
+
+	if ( isset( $actions[ $action_slug ] ) ) {
+		$key = $actions[ $action_slug ];
+	}
+
+	return $key;
 }
 
 /**
@@ -465,9 +504,9 @@ function bp_attachments_get_item_actions() {
  *
  * @since 1.0.0
  *
- * @param string $filename The name of the BP Attachment item.
- * @param string $path     The absolute path to the BP Attachment item.
- * @return string          The BP Attachment URI.
+ * @param string $filename The name of the BP Attachments item.
+ * @param string $path     The absolute path to the BP Attachments item.
+ * @return string          The BP Attachments URI.
  */
 function bp_attachments_get_vignette_uri( $filename = '', $path = '' ) {
 	$uploads   = bp_upload_dir();
@@ -957,12 +996,12 @@ function bp_attachments_list_member_root_objects( $user_id = 0, $object_dir = ''
 }
 
 /**
- * Sanitize a BP Attachment media.
+ * Sanitize a BP Attachments media.
  *
  * @since 1.0.0
  *
- * @param object $media The BP Attachment media to sanitize.
- * @return object|null  The sanitized BP Attachment media.
+ * @param object $media The BP Attachments media to sanitize.
+ * @return object|null  The sanitized BP Attachments media.
  */
 function bp_attachments_sanitize_media( $media = null ) {
 	if ( ! is_object( $media ) ) {
@@ -1097,4 +1136,22 @@ function bp_attachments_delete_directory( $path = '', $visibility = 'public' ) {
 	}
 
 	return rmdir( $path );
+}
+
+/**
+ * Gets the queried User Media object when it's being viewed, downloaded, embbeded.
+ *
+ * @since 1.0.0
+ *
+ * @return object The queried User Media object.
+ */
+function bp_attachments_get_queried_object() {
+	$bp     = buddypress();
+	$object = null;
+
+	if ( $bp->attachments->queried_object ) {
+		$object = $bp->attachments->queried_object;
+	}
+
+	return $object;
 }

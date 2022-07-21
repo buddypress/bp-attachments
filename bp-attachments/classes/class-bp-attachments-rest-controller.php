@@ -29,7 +29,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	}
 
 	/**
-	 * Registers the routes for the BP Attachment objects of the controller.
+	 * Registers the routes for the BP Attachments objects of the controller.
 	 *
 	 * @since 1.0.0
 	 *
@@ -704,7 +704,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	}
 
 	/**
-	 * Prepares BP Attachment data for return as an object.
+	 * Prepares BP Attachments data for return as an object.
 	 *
 	 * @since 1.0.0
 	 *
