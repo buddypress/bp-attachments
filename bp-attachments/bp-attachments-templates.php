@@ -79,17 +79,19 @@ add_action( 'bp_attachments_personal_screen', 'bp_attachements_set_personal_temp
  * @since 1.0.0
  */
 function bp_attachments_set_directory_dummy_post() {
-	bp_theme_compat_reset_post( array(
-		'ID'             => 0,
-		'post_title'     => bp_get_directory_title( 'attachments' ),
-		'post_author'    => 0,
-		'post_date'      => 0,
-		'post_content'   => '',
-		'post_type'      => 'page',
-		'post_status'    => 'publish',
-		'is_page'        => true,
-		'comment_status' => 'closed'
-	) );
+	bp_theme_compat_reset_post(
+		array(
+			'ID'             => 0,
+			'post_title'     => bp_get_directory_title( 'attachments' ),
+			'post_author'    => 0,
+			'post_date'      => 0,
+			'post_content'   => '',
+			'post_type'      => 'page',
+			'post_status'    => 'publish',
+			'is_page'        => true,
+			'comment_status' => 'closed',
+		)
+	);
 }
 
 /**
@@ -116,7 +118,7 @@ function bp_attachments_set_directory_content() {
  * @since 1.0.0
  */
 function bp_attachments_set_directory_theme_compat() {
-	if ( bp_is_current_component( 'attachments') && ! bp_is_user() ) {
+	if ( bp_is_current_component( 'attachments' ) && ! bp_is_user() ) {
 		add_action( 'bp_template_include_reset_dummy_post_data', 'bp_attachments_set_directory_dummy_post' );
 		add_filter( 'bp_replace_the_content', 'bp_attachments_set_directory_content' );
 	}

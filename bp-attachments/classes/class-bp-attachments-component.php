@@ -100,6 +100,11 @@ class BP_Attachments_Component extends BP_Component {
 		}
 	}
 
+	/**
+	 * Includes what `$this->late_includes()` cannot as it fires too early.
+	 *
+	 * @since 1.0.0
+	 */
 	public function very_late_includes() {
 		if ( bp_is_current_component( 'attachments' ) & ! bp_is_user() ) {
 			require $this->path . 'screens/directory.php';
