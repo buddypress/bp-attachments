@@ -104,7 +104,7 @@ class BP_Attachments {
 	public function autoload( $class ) {
 		$name = str_replace( '_', '-', strtolower( $class ) );
 
-		if ( 0 !== strpos( $name, 'bp-attachments' ) ) {
+		if ( 0 !== strpos( $name, 'bp-attachments' ) && 'bp-medium' !== $name ) {
 			return;
 		}
 
