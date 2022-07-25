@@ -551,32 +551,19 @@ class BP_Attachments_Component extends BP_Component {
 
 			if ( $action && $status && $object ) {
 				$relative_path = array_filter(
-					array(
-						$status,
-						$object,
-						$item_id,
-						$parse_array['bp_attachments_item_action_variables'],
+					array_merge(
+						array( $object, $item_id ),
+						explode( '/', $parse_array['bp_attachments_item_action_variables'] )
 					)
 				);
 				$id            = array_pop( $relative_path );
+				$absolute_path = trailingslashit( bp_attachments_get_media_uploads_dir( $status )['path'] ) . implode( '/', $relative_path );
 
-				/*
-				 * @todo check if still using this brings something interesting.
-				 * @todo caching Attachments should probably be done inside `bp_attachments_get_medium()`.
-				 */
-				$media_object = BP_Attachments_Media::get_instance( $id, implode( '/', $relative_path ) );
-
-				if ( $media_object && isset( $media_object->path_data ) ) {
-					$media = bp_attachments_get_medium(
-						array(
-							'medium' => $media_object,
-						)
-					);
-
-					if ( $media ) {
-						$this->queried_object    = $media;
-						$this->queried_object_id = $media->id;
-					}
+				// Try to get the medium.
+				$media = bp_attachments_get_medium( $id, $absolute_path );
+				if ( $media ) {
+					$this->queried_object    = $media;
+					$this->queried_object_id = $media->id;
 				}
 			}
 		}

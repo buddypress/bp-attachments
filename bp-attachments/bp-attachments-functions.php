@@ -779,155 +779,12 @@ function bp_attachments_get_medium_visibility( $parent_dir = '' ) {
  *
  * @since 1.0.0
  *
- * @param array $args {
- *     Associative array of arguments list used to get a medium.
- *
- *     @type string|SplFileInfo $medium     The absolute path or SplFileInfo object for the medium. Required.
- *     @type string             $dir        The absolute path of the medium’s parent directory.
- *     @type string             $visibility The medium visibility, it can be `public` or `private`. Defaults to `public`.
- *     @type string             $object     The BuddyPress object the medium relates to. Defaults to `members`.
- * }
- * @return object The medium.
+ * @param string $id   The ID of the medium to retrieve.
+ * @param string $path The absolute's path of the medium to retrieve.
+ * @return BP_Medium|false The medium's object if found. False if not.
  */
-function bp_attachments_get_medium( $args = array() ) {
-	$r = bp_parse_args(
-		$args,
-		array(
-			'medium'     => '',
-			'dir'        => '',
-			'visibility' => 'public',
-			'object'     => 'members',
-		)
-	);
-
-	$medium = $r['medium'];
-	if ( ! $medium ) {
-		return null;
-	}
-
-	if ( $medium instanceof BP_Attachments_Media && isset( $medium->path_data ) ) {
-		$medium_info       = new SplFileInfo( $medium->path_data );
-		$attachment_medium = clone $medium;
-		$medium            = new stdClass();
-
-		foreach ( get_object_vars( $attachment_medium ) as $key => $value ) {
-			if ( in_array( $key, array( 'attachment', 'action', 'file_input', 'original_max_filesize', 'allowed_mime_types', 'base_dir', 'upload_error_strings', 'required_wp_files', 'upload_dir_filter_args', 'path_data', 'dfault_args' ), true ) ) {
-				continue;
-			}
-
-			$medium->{$key} = $value;
-		}
-	} else {
-		$is_spl_file_info = $medium instanceof SplFileInfo;
-		if ( ! $is_spl_file_info && ! file_exists( $medium ) ) {
-			return null;
-		}
-
-		if ( ! $is_spl_file_info ) {
-			$medium_info = new SplFileInfo( $medium );
-		} else {
-			$medium_info = $medium;
-		}
-
-		$json_data = file_get_contents( $medium_info ); // phpcs:ignore
-		$medium    = bp_attachments_sanitize_media( json_decode( $json_data ) );
-	}
-
-	$is_medium_directory   = 'inode/directory' === $medium->mime_type;
-	$medium->last_modified = $medium_info->getMTime();
-
-	if ( ! $is_medium_directory && ( ! isset( $medium->extension ) || ! $medium->extension ) ) {
-		$medium->extension = preg_replace( '/^.+?\.([^.]+)$/', '$1', $medium->name );
-	}
-
-	if ( ! isset( $medium->media_type ) || ! $medium->media_type ) {
-		$medium->media_type = wp_ext2type( $medium->extension );
-	}
-
-	// Add the icon.
-	if ( ! isset( $medium->icon ) || ! $medium->icon ) {
-		if ( ! $is_medium_directory ) {
-			$medium->icon = wp_mime_type_icon( $medium->media_type );
-		} else {
-			$medium->icon = bp_attachments_get_directory_icon( $medium->media_type );
-		}
-	}
-
-	if ( $is_medium_directory ) {
-		$medium->readonly = false;
-	}
-
-	if ( 'image' === $medium->media_type ) {
-		if ( ! isset( $medium->vignette ) ) {
-			$medium->vignette = bp_attachments_get_vignette_uri( $medium->name, $dir );
-		}
-
-		if ( ! isset( $medium->orientation ) ) {
-			list( $width, $height ) = getimagesize( trailingslashit( $dir ) . $medium->name );
-
-			if ( $width > $height ) {
-				$medium->orientation = 'landscape';
-			} else {
-				$medium->orientation = 'portrait';
-			}
-		}
-
-		// Vignette & orientation are only used for images.
-	} else {
-		$medium->vignette    = '';
-		$medium->orientation = null;
-	}
-
-	// Set the object type of the media.
-	$medium->object = $r['object'];
-
-	if ( ! $r['dir'] ) {
-		$dir = dirname( $medium_info );
-	} else {
-		$dir = $r['dir'];
-	}
-
-	if ( ! $r['visibility'] ) {
-		$visibility = bp_attachments_get_medium_visibility( $dir );
-	} else {
-		$visibility = $r['visibility'];
-	}
-
-	// Set the visibility of the media.
-	$medium->visibility = $visibility;
-
-	if ( isset( $medium->owner_id ) && $medium->owner_id ) {
-		$owner_id      = (int) $medium->owner_id;
-		$uploads_dir   = bp_attachments_get_media_uploads_dir( $visibility );
-		$relative_path = trim( str_replace( trailingslashit( $uploads_dir['path'] ) . $medium->object . '/' . $owner_id, '', $dir ), '/' );
-
-		$item_action_variables = array( $medium->id );
-		if ( $relative_path ) {
-			$item_action_variables = array_merge( explode( '/', $relative_path ), $item_action_variables );
-		}
-
-		$link_args = array(
-			'status'                => $visibility,
-			'object'                => $medium->object,
-			'object_item'           => bp_core_get_username( $owner_id ),
-			'item_action'           => bp_attachments_get_item_action_slug( 'view' ),
-			'item_action_variables' => $item_action_variables,
-		);
-
-		$medium->links = array(
-			'view' => bp_attachments_get_medium_url( $link_args ),
-		);
-
-		$link_args['item_action'] = bp_attachments_get_item_action_slug( 'embed' );
-		$medium->links['embed']   = bp_attachments_get_medium_url( $link_args );
-
-		if ( ! $is_medium_directory ) {
-			$link_args['item_action']  = bp_attachments_get_item_action_slug( 'download' );
-			$medium->links['download'] = bp_attachments_get_medium_url( $link_args );
-		}
-	}
-
-	return $medium;
+function bp_attachments_get_medium( $id = '', $path = '' ) {
+	return BP_Medium::get_instance( $id, $path );
 }
 
 /**
@@ -947,8 +804,7 @@ function bp_attachments_list_media_in_directory( $dir = '', $object = 'members' 
 		return $list;
 	}
 
-	$visibility = bp_attachments_get_medium_visibility( $dir );
-	$iterator   = new FilesystemIterator( $dir, FilesystemIterator::SKIP_DOTS );
+	$iterator = new FilesystemIterator( $dir, FilesystemIterator::SKIP_DOTS );
 
 	/**
 	 * Some of the properties should have been created during the upload/make dir process.
@@ -956,15 +812,10 @@ function bp_attachments_list_media_in_directory( $dir = '', $object = 'members' 
 	 * @todo Add checks to avoid running some functions when not necessary.
 	 */
 	foreach ( new BP_Attachments_Filter_Iterator( $iterator ) as $medium ) {
+		$medium_id = wp_basename( $medium, '.json' );
+
 		// Merge all medium into the directory.
-		$list[] = bp_attachments_get_medium(
-			array(
-				'medium'     => $medium,
-				'dir'        => $dir,
-				'visibility' => $visibility,
-				'object'     => $object,
-			)
-		);
+		$list[] = bp_attachments_get_medium( $medium_id, $dir );
 	}
 
 	return $list;

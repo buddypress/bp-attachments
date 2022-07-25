@@ -247,9 +247,8 @@ class BP_Attachments_Media extends BP_Attachment {
 		$parent_dir     = sanitize_file_name( end( $parent_path ) );
 		$parent_dir_id  = md5( $parent_dir );
 		$dirname_parent = dirname( $path );
-		$medium_path    = trailingslashit( $dirname_parent ) . $parent_dir_id . '.json';
 
-		return bp_attachments_get_medium( array( 'medium' => $medium_path ) );
+		return bp_attachments_get_medium( $parent_dir_id, $dirname_parent );
 	}
 
 	/**
@@ -374,14 +373,7 @@ class BP_Attachments_Media extends BP_Attachment {
 		}
 
 		if ( $parent ) {
-			// @todo update this part so that it uses `$this->get_parent_dir_object()`.
-			$parent_path    = explode( '/', $parent );
-			$parent_dir     = sanitize_file_name( end( $parent_path ) );
-			$parent_dir_id  = md5( $parent_dir );
-			$dirname_parent = dirname( $destination_data['path'] );
-			$medium_path    = trailingslashit( $dirname_parent ) . $parent_dir_id . '.json';
-
-			$medium = bp_attachments_get_medium( array( 'medium' => $medium_path ) );
+			$medium = $this->get_parent_dir_object( $destination_data['path'] );
 
 			if ( is_null( $medium ) || 'folder' !== $medium->media_type ) {
 				return new WP_Error(
