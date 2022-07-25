@@ -56,7 +56,8 @@ class BP_Attachments_Media extends BP_Attachment {
 					14 => __( 'A file with this name already exists but the data describing this existing file are missing.', 'bp-attachments' ),
 					15 => __( 'Unexpected error, please contact the administrator of the site.', 'bp-attachments' ),
 					16 => __( 'The destination directory is missing.', 'bp-attachments' ),
-					17 => __( 'Unknown user, item or destination directory. Please try again', 'bp-attachments' ),
+					17 => __( 'Unknown user, item or destination directory. Please try again.', 'bp-attachments' ),
+					18 => __( 'Private uploads are disabled. Try uploading your file publicly instead.', 'bp-attachments' ),
 				),
 			)
 		);
@@ -149,7 +150,7 @@ class BP_Attachments_Media extends BP_Attachment {
 		$subdir          = '';
 
 		$upload_dir = $public_uploads;
-		if ( $media_args['status'] && 'public' !== $media_args['status'] ) {
+		if ( 'public' !== $media_args['status'] ) {
 			$upload_dir = $private_uploads;
 		}
 
@@ -224,6 +225,10 @@ class BP_Attachments_Media extends BP_Attachment {
 
 		if ( $subdir ) {
 			$upload_dir['subdir'] .= $subdir;
+		}
+
+		if ( 'public' !== $media_args['status'] ) {
+			$upload_dir['url'] = '';
 		}
 
 		return $upload_dir;

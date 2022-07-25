@@ -292,6 +292,18 @@ function bp_attachments_get_document_root() {
  * @return string|WP_Error The private root directory if it exists a WP Error object otherwise.
  */
 function bp_attachments_get_private_root_dir( $upload_checks = true ) {
+	/**
+	 * Use this filter to override the private uploads root directory.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string|null $value The private uploads root directory absolute path. Default `null`.
+	 */
+	$override = apply_filters( 'bp_attachments_pre_get_private_root_dir', null );
+	if ( null !== $override ) {
+		return $override;
+	}
+
 	$document_root = bp_attachments_get_document_root();
 
 	if ( ! $document_root ) {
@@ -365,15 +377,19 @@ function bp_attachments_get_media_uploads_dir( $type = 'public' ) {
 	$bp_uploads_dir = bp_attachments_uploads_dir_get();
 	$subdir         = '/' . $type;
 
-	if ( 'private' === $type && bp_attachments_can_do_private_uploads() ) {
-		$private_dir = bp_attachments_get_private_root_dir( false );
+	if ( 'private' === $type ) {
+		if ( bp_attachments_can_do_private_uploads() ) {
+			$private_dir = bp_attachments_get_private_root_dir( false );
 
-		if ( is_wp_error( $private_dir ) ) {
-			$subdir = '/public';
+			if ( is_wp_error( $private_dir ) ) {
+				$bp_uploads_dir['bp_attachments_error_code'] = 16;
+			} else {
+				$bp_uploads_dir['basedir'] = $private_dir;
+				$bp_uploads_dir['baseurl'] = '';
+				$subdir                    = '';
+			}
 		} else {
-			$bp_uploads_dir['basedir'] = $private_dir;
-			$bp_uploads_dir['baseurl'] = '';
-			$subdir                    = '';
+			$bp_uploads_dir['bp_attachments_error_code'] = 18;
 		}
 	}
 

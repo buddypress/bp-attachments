@@ -7,6 +7,9 @@
  * @since 1.0.0
  */
 
+ /**
+  * @group media_uploads
+  */
 class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 	protected $current_user;
 	protected $bp_uploads;
@@ -30,8 +33,6 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 	}
 
 	public function test_bp_attachments_media_upload_dir_filter_member_public() {
-		$this->markTestSkipped();
-
 		$media = new BP_Attachments_Media();
 		$user_id = get_current_user_id();
 
@@ -54,28 +55,75 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 		$this->assertTrue( ! isset( $public_member_uploads['bp_attachments_error_code'] ) );
 	}
 
-	public function test_bp_attachments_media_upload_dir_filter_member_private() {
-		$this->markTestSkipped();
+	public function test_bp_attachments_media_upload_dir_filter_member_private_disabled() {
+		$media = new BP_Attachments_Media();
+		$user_id = get_current_user_id();
 
+		add_filter( 'pre_option__bp_attachments_can_upload_privately', '__return_false' );
+
+		$_POST = array(
+			'object_id' => $user_id,
+			'status'    => 'private',
+		);
+
+		$private_member_uploads = $media->upload_dir_filter();
+
+		remove_filter( 'pre_option__bp_attachments_can_upload_privately', '__return_false' );
+
+		$this->assertTrue( 18 === $private_member_uploads['bp_attachments_error_code'] );
+	}
+
+	public function test_bp_attachments_media_upload_dir_filter_member_private_missing_dir() {
+		$media = new BP_Attachments_Media();
+		$user_id = get_current_user_id();
+
+		add_filter( 'pre_option__bp_attachments_can_upload_privately', '__return_true' );
+
+		$_POST = array(
+			'object_id' => $user_id,
+			'status'    => 'private',
+		);
+
+		$private_member_uploads = $media->upload_dir_filter();
+
+		remove_filter( 'pre_option__bp_attachments_can_upload_privately', '__return_true' );
+
+		$this->assertTrue( 16 === $private_member_uploads['bp_attachments_error_code'] );
+	}
+
+	public function private_uploads_dir_override() {
+		return trailingslashit( $this->bp_uploads['basedir'] ) . 'private';
+	}
+
+	public function test_bp_attachments_media_upload_dir_filter_member_private() {
 		$media = new BP_Attachments_Media();
 		$user_id = get_current_user_id();
 
 		$_POST = array(
+			'status'    => 'private',
 			'object_id' => $user_id,
 		);
 
-		$subdir = '/private/members/' . $user_id;
+		$subdir = '/members/' . $user_id;
+
+		add_filter( 'pre_option__bp_attachments_can_upload_privately', '__return_true' );
+		add_filter( 'bp_attachments_pre_get_private_root_dir', array( $this, 'private_uploads_dir_override' ), 10, 0 );
 
 		$private_member_uploads = $media->upload_dir_filter();
+
 		$expected = array(
-			'path'   => $this->bp_uploads['basedir'] . $subdir,
-			'url'    => $this->bp_uploads['baseurl'] . $subdir,
-			'subdir' => $subdir,
+			'basedir' => $this->bp_uploads['basedir'] . '/private',
+			'path'    => $this->bp_uploads['basedir'] . '/private' . $subdir,
+			'url'     => '',
+			'subdir'  => $subdir,
 		);
 		$result = array_intersect_key( $private_member_uploads, $expected );
 
-		$this->assertSame( $expected, $result );
-		$this->assertTrue( ! isset( $private_member_uploads['bp_attachments_error_code'] ) );
+		remove_filter( 'pre_option__bp_attachments_can_upload_privately', '__return_true' );
+		remove_filter( 'bp_attachments_pre_get_private_root_dir', array( $this, 'private_uploads_dir_override' ), 10, 0 );
+
+		//$this->assertSame( $expected, $result );
+		$this->assertTrue( ! isset( $public_member_uploads['bp_attachments_error_code'] ) );
 	}
 
 	public function test_bp_attachments_media_upload_dir_filter_member_error() {

@@ -80,7 +80,7 @@ class BP_attachments_REST_controller_UnitTestCase extends WP_Test_REST_Controlle
 		return $uploads_dir;
 	}
 
-	public function copy_file( $return = null, $file, $new_file ) {
+	public function copy_file( $return, $file, $new_file ) {
 		return @copy( $file['tmp_name'], $new_file );
 	}
 
