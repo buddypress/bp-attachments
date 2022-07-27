@@ -101,8 +101,8 @@ class BP_Attachments_OEmbed_Extension extends BP_Core_oEmbed_Extension {
 			$medium = $this->current_medium;
 		}
 
-		if ( isset( $medium->links['embed'] ) ) {
-			$url = $medium->links['embed'];
+		if ( isset( $medium->links['view'] ) ) {
+			$url = $medium->links['view'];
 		}
 
 		return $url;
@@ -122,7 +122,7 @@ class BP_Attachments_OEmbed_Extension extends BP_Core_oEmbed_Extension {
 			$is_page = bp_attachments_is_media_embed();
 
 			// Make sure our custom permalink shows up in the 'WordPress Embed' block.
-			add_filter( 'the_permalink', array( $this, 'filter_embed_url' ) );
+			add_filter( 'the_permalink', array( $this, 'filter_the_permalink' ) );
 		}
 
 		return $is_page;
@@ -271,18 +271,44 @@ class BP_Attachments_OEmbed_Extension extends BP_Core_oEmbed_Extension {
 	}
 
 	/**
-	 * Pass the BP Attachments medium permalink for embedding.
+	 * Pass the BP Attachments medium embed URL.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @param string $url Current embed URL.
-	 * @return string The BP Attachments medium permalink for embedding.
+	 * @return string The BP Attachments medium embed URL.
 	 */
 	public function filter_embed_url( $url ) {
 		if ( false === $this->current_medium ) {
-			$url = $this->set_permalink();
+			$bp = buddypress();
+
+			if ( isset( $bp->attachments->queried_object ) && $bp->attachments->queried_object instanceof BP_Medium ) {
+				$url = $bp->attachments->queried_object->links['embed'];
+			}
 		} else {
 			$url = $this->current_medium->links['embed'];
+		}
+
+		return $url;
+	}
+
+	/**
+	 * Pass the BP Attachments medium permalink for embedding.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $url Current permalink.
+	 * @return string The BP Attachments medium permalink for embedding.
+	 */
+	public function filter_the_permalink( $url ) {
+		if ( false === $this->current_medium ) {
+			$bp = buddypress();
+
+			if ( isset( $bp->attachments->queried_object ) && $bp->attachments->queried_object instanceof BP_Medium ) {
+				$url = $bp->attachments->queried_object->links['view'];
+			}
+		} else {
+			$url = $this->current_medium->links['view'];
 		}
 
 		return $url;
