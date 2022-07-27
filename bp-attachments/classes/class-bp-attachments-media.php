@@ -15,6 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * BP Attachments Media Class.
  *
+ * Creates a file or a directory on the server filesystem.
+ *
  * @since 1.0.0
  */
 class BP_Attachments_Media extends BP_Attachment {
@@ -252,7 +254,8 @@ class BP_Attachments_Media extends BP_Attachment {
 					$file['error'] = 14;
 				}
 
-				$file_data     = json_decode( wp_unslash( file_get_contents( $dir . $id . '.json' ) ) ); // phpcs:ignore
+				// phpcs:ignore WordPress.WP.AlternativeFunctions
+				$file_data     = json_decode( wp_unslash( file_get_contents( $dir . $id . '.json' ) ) );
 				$revision_name = wp_unique_filename( $dir . '._revisions_' . $id, $filename );
 
 				$revision = array(

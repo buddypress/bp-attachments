@@ -175,7 +175,7 @@ final class BP_Medium {
 	/**
 	 * List (keyed by object type) of item IDs the Medium is attached to.
 	 *
-	 * eg: array(
+	 * Eg: array(
 	 *   'activity' => array( 1, 2, 3 ),
 	 *   'messages' => array( 4, 5, 6 ),
 	 * );
@@ -224,13 +224,14 @@ final class BP_Medium {
 
 		if ( ! $medium ) {
 			// Try to get the json file containing most medium properties.
-			$json_file  = trailingslashit( $uploads_dir['path'] ) . $relative_path . '/' . $id . '.json';
+			$json_file = trailingslashit( $uploads_dir['path'] ) . $relative_path . '/' . $id . '.json';
 
 			if ( ! file_exists( $json_file ) ) {
 				return false;
 			}
 
-			$json_data = file_get_contents( $json_file ); // phpcs:ignore
+			// phpcs:ignore WordPress.WP.AlternativeFunctions
+			$json_data = file_get_contents( $json_file );
 			$medium    = bp_attachments_sanitize_media( json_decode( $json_data ) );
 
 			if ( ! isset( $medium->id ) || $medium->id !== $id ) {
@@ -297,7 +298,7 @@ final class BP_Medium {
 
 			// Add links, if needed.
 			if ( ! isset( $medium->links ) || ! $medium->links ) {
-				$owner_id  = (int) $medium->owner_id;
+				$owner_id = (int) $medium->owner_id;
 
 				$item_action_variables = array( $medium->id );
 				if ( array_filter( $relative_path_chunks ) ) {

@@ -170,6 +170,8 @@ class BP_Attachments_Component extends BP_Component {
 		// Use our own queried object to avoid conflicts with WordPress one.
 		$this->queried_object    = null;
 		$this->queried_object_id = 0;
+
+		$this->oembed = new BP_Attachments_OEmbed_Extension();
 	}
 
 	/**
@@ -520,6 +522,11 @@ class BP_Attachments_Component extends BP_Component {
 
 			$bp->current_action = $action;
 
+			if ( 'embed' === bp_attachments_get_item_action_key( $action ) ) {
+				$query->set( 'embed', true );
+				$query->is_embed = true;
+			}
+
 			$item_id = 0;
 			if ( $parse_array['bp_attachments_object_item'] ) {
 				if ( 'members' === $object ) {
@@ -560,10 +567,10 @@ class BP_Attachments_Component extends BP_Component {
 				$absolute_path = trailingslashit( bp_attachments_get_media_uploads_dir( $status )['path'] ) . implode( '/', $relative_path );
 
 				// Try to get the medium.
-				$media = bp_attachments_get_medium( $id, $absolute_path );
-				if ( $media ) {
-					$this->queried_object    = $media;
-					$this->queried_object_id = $media->id;
+				$medium = bp_attachments_get_medium( $id, $absolute_path );
+				if ( $medium ) {
+					$this->queried_object    = $medium;
+					$this->queried_object_id = $medium->id;
 				}
 			}
 		}

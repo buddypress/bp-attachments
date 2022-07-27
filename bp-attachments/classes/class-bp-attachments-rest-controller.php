@@ -566,7 +566,8 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		$subdir      = '/' . trim( $relative_path, '/' );
 		$medium_data = $path . $subdir . '/' . $id . '.json';
 
-		$data     = json_decode( wp_unslash( file_get_contents( $medium_data ) ) ); // phpcs:ignore
+		// phpcs:ignore WordPress.WP.AlternativeFunctions
+		$data     = json_decode( wp_unslash( file_get_contents( $medium_data ) ) );
 		$previous = $this->prepare_item_for_response( $data, $request );
 		$deleted  = true;
 
