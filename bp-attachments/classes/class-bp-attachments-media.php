@@ -22,16 +22,8 @@ class BP_Attachments_Media extends BP_Attachment {
 	 * The constuctor.
 	 *
 	 * @since 1.0.0
-	 *
-	 * @param BP_Attachments_Media|object $media The Attachment object.
 	 */
-	public function __construct( $media = null ) {
-		if ( ! is_null( $media ) && is_object( $media ) ) {
-			foreach ( get_object_vars( $media ) as $key => $value ) {
-				$this->$key = $value;
-			}
-		}
-
+	public function __construct() {
 		// Max upload size.
 		$max_upload_file_size = bp_attachments_get_max_upload_file_size();
 
@@ -64,62 +56,9 @@ class BP_Attachments_Media extends BP_Attachment {
 	}
 
 	/**
-	 * Retrieves a BP Attachments media from the file system.
+	 * Override the parent method to avoid re-creating the directories.
 	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $id            The ID of the media to retrieve.
-	 * @param string $relative_path The relative path to `/wp-content/uploads/buddypress`.
-	 * @return BP_Attachments_Media|false The site's object if found. False if not.
-	 */
-	public static function get_instance( $id, $relative_path ) {
-		if ( ! $id || ! $relative_path ) {
-			return false;
-		}
-
-		// Build the cache id.
-		$r_path     = trim( $relative_path, '/' );
-		$path_parts = explode( '/', $r_path );
-		$status     = array_shift( $path_parts );
-
-		if ( 'public' !== $status && 'private' !== $status ) {
-			return false;
-		}
-
-		$r_path    = implode( '/', $path_parts );
-		$cache_key = $status . '/' . $r_path . '/' . $id;
-
-		$media = wp_cache_get( $cache_key, 'bp_attachments' );
-
-		if ( ! $media ) {
-			$bp_uploads = bp_attachments_get_media_uploads_dir( $status );
-			$json_file  = trailingslashit( $bp_uploads['path'] ) . $r_path . '/' . $id . '.json';
-
-			if ( ! file_exists( $json_file ) ) {
-				return false;
-			}
-
-			$json_data = file_get_contents( $json_file ); // phpcs:ignore
-			$media     = bp_attachments_sanitize_media( json_decode( $json_data ) );
-
-			if ( ! $media ) {
-				return false;
-			}
-
-			if ( isset( $media->name ) && $media->name ) {
-				$media->path_data = $json_file;
-			}
-
-			wp_cache_add( $cache_key, $media, 'bp_attachments' );
-		}
-
-		return new BP_Attachments_Media( $media );
-	}
-
-	/**
-	 * Override the parent method to avoid re-create the directories.
-	 *
-	 * NB: This has been already set during plugin installation.
+	 * NB: These have been already set during plugin installation.
 	 *
 	 * @since 1.0.0
 	 */
