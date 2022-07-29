@@ -60,6 +60,7 @@ class BP_Attachments_Component extends BP_Component {
 		// Files to include.
 		$includes = array(
 			'functions',
+			'assets-loader',
 			'templates',
 		);
 
@@ -68,7 +69,7 @@ class BP_Attachments_Component extends BP_Component {
 			$includes[] = 'settings';
 		}
 
-		$includes[] = 'filters';
+		$includes[] = 'hooks';
 
 		parent::includes( $includes );
 	}

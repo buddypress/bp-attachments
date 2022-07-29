@@ -44,12 +44,12 @@ class BP_Attachments_OEmbed_Extension extends BP_Core_oEmbed_Extension {
 	 */
 	protected function content() {
 		// Temporarly overrides the BuddyPress Template Stack.
-		add_filter( 'bp_get_template_stack', 'bp_attachments_get_template_stack' );
+		bp_attachments_start_overriding_template_stack();
 
 		bp_get_asset_template_part( 'embeds/content', 'attachments' );
 
 		// Stop overriding the BuddyPress Template Stack.
-		remove_filter( 'bp_get_template_stack', 'bp_attachments_get_template_stack' );
+		bp_attachments_stop_overriding_template_stack();
 	}
 
 	/**
@@ -61,12 +61,12 @@ class BP_Attachments_OEmbed_Extension extends BP_Core_oEmbed_Extension {
 	 */
 	public function content_buffer_end( $name ) {
 		// Temporarly overrides the BuddyPress Template Stack.
-		add_filter( 'bp_get_template_stack', 'bp_attachments_get_template_stack' );
+		bp_attachments_start_overriding_template_stack();
 
 		parent::content_buffer_end( $name );
 
 		// Stop overriding the BuddyPress Template Stack.
-		remove_filter( 'bp_get_template_stack', 'bp_attachments_get_template_stack' );
+		bp_attachments_stop_overriding_template_stack();
 	}
 
 	/**

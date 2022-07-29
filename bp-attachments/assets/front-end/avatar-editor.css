@@ -1,0 +1,68 @@
+#buddypress #item-header-cover-image #item-header-avatar {
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+#buddypress #item-header-cover-image #item-header-avatar #bp-avatar-placeholder {
+	position: relative;
+	top: auto;
+	right: auto;
+	left: auto;
+	bottom: auto;
+	padding: 0;
+	margin: 0;
+	border: 4px dashed currentColor;
+}
+
+#buddypress #item-header-cover-image #item-header-avatar #bp-avatar-placeholder {
+	z-index: 1000;
+	float: left;
+	width: 170px;
+	height: 170px;
+	background-color: rgba( 255, 255, 255, .7 );
+}
+
+#buddypress #item-header-cover-image #item-header-avatar #bp-avatar-placeholder .uploader-container.disabled {
+	display: none;
+}
+
+#buddypress #item-header-cover-image #item-header-avatar #bp-avatar-placeholder .components-drop-zone.enabled.is-dragging-over-element {
+	display: table;
+}
+
+#buddypress #item-header-cover-image #item-header-avatar #bp-avatar-placeholder .components-drop-zone.enabled.is-dragging-over-element .components-drop-zone__content {
+	vertical-align: middle;
+	display: table-cell;
+	text-align: center;
+}
+
+#buddypress #item-header-cover-image #item-header-avatar #bp-avatar-placeholder .components-drop-zone.enabled.is-dragging-over-element .components-drop-zone__content .components-drop-zone__content-icon {
+	vertical-align: middle;
+}
+
+#buddypress #item-header-cover-image #item-header-avatar #bp-avatar-placeholder .enabled .dropzone-label,
+#buddypress #item-header-cover-image #item-header-avatar #bp-avatar-placeholder .enabled .upload-restrictions {
+	margin: 2em 0 0.5em;
+	text-align: center;
+}
+
+#buddypress #item-header-cover-image #item-header-avatar #bp-avatar-placeholder .enabled .dropzone-label {
+	font-weight: 600;
+}
+
+#buddypress #item-header-cover-image #item-header-avatar #bp-avatar-placeholder .enabled .dropzone-label h2 {
+	font-size: 1em;
+	line-height: 1.4;
+	font-weight: 600;
+	color: currentColor;
+	text-shadow: none;
+	margin: 0;
+}
+
+#buddypress #item-header-cover-image #item-header-avatar #bp-avatar-placeholder .enabled .dropzone-label p.upload-instructions {
+	margin: 0;
+}
+
+#buddypress #item-header-cover-image #item-header-avatar #bp-avatar-placeholder .enabled .dropzone-label .components-form-file-upload {
+	margin-top: 1em;
+}

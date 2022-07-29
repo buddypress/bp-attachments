@@ -62,57 +62,6 @@ function bp_attachments_admin_menu() {
 add_action( 'admin_menu', 'bp_attachments_admin_menu' );
 
 /**
- * Register JavaScripts and Styles for WP Admin context.
- *
- * @since 1.0.0
- */
-function bp_attachments_admin_register_scripts() {
-	$bp_attachments = buddypress()->attachments;
-
-	wp_register_script(
-		'bp-attachments-media-library',
-		$bp_attachments->js_url . 'media-library/index.js',
-		array(
-			'wp-element',
-			'wp-components',
-			'wp-compose',
-			'wp-i18n',
-			'wp-dom-ready',
-			'wp-data',
-			'wp-api-fetch',
-			'wp-url',
-			'lodash',
-			'wp-hooks',
-		),
-		$bp_attachments->version,
-		true
-	);
-
-	wp_register_style(
-		'bp-attachments-admin',
-		$bp_attachments->assets_url . 'admin/style.css',
-		array( 'dashicons', 'wp-components' ),
-		$bp_attachments->version
-	);
-}
-add_action( 'bp_admin_enqueue_scripts', 'bp_attachments_admin_register_scripts', 1 );
-
-/**
- * Inline styles for the settings page.
- *
- * @since 1.0.0
- */
-function bp_attachments_admin_enqueue_common_scripts() {
-	wp_add_inline_style(
-		'bp-admin-common-css',
-		'.settings_page_bp-components tr.attachments td.plugin-title span:before {
-			content: "\f104";
-		}'
-	);
-}
-add_action( 'bp_admin_enqueue_scripts', 'bp_attachments_admin_enqueue_common_scripts', 20 );
-
-/**
  * Display the BuddyPress Media Admin screen.
  *
  * @since 1.0.0
