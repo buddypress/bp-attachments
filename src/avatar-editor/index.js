@@ -32,6 +32,8 @@ const AvatarEditor = ( { settings } ) => {
 		width: 0,
 		height: 0,
 		area: {},
+		originalSize: {},
+		zoom: 1,
 		isUploading: false,
 	} );
 
@@ -52,15 +54,29 @@ const AvatarEditor = ( { settings } ) => {
 		} );
 	};
 
-	const onCropEdit = ( croppedArea, croppedAreaPixels ) => {
-		setCurrentImage( {
-			...currentImage,
-			x: croppedAreaPixels.x,
-			y: croppedAreaPixels.y,
-			width: croppedAreaPixels.width,
-			height: croppedAreaPixels.height,
-			area: croppedArea,
-		} );
+	const onCropEdit = ( croppedArea, croppedAreaPixels, zoom, originalSize ) => {
+		const newImage = currentImage;
+
+		if ( null !== originalSize ) {
+			newImage.originalSize = originalSize;
+		}
+
+		if ( null !== croppedArea ) {
+			newImage.area = croppedArea;
+		}
+
+		if ( null !== croppedAreaPixels ) {
+			newImage.x = croppedAreaPixels.x;
+			newImage.y = croppedAreaPixels.y;
+			newImage.width = croppedAreaPixels.width;
+			newImage.height = croppedAreaPixels.height;
+		}
+
+		if ( null !== zoom ) {
+			newImage.zoom = zoom;
+		}
+
+		setCurrentImage( newImage );
 	};
 
 	const onSaveEdits = () => {
@@ -71,16 +87,14 @@ const AvatarEditor = ( { settings } ) => {
 	}
 
 	if ( !! currentImage.isUploading ) {
-		const roundedX = Math.round( parseInt( currentImage.area.x, 10 ) * 10 ) / 10;
-		const roundedY = Math.round( parseInt( currentImage.area.y, 10 ) * 10 ) / 10;
-		const roundedXw = ( Math.round( ( parseInt( currentImage.area.x, 10 ) + parseInt( currentImage.area.width, 10 ) ) * 10 ) / 10 ) + 1;
-		const roundedYh = ( Math.round( ( parseInt( currentImage.area.y, 10 ) + parseInt( currentImage.area.height, 10 ) ) * 10 ) / 10 ) + 1;
+		const roundedX = ( Math.round( parseFloat( currentImage.area.x ) * 10 ) / 10 );
+		const roundedY = ( Math.round( parseFloat( currentImage.area.y ) * 10 ) / 10 );
 
 		const imgStyle = {
-			height: currentImage.height + 'px',
+			height: '100%',
 			width: 'auto',
-			transform: 'translate(-' + roundedX + '%,-'  + roundedY + '%)',
-			clipPath: 'polygon(' + roundedX + '% '  + roundedY + '%, ' + roundedXw + '% ' + roundedY + '%, ' + roundedXw + '% ' + roundedYh + '%, ' + roundedX + '% '  + roundedYh + '%)',
+			transform: 'translate(-' + parseInt( currentImage.zoom ) * roundedX + '%,-'  + parseInt( currentImage.zoom ) * roundedY + '%) scale(' + currentImage.zoom + ')',
+			transformOrigin: 'top left',
 		};
 
 		return (

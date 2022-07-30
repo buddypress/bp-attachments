@@ -31,8 +31,17 @@ const AvatarCropper = ( { image, onCropEdit, onSaveEdits } ) => {
 	const [ crop, setCrop ] = useState( { x: 0, y: 0 } );
 	const [ zoom, setZoom ] = useState( 1 );
 
+	const onMediaLoaded = useCallback( ( mediaSize ) => {
+		onCropEdit( null, null, null, mediaSize );
+	}, [] );
+
 	const onCropComplete = useCallback( ( croppedArea, croppedAreaPixels ) => {
-		onCropEdit( croppedArea, croppedAreaPixels );
+		onCropEdit( croppedArea, croppedAreaPixels, null, null );
+	}, [] );
+
+	const editZoom = useCallback( ( zoomValue ) => {
+		onCropEdit( null, null, zoomValue, null );
+		setZoom( zoomValue );
 	}, [] );
 
 	return (
@@ -45,13 +54,14 @@ const AvatarCropper = ( { image, onCropEdit, onSaveEdits } ) => {
 				aspect={ 1 }
 				onCropChange={ setCrop }
 				onCropComplete={ onCropComplete }
-				onZoomChange={ setZoom }
+				onZoomChange={ editZoom }
+				onMediaLoaded={ onMediaLoaded }
 			/>
 			<AvatarEditorPortal>
 				<RangeControl
 					label={ __( 'Zoom', 'bp-attachments' ) }
 					value={ zoom }
-					onChange={ ( value ) => setZoom( value ) }
+					onChange={ editZoom }
 					min={ 1 }
 					max={ 10 }
 				/>

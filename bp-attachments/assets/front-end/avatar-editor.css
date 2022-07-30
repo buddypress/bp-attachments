@@ -55,7 +55,7 @@
 }
 
 #buddypress #item-header-cover-image #item-header-avatar #bp-avatar-editor .enabled .dropzone-label h2 {
-	font-size: 90%;
+	font-size: 15px;
 	line-height: 1.4;
 	font-weight: 600;
 	color: currentColor;
@@ -65,11 +65,11 @@
 
 #buddypress #item-header-cover-image #item-header-avatar #bp-avatar-editor .enabled .dropzone-label p.upload-instructions {
 	margin: 0;
-	font-size: 90%;
+	font-size: 15px;
 }
 
 .buddypress .buddypress-wrap button.components-button {
-	font-size: 90%;
+	font-size: 15px;
 }
 
 #buddypress #item-header-cover-image #item-header-avatar #bp-avatar-editor .enabled .dropzone-label .components-form-file-upload {
