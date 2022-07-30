@@ -36,5 +36,8 @@
 	},
 	"browserslist": [
 		"extends @wordpress/browserslist-config"
-	]
+	],
+	"dependencies": {
+		"react-easy-crop": "^4.4.1"
+	}
 }

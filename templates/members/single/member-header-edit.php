@@ -16,7 +16,7 @@ bp_attachments_before_member_header();
 ?>
 <div id="item-header-avatar">
 	<?php if ( bp_is_user_change_avatar() ) : ?>
-		<div id="bp-avatar-placeholder"></div>
+		<div id="bp-avatar-editor"></div>
 	<?php else : ?>
 		<a href="<?php bp_displayed_user_link(); ?>">
 
@@ -53,6 +53,8 @@ bp_attachments_before_member_header();
 	);
 	?>
 </div><!-- #item-header-content -->
+
+<div id="bp-avatar-editor-controls"></div>
 
 <?php
 bp_attachments_after_member_header();
