@@ -139,6 +139,7 @@ function bp_attachments_enqueue_front_end_assets() {
 				'isAdminScreen'     => is_admin(),
 				'maxUploadFileSize' => bp_core_avatar_original_max_filesize(),
 				'allowedExtTypes'   => bp_attachments_get_allowed_types( 'avatar' ),
+				'displayedUserId'   => bp_displayed_user_id(),
 			)
 		);
 
