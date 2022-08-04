@@ -54,12 +54,8 @@ const AvatarEditor = ( { settings } ) => {
 		} );
 	};
 
-	const onCropEdit = ( croppedArea, croppedAreaPixels, zoom, originalSize ) => {
+	const onCropEdit = ( croppedArea, croppedAreaPixels, zoom ) => {
 		const newImage = currentImage;
-
-		if ( null !== originalSize ) {
-			newImage.originalSize = originalSize;
-		}
 
 		if ( null !== croppedArea ) {
 			newImage.area = croppedArea;
@@ -103,9 +99,26 @@ const AvatarEditor = ( { settings } ) => {
 	}
 
 	if ( !! currentImage.src ) {
+		if ( ! currentImage.originalSize.naturalHeight ) {
+			const getImageSize = ( event ) => {
+				setCurrentImage( {
+					...currentImage,
+					originalSize: {
+						naturalHeight: event.target.naturalHeight,
+						naturalWidth: event.target.naturalWidth,
+					},
+				} );
+			};
+
+			return (
+				<img src={ currentImage.src } onLoad={ ( e ) => getImageSize( e ) } />
+			);
+		}
+
 		return (
 			<AvatarCropper
 				image={ currentImage.src }
+				originalSize={ currentImage.originalSize }
 				onCropEdit={ onCropEdit }
 				onSaveEdits={ onSaveEdits }
 			/>
