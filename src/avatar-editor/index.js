@@ -83,13 +83,19 @@ const AvatarEditor = ( { settings } ) => {
 	}
 
 	if ( !! currentImage.isUploading ) {
-		const roundedX = ( Math.round( parseFloat( currentImage.area.x ) * 10 ) / 10 );
-		const roundedY = ( Math.round( parseFloat( currentImage.area.y ) * 10 ) / 10 );
+		const {
+			area,
+			originalSize,
+			zoom,
+		} = currentImage;
+		const roundedX = ( Math.round( parseFloat( area.x ) * 10 ) / 10 );
+		const roundedY = ( Math.round( parseFloat( area.y ) * 10 ) / 10 );
+		const isPortrait = originalSize.naturalHeight > originalSize.naturalWidth;
 
 		const imgStyle = {
-			height: '100%',
-			width: 'auto',
-			transform: 'translate(-' + parseInt( currentImage.zoom ) * roundedX + '%,-'  + parseInt( currentImage.zoom ) * roundedY + '%) scale(' + currentImage.zoom + ')',
+			height: isPortrait ? 'auto' : '100%',
+			width: isPortrait ? '100%' : 'auto',
+			transform: 'translate(-' + parseInt( zoom ) * roundedX + '%,-'  + parseInt( zoom ) * roundedY + '%) scale(' + zoom + ')',
 			transformOrigin: 'top left',
 		};
 
