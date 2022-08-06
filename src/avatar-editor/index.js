@@ -9,6 +9,7 @@ const {
 	domReady,
 	element: {
 		createElement,
+		Fragment,
 		render,
 		useState,
 	},
@@ -22,6 +23,7 @@ const {
  */
 import AvatarEditorUploader from './elements/uploader';
 import AvatarCropper from './elements/cropper';
+import AvatarEditorMain from './elements/main';
 
 const AvatarEditor = ( { settings } ) => {
 	const [ currentImage, setCurrentImage ] = useState( {
@@ -36,6 +38,8 @@ const AvatarEditor = ( { settings } ) => {
 		zoom: 1,
 		isUploading: false,
 	} );
+
+	let output = null;
 
 	const onSelectedImage = ( files ) => {
 		let image;
@@ -53,6 +57,16 @@ const AvatarEditor = ( { settings } ) => {
 			src: createBlobURL( image[0] ),
 		} );
 	};
+
+	const onOriginalImageLoaded = ( imageSize ) => {
+		setCurrentImage( {
+			...currentImage,
+			originalSize: {
+				naturalHeight: imageSize.naturalHeight,
+				naturalWidth: imageSize.naturalWidth,
+			},
+		} );
+	}
 
 	const onCropEdit = ( croppedArea, croppedAreaPixels, zoom ) => {
 		const newImage = currentImage;
@@ -114,29 +128,11 @@ const AvatarEditor = ( { settings } ) => {
 			transformOrigin: 'top left',
 		};
 
-		return (
+		output = (
 			<img src={ currentImage.src } style={ imgStyle } />
 		);
-	}
-
-	if ( !! currentImage.src ) {
-		if ( ! currentImage.originalSize.naturalHeight ) {
-			const getImageSize = ( event ) => {
-				setCurrentImage( {
-					...currentImage,
-					originalSize: {
-						naturalHeight: event.target.naturalHeight,
-						naturalWidth: event.target.naturalWidth,
-					},
-				} );
-			};
-
-			return (
-				<img src={ currentImage.src } onLoad={ ( e ) => getImageSize( e ) } />
-			);
-		}
-
-		return (
+	} else if ( !! currentImage.src && !! currentImage.originalSize.naturalHeight ) {
+		output = (
 			<AvatarCropper
 				image={ currentImage.src }
 				originalSize={ currentImage.originalSize }
@@ -144,19 +140,28 @@ const AvatarEditor = ( { settings } ) => {
 				onSaveEdits={ onSaveEdits }
 			/>
 		);
-	}
-
-	if ( ! currentImage.src ) {
-		return (
+	} else if ( ! currentImage.src ) {
+		output = (
 			<AvatarEditorUploader
 				settings={ settings }
 				onSelectedImage={ onSelectedImage }
 			/>
 		);
 	}
+
+	return (
+		<Fragment>
+			{ output }
+			<AvatarEditorMain
+				settings={ settings }
+				originalImageSrc={ currentImage.src }
+				onOriginalImageLoaded={ onOriginalImageLoaded }
+			/>
+		</Fragment>
+	)
 };
 
 domReady( function() {
 	const settings = window.bpAttachmentsAvatarEditorSettings || {};
-	render( <AvatarEditor settings={ settings }/>, document.querySelector( '#bp-avatar-editor' ) );
+	render( <AvatarEditor settings={ settings } />, document.querySelector( '#bp-avatar-editor' ) );
 } );

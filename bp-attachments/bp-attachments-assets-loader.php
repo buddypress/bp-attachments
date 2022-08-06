@@ -116,12 +116,20 @@ function bp_attachments_enqueue_front_end_assets() {
 			)
 		);
 
+		$full_avatar_width  = bp_core_avatar_full_width();
+		$full_avatar_height = bp_core_avatar_full_height();
+
 		if ( $avatar ) {
 			wp_add_inline_style(
 				'bp-attachments-avatar-editor-styles',
 				'
 				#buddypress #item-header-cover-image #item-header-avatar {
 					background-image: url( ' . $avatar . ' );
+				}
+
+				#buddypress #item-header-cover-image #item-header-avatar #bp-avatar-editor {
+					width: ' . $full_avatar_width . 'px;
+					height: ' . $full_avatar_height . 'px;
 				}
 				'
 			);
@@ -140,6 +148,8 @@ function bp_attachments_enqueue_front_end_assets() {
 				'maxUploadFileSize' => bp_core_avatar_original_max_filesize(),
 				'allowedExtTypes'   => bp_attachments_get_allowed_types( 'avatar' ),
 				'displayedUserId'   => bp_displayed_user_id(),
+				'avatarFullWidth'   => $full_avatar_width,
+				'avatarFullHeight'  => $full_avatar_height,
 			)
 		);
 
