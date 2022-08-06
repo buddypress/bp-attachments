@@ -96,6 +96,21 @@ const AvatarEditor = ( { settings } ) => {
 		} );
 	}
 
+	const onCreateProfilePhoto = ( base64Image ) => {
+		const profileImageData = new FormData();
+		profileImageData.append( 'file',  base64Image );
+
+		apiFetch( {
+			path: 'buddypress/v1/attachments/members/' + settings.displayedUserId + '/profile-image',
+			method: 'POST',
+			data: {
+				image: base64Image,
+			}
+		} ).catch( ( error ) => {
+			console.log( error );
+		} );
+	};
+
 	if ( !! currentImage.isUploading ) {
 		const {
 			area,
@@ -105,21 +120,6 @@ const AvatarEditor = ( { settings } ) => {
 		const roundedX = ( Math.round( parseFloat( area.x ) * 10 ) / 10 );
 		const roundedY = ( Math.round( parseFloat( area.y ) * 10 ) / 10 );
 		const isPortrait = originalSize.naturalHeight > originalSize.naturalWidth;
-		const profileImageData = new FormData();
-		profileImageData.append( 'file', currentImage.file );
-		profileImageData.append( 'action', 'bp_avatar_upload' );
-		profileImageData.append( 'crop_x', currentImage.x );
-		profileImageData.append( 'crop_y', currentImage.y );
-		profileImageData.append( 'crop_w', currentImage.width );
-		profileImageData.append( 'crop_h', currentImage.height );
-
-		apiFetch( {
-			path: 'buddypress/v1/members/' + settings.displayedUserId + '/avatar',
-			method: 'POST',
-			body: profileImageData
-		} ).catch( ( error ) => {
-			console.log( error );
-		} );
 
 		const imgStyle = {
 			height: isPortrait ? 'auto' : '100%',
@@ -154,8 +154,9 @@ const AvatarEditor = ( { settings } ) => {
 			{ output }
 			<AvatarEditorMain
 				settings={ settings }
-				originalImageSrc={ currentImage.src }
+				currentImage={ currentImage }
 				onOriginalImageLoaded={ onOriginalImageLoaded }
+				onCreateProfilePhoto={ onCreateProfilePhoto }
 			/>
 		</Fragment>
 	)
