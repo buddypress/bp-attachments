@@ -6,6 +6,9 @@ const {
 	blob: {
 		createBlobURL,
 	},
+	components: {
+		Spinner,
+	},
 	domReady,
 	element: {
 		createElement,
@@ -129,7 +132,10 @@ const AvatarEditor = ( { settings } ) => {
 		};
 
 		output = (
-			<img src={ currentImage.src } style={ imgStyle } />
+			<Fragment>
+				<img src={ currentImage.src } style={ imgStyle } className="is-applying bp-profile-image-preview" />
+				<Spinner />
+			</Fragment>
 		);
 	} else if ( !! currentImage.src && !! currentImage.originalSize.naturalHeight ) {
 		output = (
