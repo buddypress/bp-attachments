@@ -5,6 +5,7 @@ const {
 	apiFetch,
 	blob: {
 		createBlobURL,
+		revokeBlobURL,
 	},
 	components: {
 		Spinner,
@@ -109,8 +110,28 @@ const AvatarEditor = ( { settings } ) => {
 			data: {
 				image: base64Image,
 			}
+		} ).then( ( response ) => {
+			if ( response.full ) {
+				document.querySelector( '#item-header-avatar' ).style.backgroundImage = 'url( ' + response.full + ' )';
+			}
 		} ).catch( ( error ) => {
 			console.log( error );
+		} ).finally( () => {
+			revokeBlobURL( currentImage.src );
+
+			// Reset the state.
+			setCurrentImage( {
+				file: null,
+				src: null,
+				x: 0,
+				y: 0,
+				width: 0,
+				height: 0,
+				area: {},
+				originalSize: {},
+				zoom: 1,
+				isUploading: false,
+			} );
 		} );
 	};
 
