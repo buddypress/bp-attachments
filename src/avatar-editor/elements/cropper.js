@@ -54,7 +54,7 @@ const AvatarCropper = ( { image, originalSize, onCropEdit, onSaveEdits } ) => {
 				onCropComplete={ onCropComplete }
 				onZoomChange={ editZoom }
 			/>
-			<AvatarEditorPortal>
+			<AvatarEditorPortal selector="bp-avatar-editor-controls">
 				<RangeControl
 					label={ __( 'Zoom', 'bp-attachments' ) }
 					value={ zoom }

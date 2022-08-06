@@ -11,9 +11,11 @@ const {
 
 class AvatarEditorPortal extends Component {
 	render() {
+		const { selector } = this.props;
+
 		return createPortal(
 			this.props.children,
-			document.querySelector( "#bp-avatar-editor-controls" )
+			document.querySelector( '#' + selector )
 		);
 	}
 }
