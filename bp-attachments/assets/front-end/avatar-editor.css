@@ -76,10 +76,15 @@
 	margin-top: 1em;
 }
 
-#buddypress #bp-avatar-editor-controls {
+#buddypress #bp-avatar-editor-controls .upload-controls {
 	max-width: 214px;
 	text-align: center;
 	padding-bottom: 2em;
+}
+
+#buddypress #bp-avatar-editor-controls .upload-controls label.components-base-control__label {
+	text-align: left;
+	display: block;
 }
 
 #buddypress #item-header-cover-image #item-header-avatar #bp-avatar-editor .bp-profile-image-preview.is-applying {
@@ -92,4 +97,31 @@
 	left: 50%;
 	margin-top: -9px;
 	margin-left: -9px;
+}
+
+#buddypress #bp-avatar-editor-controls div.bp-avatar-status,
+#buddypress #bp-avatar-editor-controls div.bp-cover-image-status {
+	clear: both;
+	margin: 1em 0;
+	text-align: left;
+}
+
+#buddypress #bp-avatar-editor-controls div.bp-avatar-status p,
+#buddypress #bp-avatar-editor-controls div.bp-cover-image-status p {
+	display: block;
+	padding: 10px 15px;
+}
+
+#buddypress #bp-avatar-editor-controls div.bp-avatar-status.updated p,
+#buddypress #bp-avatar-editor-controls div.bp-cover-image-status.updated p {
+	background-color: #efc;
+	border: 1px solid #591;
+	color: #250;
+}
+
+#buddypress #bp-avatar-editor-controls div.bp-avatar-status.error p,
+#buddypress #bp-avatar-editor-controls div.bp-cover-image-status.error p {
+	background-color: #fdc;
+	border: 1px solid #a00;
+	color: #800;
 }

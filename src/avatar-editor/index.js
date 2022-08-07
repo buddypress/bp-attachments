@@ -28,6 +28,7 @@ const {
 import AvatarEditorUploader from './elements/uploader';
 import AvatarCropper from './elements/cropper';
 import AvatarEditorMain from './elements/main';
+import AvatarEditorFeedback from './elements/feedback';
 
 const AvatarEditor = ( { settings } ) => {
 	const [ currentImage, setCurrentImage ] = useState( {
@@ -41,6 +42,7 @@ const AvatarEditor = ( { settings } ) => {
 		originalSize: {},
 		zoom: 1,
 		isUploading: false,
+		feedback: {},
 	} );
 
 	let output = null;
@@ -59,6 +61,7 @@ const AvatarEditor = ( { settings } ) => {
 			...currentImage,
 			file: image[0],
 			src: createBlobURL( image[0] ),
+			feedback: {},
 		} );
 	};
 
@@ -101,6 +104,7 @@ const AvatarEditor = ( { settings } ) => {
 	}
 
 	const onCreateProfilePhoto = ( base64Image ) => {
+		const currentState = currentImage;
 		const profileImageData = new FormData();
 		profileImageData.append( 'file',  base64Image );
 
@@ -114,10 +118,26 @@ const AvatarEditor = ( { settings } ) => {
 			if ( response.full ) {
 				document.querySelector( '#item-header-avatar' ).style.backgroundImage = 'url( ' + response.full + ' )';
 			}
+
+			currentState.feedback = {
+				type: 'updated',
+				message: __( 'Profile image successfully saved.', 'bp-attachments' ),
+			};
+
+			setCurrentImage( currentState );
+
 		} ).catch( ( error ) => {
-			console.log( error );
+			const errorMessage = !! error.message ? error.message : __( 'Unknow error. Please try again.', 'bp-attachments' );
+
+			currentState.feedback = {
+				type: 'error',
+				message: errorMessage,
+			};
+
+			setCurrentImage( currentState );
 		} ).finally( () => {
 			revokeBlobURL( currentImage.src );
+			const currentFeedback = currentImage.feedback;
 
 			// Reset the state.
 			setCurrentImage( {
@@ -131,6 +151,7 @@ const AvatarEditor = ( { settings } ) => {
 				originalSize: {},
 				zoom: 1,
 				isUploading: false,
+				feedback: currentFeedback,
 			} );
 		} );
 	};
@@ -185,6 +206,13 @@ const AvatarEditor = ( { settings } ) => {
 				onOriginalImageLoaded={ onOriginalImageLoaded }
 				onCreateProfilePhoto={ onCreateProfilePhoto }
 			/>
+			{ !! currentImage.feedback.type && (
+				<AvatarEditorFeedback type={ currentImage.feedback.type }>
+					<p>
+						{ currentImage.feedback.message }
+					</p>
+				</AvatarEditorFeedback>
+			) }
 		</Fragment>
 	)
 };

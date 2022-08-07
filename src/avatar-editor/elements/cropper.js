@@ -55,16 +55,18 @@ const AvatarCropper = ( { image, originalSize, onCropEdit, onSaveEdits } ) => {
 				onZoomChange={ editZoom }
 			/>
 			<AvatarEditorPortal selector="bp-avatar-editor-controls">
-				<RangeControl
-					label={ __( 'Zoom', 'bp-attachments' ) }
-					value={ zoom }
-					onChange={ editZoom }
-					min={ 1 }
-					max={ 10 }
-				/>
-				<Button variant="primary" onClick={ () => onSaveEdits() }>
-					{ __( 'Save profile photo', 'bp-attachments' ) }
-				</Button>
+				<div className="upload-controls">
+					<RangeControl
+						label={ __( 'Zoom', 'bp-attachments' ) }
+						value={ zoom }
+						onChange={ editZoom }
+						min={ 1 }
+						max={ 10 }
+					/>
+					<Button variant="primary" onClick={ () => onSaveEdits() }>
+						{ __( 'Save profile photo', 'bp-attachments' ) }
+					</Button>
+				</div>
 			</AvatarEditorPortal>
 		</Fragment>
 	);
