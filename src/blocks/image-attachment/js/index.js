@@ -54,7 +54,7 @@ registerBlockType( metadata, {
 		'className': false,
 		'html': false,
 	},
-    edit: function( { attributes, setAttributes } ) {
+	edit: function( { attributes, setAttributes } ) {
 		const blockProps = useBlockProps();
 
 		return (
@@ -64,7 +64,7 @@ registerBlockType( metadata, {
 			/>
 		);
 	},
-    save: function( { attributes } ) {
+	save: function( { attributes } ) {
 		const blockProps = useBlockProps.save();
 		return null;
 	}
