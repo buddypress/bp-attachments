@@ -13,6 +13,8 @@
 		"build": "parcel build src/media-library/index.js --dist-dir bp-attachments/js/media-library/",
 		"dev:avatar-editor": "parcel src/avatar-editor/index.js --dist-dir bp-attachments/js/avatar-editor/",
 		"build:avatar-editor": "parcel build src/avatar-editor/index.js --dist-dir bp-attachments/js/avatar-editor/",
+		"dev:blocks": "parcel src/blocks/*-attachment/*s/index.*s --dist-dir bp-attachments/assets/blocks/",
+		"build:blocks": "parcel build src/blocks/*-attachment/*s/index.*s --dist-dir bp-attachments/assets/blocks/",
 		"pot": "wp i18n make-pot . --exclude=\".cache,node_modules,tests,bp-attachments/js/*.js\" languages/bp-attachments.pot"
 	},
 	"keywords": [
@@ -30,6 +32,7 @@
 	},
 	"version": "1.0.0-alpha",
 	"devDependencies": {
+		"@parcel/transformer-sass": "^2.6.2",
 		"@wordpress/babel-preset-default": "^6.15.0",
 		"@wordpress/browserslist-config": "^4.1.2",
 		"parcel": "^2.6.2"

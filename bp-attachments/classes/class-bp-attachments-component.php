@@ -590,4 +590,45 @@ class BP_Attachments_Component extends BP_Component {
 	public function rest_api_init( $controllers = array() ) {
 		parent::rest_api_init( array( 'BP_Attachments_REST_Controller' ) );
 	}
+
+	/**
+	 * Register the BP Attachments Blocks.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $blocks Optional. See BP_Component::blocks_init() for
+	 *                      description.
+	 */
+	public function blocks_init( $blocks = array() ) {
+		$editor_script_deps = array(
+			'wp-blocks',
+			'wp-block-editor',
+			'wp-element',
+			'wp-components',
+			'wp-i18n',
+		);
+
+		// Get the blocks metadata.
+		$metadata_file   = $this->path . 'assets/blocks/blocks.json';
+		$blocks_metadata = wp_json_file_decode( $metadata_file, array( 'associative' => true ) );
+		$blocks_list     = array();
+
+		if ( ! is_null( $blocks_metadata ) ) {
+			foreach ( $blocks_metadata as $block_metadata ) {
+				$block_suffix = str_replace( 'bp/', '', $block_metadata['name'] );
+
+				$blocks_list[ $block_metadata['name'] ] = array(
+					'name'               => $block_metadata['name'],
+					'editor_script'      => 'bp-' . $block_suffix . '-script',
+					'editor_script_url'  => plugins_url( 'assets/blocks/' . $block_suffix . '/js/index.js', dirname( __FILE__ ) ),
+					'editor_script_deps' => $editor_script_deps,
+					'style'              => 'bp-' . $block_suffix . '-style',
+					'style_url'          => plugins_url( 'assets/blocks/' . $block_suffix . '/css/index.css', dirname( __FILE__ ) ),
+					'attributes'         => $block_metadata['attributes'],
+				);
+			}
+		}
+
+		parent::blocks_init( $blocks_list );
+	}
 }

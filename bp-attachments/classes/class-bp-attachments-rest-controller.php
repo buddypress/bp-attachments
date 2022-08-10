@@ -116,7 +116,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 						'description' => __( 'A unique numeric ID for the Member.', 'bp-attachments' ),
 						'type'        => 'integer',
 					),
-					'image' => array(
+					'image'   => array(
 						'description' => __( 'The captured image area to use as the member’s profile image.', 'bp-attachments' ),
 						'type'        => 'string',
 					),
@@ -720,6 +720,8 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		}
 
 		$profile_image = str_replace( array( 'data:image/png;base64,', ' ' ), array( '', '+' ), $image );
+
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
 		$profile_image = base64_decode( $profile_image );
 		$avatar_data   = array(
 			'item_id' => $user_id,
@@ -727,7 +729,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 			'object'  => 'user',
 		);
 
-		// Put the profile image in place
+		// Put the profile image in place.
 		$capture = bp_avatar_handle_capture( $profile_image, $user_id, 'array' );
 		if ( ! $capture ) {
 			return new WP_Error(

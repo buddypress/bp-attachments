@@ -1,0 +1,25 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "bp/video-attachment",
+	"title": "Community Video",
+	"category": "media",
+	"icon": "video-alt3",
+	"description": "Insert a movie from your personal media library.",
+	"keywords": [ "BuddyPress", "community", "video", "movie", "media" ],
+	"textdomain": "bp-attachments",
+	"attributes": {
+		"link": {
+			"type": "string"
+		}
+	},
+	"supports": {
+		"align": false,
+		"alignWide": false,
+		"anchor": false,
+		"className": false,
+		"html": false
+	},
+	"editorScript": "file:./bp-attachments/js/blocks/video-attachment/index.js",
+	"style": "file:./bp-attachments/assets/blocks/video-attachment/index.css"
+}
