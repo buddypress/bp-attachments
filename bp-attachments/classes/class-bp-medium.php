@@ -230,9 +230,8 @@ final class BP_Medium {
 				return false;
 			}
 
-			// phpcs:ignore WordPress.WP.AlternativeFunctions
-			$json_data = file_get_contents( $json_file );
-			$medium    = bp_attachments_sanitize_media( json_decode( $json_data ) );
+			$json_data = wp_json_file_decode( $json_file );
+			$medium    = bp_attachments_sanitize_media( $json_data );
 
 			if ( ! isset( $medium->id ) || $medium->id !== $id ) {
 				return false;

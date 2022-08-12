@@ -254,8 +254,7 @@ class BP_Attachments_Media extends BP_Attachment {
 					$file['error'] = 14;
 				}
 
-				// phpcs:ignore WordPress.WP.AlternativeFunctions
-				$file_data     = json_decode( wp_unslash( file_get_contents( $dir . $id . '.json' ) ) );
+				$file_data     = wp_json_file_decode( $dir . $id . '.json' );
 				$revision_name = wp_unique_filename( $dir . '._revisions_' . $id, $filename );
 
 				$revision = array(
