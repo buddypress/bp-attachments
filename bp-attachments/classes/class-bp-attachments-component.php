@@ -612,10 +612,17 @@ class BP_Attachments_Component extends BP_Component {
 		$metadata_file   = $this->path . 'assets/blocks/blocks.json';
 		$blocks_metadata = wp_json_file_decode( $metadata_file, array( 'associative' => true ) );
 		$blocks_list     = array();
+		$allowed_types   = bp_attachments_get_allowed_media_types();
 
 		if ( ! is_null( $blocks_metadata ) ) {
 			foreach ( $blocks_metadata as $block_metadata ) {
 				$block_suffix = str_replace( 'bp/', '', $block_metadata['name'] );
+				$block_type   = str_replace( '-attachment', '', $block_suffix );
+
+				// Only register blocks if the corresponding attachment type is allowed.
+				if ( ! isset( $allowed_types[ $block_type ] ) || ! $allowed_types[ $block_type ] ) {
+					continue;
+				}
 
 				$blocks_list[ $block_metadata['name'] ] = array(
 					'name'               => $block_metadata['name'],
