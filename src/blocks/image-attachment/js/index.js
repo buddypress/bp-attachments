@@ -8,9 +8,6 @@ const {
 	blockEditor: {
 		useBlockProps,
 	},
-	components: {
-		Placeholder,
-	},
 	element: {
 		createElement,
 	},
@@ -23,6 +20,7 @@ const {
  * Internal dependencies.
  */
 import metadata from '../block.json';
+import AttachmentPlaceholder from '../../common/components/attachment-placeholder';
 
 registerBlockType( metadata, {
 	title: __( 'Community Image', 'bp-attachments' ),
@@ -58,7 +56,8 @@ registerBlockType( metadata, {
 		const blockProps = useBlockProps();
 
 		return (
-			<Placeholder
+			<AttachmentPlaceholder
+				type="image"
 				icon="format-image"
 				label={ __( 'Insert an image', 'bp-attachments' ) }
 			/>
