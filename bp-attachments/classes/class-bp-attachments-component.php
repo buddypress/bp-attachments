@@ -632,6 +632,7 @@ class BP_Attachments_Component extends BP_Component {
 					'style'              => 'bp-' . $block_suffix . '-style',
 					'style_url'          => plugins_url( 'assets/blocks/' . $block_suffix . '/css/index.css', dirname( __FILE__ ) ),
 					'attributes'         => $block_metadata['attributes'],
+					'render_callback'    => 'bp_attachments_render_' . str_replace( '-', '_', $block_suffix ),
 				);
 			}
 		}

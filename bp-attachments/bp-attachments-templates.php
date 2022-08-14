@@ -864,3 +864,35 @@ function bp_attachments_member_after_edit_cover_image() {
 	 */
 	do_action( 'bp_after_profile_edit_cover_image' );
 }
+
+/**
+ * Callback function to render the Image Attachment Block.
+ *
+ * NB: using such a callback will help us make sure the attached image still
+ * exists at the place it was when attached to the object before trying
+ * to render it.
+ *
+ * @since 1.0.0
+ *
+ * @param array $attributes The block attributes.
+ * @return string           HTML output.
+ */
+function bp_attachments_render_image_attachment( $attributes = array() ) {
+	return null;
+}
+
+/**
+ * Callback function to render the Video Attachment Block.
+ *
+ * NB: using such a callback will help us make sure the attached video still
+ * exists at the place it was when attached to the object before trying
+ * to render it.
+ *
+ * @since 1.0.0
+ *
+ * @param array $attributes The block attributes.
+ * @return string           HTML output.
+ */
+function bp_attachments_render_video_attachment( $attributes = array() ) {
+	return null;
+}
