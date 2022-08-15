@@ -128,7 +128,7 @@ function bp_attachments_admin_load_settings() {
 	wp_enqueue_style( 'site-health' );
 	wp_add_inline_style(
 		'site-health',
-		'.health-check-accordion table.widefat { border: none; }
+		'.health-check-accordion table.widefat { border: none; box-shadow: none; }
 		.health-check-accordion table.widefat th.check-column { vertical-align: middle; padding: 0; }'
 	);
 	wp_enqueue_script( 'bp-attachments-admin' );
