@@ -39,6 +39,16 @@ function bp_attachments_register_admin_assets() {
 		true
 	);
 
+	wp_register_script(
+		'bp-attachments-admin',
+		$bp_attachments->js_url . 'admin/index.js',
+		array(
+			'wp-dom-ready',
+		),
+		$bp_attachments->version,
+		true
+	);
+
 	wp_register_style(
 		'bp-attachments-admin',
 		$bp_attachments->assets_url . 'admin/style.css',

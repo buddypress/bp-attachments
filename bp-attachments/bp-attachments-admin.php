@@ -118,3 +118,19 @@ function bp_attachments_admin_media() {
 	echo ( '<div class="wrap" id="bp-media-library"></div>' );
 	bp_attachments_get_javascript_templates();
 }
+
+/**
+ * Enqueue JavaScript and Styles for the Mime Types settings.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_admin_load_settings() {
+	wp_enqueue_style( 'site-health' );
+	wp_add_inline_style(
+		'site-health',
+		'.health-check-accordion table.widefat { border: none; }
+		.health-check-accordion table.widefat th.check-column { vertical-align: middle; padding: 0; }'
+	);
+	wp_enqueue_script( 'bp-attachments-admin' );
+}
+add_action( 'load-settings_page_bp-settings', 'bp_attachments_admin_load_settings' );

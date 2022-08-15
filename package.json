@@ -15,6 +15,8 @@
 		"build:avatar-editor": "parcel build src/avatar-editor/index.js --dist-dir bp-attachments/js/avatar-editor/",
 		"dev:blocks": "parcel src/blocks/*-attachment/*s/index.*s --dist-dir bp-attachments/assets/blocks/",
 		"build:blocks": "parcel build src/blocks/*-attachment/*s/index.*s --dist-dir bp-attachments/assets/blocks/",
+		"dev:admin": "parcel src/admin/index.js --dist-dir bp-attachments/js/admin/",
+		"build:admin": "parcel build src/admin/index.js --dist-dir bp-attachments/js/admin/",
 		"pot": "wp i18n make-pot . --exclude=\".cache,node_modules,tests,bp-attachments/js/*.js\" languages/bp-attachments.pot"
 	},
 	"keywords": [

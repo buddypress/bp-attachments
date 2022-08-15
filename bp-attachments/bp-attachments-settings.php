@@ -123,56 +123,77 @@ function bp_attachments_allowed_media_types_callback() {
 
 	$i18n_types    = bp_attachments_get_i18n_media_type( $allowed_types );
 	$allowed_mimes = bp_attachments_get_allowed_mimes( '' );
-	/**
-	 * `bp_get_option()` does not include the default value set during the settings registration.
-	 */
+
+	// `bp_get_option()` does not include the default value set during the settings registration.
 	$setting      = get_option( '_bp_attachments_allowed_media_types' );
 	$printed_mime = array();
-
-	foreach ( $i18n_types as $k_type => $i18n_type ) {
-		?>
-		<fieldset>
-			<legend>
-				<label for="bp-attachments-selectall-<?php echo esc_attr( $k_type ); ?>">
-					<input
-						id="bp-attachments-selectall-<?php echo esc_attr( $k_type ); ?>"
-						type="checkbox" class="bp-attachments-selectall"
-						data-mime-type="<?php echo esc_attr( $k_type ); ?>"
-						<?php checked( true, isset( $setting[ $k_type ] ) ); ?>
-					>
-					<?php echo esc_html( $i18n_type ); ?>
-				</label>
-			</legend>
-
-			<ul>
-			<?php
-			foreach ( $allowed_types[ $k_type ] as $bp_type ) {
-				if ( isset( $allowed_mimes[ $bp_type ] ) && ! in_array( $allowed_mimes[ $bp_type ], $printed_mime, true ) ) {
-					array_push( $printed_mime, $allowed_mimes[ $bp_type ] );
-					$sub_type_id = str_replace( $k_type . '/', '', $allowed_mimes[ $bp_type ] );
-					?>
-					<li>
-						<label for="bp-attachments_mime_type-<?php echo esc_attr( $sub_type_id ); ?>">
-							<input
-								id="bp-attachments_mime_type-<?php echo esc_attr( $sub_type_id ); ?>"
-								type="checkbox"
-								name="_bp_attachments_allowed_media_types[<?php echo esc_attr( $k_type ); ?>][]"
-								data-mime-type="<?php echo esc_attr( $k_type ); ?>"
-								value="<?php echo esc_attr( $allowed_mimes[ $bp_type ] ); ?>"
-								<?php isset( $setting[ $k_type ] ) ? checked( true, in_array( $allowed_mimes[ $bp_type ], $setting[ $k_type ], true ) ) : ''; ?>
-							>
-							<?php echo esc_html( $allowed_mimes[ $bp_type ] ); ?>
-						</label>
-					</li>
-					<?php
-				}
-			}
-			?>
-			</ul>
-
-		</fieldset>
+	?>
+	<div class="health-check-accordion">
 		<?php
-	}
+		foreach ( $i18n_types as $k_type => $i18n_type ) {
+			?>
+			<h3 class="health-check-accordion-heading">
+				<button aria-expanded="false" class="health-check-accordion-trigger" aria-controls="health-check-accordion-block-<?php echo esc_attr( $k_type ); ?>-extensions" type="button">
+					<span class="title"><?php echo esc_html( $i18n_type ); ?></span>
+					<span class="icon"></span>
+				</button>
+			</h3>
+
+			<div id="health-check-accordion-block-<?php echo esc_attr( $k_type ); ?>-extensions" class="health-check-accordion-panel" hidden="hidden">
+				<table class="form-table widefat" role="presentation">
+					<thead>
+						<tr>
+							<th class="check-column">
+								<input
+									id="bp-attachments-selectall-<?php echo esc_attr( $k_type ); ?>"
+									type="checkbox" class="bp-attachments-selectall"
+									data-mime-type="<?php echo esc_attr( $k_type ); ?>"
+									<?php checked( true, isset( $setting[ $k_type ] ) ); ?>
+								>
+							</th>
+							<td>
+								<label for="bp-attachments-selectall-<?php echo esc_attr( $k_type ); ?>">
+									<?php echo sprintf( esc_html__( 'Select/Unselect all %s mime types', 'bp-attachments' ), esc_html( strtolower( $i18n_type ) ) ); ?>
+								</label>
+							</td>
+						</tr>
+					</thead>
+					<tbody>
+						<?php
+						foreach ( $allowed_types[ $k_type ] as $bp_type ) {
+							if ( isset( $allowed_mimes[ $bp_type ] ) && ! in_array( $allowed_mimes[ $bp_type ], $printed_mime, true ) ) {
+								array_push( $printed_mime, $allowed_mimes[ $bp_type ] );
+								$sub_type_id = str_replace( $k_type . '/', '', $allowed_mimes[ $bp_type ] );
+								?>
+								<tr>
+									<th class="check-column">
+										<input
+											id="bp-attachments_mime_type-<?php echo esc_attr( $sub_type_id ); ?>"
+											type="checkbox"
+											name="_bp_attachments_allowed_media_types[<?php echo esc_attr( $k_type ); ?>][]"
+											data-mime-type="<?php echo esc_attr( $k_type ); ?>"
+											value="<?php echo esc_attr( $allowed_mimes[ $bp_type ] ); ?>"
+											<?php isset( $setting[ $k_type ] ) ? checked( true, in_array( $allowed_mimes[ $bp_type ], $setting[ $k_type ], true ) ) : ''; ?>
+										>
+									</th>
+									<td>
+										<label for="bp-attachments_mime_type-<?php echo esc_attr( $sub_type_id ); ?>">
+											<?php echo esc_html( $allowed_mimes[ $bp_type ] ); ?>
+										</label>
+									</td>
+								</tr>
+								<?php
+							}
+						}
+						?>
+					</tbody>
+				</table>
+			</div>
+			<?php
+		}
+		?>
+	</div>
+	<?php
 }
 
 /**
