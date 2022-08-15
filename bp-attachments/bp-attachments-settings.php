@@ -153,7 +153,13 @@ function bp_attachments_allowed_media_types_callback() {
 							</th>
 							<td>
 								<label for="bp-attachments-selectall-<?php echo esc_attr( $k_type ); ?>">
-									<?php echo sprintf( esc_html__( 'Select/Unselect all %s mime types', 'bp-attachments' ), esc_html( strtolower( $i18n_type ) ) ); ?>
+									<?php
+									echo sprintf(
+										/* Translators: %s is the category name of the listed mime types. */
+										esc_html__( 'Select/Unselect all %s mime types', 'bp-attachments' ),
+										esc_html( strtolower( $i18n_type ) )
+									);
+									?>
 								</label>
 							</td>
 						</tr>
