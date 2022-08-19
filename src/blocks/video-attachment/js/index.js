@@ -57,8 +57,9 @@ registerBlockType( metadata, {
 
 		return (
 			<Placeholder
+				type="video"
 				icon="video-alt3"
-				label={ __( 'Insert a video', 'bp-attachments' ) }
+				label={ __( 'Community Video', 'bp-attachments' ) }
 			/>
 		);
 	},

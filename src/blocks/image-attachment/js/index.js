@@ -59,7 +59,7 @@ registerBlockType( metadata, {
 			<AttachmentPlaceholder
 				type="image"
 				icon="format-image"
-				label={ __( 'Insert an image', 'bp-attachments' ) }
+				label={ __( 'Community Image', 'bp-attachments' ) }
 			/>
 		);
 	},

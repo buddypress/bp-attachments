@@ -36,7 +36,7 @@ const AttachmentPlaceholder = ( { type, icon, label } ) => {
 	}  = useSelect( ( select ) => {
 		return select( 'core/editor' ).getEditorSettings();
 	}, [] );
-	const allowedTypes = allowedExtByMediaList[ type ] ? allowedExtByMediaList[ type ] : allowedExtByMediaList.album;
+	const allowedTypes = allowedExtByMediaList[ type + '_playlist' ] ? allowedExtByMediaList[ type + '_playlist' ] : allowedExtByMediaList.album;
 
 	const uploadMedia = ( files ) => {
 		let media;
@@ -54,7 +54,7 @@ const AttachmentPlaceholder = ( { type, icon, label } ) => {
 	return (
 		<Placeholder
 			icon={ !! icon ? icon : 'admin-media' }
-			label={ !! label ? label : __( 'Insert a media', 'bp-attachments' ) }
+			label={ !! label ? label : __( 'Community Media', 'bp-attachments' ) }
 		>
 			<DropZone
 				onFilesDrop={ ( files ) => uploadMedia( files ) }
@@ -64,7 +64,7 @@ const AttachmentPlaceholder = ( { type, icon, label } ) => {
 				onChange={ ( files ) => uploadMedia( files ) }
 				multiple={ false }
 				accept={ allowedTypes }
-				className="block-editor-media-placeholder__button block-editor-media-placeholder__upload-button"
+				className="components-button block-editor-media-placeholder__button block-editor-media-placeholder__upload-button is-primary"
 			>
 				{ __( 'Select a file', 'bp-attachments' ) }
 			</FormFileUpload>
