@@ -609,7 +609,7 @@ function bp_attachments_get_medium_url( $args = array() ) {
  * @todo this function should use `bp_attachments_get_medium()` to be sure to set all medium properties.
  *
  * @param object $media Media Data to create the Media Item.
- * @return object       The created Media Item.
+ * @return BP_Medium    The created Media Item.
  */
 function bp_attachments_create_media( $media = null ) {
 	if ( ! is_object( $media ) || ! isset( $media->path ) || ! $media->path ) {
@@ -699,7 +699,7 @@ function bp_attachments_create_media( $media = null ) {
 		mkdir( $revisions );
 	}
 
-	return $media;
+	return bp_attachments_get_medium( $media->id, $parent_dir );
 }
 
 /**

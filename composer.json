@@ -23,7 +23,7 @@
 	},
 	"scripts": {
 		"lint:wpcs": "@php ./vendor/squizlabs/php_codesniffer/bin/phpcs",
-		"do:wpcs": "@php ./vendor/bin/phpcs . --extensions=php --standard=WordPress --ignore=vendor/,tests/,languages/,node_modules/,templates/index.php",
+		"do:wpcs": "@php ./vendor/bin/phpcs . --extensions=php --standard=WordPress --ignore=bin,vendor/,tests/,languages/,node_modules/,templates/index.php",
 		"format": "@php ./vendor/squizlabs/php_codesniffer/bin/phpcbf",
 		"lint:php": "@php ./vendor/bin/parallel-lint --exclude .git --exclude node_modules --exclude vendor .",
 		"phpcompat": "@php ./vendor/bin/phpcs . -p --standard=PHPCompatibilityWP --extensions=php --runtime-set testVersion 5.6- --ignore=vendor/,tests/,languages/,node_modules/,templates/index.php"
