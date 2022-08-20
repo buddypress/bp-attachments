@@ -41,12 +41,17 @@ registerBlockType( metadata, {
 		__( 'media', 'bp-attachments' ),
 	],
 	attributes: {
-		link: {
+		align: {
 			type: 'string',
-		}
+		},
+		url: {
+			type: 'string',
+		},
+		src: {
+			type: 'string',
+		},
 	},
 	supports: {
-		'align': false,
 		'alignWide': false,
 		'anchor': false,
 		'className': false,

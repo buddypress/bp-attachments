@@ -28,7 +28,7 @@ const {
  * @param {string} icon The dashicon name.
  * @param {string} label The label to use.
  */
-const AttachmentPlaceholder = ( { type, icon, label, onUploadedMedium } ) => {
+const AttachmentPlaceholder = ( { type, icon, label, onUploadedMedium, children } ) => {
 	const {
 		bpAttachments: {
 			allowedExtByMediaList,
@@ -56,6 +56,7 @@ const AttachmentPlaceholder = ( { type, icon, label, onUploadedMedium } ) => {
 		<Placeholder
 			icon={ !! icon ? icon : 'admin-media' }
 			label={ !! label ? label : __( 'Community Media', 'bp-attachments' ) }
+			isColumnLayout={ true }
 		>
 			<DropZone
 				onFilesDrop={ ( files ) => uploadMedia( files ) }
@@ -69,6 +70,7 @@ const AttachmentPlaceholder = ( { type, icon, label, onUploadedMedium } ) => {
 			>
 				{ __( 'Select a file', 'bp-attachments' ) }
 			</FormFileUpload>
+			{ children }
 		</Placeholder>
 	);
 };
