@@ -516,23 +516,43 @@ function bp_attachments_get_item_action_key( $action_slug = '' ) {
 }
 
 /**
+ * Get the `src` attribute of a media out of its path.
+ *
+ * @since 1.0.0
+ *
+ * @param string $filename The name of the BP Attachments item.
+ * @param string $path     The absolute path to the BP Attachments item.
+ * @return string          The BP Attachments item `src` attribute.
+ */
+function bp_attachments_get_src( $filename = '', $path = '' ) {
+	$src       = '';
+	$uploads   = bp_upload_dir();
+	$file_path = trailingslashit( $path ) . $filename;
+
+	if ( file_exists( $file_path ) && 0 === strpos( $file_path, WP_CONTENT_DIR ) ) {
+		$src = str_replace( $uploads['basedir'], $uploads['baseurl'], $file_path );
+	}
+
+	return $src;
+}
+
+/**
  * Get the vignette URI of an image attachment out of its path.
  *
  * @since 1.0.0
  *
  * @param string $filename The name of the BP Attachments item.
  * @param string $path     The absolute path to the BP Attachments item.
- * @return string          The BP Attachments URI.
+ * @return string          The BP Attachments item URI.
  */
 function bp_attachments_get_vignette_uri( $filename = '', $path = '' ) {
-	$uploads   = bp_upload_dir();
-	$file_path = trailingslashit( $path ) . $filename;
+	$vignette_uri = bp_attachments_get_src( $filename, $path );
 
-	if ( ! file_exists( $file_path ) || 0 !== strpos( $file_path, WP_CONTENT_DIR ) ) {
-		return trailingslashit( buddypress()->attachments->assets_url ) . 'images/image.png';
+	if ( ! $vignette_uri ) {
+		$vignette_uri = trailingslashit( buddypress()->attachments->assets_url ) . 'images/image.png';
 	}
 
-	return str_replace( $uploads['basedir'], $uploads['baseurl'], $file_path );
+	return $vignette_uri;
 }
 
 /**

@@ -244,9 +244,6 @@ final class BP_Medium {
 			// Reset medium's visibility based on where it is located now.
 			$medium->visibility = $visibility;
 
-			// Reset medium's visibility based on where it is located now.
-			$medium->visibility = $visibility;
-
 			// Reset medium's object based on where it is located now.
 			$medium->object = array_shift( $relative_path_chunks );
 
@@ -322,6 +319,10 @@ final class BP_Medium {
 				if ( ! $is_medium_directory ) {
 					$link_args['item_action']  = bp_attachments_get_item_action_slug( 'download' );
 					$medium->links['download'] = bp_attachments_get_medium_url( $link_args );
+				}
+
+				if ( 'public' === $visibility ) {
+					$medium->links['src'] = bp_attachments_get_src( $medium->name, $path );
 				}
 			}
 
