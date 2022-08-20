@@ -20,11 +20,11 @@ const {
  * Internal dependencies.
  */
 import metadata from '../block.json';
-import AttachmentPlaceholder from '../../common/components/attachment-placeholder';
+import editImage from './edit';
 
 registerBlockType( metadata, {
 	title: __( 'Community Image', 'bp-attachments' ),
-	description: __( 'Insert an image from your personal media library.', 'bp-attachments' ),
+	description: __( 'Insert an image into your personal media library and use it for this content.', 'bp-attachments' ),
 	icon: {
 		background: '#fff',
 		foreground: '#d84800',
@@ -52,17 +52,7 @@ registerBlockType( metadata, {
 		'className': false,
 		'html': false,
 	},
-	edit: function( { attributes, setAttributes } ) {
-		const blockProps = useBlockProps();
-
-		return (
-			<AttachmentPlaceholder
-				type="image"
-				icon="format-image"
-				label={ __( 'Community Image', 'bp-attachments' ) }
-			/>
-		);
-	},
+	edit: editImage,
 	save: function( { attributes } ) {
 		const blockProps = useBlockProps.save();
 		return null;
