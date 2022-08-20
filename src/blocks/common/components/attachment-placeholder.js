@@ -28,12 +28,12 @@ const {
  * @param {string} icon The dashicon name.
  * @param {string} label The label to use.
  */
-const AttachmentPlaceholder = ( { type, icon, label } ) => {
+const AttachmentPlaceholder = ( { type, icon, label, onUploadedMedium } ) => {
 	const {
 		bpAttachments: {
 			allowedExtByMediaList,
 		},
-	}  = useSelect( ( select ) => {
+	} = useSelect( ( select ) => {
 		return select( 'core/editor' ).getEditorSettings();
 	}, [] );
 	const allowedTypes = allowedExtByMediaList[ type + '_playlist' ] ? allowedExtByMediaList[ type + '_playlist' ] : allowedExtByMediaList.album;
@@ -49,6 +49,7 @@ const AttachmentPlaceholder = ( { type, icon, label } ) => {
 
 		// Using only one medium.
 		const medium = media[0];
+		onUploadedMedium( medium );
 	}
 
 	return (

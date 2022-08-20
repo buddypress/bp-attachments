@@ -601,10 +601,12 @@ class BP_Attachments_Component extends BP_Component {
 	 */
 	public function blocks_init( $blocks = array() ) {
 		$editor_script_deps = array(
+			'wp-api-fetch',
 			'wp-blocks',
 			'wp-block-editor',
-			'wp-element',
 			'wp-components',
+			'wp-data',
+			'wp-element',
 			'wp-i18n',
 		);
 

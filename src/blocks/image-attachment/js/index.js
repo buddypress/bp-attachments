@@ -53,8 +53,4 @@ registerBlockType( metadata, {
 		'html': false,
 	},
 	edit: editImage,
-	save: function( { attributes } ) {
-		const blockProps = useBlockProps.save();
-		return null;
-	}
 } );

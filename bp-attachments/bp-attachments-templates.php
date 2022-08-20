@@ -878,6 +878,7 @@ function bp_attachments_member_after_edit_cover_image() {
  * @return string           HTML output.
  */
 function bp_attachments_render_image_attachment( $attributes = array() ) {
+	$wrapper_attributes = get_block_wrapper_attributes();
 	return null;
 }
 
@@ -894,5 +895,6 @@ function bp_attachments_render_image_attachment( $attributes = array() ) {
  * @return string           HTML output.
  */
 function bp_attachments_render_video_attachment( $attributes = array() ) {
+	$wrapper_attributes = get_block_wrapper_attributes();
 	return null;
 }
