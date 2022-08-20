@@ -22,7 +22,6 @@
 	"supports": {
 		"alignWide": false,
 		"anchor": false,
-		"className": false,
 		"html": false
 	},
 	"editorScript": "file:./bp-attachments/js/blocks/image-attachment/index.js",

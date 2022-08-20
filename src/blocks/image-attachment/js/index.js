@@ -54,7 +54,6 @@ registerBlockType( metadata, {
 	supports: {
 		'alignWide': false,
 		'anchor': false,
-		'className': false,
 		'html': false,
 	},
 	edit: editImage,

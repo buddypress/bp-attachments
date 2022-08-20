@@ -27,7 +27,9 @@ const {
 import AttachmentPlaceholder from '../../common/components/attachment-placeholder';
 
 const editImage = ( { attributes, setAttributes } ) => {
-	const blockProps = useBlockProps();
+	const blockProps = useBlockProps( {
+		className: 'wp-block-bp-image-attachment',
+	} );
 	const [ errorMessage, setErrorMessage ] = useState( '' );
 	const { align, url, src } = attributes;
 	const currentUser = useSelect( ( select ) => {
