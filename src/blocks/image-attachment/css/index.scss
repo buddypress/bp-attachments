@@ -11,3 +11,15 @@
 		}
 	}
 }
+
+.wp-block-bp-image-attachment {
+	margin-block-start: 0;
+	margin-block-end: 0;
+	margin-inline-start: 0;
+	margin-inline-end: 0;
+
+	img {
+		max-width: 100%;
+		height: auto;
+	}
+}

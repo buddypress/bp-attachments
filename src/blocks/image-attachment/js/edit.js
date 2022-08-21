@@ -32,7 +32,7 @@ import AttachmentPlaceholder from '../../common/components/attachment-placeholde
 const editImage = ( { attributes, setAttributes } ) => {
 	const { align, src } = attributes;
 	const blockProps = useBlockProps( {
-		className: 'wp-block-bp-image-attachment' + !! align && undefined !== align ? 'align' + align : '',
+		className: !! align && undefined !== align ? 'wp-block-bp-image-attachment align' + align : 'wp-block-bp-image-attachment',
 	} );
 	const [ errorMessage, setErrorMessage ] = useState( '' );
 	const { userId, postId } = useSelect( ( select ) => {

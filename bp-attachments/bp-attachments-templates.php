@@ -878,8 +878,60 @@ function bp_attachments_member_after_edit_cover_image() {
  * @return string           HTML output.
  */
 function bp_attachments_render_image_attachment( $attributes = array() ) {
-	$wrapper_attributes = get_block_wrapper_attributes();
-	return null;
+	$attrs = bp_parse_args(
+		$attributes,
+		array(
+			'src'       => '',
+			'url'       => '',
+			'align'     => '',
+			'className' => '',
+		)
+	);
+
+	// The `url` attribute is required as it lets us check the image still exists.
+	if ( ! $attrs['url'] ) {
+		return null;
+	}
+
+	$medium_path_parts = explode( '/', trim( wp_parse_url( $attrs['url'], PHP_URL_PATH ), '/' ) );
+	if ( ! isset( $medium_path_parts[3] ) || count( $medium_path_parts ) < 6 ) {
+		return null;
+	}
+
+	$user_slug = $medium_path_parts[3];
+	$user      = get_user_by( 'slug', $user_slug );
+	if ( ! $user || ! $user->ID ) {
+		return null;
+	}
+
+	$status        = array_search( $medium_path_parts[1], bp_attachments_get_item_stati(), true );
+	$object        = array_search( $medium_path_parts[2], bp_attachments_get_item_object_slugs(), true );
+	$medium_id     = array_pop( $medium_path_parts );
+	$relative_path = array_merge( array( $object, $user->ID ), array_slice( $medium_path_parts, 5 ) );
+	$absolute_path = trailingslashit( bp_attachments_get_media_uploads_dir( $status )['path'] ) . implode( '/', $relative_path );
+
+	// Validate and get the Medium object.
+	$medium = bp_attachments_get_medium( $medium_id, $absolute_path );
+	if ( ! isset( $medium->media_type ) || 'image' !== $medium->media_type ) {
+		return null;
+	}
+
+	$extra_wrapper_attributes = array();
+	if ( in_array( $attrs['align'], array( 'center', 'left', 'right' ), true ) ) {
+		$extra_wrapper_attributes = array( 'class' => 'align' . $attrs['align'] );
+	}
+
+	$wrapper_attributes = get_block_wrapper_attributes( $extra_wrapper_attributes );
+
+	// Return the `bp/image-attachment` output.
+	return sprintf(
+		'<figure %1$s>
+			<a href="%2$s"><img src="%3$s" alt="" /></a>
+		</figure>',
+		$wrapper_attributes,
+		esc_url( $medium->links['view'] ),
+		esc_url_raw( $medium->links['src'] )
+	);
 }
 
 /**
