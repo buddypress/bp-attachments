@@ -9,6 +9,6 @@ Targeted Configuration
 ----------------------
 
 + WordPress 5.9.0
-+ BuddyPress 10.0.0
++ BuddyPress 11.0.0
 
 **NB: A complete rewrite of the plugin is in progress. More informations about it soon!**
