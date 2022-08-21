@@ -32,8 +32,13 @@ const editImage = ( { attributes, setAttributes } ) => {
 	} );
 	const [ errorMessage, setErrorMessage ] = useState( '' );
 	const { align, url, src } = attributes;
-	const currentUser = useSelect( ( select ) => {
-		return select( 'core' ).getCurrentUser();
+	const { userId, postId } = useSelect( ( select ) => {
+		const currentUser = select( 'core' ).getCurrentUser();
+
+		return {
+			userId: currentUser.id,
+			postId: select( 'core/editor' ).getCurrentPostId(),
+		};
 	}, [] );
 
 	const onUploadedImage = ( file ) => {
@@ -41,9 +46,15 @@ const editImage = ( { attributes, setAttributes } ) => {
 		formData.append( 'file', file );
 		formData.append( 'action', 'bp_attachments_media_upload' );
 		formData.append( 'object', 'members' );
-		formData.append( 'object_item', currentUser.id );
+		formData.append( 'object_item', userId );
 		formData.append( 'status', 'public' );
 
+		if ( !! postId ) {
+			formData.append( 'attached_to_object_type', 'post' );
+			formData.append( 'attached_to_object_id', postId );
+		}
+
+		// Reset error message.
 		setErrorMessage( '' );
 
 		apiFetch( {

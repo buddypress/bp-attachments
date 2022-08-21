@@ -1005,6 +1005,17 @@ function bp_attachments_sanitize_media( $media = null ) {
 			$media->{$property} = sanitize_mime_type( $media->{$property} );
 		} elseif ( 'name' === $property ) {
 			$media->{$property} = sanitize_file_name( $media->{$property} );
+		} elseif ( 'attached_to' === $property ) {
+			$sanitized_attached_to = array();
+
+			foreach ( $media->{$property} as $attached_to ) {
+				$sanitized_attached_to[] = (object) array(
+					'object_type' => sanitize_key( $attached_to->object_type ),
+					'object_id'   => intval( $attached_to->object_id ),
+				);
+			}
+
+			$media->{$property} = $sanitized_attached_to;
 		}
 	}
 

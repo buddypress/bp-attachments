@@ -51,8 +51,8 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 					'callback'            => array( $this, 'create_item' ),
 					'permission_callback' => array( $this, 'create_item_permissions_check' ),
 					'args'                => array(
-						'action'    => array(
-							'description' => __( 'Whether to upload a media or create a directory.', 'bp-attachments' ),
+						'action'                  => array(
+							'description' => __( 'Whether to upload a medium or create a directory.', 'bp-attachments' ),
 							'type'        => 'string',
 							'enum'        => array( 'bp_attachments_media_upload', 'bp_attachments_make_directory' ),
 							'required'    => true,
@@ -60,8 +60,8 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 								'sanitize_callback' => 'sanitize_key',
 							),
 						),
-						'object'    => array(
-							'description' => __( 'The object the media is uploaded for.', 'bp-attachments' ),
+						'object'                  => array(
+							'description' => __( 'The object the medium is uploaded for.', 'bp-attachments' ),
 							'type'        => 'string',
 							'enum'        => array( 'members', 'groups' ),
 							'default'     => 'members',
@@ -69,8 +69,24 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 								'sanitize_callback' => 'sanitize_key',
 							),
 						),
-						'object_id' => array(
-							'description' => __( 'The object single item the media is uploaded for.', 'bp-attachments' ),
+						'object_item'             => array(
+							'description' => __( 'The object single item the medium is uploaded for.', 'bp-attachments' ),
+							'type'        => 'integer',
+							'default'     => 0,
+							'arg_options' => array(
+								'sanitize_callback' => 'intval',
+							),
+						),
+						'attached_to_object_type' => array(
+							'description' => __( 'The object type the medium is attached to.', 'bp-attachments' ),
+							'type'        => 'string',
+							'default'     => '',
+							'arg_options' => array(
+								'sanitize_callback' => 'sanitize_key',
+							),
+						),
+						'attached_to_object_id'   => array(
+							'description' => __( 'The object id the medium is attached to.', 'bp-attachments' ),
 							'type'        => 'integer',
 							'default'     => 0,
 							'arg_options' => array(
@@ -824,6 +840,19 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 			$media->media_type = $request['media_type'];
 		}
 
+		// Object the medium is attached to.
+		$attached_to_object_type = $request->get_param( 'attached_to_object_type' );
+		$attached_to_object_id   = $request->get_param( 'attached_to_object_id' );
+
+		if ( ! empty( $schema['properties']['attached_to'] ) && $attached_to_object_type && $attached_to_object_id ) {
+			$media->attached_to = array(
+				(object) array(
+					'object_type' => $attached_to_object_type,
+					'object_id'   => $attached_to_object_id,
+				),
+			);
+		}
+
 		return $media;
 	}
 
@@ -1035,7 +1064,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 					),
 					'media_type'    => array(
 						'context'           => array( 'view', 'edit' ),
-						'description'       => __( 'Human readable media type', 'bp-attachments' ),
+						'description'       => __( 'Human readable medium type', 'bp-attachments' ),
 						'type'              => 'string',
 						'sanitize_callback' => 'rest_sanitize_request_arg',
 						'validate_callback' => 'rest_validate_request_arg',
@@ -1043,8 +1072,20 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 					),
 					'path'          => array(
 						'context'           => array( 'edit' ),
-						'description'       => __( 'The path to the media', 'bp-attachments' ),
+						'description'       => __( 'The path to the medium', 'bp-attachments' ),
 						'type'              => 'string',
+						'sanitize_callback' => 'rest_sanitize_request_arg',
+						'validate_callback' => 'rest_validate_request_arg',
+						'readonly'          => true,
+					),
+					'attached_to'   => array(
+						'context'           => array( 'view', 'edit' ),
+						'description'       => __( 'List of objects the medium is attached to', 'bp-attachments' ),
+						'type'              => 'array',
+						'items'             => array(
+							'type' => 'object',
+						),
+						'default'           => array(),
 						'sanitize_callback' => 'rest_sanitize_request_arg',
 						'validate_callback' => 'rest_validate_request_arg',
 						'readonly'          => true,

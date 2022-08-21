@@ -173,17 +173,17 @@ final class BP_Medium {
 	public $object = 'members';
 
 	/**
-	 * List (keyed by object type) of item IDs the Medium is attached to.
+	 * List of objects the Medium is attached to.
 	 *
 	 * Eg: array(
-	 *   'activity' => array( 1, 2, 3 ),
-	 *   'messages' => array( 4, 5, 6 ),
+	 *   object { ['object_type']=> 'post' ['object_id']=> int(1) },
+	 *   object { ['object_type']=> 'activity' ['object_id']=> int(3) },
 	 * );
 	 *
 	 * @since 1.0.0
 	 * @var array
 	 */
-	public $item_ids = array();
+	public $attached_to = array();
 
 	/**
 	 * List of the `view`, `embed` and `download` links.
