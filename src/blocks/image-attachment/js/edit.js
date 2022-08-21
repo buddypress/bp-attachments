@@ -4,6 +4,8 @@
 const {
 	apiFetch,
 	blockEditor: {
+		BlockAlignmentControl,
+		BlockControls,
 		useBlockProps,
 	},
 	data: {
@@ -14,6 +16,7 @@ const {
 	},
 	element: {
 		createElement,
+		Fragment,
 		useState,
 	},
 	i18n: {
@@ -27,11 +30,11 @@ const {
 import AttachmentPlaceholder from '../../common/components/attachment-placeholder';
 
 const editImage = ( { attributes, setAttributes } ) => {
+	const { align, src } = attributes;
 	const blockProps = useBlockProps( {
-		className: 'wp-block-bp-image-attachment',
+		className: 'wp-block-bp-image-attachment' + !! align && undefined !== align ? 'align' + align : '',
 	} );
 	const [ errorMessage, setErrorMessage ] = useState( '' );
-	const { align, url, src } = attributes;
 	const { userId, postId } = useSelect( ( select ) => {
 		const currentUser = select( 'core' ).getCurrentUser();
 
@@ -95,9 +98,18 @@ const editImage = ( { attributes, setAttributes } ) => {
 	}
 
 	return (
-		<figure { ...blockProps }>
-			<img src={ src } />
-		</figure>
+		<Fragment>
+			<BlockControls group="block">
+				<BlockAlignmentControl
+					controls={ [ 'none', 'left', 'center', 'right' ] }
+					value={ align }
+					onChange={ ( alignment ) => setAttributes( { align: alignment } ) }
+				/>
+			</BlockControls>
+			<figure { ...blockProps }>
+				<img src={ src } />
+			</figure>
+		</Fragment>
 	)
 };
 
