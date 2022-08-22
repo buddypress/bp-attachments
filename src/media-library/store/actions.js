@@ -143,6 +143,28 @@ export function updateFormState( params ) {
 }
 
 /**
+ * Prepare a directory to be added to the Tree.
+ *
+ * @param {Object} directory The medium object.
+ * @param {string} parent The parent ID.
+ * @returns {Object} The item Tree.
+ */
+const setItemTree = ( directory, parent ) => {
+	const itemTree = {
+		id: directory.id,
+		slug: directory.name,
+		name: directory.title,
+		parent: parent,
+		object: directory.object ? directory.object : 'members',
+		readonly: directory.readonly ? directory.readonly : false,
+		visibility: directory.visibility ? directory.visibility : 'public',
+		type: directory.media_type ? directory.media_type : 'folder',
+	}
+
+	return itemTree;
+}
+
+/**
  * Init the directories Tree.
  *
  * @param {array} items The list of media.
@@ -152,16 +174,8 @@ export function initTree( items ) {
 	const directories = filter( items, { 'mime_type': 'inode/directory' } );
 	if ( ! tree.length ) {
 		directories.forEach( ( item ) => {
-			dispatch( STORE_KEY ).addItemTree( {
-				id: item.id,
-				slug: item.name,
-				name: item.title,
-				parent: 0,
-				object: item.object ? item.object : 'members',
-				readonly: item.readonly ? item.readonly : false,
-				visibility: item.visibility ? item.visibility : 'public',
-				type: item.media_type ? item.media_type : 'folder',
-			} );
+			const itemTree = setItemTree( item, 0 );
+			dispatch( STORE_KEY ).addItemTree( itemTree );
 		} );
 	}
 }
@@ -340,6 +354,12 @@ export function * createDirectory( directory ) {
 		yield { type: 'UPLOAD_END', uploading, file };
 		upload.uploaded = true;
 
+		const currentDir = store.getCurrentDirectoryObject();
+		const itemTree = setItemTree( upload, currentDir.id );
+
+		// Add the directory to the tree.
+		yield addItemTree( itemTree );
+
 		return addMedium( upload );
 	} catch ( error ) {
 		upload = {
@@ -369,16 +389,8 @@ export const parseResponseMedia = async ( response, relativePath, parent = '' ) 
 			item.parent = parent;
 
 			if ( 'inode/directory' === item.mime_type ) {
-				dispatch( STORE_KEY ).addItemTree( {
-					id: item.id,
-					slug: item.name,
-					name: item.title,
-					parent: item.parent,
-					object: item.object ? item.object : 'members',
-					readonly: item.readonly ? item.readonly : false,
-					visibility: item.visibility ? item.visibility : 'public',
-					type: item.media_type ? item.media_type : 'folder',
-				} );
+				const itemTree = setItemTree( item, parent );
+				dispatch( STORE_KEY ).addItemTree( itemTree );
 			}
 		} );
 
