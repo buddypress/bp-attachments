@@ -68,6 +68,12 @@ const DEFAULT_STATE = {
 				],
 			};
 
+		case types.PURGE_TREE:
+			return {
+				...state,
+				tree: reject( state.tree, [ 'id', action.itemId ] ),
+			};
+
 		case types.UPDATE_FORM_STATE:
 			return {
 				...state,

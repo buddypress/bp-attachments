@@ -194,6 +194,19 @@ export function addItemTree( item ) {
 };
 
 /**
+ * Returns an action object used to remove a directory item from the Items tree.
+ *
+ * @param {string} itemId A media item ID.
+ * @return {Object} Object for action.
+ */
+ export function removeItemTree( itemId ) {
+	return {
+		type: types.PURGE_TREE,
+		itemId,
+	};
+};
+
+/**
  * Returns an action object used to switch between Selectable & Regular mode.
  *
  * @param {boolean} isSelectable True to switch to Selectable mode. False otherwise.
@@ -472,6 +485,10 @@ export function * deleteMedium( file ) {
 
 	try {
 		deleted = yield deleteFromAPI( '/buddypress/v1/attachments/' + file.id + '/', relativePath );
+
+		if ( 'inode/directory' === deleted.previous.mime_type ) {
+			yield removeItemTree( deleted.previous.id );
+		}
 
 		return removeMedium( deleted.previous.id );
 	} catch ( error ) {
