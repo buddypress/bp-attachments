@@ -1,0 +1,9 @@
+/**
+ * BP Attachments medium view styles.
+ *
+ * @version 1.0.0
+ */
+body.attachments.view .bp-attachments-medium img {
+	max-width: 100%;
+	height: auto;
+}

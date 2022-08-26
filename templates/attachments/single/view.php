@@ -12,5 +12,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 ?>
-
-<p>Nice view!</p>
+<div class="bp-attachments-medium">
+	<?php bp_get_template_part( 'attachments/single/parts/single', bp_attachments_get_medium_type() ); ?>
+</div>

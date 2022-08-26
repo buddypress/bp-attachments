@@ -24,6 +24,15 @@ function bp_attachments_get_templates_dir() {
 }
 
 /**
+ * Get Attachments Templates url.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_get_templates_url() {
+	return buddypress()->attachments->templates_url;
+}
+
+/**
  * Temporarly add the BP Attachments templates directory to the BuddyPress
  * Templates stack.
  *
@@ -269,6 +278,41 @@ function bp_attachments_set_directory_theme_compat() {
 	}
 }
 add_action( 'bp_setup_theme_compat', 'bp_attachments_set_directory_theme_compat' );
+
+/**
+ * Enqueue styles for BP Attachments views.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_enqueue_medium_view_style() {
+	if ( ! bp_attachments_is_media_view() ) {
+		return;
+	}
+
+	// Temporarly overrides the BuddyPress Template Stack.
+	bp_attachments_start_overriding_template_stack();
+
+	$css = bp_locate_template_asset( 'css/attachments-media-view.css' );
+
+	// Stop overriding the BuddyPress Template Stack.
+	bp_attachments_stop_overriding_template_stack();
+
+	// Bail if file wasn't found.
+	if ( false === $css ) {
+		return;
+	}
+
+	// If this replacement happens, this means the current template pack has not found the corresponding style.
+	$css['uri'] = str_replace( bp_attachments_get_templates_dir(), bp_attachments_get_templates_url(), $css['uri'] );
+
+	wp_enqueue_style(
+		'bp-attachments-media-view',
+		$css['uri'],
+		array(),
+		bp_attachments_get_version()
+	);
+}
+add_action( 'bp_enqueue_scripts', 'bp_attachments_enqueue_medium_view_style', 20 );
 
 /**
  * Add inline styles for BP Attachments embeds.
@@ -588,11 +632,13 @@ function bp_attachment_media_classes() {
 }
 
 /**
- * Renders the BP Attachments media.
+ * Returns the BP Attachments queried medium output.
  *
  * @since 1.0.0
+ *
+ * @return string the medium HTML output.
  */
-function bp_attachments_media_render() {
+function bp_attachments_get_medium_output() {
 	$output = '';
 	$medium = bp_attachments_get_queried_object();
 
@@ -600,22 +646,85 @@ function bp_attachments_media_render() {
 		return;
 	}
 
-	switch ( $medium->media_type ) {
-		case 'image':
+	switch ( true ) {
+		case 'image' === $medium->media_type && isset( $medium->links['src'] ):
 			$output = sprintf(
-				'<img src="%1$s" />',
-				esc_url( $medium->vignette )
+				'<img src="%1$s" alt="" />',
+				esc_url( $medium->links['src'] )
 			);
 			break;
 		default:
 			$output = sprintf(
-				'<img src="%1$s" />',
+				'<img src="%1$s" alt="" />',
 				esc_url( $medium->icon )
 			);
 			break;
 	}
 
-	echo $output; // phpcs:ignore
+	return $output;
+}
+
+/**
+ * Renders the BP Attachments queried medium.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_render_medium() {
+	echo bp_attachments_get_medium_output(); // phpcs:ignore WordPress.Security.EscapeOutput
+}
+
+/**
+ * Returns the queried medium type.
+ *
+ * @since 1.0.0
+ *
+ * @return string The queried medium type.
+ */
+function bp_attachments_get_medium_type() {
+	$type   = '';
+	$medium = bp_attachments_get_queried_object();
+
+	if ( isset( $medium->media_type ) ) {
+		$type = $medium->media_type;
+	}
+
+	return sanitize_file_name( $type );
+}
+
+/**
+ * Outputs the queried medium type.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_medium_type() {
+	echo bp_attachments_get_medium_type(); // phpcs:ignore WordPress.Security.EscapeOutput
+}
+
+/**
+ * Returns the queried medium download url.
+ *
+ * @since 1.0.0
+ *
+ * @return string The queried medium download url.
+ */
+function bp_attachments_get_medium_download_url() {
+	$url    = '#';
+	$medium = bp_attachments_get_queried_object();
+
+	if ( isset( $medium->links['download'] ) ) {
+		$url = $medium->links['download'];
+	}
+
+	return $url;
+}
+
+/**
+ * Outputs the queried medium download url.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_medium_download_url() {
+	echo esc_url( bp_attachments_get_medium_download_url() );
 }
 
 /**

@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 <div class="<?php bp_attachment_media_classes(); ?>">
-	<?php bp_attachments_media_render(); ?>
+	<?php bp_attachments_render_medium(); ?>
 </div>
 
 <div class="wp-embed-excerpt">
