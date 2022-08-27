@@ -622,6 +622,46 @@ function bp_attachments_get_medium_url( $args = array() ) {
 }
 
 /**
+ * Uses an attachment URL to retrieve its path.
+ *
+ * @since 1.0.0
+ *
+ * @param string $url       The attachments URL to view the medium.
+ * @param bool   $with_data Whether to get additionnal data.
+ * @return string|array The attachments path to the medium or a list of medium data (including its path).
+ */
+function bp_attachments_get_medium_path( $url = '', $with_data = false ) {
+	$medium_path_parts = explode( '/', trim( wp_parse_url( $url, PHP_URL_PATH ), '/' ) );
+	if ( ! isset( $medium_path_parts[3] ) || count( $medium_path_parts ) < 6 ) {
+		return '';
+	}
+
+	$user_slug = $medium_path_parts[3];
+	$user      = get_user_by( 'slug', $user_slug );
+	if ( ! $user || ! $user->ID ) {
+		return '';
+	}
+
+	$status        = array_search( $medium_path_parts[1], bp_attachments_get_item_stati(), true );
+	$object        = array_search( $medium_path_parts[2], bp_attachments_get_item_object_slugs(), true );
+	$medium_id     = array_pop( $medium_path_parts );
+	$relative_path = array_merge( array( $object, $user->ID ), array_slice( $medium_path_parts, 5 ) );
+	$medium_path   = trailingslashit( bp_attachments_get_media_uploads_dir( $status )['path'] ) . implode( '/', $relative_path );
+
+	if ( $with_data ) {
+		return array(
+			'id'     => $medium_id,
+			'path'   => $medium_path,
+			'status' => $status,
+			'object' => $object,
+			'user'   => $user,
+		);
+	}
+
+	return $medium_path;
+}
+
+/**
  * Create a Media Item.
  *
  * @since 1.0.0

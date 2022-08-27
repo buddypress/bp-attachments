@@ -1002,25 +1002,13 @@ function bp_attachments_render_image_attachment( $attributes = array() ) {
 		return null;
 	}
 
-	$medium_path_parts = explode( '/', trim( wp_parse_url( $attrs['url'], PHP_URL_PATH ), '/' ) );
-	if ( ! isset( $medium_path_parts[3] ) || count( $medium_path_parts ) < 6 ) {
+	$medium_data = bp_attachments_get_medium_path( $attrs['url'], true );
+	if ( ! isset( $medium_data['id'], $medium_data['path'] ) ) {
 		return null;
 	}
-
-	$user_slug = $medium_path_parts[3];
-	$user      = get_user_by( 'slug', $user_slug );
-	if ( ! $user || ! $user->ID ) {
-		return null;
-	}
-
-	$status        = array_search( $medium_path_parts[1], bp_attachments_get_item_stati(), true );
-	$object        = array_search( $medium_path_parts[2], bp_attachments_get_item_object_slugs(), true );
-	$medium_id     = array_pop( $medium_path_parts );
-	$relative_path = array_merge( array( $object, $user->ID ), array_slice( $medium_path_parts, 5 ) );
-	$absolute_path = trailingslashit( bp_attachments_get_media_uploads_dir( $status )['path'] ) . implode( '/', $relative_path );
 
 	// Validate and get the Medium object.
-	$medium = bp_attachments_get_medium( $medium_id, $absolute_path );
+	$medium = bp_attachments_get_medium( $medium_data['id'], $medium_data['path'] );
 	if ( ! isset( $medium->media_type ) || 'image' !== $medium->media_type ) {
 		return null;
 	}
