@@ -627,14 +627,15 @@ class BP_Attachments_Component extends BP_Component {
 				}
 
 				$blocks_list[ $block_metadata['name'] ] = array(
-					'name'               => $block_metadata['name'],
-					'editor_script'      => 'bp-' . $block_suffix . '-script',
-					'editor_script_url'  => plugins_url( 'assets/blocks/' . $block_suffix . '/js/index.js', dirname( __FILE__ ) ),
-					'editor_script_deps' => $editor_script_deps,
-					'style'              => 'bp-' . $block_suffix . '-style',
-					'style_url'          => plugins_url( 'assets/blocks/' . $block_suffix . '/css/index.css', dirname( __FILE__ ) ),
-					'attributes'         => $block_metadata['attributes'],
-					'render_callback'    => 'bp_attachments_render_' . str_replace( '-', '_', $block_suffix ),
+					'name'                => $block_metadata['name'],
+					'editor_script'       => 'bp-' . $block_suffix . '-script',
+					'editor_script_url'   => plugins_url( 'assets/blocks/' . $block_suffix . '/js/index.js', dirname( __FILE__ ) ),
+					'editor_script_deps'  => $editor_script_deps,
+					'style'               => 'bp-' . $block_suffix . '-style',
+					'style_url'           => plugins_url( 'assets/blocks/' . $block_suffix . '/css/index.css', dirname( __FILE__ ) ),
+					'attributes'          => $block_metadata['attributes'],
+					'render_callback'     => 'bp_attachments_render_' . str_replace( '-', '_', $block_suffix ),
+					'buddypress_contexts' => array( 'activity' ),
 				);
 			}
 		}

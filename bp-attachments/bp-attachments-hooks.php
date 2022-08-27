@@ -66,3 +66,4 @@ function bp_attachments_block_editor_settings( $settings = array() ) {
 	return $settings;
 }
 add_filter( 'block_editor_settings_all', 'bp_attachments_block_editor_settings', 10, 1 );
+add_filter( 'bp_activity_block_editor_settings', 'bp_attachments_block_editor_settings', 10, 1 );
