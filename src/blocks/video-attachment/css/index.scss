@@ -1,1 +1,14 @@
 /* Styles for the Video Attachment Block. */
+[data-type="bp/video-attachment"] {
+
+	.components-placeholder {
+
+		.components-placeholder__label {
+
+			.dashicon {
+				margin-right: 1em;
+				color: #d84800;
+			}
+		}
+	}
+}

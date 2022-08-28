@@ -158,6 +158,7 @@ class BP_Attachments_Component extends BP_Component {
 		$this->templates_dir = trailingslashit( plugin_dir_path( $this->path ) ) . 'templates';
 
 		// URLs.
+		$this->plugin_url    = plugins_url( '/', $this->path );
 		$this->templates_url = plugins_url( 'templates/', $this->path );
 		$this->js_url        = plugins_url( 'bp-attachments/js/', $this->path );
 		$this->assets_url    = plugins_url( 'bp-attachments/assets/', $this->path );
@@ -626,17 +627,11 @@ class BP_Attachments_Component extends BP_Component {
 					continue;
 				}
 
-				$blocks_list[ $block_metadata['name'] ] = array(
-					'name'                => $block_metadata['name'],
-					'editor_script'       => 'bp-' . $block_suffix . '-script',
-					'editor_script_url'   => plugins_url( 'assets/blocks/' . $block_suffix . '/js/index.js', dirname( __FILE__ ) ),
-					'editor_script_deps'  => $editor_script_deps,
-					'style'               => 'bp-' . $block_suffix . '-style',
-					'style_url'           => plugins_url( 'assets/blocks/' . $block_suffix . '/css/index.css', dirname( __FILE__ ) ),
-					'attributes'          => $block_metadata['attributes'],
-					'render_callback'     => 'bp_attachments_render_' . str_replace( '-', '_', $block_suffix ),
-					'buddypress_contexts' => array( 'activity' ),
-				);
+				$block_metadata['editor_script_deps']   = $editor_script_deps;
+				$block_metadata['render_callback']      = 'bp_attachments_render_' . str_replace( '-', '_', $block_suffix );
+				$block_metadata['plugin_url']           = $this->plugin_url;
+				$block_metadata['buddypress_contexts']  = array( 'activity' );
+				$blocks_list[ $block_metadata['name'] ] = $block_metadata;
 			}
 		}
 

@@ -86,14 +86,16 @@ const editImage = ( { attributes, setAttributes } ) => {
 
 	if ( ! src ) {
 		return (
-			<AttachmentPlaceholder
-				type="image"
-				icon="format-image"
-				label={ __( 'Community Image', 'bp-attachments' ) }
-				onUploadedMedium={ onUploadedImage }
-			>
-				{ errorMessage }
-			</AttachmentPlaceholder>
+			<figure { ...blockProps }>
+				<AttachmentPlaceholder
+					type="image"
+					icon="format-image"
+					label={ __( 'Community Image', 'bp-attachments' ) }
+					onUploadedMedium={ onUploadedImage }
+				>
+					{ errorMessage }
+				</AttachmentPlaceholder>
+			</figure>
 		);
 	}
 

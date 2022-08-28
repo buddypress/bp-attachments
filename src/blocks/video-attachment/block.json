@@ -1,6 +1,7 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 2,
+	"version": "1.0.0",
 	"name": "bp/video-attachment",
 	"title": "Community Video",
 	"category": "media",
@@ -20,6 +21,6 @@
 		"className": false,
 		"html": false
 	},
-	"editorScript": "file:./bp-attachments/js/blocks/video-attachment/index.js",
-	"style": "file:./bp-attachments/assets/blocks/video-attachment/index.css"
+	"editorScript": "file:./bp-attachments/assets/blocks/video-attachment/js/index.js",
+	"style": "file:./bp-attachments/assets/blocks/video-attachment/css/index.css"
 }

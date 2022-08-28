@@ -57,6 +57,7 @@ const AttachmentPlaceholder = ( { type, icon, label, onUploadedMedium, children 
 			icon={ !! icon ? icon : 'admin-media' }
 			label={ !! label ? label : __( 'Community Media', 'bp-attachments' ) }
 			isColumnLayout={ true }
+			className="bp-attachments-media-placeholder"
 		>
 			<DropZone
 				onFilesDrop={ ( files ) => uploadMedia( files ) }

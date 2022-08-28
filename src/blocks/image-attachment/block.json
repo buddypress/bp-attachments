@@ -1,6 +1,7 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 2,
+	"version": "1.0.0",
 	"name": "bp/image-attachment",
 	"title": "Community Image",
 	"category": "media",
@@ -24,6 +25,6 @@
 		"anchor": false,
 		"html": false
 	},
-	"editorScript": "file:./bp-attachments/js/blocks/image-attachment/index.js",
-	"style": "file:./bp-attachments/assets/blocks/image-attachment/index.css"
+	"editorScript": "file:./bp-attachments/assets/blocks/image-attachment/js/index.js",
+	"style": "file:./bp-attachments/assets/blocks/image-attachment/css/index.css"
 }

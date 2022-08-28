@@ -25,42 +25,22 @@ const {
 import metadata from '../block.json';
 
 registerBlockType( metadata, {
-	title: __( 'Community Video', 'bp-attachments' ),
-	description: __( 'Insert a movie from your personal media library.', 'bp-attachments' ),
 	icon: {
 		background: '#fff',
 		foreground: '#d84800',
 		src: 'video-alt3',
 	},
-	category: 'media',
-	keywords: [
-		'BuddyPress',
-		__( 'community', 'bp-attachments' ),
-		__( 'video', 'bp-attachments' ),
-		__( 'movie', 'bp-attachments' ),
-		__( 'media', 'bp-attachments' ),
-	],
-	attributes: {
-		link: {
-			type: 'string',
-		}
-	},
-	supports: {
-		'align': false,
-		'alignWide': false,
-		'anchor': false,
-		'className': false,
-		'html': false,
-	},
 	edit: function( { attributes, setAttributes } ) {
 		const blockProps = useBlockProps();
 
 		return (
-			<Placeholder
-				type="video"
-				icon="video-alt3"
-				label={ __( 'Community Video', 'bp-attachments' ) }
-			/>
+			<figure { ...blockProps }>
+				<Placeholder
+					type="video"
+					icon="video-alt3"
+					label={ __( 'Community Video', 'bp-attachments' ) }
+				/>
+			</figure>
 		);
 	},
 	save: function( { attributes} ) {
