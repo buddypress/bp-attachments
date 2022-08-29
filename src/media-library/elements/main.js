@@ -49,10 +49,11 @@ const MediaLibraryMain = ( { gridDisplay, tree } ) => {
 					icon={ item.icon }
 					vignette={ item.vignette }
 					orientation={ item.orientation }
-					isSelected= { item.selected || false }
-					object= { item.object || 'members' }
-					isSelectable = { isSelectable }
-					tree = { tree }
+					isSelected={ item.selected || false }
+					object={ item.object || 'members' }
+					isSelectable={ isSelectable }
+					tree={ tree }
+					medium={ item }
 				/>
 			);
 		} );

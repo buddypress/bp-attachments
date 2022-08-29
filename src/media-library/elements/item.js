@@ -25,10 +25,11 @@
  */
 import { BP_ATTACHMENTS_STORE_KEY } from '../store';
 import setTemplate from '../utils/set-template';
+import EditMediaItem from './edit-item';
 
 const MediaItem = ( props ) => {
 	const Template = setTemplate( 'bp-attachments-media-item' );
-	const { title, vignette, selected } = props;
+	const { name, medium, selected } = props;
 	const { toggleMediaSelection, requestMedia } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
 	const [ isOpen, toggleModal ] = useState( false );
 	const [ isSelected, selectMedia ] = useState( selected );
@@ -71,17 +72,10 @@ const MediaItem = ( props ) => {
 			/>
 			{ isOpen && (
 				<Modal
-					title={ sprintf( __( 'Details for: %s', 'bp-attachments' ), title ) }
+					title={ sprintf( __( 'Edit %s', 'bp-attachments' ), name ) }
 					onRequestClose={ () => toggleModal( false ) }
 				>
-
-					{ vignette && (
-						<img src={vignette} className="mediaDetails" />
-					) }
-
-					{ ! vignette && (
-						<p>{ __( '@todo Fetch the Media properties.', 'bp-attachments' ) }</p>
-					) }
+					<EditMediaItem medium={ medium }/>
 				</Modal>
 			) }
 		</Fragment>
