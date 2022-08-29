@@ -653,6 +653,25 @@ function bp_attachments_get_medium_output() {
 				esc_url( $medium->links['src'] )
 			);
 			break;
+		case 'video' === $medium->media_type && isset( $medium->links['src'] ):
+			$output = sprintf(
+				'<video controls="true" muted="true" preload="metadata">
+					<source src="%1$s" type="%2$s">
+					<p>%3$s</p>
+				</video>',
+				esc_url( $medium->links['src'] ),
+				esc_attr( $medium->mime_type ),
+				sprintf(
+					/* translators: %s is the link to download the video */
+					esc_html__( 'Your browser does not take in charge this video format. Please %s to play it from your computer', 'bp-attachments' ),
+					sprintf(
+						'<a href="%1$s">%2$s</a>',
+						esc_url( bp_attachments_get_medium_download_url() ),
+						esc_html__( 'download it', 'bp-attachments' )
+					)
+				)
+			);
+			break;
 		default:
 			$output = sprintf(
 				'<img src="%1$s" alt="" />',
