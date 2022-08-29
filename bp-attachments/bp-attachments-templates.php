@@ -622,7 +622,7 @@ function bp_attachment_media_classes() {
 	$classes = array( 'bp-embed-media', 'wp-embed-featured-image' );
 	$medium  = bp_attachments_get_queried_object();
 
-	if ( isset( $medium->orientation ) && 'landscape' === $medium->orientation ) {
+	if ( ( isset( $medium->orientation ) && 'landscape' === $medium->orientation ) || 'audio' === $medium->media_type ) {
 		$classes[] = 'rectangular';
 	} else {
 		$classes[] = 'square';
@@ -655,7 +655,7 @@ function bp_attachments_get_medium_output() {
 			break;
 		case 'video' === $medium->media_type && isset( $medium->links['src'] ):
 			$output = sprintf(
-				'<video controls="true" muted="true" preload="metadata">
+				'<video controls="controls" muted="true" preload="metadata">
 					<source src="%1$s" type="%2$s">
 					<p>%3$s</p>
 				</video>',
@@ -664,6 +664,25 @@ function bp_attachments_get_medium_output() {
 				sprintf(
 					/* translators: %s is the link to download the video */
 					esc_html__( 'Your browser does not take in charge this video format. Please %s to play it from your computer', 'bp-attachments' ),
+					sprintf(
+						'<a href="%1$s">%2$s</a>',
+						esc_url( bp_attachments_get_medium_download_url() ),
+						esc_html__( 'download it', 'bp-attachments' )
+					)
+				)
+			);
+			break;
+		case 'audio' === $medium->media_type && isset( $medium->links['src'] ):
+			$output = sprintf(
+				'<audio controls="controls" preload="metadata">
+					<source src="%1$s" type="%2$s">
+					<p>%3$s</p>
+				</audio>',
+				esc_url( $medium->links['src'] ),
+				esc_attr( $medium->mime_type ),
+				sprintf(
+					/* translators: %s is the link to download the audio */
+					esc_html__( 'Your browser does not take in charge this audio format. Please %s to play it from your computer', 'bp-attachments' ),
 					sprintf(
 						'<a href="%1$s">%2$s</a>',
 						esc_url( bp_attachments_get_medium_download_url() ),

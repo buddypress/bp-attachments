@@ -3,6 +3,7 @@
  *
  * @version 1.0.0
  */
+body.attachments.view .bp-attachment-audio,
 body.attachments.view .bp-attachment-image,
 body.attachments.view .bp-attachment-video {
 	display: flex;
@@ -18,4 +19,8 @@ body.attachments.view .bp-attachment-image img {
 body.attachments.view .bp-attachment-video video {
 	max-width: 100%;
 	height: auto;
+}
+
+body.attachments.view .bp-attachment-audio audio {
+	width: 100%;
 }
