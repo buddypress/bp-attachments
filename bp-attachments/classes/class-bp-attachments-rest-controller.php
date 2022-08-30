@@ -166,7 +166,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		 */
 		if ( ! current_user_can( 'manage_options' ) ) {
 			$retval = new WP_Error(
-				'bp_rest_authorization_required',
+				'bp_attachments_rest_authorization_require',
 				__( 'Sorry, you are not allowed to request media.', 'bp-attachments' ),
 				array(
 					'status' => rest_authorization_required_code(),
@@ -333,7 +333,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		 */
 		if ( ! current_user_can( 'manage_options' ) ) {
 			$retval = new WP_Error(
-				'bp_rest_authorization_required',
+				'bp_attachments_rest_authorization_required',
 				__( 'Sorry, you are not allowed to create media.', 'bp-attachments' ),
 				array(
 					'status' => rest_authorization_required_code(),
@@ -367,7 +367,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		$request->set_param( 'context', 'edit' );
 
 		// Upload a file.
-		if ( 'bp_attachments_make_directory' !== $action ) {
+		if ( 'bp_attachments_media_upload' === $action ) {
 
 			// Get the file via $_FILES or raw data.
 			$files = $request->get_file_params();
@@ -403,7 +403,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 
 			if ( ! $can_upload ) {
 				return new WP_Error(
-					'rest_upload_forbidden',
+					'bp_attachments_rest_upload_forbidden',
 					__( 'You cannot upload files into the required destination', 'bp-attachments' ),
 					array(
 						'status' => 403,
@@ -416,7 +416,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 
 			if ( isset( $uploaded['error'] ) && $uploaded['error'] ) {
 				return new WP_Error(
-					'rest_upload_unknown_error',
+					'bp_attachments_rest_upload_unknown_error',
 					$uploaded['error'],
 					array(
 						'status' => 500,
@@ -428,7 +428,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 			$request->set_param( 'mime_type', $uploaded['type'] );
 
 			// Make a new directory.
-		} else {
+		} elseif ( 'bp_attachments_make_directory' === $action ) {
 			$can_create_dir = false;
 			$dir_data       = wp_parse_args(
 				array_map( 'wp_unslash', $request->get_params() ),
@@ -458,7 +458,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 
 			if ( ! $can_create_dir ) {
 				return new WP_Error(
-					'rest_create_dir_forbidden',
+					'bp_attachments_rest_create_dir_forbidden',
 					__( 'You cannot create directories into the required destination', 'bp-attachments' ),
 					array(
 						'status' => 403,
@@ -468,7 +468,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 
 			if ( ! $dir_data['directory_name'] || ! $dir_data['directory_type'] ) {
 				return new WP_Error(
-					'bp_rest_create_dir_no_data',
+					'bp_attachments_rest_create_dir_no_data',
 					__( 'Some information are missing to be able to create the directory.', 'bp-attachments' ),
 					array(
 						'status' => 400,
@@ -482,7 +482,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 
 			if ( is_wp_error( $made_dir ) ) {
 				return new WP_Error(
-					'bp_rest_makedir_failure',
+					'bp_attachments_rest_makedir_failure',
 					$made_dir->get_error_message(),
 					array(
 						'status' => 500,
@@ -493,6 +493,14 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 			$request->set_param( 'path', $made_dir['path'] );
 			$request->set_param( 'title', $dir_data['directory_name'] );
 			$request->set_param( 'media_type', $made_dir['media_type'] );
+		} else {
+			return new WP_Error(
+				'bp_attachments_rest_unsupported_action',
+				__( 'This action is not supported by the BP Attachments plugin.', 'bp-attachments' ),
+				array(
+					'status' => 400,
+				)
+			);
 		}
 
 		$prepared_media = $this->prepare_item_for_filesystem( $request );
@@ -549,7 +557,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		 */
 		if ( ! current_user_can( 'manage_options' ) ) {
 			$retval = new WP_Error(
-				'bp_rest_authorization_required',
+				'bp_attachments_rest_authorization_require',
 				__( 'Sorry, you are not allowed to delete media.', 'bp-attachments' ),
 				array(
 					'status' => rest_authorization_required_code(),
@@ -800,28 +808,8 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		 * @todo
 		 */
 
-		if ( ! isset( $request['path'] ) || ! $request['path'] ) {
-			return new WP_Error(
-				'rest_bp_attachments_missing_media_path',
-				__( 'The path to your media file is missing.', 'bp_attachments' ),
-				array(
-					'status' => 500,
-				)
-			);
-		}
-
-		if ( ( 'bp_attachments_media_upload' === $request['action'] && ! file_exists( $request['path'] ) ) || ( 'bp_attachments_make_directory' === $request['action'] && ! is_dir( $request['path'] ) ) ) {
-			return new WP_Error(
-				'rest_bp_attachments_missing_media_path',
-				__( 'The path to your media file does not exist.', 'bp_attachments' ),
-				array(
-					'status' => 500,
-				)
-			);
-		}
-
 		// Media Path.
-		if ( ! empty( $schema['properties']['path'] ) && isset( $request['path'] ) ) {
+		if ( isset( $request['path'] ) && $request['path'] ) {
 			$media->path = $request['path'];
 		}
 
