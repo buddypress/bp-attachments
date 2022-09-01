@@ -115,6 +115,11 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 					),
 				),
 				array(
+					'methods'             => WP_REST_Server::EDITABLE,
+					'callback'            => array( $this, 'update_item' ),
+					'permission_callback' => array( $this, 'update_item_permissions_check' ),
+				),
+				array(
 					'methods'             => WP_REST_Server::DELETABLE,
 					'callback'            => array( $this, 'delete_item' ),
 					'permission_callback' => array( $this, 'delete_item_permissions_check' ),
@@ -182,7 +187,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		 * @param bool|WP_Error   $retval  Returned value.
 		 * @param WP_REST_Request $request The request sent to the API.
 		 */
-		return apply_filters( 'bp_attachments_get_items_rest_permissions_check', $retval, $request );
+		return apply_filters( 'bp_attachments_rest_get_items_permissions_check', $retval, $request );
 	}
 
 	/**
@@ -204,10 +209,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 			$user_id = bp_loggedin_user_id();
 		}
 
-		/*
-		 * @todo check why I use "member" instead of "members"??
-		 * @see bp_attachments_list_member_root_objects() $list['member'] at line 589
-		 */
+		// Get files inside a single item directory.
 		if ( $parent && ! in_array( $parent, array( 'member', 'groups' ), true ) ) {
 			$visibility = 'public';
 
@@ -349,7 +351,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		 * @param bool|WP_Error   $retval  Returned value.
 		 * @param WP_REST_Request $request The request sent to the API.
 		 */
-		return apply_filters( 'bp_attachments_create_item_rest_permissions_check', $retval, $request );
+		return apply_filters( 'bp_attachments_rest_create_item_permissions_check', $retval, $request );
 	}
 
 	/**
@@ -374,7 +376,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 
 			if ( empty( $files ) ) {
 				return new WP_Error(
-					'bp_rest_upload_no_data',
+					'bp_attachments_rest_upload_no_data',
 					__( 'No files were provided.', 'bp-attachments' ),
 					array(
 						'status' => 400,
@@ -539,6 +541,49 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	}
 
 	/**
+	 * Check if the user can update a BP Attachments medium.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 * @return bool|WP_Error
+	 */
+	public function update_item_permissions_check( $rquest ) {
+		$retval = $this->create_item_permissions_check( $request );
+
+		/**
+		 * Filter the BP Attachments media `update_item` permissions check.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param bool|WP_Error   $retval  Returned value.
+		 * @param WP_REST_Request $request The request sent to the API.
+		 */
+		return apply_filters( 'bp_attachments_rest_update_item_permissions_check', $retval, $request );
+	}
+
+	/**
+	 * Updates a BP Attachments Medium.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param WP_REST_Request $request Full details about the request.
+	 * @return WP_Error|WP_REST_Response Response object on success, WP_Error object on failure.
+	 */
+	public function update_item( $request ) {
+		$id            = trim( $request->get_param( 'id' ), '/' );
+		$relative_path = $request->get_param( 'relative_path' );
+
+		return new WP_Error(
+			'bp_attachments_rest_update_medium_failed',
+			__( 'Sorry, we were not able to delete the media.', 'bp-attachments' ),
+			array(
+				'status' => 500,
+			)
+		);
+	}
+
+	/**
 	 * Check if the user can delete a BP Attachments medium.
 	 *
 	 * @since 1.0.0
@@ -573,7 +618,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		 * @param bool|WP_Error   $retval  Returned value.
 		 * @param WP_REST_Request $request The request sent to the API.
 		 */
-		return apply_filters( 'bp_attachments_delete_item_rest_permissions_check', $retval, $request );
+		return apply_filters( 'bp_attachments_rest_delete_item_permissions_check', $retval, $request );
 	}
 
 	/**
@@ -588,7 +633,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		$id            = trim( $request->get_param( 'id' ), '/' );
 		$relative_path = $request->get_param( 'relative_path' );
 		$error         = new WP_Error(
-			'bp_rest_delete_media_failed',
+			'bp_attachments_rest_delete_medium_failed',
 			__( 'Sorry, we were not able to delete the media.', 'bp-attachments' ),
 			array(
 				'status' => 500,
@@ -670,7 +715,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	public function create_profile_image_permissions_check( $request ) {
 		if ( 'POST' === $request->get_method() && bp_disable_avatar_uploads() ) {
 			$retval = new WP_Error(
-				'bp_rest_attachments_member_avatar_disabled',
+				'bp_attachments_rest_member_avatar_disabled',
 				__( 'Sorry, member avatar upload is disabled.', 'bp-attachements' ),
 				array(
 					'status' => 500,
@@ -678,7 +723,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 			);
 		} else {
 			$retval = new WP_Error(
-				'bp_rest_member_invalid_id',
+				'bp_attachments_rest_invalid_member_id',
 				__( 'Invalid member ID.', 'bp-attachements' ),
 				array(
 					'status' => 404,
@@ -695,7 +740,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 
 				if ( ! bp_attachments_current_user_can( 'edit_avatar', $args ) ) {
 					$retval = new WP_Error(
-						'bp_rest_attachments_member_avatar_disabled',
+						'bp_attachments_rest_member_avatar_disabled',
 						__( 'Sorry, you are not allowed to change this member’s profile image.', 'bp-attachements' ),
 						array(
 							'status' => 500,
@@ -715,7 +760,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		 * @param true|WP_Error   $retval  Returned value.
 		 * @param WP_REST_Request $request The request sent to the API.
 		 */
-		return apply_filters( 'bp_attachments_create_profile_image_permissions_check', $retval, $request );
+		return apply_filters( 'bp_attachments_rest_create_profile_image_permissions_check', $retval, $request );
 	}
 
 	/**
@@ -734,7 +779,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 
 		if ( ! $image ) {
 			return new WP_Error(
-				'bp_rest_attachments_member_avatar_no_image_file',
+				'bp_attachments_rest_member_avatar_no_image_file',
 				__( 'Sorry, you need an image file to upload.', 'bp-attachments' ),
 				array(
 					'status' => 500,
@@ -756,7 +801,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		$capture = bp_avatar_handle_capture( $profile_image, $user_id, 'array' );
 		if ( ! $capture ) {
 			return new WP_Error(
-				'bp_rest_attachments_member_avatar_capture_failed',
+				'bp_attachments_rest_member_avatar_capture_failed',
 				__( 'Sorry, we could not create your profile image.', 'bp-attachments' ),
 				array(
 					'status' => 500,
@@ -823,6 +868,10 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 			$media->title = $request['title'];
 		}
 
+		if ( ! empty( $schema['properties']['description'] ) && isset( $request['description'] ) ) {
+			$media->description = $request['description'];
+		}
+
 		// Media Media Type.
 		if ( ! empty( $schema['properties']['media_type'] ) && isset( $request['media_type'] ) ) {
 			$media->media_type = $request['media_type'];
@@ -870,7 +919,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		 * @param array  $links The prepared links of the REST response.
 		 * @param object $medium Activity object.
 		 */
-		return apply_filters( 'bp_attachments_item_rest_prepare_links', $links, $medium );
+		return apply_filters( 'bp_attachments_rest_item_prepare_links', $links, $medium );
 	}
 
 	/**
@@ -1168,7 +1217,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		 * @param array $schema The endpoint schema.
 		 */
 		return apply_filters(
-			'bp_attachments_profile_image_schema',
+			'bp_attachments_rest_profile_image_schema',
 			array(
 				'$schema'    => 'http://json-schema.org/draft-04/schema#',
 				'title'      => 'bp_attachments_profile_image',
