@@ -541,6 +541,59 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	}
 
 	/**
+	 * Get the BP Attachments Medium's json file data.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 * @return null|object The BP AttachmentsMedium's json file data.
+	 */
+	public function get_medium_json_data( $request ) {
+		$id            = trim( $request->get_param( 'id' ), '/' );
+		$relative_path = $request->get_param( 'relative_path' );
+
+		$relative_path_parts = array_filter( explode( '/', $relative_path ) );
+		$visibility          = array_shift( $relative_path_parts );
+
+		if ( 'private' !== $visibility && 'public' !== $visibility ) {
+			return null;
+		}
+
+		// Remove visibility from private path.
+		$relative_path = str_replace( '/' . $visibility, '', $relative_path );
+
+		// Set the context of the request.
+		$request->set_param( 'context', 'edit' );
+
+		$path      = bp_attachments_get_media_uploads_dir( $visibility )['path'];
+		$subdir    = trailingslashit( implode( '/', $relative_path_parts ) );
+		$abspath   = trailingslashit( $path ) . $subdir;
+		$json_file = $abspath . $id . '.json';
+
+		if ( ! file_exists( $json_file ) ) {
+			return null;
+		}
+
+		// Create the medium data out of the json file.
+		$medium_data = wp_json_file_decode( $json_file );
+
+		// Add extra data that may need `deleta_item` or `update_item` methods.
+		$medium_data->json_file  = $json_file;
+		$medium_data->abspath    = untrailingslashit( $abspath );
+		$medium_data->visibility = $visibility;
+
+		/**
+		 * Filter the BP Attachments Medium's json file data.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param object          $medium_data Medium's json file data.
+		 * @param WP_REST_Request $request     The request sent to the API.
+		 */
+		return apply_filters( 'bp_attachments_rest_medium_json_data', $medium_data, $request );
+	}
+
+	/**
 	 * Check if the user can update a BP Attachments medium.
 	 *
 	 * @since 1.0.0
@@ -548,7 +601,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return bool|WP_Error
 	 */
-	public function update_item_permissions_check( $rquest ) {
+	public function update_item_permissions_check( $request ) {
 		$retval = $this->create_item_permissions_check( $request );
 
 		/**
@@ -571,9 +624,6 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	 * @return WP_Error|WP_REST_Response Response object on success, WP_Error object on failure.
 	 */
 	public function update_item( $request ) {
-		$id            = trim( $request->get_param( 'id' ), '/' );
-		$relative_path = $request->get_param( 'relative_path' );
-
 		return new WP_Error(
 			'bp_attachments_rest_update_medium_failed',
 			__( 'Sorry, we were not able to delete the media.', 'bp-attachments' ),
@@ -630,9 +680,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	 * @return WP_Error|WP_REST_Response Response object on success, WP_Error object on failure.
 	 */
 	public function delete_item( $request ) {
-		$id            = trim( $request->get_param( 'id' ), '/' );
-		$relative_path = $request->get_param( 'relative_path' );
-		$error         = new WP_Error(
+		$error = new WP_Error(
 			'bp_attachments_rest_delete_medium_failed',
 			__( 'Sorry, we were not able to delete the media.', 'bp-attachments' ),
 			array(
@@ -640,51 +688,38 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 			)
 		);
 
-		$relative_path_parts = explode( '/', $relative_path );
-		$relative_path_parts = array_filter( $relative_path_parts );
-		$visibility          = reset( $relative_path_parts );
-
-		if ( 'private' !== $visibility && 'public' !== $visibility ) {
+		$medium_data = $this->get_medium_json_data( $request );
+		if ( ! $medium_data ) {
 			return $error;
 		}
 
-		// Remove visibility from private path.
-		$relative_path = str_replace( '/' . $visibility, '', $relative_path );
-
-		// Set the context of the request.
-		$request->set_param( 'context', 'edit' );
-
-		$path        = bp_attachments_get_media_uploads_dir( $visibility )['path'];
-		$subdir      = '/' . trim( $relative_path, '/' );
-		$medium_data = $path . $subdir . '/' . $id . '.json';
-
-		$data     = wp_json_file_decode( $medium_data );
-		$previous = $this->prepare_item_for_response( $data, $request );
+		$previous = $this->prepare_item_for_response( $medium_data, $request );
 		$deleted  = true;
 
 		// Delete the json file data.
-		if ( file_exists( $medium_data ) ) {
-			$deleted = unlink( $medium_data );
+		if ( file_exists( $medium_data->json_file ) ) {
+			$deleted = unlink( $medium_data->json_file );
 		}
 
 		/**
 		 * The medium is a a file. We need to delete:
-		 * - the file,
-		 * - its revisions.
+		 * - the revisions,
+		 * - the file.
 		 */
-		if ( 'file' === $data->type ) {
+		if ( 'file' === $medium_data->type ) {
+			// Delete revisions folder.
 			if ( true === $deleted ) {
-				// Delete revisions folder.
-				$deleted = bp_attachments_delete_directory( $path . $subdir . '/._revisions_' . $id, $visibility );
+				$deleted = bp_attachments_delete_directory( $medium_data->abspath . '/._revisions_' . $medium_data->id, $medium_data->visibility );
 			}
 
-			if ( true === $deleted && file_exists( $path . $subdir . '/' . $data->name ) ) {
-				$deleted = unlink( $path . $subdir . '/' . $data->name );
+			// Delete file.
+			if ( true === $deleted && file_exists( $medium_data->abspath . '/' . $medium_data->name ) ) {
+				$deleted = unlink( $medium_data->abspath . '/' . $medium_data->name );
 			}
 		} else {
 			if ( true === $deleted ) {
 				// Delete the folder and its content.
-				$deleted = bp_attachments_delete_directory( $path . $subdir . '/' . $data->name, $visibility );
+				$deleted = bp_attachments_delete_directory( $medium_data->abspath . '/' . $medium_data->name, $medium_data->visibility );
 			}
 		}
 
