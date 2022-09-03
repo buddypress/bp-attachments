@@ -75,7 +75,7 @@ const MediaItem = ( props ) => {
 					title={ sprintf( __( 'Edit %s', 'bp-attachments' ), name ) }
 					onRequestClose={ () => toggleModal( false ) }
 				>
-					<EditMediaItem medium={ medium }/>
+					<EditMediaItem medium={ medium } errorCallback={ toggleModal }/>
 				</Modal>
 			) }
 		</Fragment>

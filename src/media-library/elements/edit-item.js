@@ -7,6 +7,9 @@
 		TextareaControl,
 		TextControl,
 	},
+	data: {
+		useDispatch,
+	},
 	element: {
 		createElement,
 		useState,
@@ -16,8 +19,15 @@
 	},
 } = wp;
 
-const EditMediaItem = ( { medium } ) => {
+/**
+ * Internal dependencies.
+ */
+import { BP_ATTACHMENTS_STORE_KEY } from '../store';
+
+const EditMediaItem = ( { medium, errorCallback } ) => {
 	const {
+		id,
+		name,
 		title,
 		description,
 		vignette,
@@ -31,13 +41,28 @@ const EditMediaItem = ( { medium } ) => {
 		title: title,
 		description: description,
 	} );
-
+	const { updateMedium } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
 	const isDisabled = title === editedMedium.title && description === editedMedium.description;
 
 	const saveMediumProps = ( event ) => {
 		event.preventDefault();
 
-		console.log( editedMedium );
+		updateMedium( {
+			id: id,
+			name: name,
+			title: editedMedium.title,
+			description: editedMedium.description,
+		} ).then( ( response ) => {
+			if ( response.error ) {
+				errorCallback( false );
+			} else if ( response.file ) {
+				editMedium( {
+					...editedMedium,
+					title: response.file.title,
+					description: response.file.description,
+				} );
+			}
+		} );
 	}
 
 	const resetMediumProps = ( event ) => {

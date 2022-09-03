@@ -506,18 +506,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		}
 
 		$prepared_media = $this->prepare_item_for_filesystem( $request );
-
-		if ( is_wp_error( $prepared_media ) ) {
-			return new WP_Error(
-				$prepared_media->get_error_code(),
-				$made_dir->get_error_message(),
-				array(
-					'status' => 500,
-				)
-			);
-		}
-
-		$media = bp_attachments_create_media( $prepared_media );
+		$media          = bp_attachments_create_media( $prepared_media );
 
 		if ( is_wp_error( $media ) ) {
 			return new WP_Error(
@@ -624,13 +613,47 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	 * @return WP_Error|WP_REST_Response Response object on success, WP_Error object on failure.
 	 */
 	public function update_item( $request ) {
-		return new WP_Error(
-			'bp_attachments_rest_update_medium_failed',
-			__( 'Sorry, we were not able to delete the media.', 'bp-attachments' ),
-			array(
-				'status' => 500,
-			)
-		);
+		$medium_data = $this->get_medium_json_data( $request );
+		if ( ! $medium_data ) {
+			return new WP_Error(
+				'bp_attachments_rest_update_medium_failed',
+				__( 'Sorry, we were not able to update the media.', 'bp-attachments' ),
+				array(
+					'status' => 500,
+				)
+			);
+		}
+
+		$prepared_medium = $this->prepare_item_for_filesystem( $request );
+
+		// Merge edits.
+		foreach ( array_keys( get_object_vars( $medium_data ) ) as $prop ) {
+			if ( isset( $prepared_medium->{$prop} ) ) {
+				$medium_data->{$prop} = $prepared_medium->{$prop};
+			}
+		}
+
+		$medium = bp_attachments_update_medium( $medium_data );
+
+		if ( is_wp_error( $medium ) ) {
+			return new WP_Error(
+				$medium->get_error_code(),
+				$medium->get_error_message(),
+				array(
+					'status' => 500,
+				)
+			);
+		}
+
+		// Add the icon.
+		if ( 'inode/directory' !== $medium->mime_type ) {
+			$medium->icon = wp_mime_type_icon( $medium->media_type );
+		} else {
+			$medium->icon = bp_attachments_get_directory_icon( $medium->media_type );
+		}
+
+		// Return the response.
+		return rest_ensure_response( $medium );
 	}
 
 	/**
@@ -882,13 +905,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 
 		$schema = $this->get_item_schema();
 
-		/**
-		 * Update item using the media ID.
-		 *
-		 * @todo
-		 */
-
-		// Media Path.
+		// It's a new medium.
 		if ( isset( $request['path'] ) && $request['path'] ) {
 			$media->path = $request['path'];
 		}

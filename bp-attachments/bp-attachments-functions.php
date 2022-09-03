@@ -666,8 +666,6 @@ function bp_attachments_get_medium_path( $url = '', $with_data = false ) {
  *
  * @since 1.0.0
  *
- * @todo this function should use `bp_attachments_get_medium()` to be sure to set all medium properties.
- *
  * @param object $media Media Data to create the Media Item.
  * @return BP_Medium    The created Media Item.
  */
@@ -760,6 +758,39 @@ function bp_attachments_create_media( $media = null ) {
 	}
 
 	return bp_attachments_get_medium( $media->id, $parent_dir );
+}
+
+/**
+ * Update a Media Item.
+ *
+ * @since 1.0.0
+ *
+ * @param object $medium Medium Data to update the Media Item.
+ * @return BP_Medium     The updated Media Item.
+ */
+function bp_attachments_update_medium( $medium ) {
+	if ( ! is_object( $medium ) || ! isset( $medium->abspath, $medium->json_file ) ) {
+		return new WP_Error( 'bp_attachments_missing_media_path', __( 'The path to your media file is missing.', 'bp_attachments' ) );
+	}
+
+	$json_file  = $medium->json_file;
+	$parent_dir = $medium->abspath;
+
+	// Do not write these properties into the json file.
+	unset( $medium->json_file, $medium->abspath, $medium->visibility );
+
+	// Set the last modified date.
+	$medium->last_modified = bp_core_current_time( true, 'timestamp' );
+
+	// Sanitize the medium.
+	$medium = bp_attachments_sanitize_media( $medium );
+
+	// Update properties.
+	if ( file_exists( $json_file ) ) {
+		file_put_contents( $json_file, wp_json_encode( $medium ) ); // phpcs:ignore
+	}
+
+	return bp_attachments_get_medium( $medium->id, $parent_dir );
 }
 
 /**

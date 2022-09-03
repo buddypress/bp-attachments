@@ -24,9 +24,24 @@ export const controls = {
 			}
 		);
 	},
+	UPDATE_FROM_API( { path, data } ) {
+		return apiFetch(
+			{
+				path: path,
+				method: 'PUT',
+				data: data
+			}
+		);
+	},
 	DELETE_FROM_API( { path, relativePath } ) {
-		return apiFetch( { path: path, method: 'DELETE', data: {
-			relative_path: relativePath
-		} } );
+		return apiFetch(
+			{
+				path: path,
+				method: 'DELETE',
+				data: {
+					relative_path: relativePath
+				}
+			}
+		);
 	}
 };

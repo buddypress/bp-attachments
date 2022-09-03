@@ -72,6 +72,21 @@ export function createFromAPI( path, data ) {
 }
 
 /**
+ * Returns an action object used to update media via the API.
+ *
+ * @param {string} path Endpoint path.
+ * @param {Object} data The data to be updated.
+ * @return {Object} Object for action.
+ */
+ export function updateFromAPI( path, data ) {
+	return {
+		type: types.UPDATE_FROM_API,
+		path,
+		data,
+	};
+}
+
+/**
  * Returns an action object used to delete a media via the API.
  *
  * @param {string} path Endpoint path.
@@ -385,6 +400,40 @@ export function * createDirectory( directory ) {
 		yield { type: 'UPLOAD_END', uploading, file };
 
 		return addMediumError( upload );
+	}
+}
+
+/**
+ * Updates a Medium.
+ *
+ * @param {Object} medium The medium object to update.
+ * @returns {Object} Object for action.
+ */
+export function * updateMedium( medium ) {
+	let update;
+	const store = select( STORE_KEY );
+	const relativePath = store.getRelativePath();
+
+	try {
+		update = yield updateFromAPI(
+			'/buddypress/v1/attachments/' + medium.id + '/',
+			{
+				'relative_path':  relativePath,
+				title: medium.title,
+				description: medium.description,
+			}
+		);
+
+		return addMedium( update );
+	} catch ( error ) {
+		update = {
+			id: uniqueId(),
+			name: medium.name,
+			error: error.message,
+			updated: false,
+		};
+
+		return addMediumError( update );
 	}
 }
 
