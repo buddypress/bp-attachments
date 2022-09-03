@@ -12,7 +12,6 @@
 	},
 	i18n: {
 		__,
-		sprintf,
 	},
 	data: {
 		useSelect,
@@ -72,7 +71,7 @@ const MediaItem = ( props ) => {
 			/>
 			{ isOpen && (
 				<Modal
-					title={ sprintf( __( 'Edit %s', 'bp-attachments' ), name ) }
+					title={ __( 'Media details', 'bp-attachments' ) }
 					onRequestClose={ () => toggleModal( false ) }
 				>
 					<EditMediaItem medium={ medium } errorCallback={ toggleModal }/>

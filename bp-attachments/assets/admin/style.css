@@ -511,10 +511,23 @@ a.file-item {
 	line-height: 20px;
 }
 
+body.buddypress.media_page_community-library .components-modal__frame {
+	max-height: 90%;
+	min-height: 80%;
+}
+
+ul.bp-attachment-edit-item__preview_links {
+    display: flex;
+}
+
+ul.bp-attachment-edit-item__preview_links li {
+    margin: 0 1em 0 0;
+}
+
 .bp-attachment-edit-item {
     display: flex;
     flex-direction: row;
-    width: 80vw;
+    width: 90vw;
 }
 
 .bp-attachment-edit-item__preview {

@@ -4,6 +4,7 @@
  const {
 	components: {
 		Button,
+		ExternalLink,
 		TextareaControl,
 		TextControl,
 	},
@@ -16,6 +17,7 @@
 	},
 	i18n: {
 		__,
+		sprintf,
 	},
 } = wp;
 
@@ -80,6 +82,10 @@ const EditMediaItem = ( { medium, errorCallback } ) => {
 			<div className="bp-attachment-edit-item__preview">
 				<h3 className="bp-attachment-edit-item__preview_title">{ editedMedium.title }</h3>
 				<div className="bp-attachment-edit-item__preview_vignette">
+					<ul className="bp-attachment-edit-item__preview_links">
+						<li><ExternalLink href={ view }>{ __( 'Open media page', 'bp-attachments' ) }</ExternalLink></li>
+						<li><a href={ download }>{ __( 'Download media', 'bp-attachments' ) }</a></li>
+					</ul>
 					<p>{ editedMedium.description }</p>
 					{ vignette && (
 						<img src={ vignette } className="bp-attachment-medium-vignette" />
@@ -90,7 +96,7 @@ const EditMediaItem = ( { medium, errorCallback } ) => {
 				</div>
 			</div>
 			<div className="bp-attachment-edit-item__form">
-				<h3>{ __( 'Editable media properties', 'bp-attachments' ) }</h3>
+				<h3>{ sprintf( __( 'Edit %s', 'bp-attachments' ), name ) }</h3>
 				<p className="description">{ __( 'Use the below fields to edit media properties.', 'bp-attachments' ) }</p>
 				<TextControl
 					label={ __( 'Title', 'bp-attachments' ) }
