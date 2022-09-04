@@ -101,7 +101,7 @@ function bp_attachments_admin_media() {
 	 * the Community Media Library Admin screen or not.
 	 */
 	$settings = apply_filters(
-		'bp_attachments_media_library_admin',
+		'bp_attachments_medium_library_admin',
 		array(
 			'isAdminScreen'         => $is_admin_screen,
 			'maxUploadFileSize'     => wp_max_upload_size(),

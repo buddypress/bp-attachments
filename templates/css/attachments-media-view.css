@@ -24,3 +24,7 @@ body.attachments.view .bp-attachment-video video {
 body.attachments.view .bp-attachment-audio audio {
 	width: 100%;
 }
+
+body.attachments.view .wp-block-post-author {
+	margin: 2em 0;
+}

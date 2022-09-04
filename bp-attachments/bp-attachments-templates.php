@@ -124,7 +124,7 @@ add_filter( 'bp_nouveau_member_locate_template_part', 'bp_attachments_template_p
  *
  * @return bool True if it's a BP Attachments item action request. False otherwise.
  */
-function bp_attachments_current_media_action() {
+function bp_attachments_current_medium_action() {
 	$action = get_query_var( 'bp_attachments_item_action' );
 
 	if ( $action ) {
@@ -141,10 +141,10 @@ function bp_attachments_current_media_action() {
  *
  * @return bool True if it's a BP Attachments item view request. False otherwise.
  */
-function bp_attachments_is_media_view() {
+function bp_attachments_is_medium_view() {
 	$retval = false;
 
-	if ( ! is_null( bp_attachments_get_queried_object() ) && 'view' === bp_attachments_current_media_action() ) {
+	if ( ! is_null( bp_attachments_get_queried_object() ) && 'view' === bp_attachments_current_medium_action() ) {
 		$retval = true;
 	}
 
@@ -158,10 +158,10 @@ function bp_attachments_is_media_view() {
  *
  * @return bool True if it's a BP Attachments item download request. False otherwise.
  */
-function bp_attachments_is_media_download() {
+function bp_attachments_is_medium_download() {
 	$retval = false;
 
-	if ( ! is_null( bp_attachments_get_queried_object() ) && 'download' === bp_attachments_current_media_action() ) {
+	if ( ! is_null( bp_attachments_get_queried_object() ) && 'download' === bp_attachments_current_medium_action() ) {
 		$retval = true;
 	}
 
@@ -175,10 +175,10 @@ function bp_attachments_is_media_download() {
  *
  * @return bool True if it's a BP Attachments item embed request. False otherwise.
  */
-function bp_attachments_is_media_embed() {
+function bp_attachments_is_medium_embed() {
 	$retval = false;
 
-	if ( ! is_null( bp_attachments_get_queried_object() ) && 'embed' === bp_attachments_current_media_action() ) {
+	if ( ! is_null( bp_attachments_get_queried_object() ) && 'embed' === bp_attachments_current_medium_action() ) {
 		$retval = true;
 	}
 
@@ -215,10 +215,10 @@ function bp_attachments_set_dummy_post() {
 	// Use the Attachments directory title by default.
 	$title = bp_get_directory_title( 'attachments' );
 
-	$medium_action = bp_attachments_current_media_action();
+	$medium_action = bp_attachments_current_medium_action();
 
 	// Downloads are intercepted before in the loading process.
-	if ( $medium_action && ! bp_attachments_is_media_download() ) {
+	if ( $medium_action && ! bp_attachments_is_medium_download() ) {
 		$medium = bp_attachments_get_queried_object();
 		$title  = $medium->title;
 	}
@@ -250,10 +250,10 @@ function bp_attachments_set_content_template() {
 	// By default the Attachments directory template.
 	$template = 'attachments/index';
 
-	$medium_action = bp_attachments_current_media_action();
+	$medium_action = bp_attachments_current_medium_action();
 
 	// Downloads are intercepted before in the loading process.
-	if ( $medium_action && ! bp_attachments_is_media_download() ) {
+	if ( $medium_action && ! bp_attachments_is_medium_download() ) {
 		$template = 'attachments/single/' . $medium_action;
 	}
 
@@ -285,7 +285,7 @@ add_action( 'bp_setup_theme_compat', 'bp_attachments_set_directory_theme_compat'
  * @since 1.0.0
  */
 function bp_attachments_enqueue_medium_view_style() {
-	if ( ! bp_attachments_is_media_view() ) {
+	if ( ! bp_attachments_is_medium_view() ) {
 		return;
 	}
 
@@ -311,6 +311,7 @@ function bp_attachments_enqueue_medium_view_style() {
 		array(),
 		bp_attachments_get_version()
 	);
+	wp_enqueue_style( 'wp-block-post-author' );
 }
 add_action( 'bp_enqueue_scripts', 'bp_attachments_enqueue_medium_view_style', 20 );
 
@@ -319,8 +320,8 @@ add_action( 'bp_enqueue_scripts', 'bp_attachments_enqueue_medium_view_style', 20
  *
  * @since 1.0.0
  */
-function bp_attachments_media_embed_inline_styles() {
-	if ( ! bp_attachments_is_media_embed() ) {
+function bp_attachments_medium_embed_inline_styles() {
+	if ( ! bp_attachments_is_medium_embed() ) {
 		return;
 	}
 
@@ -342,16 +343,16 @@ function bp_attachments_media_embed_inline_styles() {
 
 	printf( '<style type="text/css">%s</style>', wp_kses( $css, array( "\'", '\"' ) ) );
 }
-add_action( 'embed_head', 'bp_attachments_media_embed_inline_styles', 20 );
+add_action( 'embed_head', 'bp_attachments_medium_embed_inline_styles', 20 );
 
 /**
- * Gets the owner URL for the BP Attachments media.
+ * Gets the owner URL for the BP Attachments medium.
  *
  * @since 1.0.0
  *
- * @return string The owner URL for the BP Attachments media.
+ * @return string The owner URL for the BP Attachments medium.
  */
-function bp_attachments_media_get_owner_url() {
+function bp_attachments_medium_get_owner_url() {
 	$url    = '#';
 	$medium = bp_attachments_get_queried_object();
 
@@ -363,22 +364,22 @@ function bp_attachments_media_get_owner_url() {
 }
 
 /**
- * Outputs the owner URL for the BP Attachments media.
+ * Outputs the owner URL for the BP Attachments medium.
  *
  * @since 1.0.0
  */
-function bp_attachments_media_owner_url() {
-	echo esc_url( bp_attachments_media_get_owner_url() );
+function bp_attachments_medium_owner_url() {
+	echo esc_url( bp_attachments_medium_get_owner_url() );
 }
 
 /**
- * Gets the owner Avatar for the BP Attachments media.
+ * Gets the owner Avatar for the BP Attachments medium.
  *
  * @since 1.0.0
  *
- * @return string HTML output for the owner Avatar for the BP Attachments media.
+ * @return string HTML output for the owner Avatar for the BP Attachments medium.
  */
-function bp_attachments_media_get_owner_avatar() {
+function bp_attachments_medium_get_owner_avatar() {
 	$avatar = '';
 	$medium = bp_attachments_get_queried_object();
 
@@ -400,13 +401,13 @@ function bp_attachments_media_get_owner_avatar() {
 }
 
 /**
- * Outputs the owner avatar for the BP Attachments media.
+ * Outputs the owner avatar for the BP Attachments medium.
  *
  * @since 1.0.0
  */
-function bp_attachments_media_owner_avatar() {
+function bp_attachments_medium_owner_avatar() {
 	echo wp_kses(
-		bp_attachments_media_get_owner_avatar(),
+		bp_attachments_medium_get_owner_avatar(),
 		array(
 			'img' => array(
 				'src'    => true,
@@ -420,40 +421,99 @@ function bp_attachments_media_owner_avatar() {
 }
 
 /**
- * Gets the owner mention name for the BP Attachments media.
+ * Gets the owner mention name for the BP Attachments medium.
  *
  * @since 1.0.0
  *
- * @return string The owner mention name for the BP Attachments media.
+ * @return string The owner mention name for the BP Attachments medium.
  */
-function bp_attachments_get_media_owner_mentionname() {
+function bp_attachments_get_medium_owner_mentionname() {
 	$mention_name = '';
 	$medium       = bp_attachments_get_queried_object();
 
 	if ( isset( $medium->owner_id ) && $medium->owner_id ) {
-		$mention_name = bp_activity_get_user_mentionname( $medium->owner_id );
+		$mention_name = bp_core_get_username( $medium->owner_id );
 	}
 
 	return $mention_name;
 }
 
 /**
- * Outputs the owner mention name for the BP Attachments media.
+ * Outputs the owner mention name for the BP Attachments medium.
  *
  * @since 1.0.0
  */
-function bp_attachments_media_owner_mentionname() {
-	echo esc_html( bp_attachments_get_media_owner_mentionname() );
+function bp_attachments_medium_owner_mentionname() {
+	echo esc_html( bp_attachments_get_medium_owner_mentionname() );
 }
 
 /**
- * Gets the action made by the owner about the BP Attachments media.
+ * Gets the owner display name for the BP Attachments medium.
  *
  * @since 1.0.0
  *
- * @return string HTML output for the action made by the owner about the BP Attachments media.
+ * @return string The owner mention name for the BP Attachments medium.
  */
-function bp_attachments_media_get_action() {
+function bp_attachments_get_medium_owner_displayname() {
+	$display_name = '';
+	$medium       = bp_attachments_get_queried_object();
+
+	if ( isset( $medium->owner_id ) && $medium->owner_id ) {
+		$display_name = bp_core_get_user_displayname( $medium->owner_id );
+	}
+
+	return $display_name;
+}
+
+/**
+ * Outputs the owner mention name for the BP Attachments medium.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_medium_owner_displayname() {
+	echo esc_html( bp_attachments_get_medium_owner_displayname() );
+}
+
+/**
+ * Checks if the BP Attachments medium's owner has a description.
+ *
+ * @since 1.0.0
+ *
+ * @return bool True if the BP Attachments medium's owner has a description. False otherwise.
+ */
+function bp_attachments_medium_owner_has_description() {
+	$owner_has_description = false;
+	$medium                = bp_attachments_get_queried_object();
+
+	if ( isset( $medium->owner_id ) && $medium->owner_id ) {
+		$owner_has_description = (bool) get_the_author_meta( 'description', $medium->owner_id );
+	}
+
+	return $owner_has_description;
+}
+
+/**
+ * Outputs the BP Attachments medium's owner description.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_medium_owner_description() {
+	$owner_description = '';
+	$medium            = bp_attachments_get_queried_object();
+
+	if ( isset( $medium->owner_id ) && $medium->owner_id ) {
+		the_author_meta( 'description', $medium->owner_id );
+	}
+}
+
+/**
+ * Gets the action made by the owner about the BP Attachments medium.
+ *
+ * @since 1.0.0
+ *
+ * @return string HTML output for the action made by the owner about the BP Attachments medium.
+ */
+function bp_attachments_medium_get_action() {
 	$action = '';
 	$medium = bp_attachments_get_queried_object();
 
@@ -473,13 +533,13 @@ function bp_attachments_media_get_action() {
 }
 
 /**
- * Outputs the action made by the owner about the BP Attachments media.
+ * Outputs the action made by the owner about the BP Attachments medium.
  *
  * @since 1.0.0
  */
-function bp_attachments_media_action() {
+function bp_attachments_medium_action() {
 	echo wp_kses(
-		bp_attachments_media_get_action(),
+		bp_attachments_medium_get_action(),
 		array(
 			'a' => array(
 				'class' => true,
@@ -490,13 +550,13 @@ function bp_attachments_media_action() {
 }
 
 /**
- * Gets the BP Attachments media view url.
+ * Gets the BP Attachments medium view url.
  *
  * @since 1.0.0
  *
- * @return string The BP Attachments media view url.
+ * @return string The BP Attachments medium view url.
  */
-function bp_attachments_media_get_view_url() {
+function bp_attachments_medium_get_view_url() {
 	$url    = '#';
 	$medium = bp_attachments_get_queried_object();
 
@@ -508,22 +568,22 @@ function bp_attachments_media_get_view_url() {
 }
 
 /**
- * Outputs the BP Attachments media view url.
+ * Outputs the BP Attachments medium view url.
  *
  * @since 1.0.0
  */
-function bp_attachments_media_view_url() {
-	echo esc_url( bp_attachments_media_get_view_url() );
+function bp_attachments_medium_view_url() {
+	echo esc_url( bp_attachments_medium_get_view_url() );
 }
 
 /**
- * Gets the BP Attachments media last modified date.
+ * Gets the BP Attachments medium last modified date.
  *
  * @since 1.0.0
  *
- * @return string The BP Attachments media last modified date.
+ * @return string The BP Attachments medium last modified date.
  */
-function bp_attachments_media_get_modified_date() {
+function bp_attachments_medium_get_modified_date() {
 	$modified_date = '';
 	$medium        = bp_attachments_get_queried_object();
 
@@ -535,23 +595,23 @@ function bp_attachments_media_get_modified_date() {
 }
 
 /**
- * Outputs the BP Attachments media last modified date.
+ * Outputs the BP Attachments medium last modified date.
  *
  * @since 1.0.0
  */
-function bp_attachments_media_modified_date() {
-	echo esc_html( bp_attachments_media_get_modified_date() );
+function bp_attachments_medium_modified_date() {
+	echo esc_html( bp_attachments_medium_get_modified_date() );
 }
 
 /**
- * Gets the BP Attachments media description.
+ * Gets the BP Attachments medium description.
  *
  * @since 1.0.0
  *
  * @param bool $return_bool Whether to return a boolean or the description string.
- * @return bool|string the BP Attachments media description.
+ * @return bool|string the BP Attachments medium description.
  */
-function bp_attachments_media_get_description( $return_bool = false ) {
+function bp_attachments_medium_get_description( $return_bool = false ) {
 	$description = '';
 	$medium      = bp_attachments_get_queried_object();
 
@@ -567,24 +627,39 @@ function bp_attachments_media_get_description( $return_bool = false ) {
 }
 
 /**
- * Checks if the BP Attachments media has a description.
+ * Checks if the BP Attachments medium has a description.
  *
  * @since 1.0.0
  *
- * @return bool True if the BP Attachments media has a description. False otherwise.
+ * @return bool True if the BP Attachments medium has a description. False otherwise.
  */
-function bp_attachments_media_has_description() {
-	return true === bp_attachments_media_get_description( true );
+function bp_attachments_medium_has_description() {
+	return true === bp_attachments_medium_get_description( true );
 }
 
 /**
- * Gets the BP Attachments media title.
+ * Outputs the BP Attachments medium description.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_medium_description() {
+	$description = esc_html( bp_attachments_medium_get_description() );
+
+	if ( is_embed() ) {
+		echo $description; // phpcs:ignore WordPress.Security.EscapeOutput
+	} else {
+		echo wpautop( str_replace( "\n", '<br><br>', $description ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+	}
+}
+
+/**
+ * Gets the BP Attachments medium title.
  *
  * @since 1.0.0
  *
- * @return string The BP Attachments media title.
+ * @return string The BP Attachments medium title.
  */
-function bp_attachments_media_get_title() {
+function bp_attachments_medium_get_title() {
 	$title  = '';
 	$medium = bp_attachments_get_queried_object();
 
@@ -596,41 +671,26 @@ function bp_attachments_media_get_title() {
 }
 
 /**
- * Outputs the BP Attachments media title.
+ * Outputs the BP Attachments medium title.
  *
  * @since 1.0.0
  */
-function bp_attachments_media_title() {
-	$title = esc_html( bp_attachments_media_get_title() );
+function bp_attachments_medium_title() {
+	$title = esc_html( bp_attachments_medium_get_title() );
 
 	if ( is_embed() ) {
-		printf( '<a href="%1$s">%2$s</a>', esc_url( bp_attachments_media_get_view_url() ), $title ); // phpcs:ignore WordPress.Security.EscapeOutput
+		printf( '<a href="%1$s">%2$s</a>', esc_url( bp_attachments_medium_get_view_url() ), $title ); // phpcs:ignore WordPress.Security.EscapeOutput
 	} else {
 		echo $title; // phpcs:ignore WordPress.Security.EscapeOutput
 	}
 }
 
 /**
- * Outputs the BP Attachments media description.
+ * Outputs classes for the BP Attachment medium container.
  *
  * @since 1.0.0
  */
-function bp_attachments_media_description() {
-	$description = esc_html( bp_attachments_media_get_description() );
-
-	if ( is_embed() ) {
-		echo $description; // phpcs:ignore WordPress.Security.EscapeOutput
-	} else {
-		echo wpautop( str_replace( "\n", '<br><br>', $description ) ); // phpcs:ignore WordPress.Security.EscapeOutput
-	}
-}
-
-/**
- * Outputs classes for the BP Attachment media container.
- *
- * @since 1.0.0
- */
-function bp_attachment_media_classes() {
+function bp_attachments_medium_classes() {
 	$classes = array( 'bp-embed-media', 'wp-embed-featured-image' );
 	$medium  = bp_attachments_get_queried_object();
 

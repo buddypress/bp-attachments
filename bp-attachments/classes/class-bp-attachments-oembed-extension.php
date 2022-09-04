@@ -116,10 +116,10 @@ class BP_Attachments_OEmbed_Extension extends BP_Core_oEmbed_Extension {
 	 * @return bool
 	 */
 	protected function is_page() {
-		$is_page = bp_attachments_is_media_view();
+		$is_page = bp_attachments_is_medium_view();
 
 		if ( 'embed_template' === current_filter() || 'bp_embed_content' === current_action() ) {
-			$is_page = bp_attachments_is_media_embed();
+			$is_page = bp_attachments_is_medium_embed();
 
 			// Make sure our custom permalink shows up in the 'WordPress Embed' block.
 			add_filter( 'the_permalink', array( $this, 'filter_the_permalink' ) );

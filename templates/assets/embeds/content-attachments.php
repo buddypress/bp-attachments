@@ -12,14 +12,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 ?>
-<div class="<?php bp_attachment_media_classes(); ?>">
+<div class="<?php bp_attachments_medium_classes(); ?>">
 	<?php bp_attachments_render_medium(); ?>
 </div>
 
 <div class="wp-embed-excerpt">
-	<p><strong><?php bp_attachments_media_title(); ?></strong></p>
+	<p><strong><?php bp_attachments_medium_title(); ?></strong></p>
 
-	<?php if ( bp_attachments_media_has_description() ) : ?>
-		<p><?php bp_attachments_media_description(); ?></p>
+	<?php if ( bp_attachments_medium_has_description() ) : ?>
+		<p><?php bp_attachments_medium_description(); ?></p>
 	<?php endif; ?>
 </div>
