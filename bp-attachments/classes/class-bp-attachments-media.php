@@ -79,7 +79,7 @@ class BP_Attachments_Media extends BP_Attachment {
 		$media_args = wp_parse_args(
 			array_map( 'wp_unslash', $_POST ), // phpcs:ignore
 			array(
-				'status'      => 'public',
+				'visibility'  => 'public',
 				'object'      => 'members',
 				'object_item' => '',
 				'parent_dir'  => '',
@@ -91,7 +91,7 @@ class BP_Attachments_Media extends BP_Attachment {
 		$subdir          = '';
 
 		$upload_dir = $public_uploads;
-		if ( 'public' !== $media_args['status'] ) {
+		if ( 'public' !== $media_args['visibility'] ) {
 			$upload_dir = $private_uploads;
 		}
 
@@ -109,13 +109,13 @@ class BP_Attachments_Media extends BP_Attachment {
 			 * @param array $media_args {
 			 *     An array of arguments.
 			 *
-			 *     @type string     $status      Whether the media being created is public or private.
+			 *     @type string     $visibility  Whether the medium being created is public or private.
 			 *                                   Default 'public'.
-			 *     @type string     $object      The name of the object the media being created is attached to.
+			 *     @type string     $object      The name of the object the medium being created is attached to.
 			 *                                   Default 'members'. Possible values are 'members', 'groups' or any
 			 *                                   custom BuddyPress component's name.
 			 *     @type string|int $object_item The unique identifier for the object's item. It can be the object's ID or slug.
-			 *     @type string     $parent_dir  The parent directory the media being created is attached to.
+			 *     @type string     $parent_dir  The parent directory the medium being created is attached to.
 			 * }
 			 */
 			return apply_filters( 'bp_attachments_media_uploads_dir', $upload_dir, $media_args );
@@ -168,7 +168,7 @@ class BP_Attachments_Media extends BP_Attachment {
 			$upload_dir['subdir'] .= $subdir;
 		}
 
-		if ( 'public' !== $media_args['status'] ) {
+		if ( 'public' !== $media_args['visibility'] ) {
 			$upload_dir['url'] = '';
 		}
 

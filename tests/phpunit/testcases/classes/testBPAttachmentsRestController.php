@@ -93,7 +93,7 @@ class BP_attachments_REST_controller_UnitTestCase extends WP_Test_REST_Controlle
 		$this->assertCount( 2, $routes[ $this->endpoint_url ] );
 
 		$this->assertArrayHasKey( $this->endpoint_url . '/(?P<id>[\S]+)', $routes );
-		$this->assertCount( 1, $routes[$this->endpoint_url . '/(?P<id>[\S]+)'] );
+		$this->assertCount( 2, $routes[$this->endpoint_url . '/(?P<id>[\S]+)'] );
 	}
 
 	public function test_context_param() {
@@ -137,9 +137,9 @@ class BP_attachments_REST_controller_UnitTestCase extends WP_Test_REST_Controlle
 		);
 
 		$_POST = array(
-			'action' => 'bp_attachments_media_upload',
-			'status' => 'public',
-			'object' => 'members',
+			'action'     => 'bp_attachments_media_upload',
+			'visibility' => 'public',
+			'object'     => 'members',
 		);
 
 		$request = new WP_REST_Request( 'POST', $this->endpoint_url );
@@ -177,7 +177,7 @@ class BP_attachments_REST_controller_UnitTestCase extends WP_Test_REST_Controlle
 
 		$_POST = array(
 			'action'         => 'bp_attachments_make_directory',
-			'status'         => 'public',
+			'visibility'     => 'public',
 			'object'         => 'members',
 			'directory_name' => 'My Beautiful directory',
 		);

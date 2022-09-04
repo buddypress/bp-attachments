@@ -11,10 +11,25 @@
  * @group functions
  */
 class BP_Attachments_Functions_UnitTestCase extends BP_UnitTestCase {
+	public function filter_bp_attachments_uploads_dir_get( $dir = array() ) {
+		if ( is_array( $dir ) ) {
+			$dir['basedir'] = BP_ATTACHMENTS_TESTS_DIR . '/assets';
+		}
+
+		return $dir;
+	}
+
+	/**
+	 * @group imath
+	 */
 	public function test_bp_attachments_list_media_in_directory() {
 		$dir = BP_ATTACHMENTS_TESTS_DIR . '/assets/public/members/1';
 
+		add_filter( 'bp_attachments_uploads_dir_get', array( $this, 'filter_bp_attachments_uploads_dir_get' ) );
+
 		$media_items = bp_attachments_list_media_in_directory( $dir );
+
+		remove_filter( 'bp_attachments_uploads_dir_get', array( $this, 'filter_bp_attachments_uploads_dir_get' ) );
 
 		$expected = array(
 			'file-1.txt' => 'file',

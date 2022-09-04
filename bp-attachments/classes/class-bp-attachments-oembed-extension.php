@@ -180,7 +180,7 @@ class BP_Attachments_OEmbed_Extension extends BP_Core_oEmbed_Extension {
 		} else {
 			$parse_array = array(
 				'bp_attachments'                       => 1,
-				'bp_attachments_status'                => $visibility,
+				'bp_attachments_visibility'            => $visibility,
 				'bp_attachments_object'                => $object,
 				'bp_attachments_object_item'           => $item,
 				'bp_attachments_item_action'           => $action,

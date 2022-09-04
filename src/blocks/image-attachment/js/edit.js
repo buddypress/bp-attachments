@@ -50,7 +50,7 @@ const editImage = ( { attributes, setAttributes } ) => {
 		formData.append( 'action', 'bp_attachments_media_upload' );
 		formData.append( 'object', 'members' );
 		formData.append( 'object_item', userId );
-		formData.append( 'status', 'public' );
+		formData.append( 'visibility', 'public' );
 
 		if ( !! postId ) {
 			formData.append( 'attached_to_object_type', 'post' );

@@ -28,7 +28,7 @@ import EditMediaItem from './edit-item';
 
 const MediaItem = ( props ) => {
 	const Template = setTemplate( 'bp-attachments-media-item' );
-	const { name, medium, selected } = props;
+	const { medium, selected } = props;
 	const { toggleMediaSelection, requestMedia } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
 	const [ isOpen, toggleModal ] = useState( false );
 	const [ isSelected, selectMedia ] = useState( selected );

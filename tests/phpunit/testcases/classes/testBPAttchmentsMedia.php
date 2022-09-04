@@ -37,8 +37,8 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 		$user_id = get_current_user_id();
 
 		$_POST = array(
-			'status'    => 'public',
-			'object_id' => $user_id,
+			'visibility' => 'public',
+			'object_id'  => $user_id,
 		);
 
 		$subdir = '/public/members/' . $user_id;
@@ -62,8 +62,8 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 		add_filter( 'pre_option__bp_attachments_can_upload_privately', '__return_false' );
 
 		$_POST = array(
-			'object_id' => $user_id,
-			'status'    => 'private',
+			'object_id'  => $user_id,
+			'visibility' => 'private',
 		);
 
 		$private_member_uploads = $media->upload_dir_filter();
@@ -80,8 +80,8 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 		add_filter( 'pre_option__bp_attachments_can_upload_privately', '__return_true' );
 
 		$_POST = array(
-			'object_id' => $user_id,
-			'status'    => 'private',
+			'object_id'  => $user_id,
+			'visibility' => 'private',
 		);
 
 		$private_member_uploads = $media->upload_dir_filter();
@@ -100,8 +100,8 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 		$user_id = get_current_user_id();
 
 		$_POST = array(
-			'status'    => 'private',
-			'object_id' => $user_id,
+			'visibility' => 'private',
+			'object_id'  => $user_id,
 		);
 
 		$subdir = '/members/' . $user_id;

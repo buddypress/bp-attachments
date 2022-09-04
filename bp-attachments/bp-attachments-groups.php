@@ -64,13 +64,13 @@ add_filter( 'bp_attachments_rest_can_create_dir_to_object', 'bp_attachments_rest
  * @param array $media_args {
  *     An array of arguments.
  *
- *     @type string     $status      Whether the media being created is public or private.
+ *     @type string     $visibility  Whether the medium being created is public or private.
  *                                   Default 'public'.
- *     @type string     $object      The name of the object the media being created is attached to.
+ *     @type string     $object      The name of the object the medium being created is attached to.
  *                                   Default 'members'. Possible values are 'members', 'groups' or any
  *                                   custom BuddyPress component's name.
  *     @type string|int $object_item The unique identifier for the object's item. It can be the object's ID or slug.
- *     @type string     $parent_dir  The parent directory the media being created is attached to.
+ *     @type string     $parent_dir  The parent directory the medium being created is attached to.
  * }
  * @return string The uploads sub-directory for Groups.
  */

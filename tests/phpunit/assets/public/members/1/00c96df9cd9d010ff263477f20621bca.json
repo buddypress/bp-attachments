@@ -1,8 +1,10 @@
 {
-  "id": "d266a54dd51dc74f25110130d3b363d5",
+  "id": "00c96df9cd9d010ff263477f20621bca",
+	"owner_id": 1,
   "name": "folder-1",
   "title": "Folder 1",
   "description": "A random folder.",
   "mime_type": "inode/directory",
-  "type": "directory"
+  "type": "directory",
+	"media_type": "folder"
 }

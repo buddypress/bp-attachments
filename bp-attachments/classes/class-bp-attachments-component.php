@@ -129,7 +129,7 @@ class BP_Attachments_Component extends BP_Component {
 			'root_slug'   => 'bp-attachments',
 			'rewrite_ids' => array(
 				'directory'                    => 'bp_attachments',
-				'directory_status'             => 'bp_attachments_status',
+				'directory_visibility'         => 'bp_attachments_visibility',
 				'directory_object'             => 'bp_attachments_object',
 				'single_item'                  => 'bp_attachments_object_item',
 				'single_item_action'           => 'bp_attachments_item_action',
@@ -346,8 +346,8 @@ class BP_Attachments_Component extends BP_Component {
 				'id'    => '%' . $this->rewrite_ids['directory'] . '%',
 				'regex' => '([1]{1,})',
 			),
-			'directory-status'             => array(
-				'id'    => '%' . $this->rewrite_ids['directory_status'] . '%',
+			'directory-visibility'         => array(
+				'id'    => '%' . $this->rewrite_ids['directory_visibility'] . '%',
 				'regex' => '([^/]+)',
 			),
 			'directory-object'             => array(
@@ -402,23 +402,23 @@ class BP_Attachments_Component extends BP_Component {
 			),
 			'single-item-action-variables' => array(
 				'regex' => $this->root_slug . '/([^/]+)\/([^/]+)\/([^/]+)\/([^/]+)\/(.+?)/?$',
-				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1&' . $this->rewrite_ids['directory_status'] . '=$matches[1]&' . $this->rewrite_ids['directory_object'] . '=$matches[2]&' . $this->rewrite_ids['single_item'] . '=$matches[3]&' . $this->rewrite_ids['single_item_action'] . '=$matches[4]&' . $this->rewrite_ids['single_item_action_variables'] . '=$matches[5]',
+				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1&' . $this->rewrite_ids['directory_visibility'] . '=$matches[1]&' . $this->rewrite_ids['directory_object'] . '=$matches[2]&' . $this->rewrite_ids['single_item'] . '=$matches[3]&' . $this->rewrite_ids['single_item_action'] . '=$matches[4]&' . $this->rewrite_ids['single_item_action_variables'] . '=$matches[5]',
 			),
 			'single-item-action'           => array(
 				'regex' => $this->root_slug . '/([^/]+)\/([^/]+)\/([^/]+)\/([^/]+)/?$',
-				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1&' . $this->rewrite_ids['directory_status'] . '=$matches[1]&' . $this->rewrite_ids['directory_object'] . '=$matches[2]&' . $this->rewrite_ids['single_item'] . '=$matches[3]&' . $this->rewrite_ids['single_item_action'] . '=$matches[4]',
+				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1&' . $this->rewrite_ids['directory_visibility'] . '=$matches[1]&' . $this->rewrite_ids['directory_object'] . '=$matches[2]&' . $this->rewrite_ids['single_item'] . '=$matches[3]&' . $this->rewrite_ids['single_item_action'] . '=$matches[4]',
 			),
 			'single-item'                  => array(
 				'regex' => $this->root_slug . '/([^/]+)\/([^/]+)\/([^/]+)/?$',
-				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1&' . $this->rewrite_ids['directory_status'] . '=$matches[1]&' . $this->rewrite_ids['directory_object'] . '=$matches[2]&' . $this->rewrite_ids['single_item'] . '=$matches[3]',
+				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1&' . $this->rewrite_ids['directory_visibility'] . '=$matches[1]&' . $this->rewrite_ids['directory_object'] . '=$matches[2]&' . $this->rewrite_ids['single_item'] . '=$matches[3]',
 			),
 			'directory_object'             => array(
 				'regex' => $this->root_slug . '/([^/]+)\/([^/]+)/?$',
-				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1&' . $this->rewrite_ids['directory_status'] . '=$matches[1]&' . $this->rewrite_ids['directory_object'] . '=$matches[2]',
+				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1&' . $this->rewrite_ids['directory_visibility'] . '=$matches[1]&' . $this->rewrite_ids['directory_object'] . '=$matches[2]',
 			),
-			'directory_status'             => array(
+			'directory_visibility'         => array(
 				'regex' => $this->root_slug . '/([^/]+)/?$',
-				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1&' . $this->rewrite_ids['directory_status'] . '=$matches[1]',
+				'query' => 'index.php?' . $this->rewrite_ids['directory'] . '=1&' . $this->rewrite_ids['directory_visibility'] . '=$matches[1]',
 			),
 			'directory'                    => array(
 				'regex' => $this->root_slug,
@@ -518,9 +518,9 @@ class BP_Attachments_Component extends BP_Component {
 		 * for an existing User Media.
 		 */
 		if ( $parse_array['bp_attachments_item_action'] ) {
-			$status = array_search( $parse_array['bp_attachments_status'], bp_attachments_get_item_stati(), true );
-			$object = array_search( $parse_array['bp_attachments_object'], bp_attachments_get_item_object_slugs(), true );
-			$action = array_search( $parse_array['bp_attachments_item_action'], bp_attachments_get_item_actions(), true );
+			$visibility = array_search( $parse_array['bp_attachments_visibility'], bp_attachments_get_item_visibilities(), true );
+			$object     = array_search( $parse_array['bp_attachments_object'], bp_attachments_get_item_object_slugs(), true );
+			$action     = array_search( $parse_array['bp_attachments_item_action'], bp_attachments_get_item_actions(), true );
 
 			$bp->current_action = $action;
 
@@ -547,7 +547,7 @@ class BP_Attachments_Component extends BP_Component {
 					 *     Associative array of arguments list used to get a medium.
 					 *
 					 *     @type string $bp_attachments                       "1" to inform the Attachments directory is displayed.
-					 *     @type string $bp_attachments_status                The medium status (eg: private or public).
+					 *     @type string $bp_attachments_visibility            The medium visibility (eg: private or public).
 					 *     @type string $bp_attachments_object                The BuddyPress object the medium relates to. Defaults to `members`.
 					 *     @type string $bp_attachments_object_item           The BuddyPress object item slug the medium relates to.
 					 *     @type string $bp_attachments_item_action           Whether the `view` or `download` action is requested.
@@ -558,7 +558,7 @@ class BP_Attachments_Component extends BP_Component {
 				}
 			}
 
-			if ( $action && $status && $object ) {
+			if ( $action && $visibility && $object ) {
 				$relative_path = array_filter(
 					array_merge(
 						array( $object, $item_id ),
@@ -566,7 +566,7 @@ class BP_Attachments_Component extends BP_Component {
 					)
 				);
 				$id            = array_pop( $relative_path );
-				$absolute_path = trailingslashit( bp_attachments_get_media_uploads_dir( $status )['path'] ) . implode( '/', $relative_path );
+				$absolute_path = trailingslashit( bp_attachments_get_media_uploads_dir( $visibility )['path'] ) . implode( '/', $relative_path );
 
 				// Try to get the medium.
 				$medium = bp_attachments_get_medium( $id, $absolute_path );

@@ -426,16 +426,16 @@ function bp_attachments_get_public_uploads_dir() {
 }
 
 /**
- * Get translated BP Attachments stati.
+ * Get translated BP Attachments visibilities.
  *
  * @since 1.0.0
  *
- * @return array The available attachments stati.
+ * @return array The available attachments visibilities.
  */
-function bp_attachments_get_item_stati() {
+function bp_attachments_get_item_visibilities() {
 	return array(
-		'public'  => sanitize_title( _x( 'public', 'public status slug', 'bp-attachments' ) ),
-		'private' => sanitize_title( _x( 'private', 'private status slug', 'bp-attachments' ) ),
+		'public'  => sanitize_title( _x( 'public', 'public visibility slug', 'bp-attachments' ) ),
+		'private' => sanitize_title( _x( 'private', 'private visibility slug', 'bp-attachments' ) ),
 	);
 }
 
@@ -563,7 +563,7 @@ function bp_attachments_get_vignette_uri( $filename = '', $path = '' ) {
  * @param array $args {
  *     Associative array of arguments list used to buil a medium action URL.
  *
- *     @type string $status                The medium visibility, it can be `public` or `private`. Defaults to `public`.
+ *     @type string $visibility            The medium visibility, it can be `public` or `private`. Defaults to `public`.
  *     @type string $object                The BuddyPress object the medium relates to. Defaults to `members`.
  *     @type string $object_item           The object item slug (eg: the user's user_nicename).
  *     @type string $item_action           The needed action. One of the slugs for the `view `, `embed`, `download` action keys.
@@ -578,7 +578,7 @@ function bp_attachments_get_medium_url( $args = array() ) {
 	$r = wp_parse_args(
 		$args,
 		array(
-			'status'                => 'public',
+			'visibility'            => 'public',
 			'object'                => '',
 			'object_item'           => '',
 			'item_action'           => '',
@@ -608,10 +608,10 @@ function bp_attachments_get_medium_url( $args = array() ) {
 
 		// Using pretty URLs.
 	} else {
-		$link = str_replace( '%' . $bp->attachments->rewrite_ids['directory'] . '%', $r['status'], $bp->attachments->directory_permastruct );
+		$link = str_replace( '%' . $bp->attachments->rewrite_ids['directory'] . '%', $r['visibility'], $bp->attachments->directory_permastruct );
 
 		$item_action_variables = (array) $r['item_action_variables'];
-		unset( $r['status'], $r['item_action_variables'] );
+		unset( $r['visibility'], $r['item_action_variables'] );
 
 		$r = array_merge( $r, $item_action_variables );
 
@@ -642,19 +642,19 @@ function bp_attachments_get_medium_path( $url = '', $with_data = false ) {
 		return '';
 	}
 
-	$status        = array_search( $medium_path_parts[1], bp_attachments_get_item_stati(), true );
+	$visibility    = array_search( $medium_path_parts[1], bp_attachments_get_item_visibilities(), true );
 	$object        = array_search( $medium_path_parts[2], bp_attachments_get_item_object_slugs(), true );
 	$medium_id     = array_pop( $medium_path_parts );
 	$relative_path = array_merge( array( $object, $user->ID ), array_slice( $medium_path_parts, 5 ) );
-	$medium_path   = trailingslashit( bp_attachments_get_media_uploads_dir( $status )['path'] ) . implode( '/', $relative_path );
+	$medium_path   = trailingslashit( bp_attachments_get_media_uploads_dir( $visibility )['path'] ) . implode( '/', $relative_path );
 
 	if ( $with_data ) {
 		return array(
-			'id'     => $medium_id,
-			'path'   => $medium_path,
-			'status' => $status,
-			'object' => $object,
-			'user'   => $user,
+			'id'         => $medium_id,
+			'path'       => $medium_path,
+			'visibility' => $visibility,
+			'object'     => $object,
+			'user'       => $user,
 		);
 	}
 

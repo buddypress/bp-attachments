@@ -273,7 +273,7 @@ export const getDestinationData = ( state ) => {
 	const destinationData = trim( relativePath, '/' ).split( '/' );
 
 	return {
-		status: destinationData[0] ? destinationData[0] : 'public',
+		visibility: destinationData[0] ? destinationData[0] : 'public',
 		object: destinationData[1] ? destinationData[1] : 'members',
 		item: destinationData[2] ? destinationData[2] : '',
 	}

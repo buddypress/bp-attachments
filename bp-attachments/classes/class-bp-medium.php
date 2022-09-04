@@ -302,7 +302,7 @@ final class BP_Medium {
 				}
 
 				$link_args = array(
-					'status'                => $visibility,
+					'visibility'            => $visibility,
 					'object'                => $medium->object,
 					'object_item'           => bp_core_get_username( $medium->owner_id ),
 					'item_action'           => bp_attachments_get_item_action_slug( 'view' ),

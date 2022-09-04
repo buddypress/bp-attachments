@@ -284,7 +284,7 @@ export function addMediumError( error ) {
 export function * createMedium( file ) {
 	let uploading = true, upload;
 	const store = select( STORE_KEY );
-	const { object, item, status } = store.getDestinationData();
+	const { object, item, visibility } = store.getDestinationData();
 	const relativePath = store.getRelativePath();
 
 	yield { type: 'UPLOAD_START', uploading, file };
@@ -295,15 +295,15 @@ export function * createMedium( file ) {
 	formData.append( 'object', object );
 	formData.append( 'object_item', item );
 
-	if ( status ) {
-		formData.append( 'status', status );
+	if ( visibility ) {
+		formData.append( 'visibility', visibility );
 	}
 
-	if ( trim( relativePath, '/' ) !== status + '/' + object + '/' + item ) {
+	if ( trim( relativePath, '/' ) !== visibility + '/' + object + '/' + item ) {
 		let uploadRelativePath = relativePath;
 
 		// Private uploads are stored out of the site's uploads dir.
-		if ( 'private' === status ) {
+		if ( 'private' === visibility ) {
 			uploadRelativePath = relativePath.replace( '/private', '' );
 		}
 
@@ -349,7 +349,7 @@ export function * createDirectory( directory ) {
 	};
 
 	const store = select( STORE_KEY );
-	const { object, item, status } = store.getDestinationData();
+	const { object, item, visibility } = store.getDestinationData();
 	const relativePath = store.getRelativePath();
 
 	yield { type: 'UPLOAD_START', uploading, file };
@@ -361,15 +361,15 @@ export function * createDirectory( directory ) {
 	formData.append( 'object', object );
 	formData.append( 'object_item', item );
 
-	if ( status ) {
-		formData.append( 'status', status );
+	if ( visibility ) {
+		formData.append( 'visibility', visibility );
 	}
 
-	if ( trim( relativePath, '/' ) !== status + '/' + object + '/' + item ) {
+	if ( trim( relativePath, '/' ) !== visibility + '/' + object + '/' + item ) {
 		let createDirRelativePath = relativePath;
 
 		// Private uploads are stored out of the site's uploads dir.
-		if ( 'private' === status ) {
+		if ( 'private' === visibility ) {
 			createDirRelativePath = relativePath.replace( '/private', '' );
 		}
 
