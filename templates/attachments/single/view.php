@@ -14,4 +14,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <div class="bp-attachments-medium">
 	<?php bp_get_template_part( 'attachments/single/parts/single', bp_attachments_get_medium_type() ); ?>
+
+	<?php if ( bp_attachments_media_has_description() ) :?>
+		<div>
+			<?php bp_attachments_media_description(); ?>
+		</div>
+	<?php endif; ?>
 </div>
