@@ -588,7 +588,7 @@ function bp_attachments_medium_get_modified_date() {
 	$medium        = bp_attachments_get_queried_object();
 
 	if ( isset( $medium->last_modified ) && $medium->last_modified ) {
-		$modified_date = date_i18n( get_option( 'time_format' ) . ' - ' . get_option( 'date_format' ), $medium->last_modified );
+		$modified_date = date_i18n( get_option( 'date_format' ) . ' - ' . get_option( 'time_format' ), $medium->last_modified );
 	}
 
 	return $modified_date;

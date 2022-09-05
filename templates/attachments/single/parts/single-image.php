@@ -17,8 +17,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php bp_attachments_render_medium(); ?>
 	</a>
 </figure>
-<dl class="bp-attachment-meta">
-	<dt><?php esc_html_e( 'Uploaded on:', 'bp-attachments' ); ?></dt>
+<dl class="bp-attachment-meta horizontal">
+	<dt><?php esc_html_e( 'Lastly edited on:', 'bp-attachments' ); ?></dt>
 	<dd><?php bp_attachments_medium_modified_date(); ?></dd>
 	<dt><?php esc_html_e( 'Image type:', 'bp-attachments' ); ?></dt>
 	<dd><?php bp_attachments_medium_mime_type(); ?></dd>

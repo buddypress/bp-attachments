@@ -35,6 +35,9 @@ body.attachments.view .wp-block-post-author {
 
 body.attachments.view dl.bp-attachment-meta {
 	font-size: 80%;
+}
+
+body.attachments.view dl.bp-attachment-meta.horizontal {
 	display: flex;
 	justify-content: center;
 }
@@ -45,5 +48,28 @@ body.attachments.view dl.bp-attachment-meta dt {
 
 body.attachments.view dl.bp-attachment-meta dd {
 	margin-left: 0.5em;
+}
+
+body.attachments.view dl.bp-attachment-meta.horizontal dd {
+	margin-left: 0.5em;
 	margin-right: 2em;
+}
+
+body.attachments.view .bp-attachment-file {
+	display: flex;
+	align-items: center;
+}
+
+body.attachments.view .bp-attachment-file .bp-attachment-file-icon {
+	margin-right: 2em;
+}
+
+body.attachments.view .bp-attachment-file dl.bp-attachment-meta dt,
+body.attachments.view .bp-attachment-file dl.bp-attachment-meta dd {
+	display: inline;
+}
+
+body.attachments.view .bp-attachment-file dl.bp-attachment-meta dd:after {
+	display: block;
+	content: '';
 }
