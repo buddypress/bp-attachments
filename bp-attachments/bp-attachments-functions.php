@@ -1221,3 +1221,36 @@ function bp_attachments_get_queried_object() {
 
 	return $object;
 }
+
+/**
+ * Formats file size for display.
+ *
+ * @since 1.0.0
+ *
+ * @param  integer $bytes The size in bytes.
+ * @return string         The formatted size.
+ */
+function bp_attachments_format_file_size( $bytes = 0 ) {
+	$unit = ' KB';
+
+	if ( ! $bytes ) {
+		return 0 . $unit;
+	}
+
+	$value     = absint( $bytes );
+	$kilobytes = $value / 1000;
+	$megabytes = $kilobytes / 1000;
+	$gigabytes = $megabytes / 1000;
+
+	if ( 1 < $gigabytes ) {
+		$unit  = ' GB';
+		$value = $gigabytes;
+	} elseif ( 1 < $megabytes ) {
+		$unit  = ' MB';
+		$value = $megabytes;
+	} else {
+		$value = $kilobytes;
+	}
+
+	return number_format_i18n( $value, 2 ) . $unit;
+}

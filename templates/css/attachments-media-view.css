@@ -11,6 +11,10 @@ body.attachments.view .bp-attachment-video {
 	justify-content: center;
 }
 
+body.attachments.view .bp-attachments-medium-description {
+	margin: 2em 0;
+}
+
 body.attachments.view .bp-attachment-image img {
 	max-width: 100%;
 	height: auto;
@@ -27,4 +31,19 @@ body.attachments.view .bp-attachment-audio audio {
 
 body.attachments.view .wp-block-post-author {
 	margin: 2em 0;
+}
+
+body.attachments.view dl.bp-attachment-meta {
+	font-size: 80%;
+	display: flex;
+	justify-content: center;
+}
+
+body.attachments.view dl.bp-attachment-meta dt {
+	font-weight:bold;
+}
+
+body.attachments.view dl.bp-attachment-meta dd {
+	margin-left: 0.5em;
+	margin-right: 2em;
 }

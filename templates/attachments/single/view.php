@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<?php bp_get_template_part( 'attachments/single/parts/single', bp_attachments_get_medium_type() ); ?>
 
 	<?php if ( bp_attachments_medium_has_description() ) :?>
-		<div>
+		<div class="bp-attachments-medium-description">
 			<?php bp_attachments_medium_description(); ?>
 		</div>
 	<?php endif; ?>

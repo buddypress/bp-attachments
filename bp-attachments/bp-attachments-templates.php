@@ -604,6 +604,60 @@ function bp_attachments_medium_modified_date() {
 }
 
 /**
+ * Gets the BP Attachments medium file size.
+ *
+ * @since 1.0.0
+ *
+ * @return string The BP Attachments medium file size.
+ */
+function bp_attachments_medium_get_size() {
+	$file_size = '';
+	$medium    = bp_attachments_get_queried_object();
+
+	if ( isset( $medium->size ) && $medium->size ) {
+		$file_size = bp_attachments_format_file_size( $medium->size );
+	}
+
+	return $file_size;
+}
+
+/**
+ * Outputs the BP Attachments medium file size.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_medium_size() {
+	echo esc_html( bp_attachments_medium_get_size() );
+}
+
+/**
+ * Gets the BP Attachments medium mime type.
+ *
+ * @since 1.0.0
+ *
+ * @return string The BP Attachments medium mime type.
+ */
+function bp_attachments_medium_get_mime_type() {
+	$mime_type = '';
+	$medium    = bp_attachments_get_queried_object();
+
+	if ( isset( $medium->mime_type ) && $medium->mime_type ) {
+		$mime_type = $medium->mime_type;
+	}
+
+	return $mime_type;
+}
+
+/**
+ * Outputs the BP Attachments medium mime type.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_medium_mime_type() {
+	echo esc_html( bp_attachments_medium_get_mime_type() );
+}
+
+/**
  * Gets the BP Attachments medium description.
  *
  * @since 1.0.0
