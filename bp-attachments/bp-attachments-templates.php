@@ -152,6 +152,25 @@ function bp_attachments_is_medium_view() {
 }
 
 /**
+ * Is this a BP Attachments media playlist view request?
+ *
+ * @since 1.0.0
+ *
+ * @return bool True if it's a BP Attachments media playlist view request. False otherwise.
+ */
+function bp_attachments_is_media_playlist_view() {
+	$retval         = false;
+	$medium         = bp_attachments_get_queried_object();
+	$playlist_types = array( 'video_playlist', 'audio_playlist' );
+
+	if ( 'view' === bp_attachments_current_medium_action() && isset( $medium->media_type ) && in_array( $medium->media_type, $playlist_types, true ) ) {
+		$retval = true;
+	}
+
+	return $retval;
+}
+
+/**
  * Is this a BP Attachments item download request?
  *
  * @since 1.0.0
@@ -278,72 +297,6 @@ function bp_attachments_set_directory_theme_compat() {
 	}
 }
 add_action( 'bp_setup_theme_compat', 'bp_attachments_set_directory_theme_compat' );
-
-/**
- * Enqueue styles for BP Attachments views.
- *
- * @since 1.0.0
- */
-function bp_attachments_enqueue_medium_view_style() {
-	if ( ! bp_attachments_is_medium_view() ) {
-		return;
-	}
-
-	// Temporarly overrides the BuddyPress Template Stack.
-	bp_attachments_start_overriding_template_stack();
-
-	$css = bp_locate_template_asset( 'css/attachments-media-view.css' );
-
-	// Stop overriding the BuddyPress Template Stack.
-	bp_attachments_stop_overriding_template_stack();
-
-	// Bail if file wasn't found.
-	if ( false === $css ) {
-		return;
-	}
-
-	// If this replacement happens, this means the current template pack has not found the corresponding style.
-	$css['uri'] = str_replace( bp_attachments_get_templates_dir(), bp_attachments_get_templates_url(), $css['uri'] );
-
-	wp_enqueue_style(
-		'bp-attachments-media-view',
-		$css['uri'],
-		array(),
-		bp_attachments_get_version()
-	);
-	wp_enqueue_style( 'wp-block-post-author' );
-}
-add_action( 'bp_enqueue_scripts', 'bp_attachments_enqueue_medium_view_style', 20 );
-
-/**
- * Add inline styles for BP Attachments embeds.
- *
- * @since 1.0.0
- */
-function bp_attachments_medium_embed_inline_styles() {
-	if ( ! bp_attachments_is_medium_embed() ) {
-		return;
-	}
-
-	// Temporarly overrides the BuddyPress Template Stack.
-	bp_attachments_start_overriding_template_stack();
-
-	$css = bp_locate_template_asset( 'css/attachments-media-embeds.css' );
-
-	// Stop overriding the BuddyPress Template Stack.
-	bp_attachments_stop_overriding_template_stack();
-
-	// Bail if file wasn't found.
-	if ( false === $css ) {
-		return;
-	}
-
-	// phpcs:ignore WordPress.WP.AlternativeFunctions
-	$css = file_get_contents( $css['file'] );
-
-	printf( '<style type="text/css">%s</style>', wp_kses( $css, array( "\'", '\"' ) ) );
-}
-add_action( 'embed_head', 'bp_attachments_medium_embed_inline_styles', 20 );
 
 /**
  * Gets the owner URL for the BP Attachments medium.

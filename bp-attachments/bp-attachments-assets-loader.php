@@ -98,6 +98,16 @@ function bp_attachments_register_front_end_assets() {
 		true
 	);
 
+	wp_register_script(
+		'bp-attachments-playlist',
+		$bp_attachments->js_url . 'front-end/playlist.js',
+		array(
+			'wp-dom-ready',
+		),
+		$bp_attachments->version,
+		true
+	);
+
 	wp_register_style(
 		'bp-attachments-avatar-editor-styles',
 		$bp_attachments->assets_url . 'front-end/avatar-editor.css',
@@ -170,3 +180,75 @@ function bp_attachments_enqueue_front_end_assets() {
 	}
 }
 add_action( 'bp_enqueue_community_scripts', 'bp_attachments_enqueue_front_end_assets' );
+
+/**
+ * Enqueue styles for BP Attachments views.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_enqueue_medium_view_style() {
+	if ( ! bp_attachments_is_medium_view() ) {
+		return;
+	}
+
+	// Temporarly overrides the BuddyPress Template Stack.
+	bp_attachments_start_overriding_template_stack();
+
+	$css = bp_locate_template_asset( 'css/attachments-media-view.css' );
+
+	// Stop overriding the BuddyPress Template Stack.
+	bp_attachments_stop_overriding_template_stack();
+
+	// Bail if file wasn't found.
+	if ( false === $css ) {
+		return;
+	}
+
+	// If this replacement happens, this means the current template pack has not found the corresponding style.
+	$css['uri'] = str_replace( bp_attachments_get_templates_dir(), bp_attachments_get_templates_url(), $css['uri'] );
+
+	wp_enqueue_style(
+		'bp-attachments-media-view',
+		$css['uri'],
+		array(),
+		bp_attachments_get_version()
+	);
+	wp_enqueue_style( 'wp-block-post-author' );
+
+	if ( bp_attachments_is_media_playlist_view() ) {
+		wp_enqueue_style( 'wp-mediaelement' );
+		wp_enqueue_script( 'bp-attachments-playlist' );
+		add_action( 'wp_footer', 'wp_underscore_playlist_templates', 0 );
+	}
+}
+add_action( 'bp_enqueue_community_scripts', 'bp_attachments_enqueue_medium_view_style', 20 );
+
+/**
+ * Add inline styles for BP Attachments embeds.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_medium_embed_inline_styles() {
+	if ( ! bp_attachments_is_medium_embed() ) {
+		return;
+	}
+
+	// Temporarly overrides the BuddyPress Template Stack.
+	bp_attachments_start_overriding_template_stack();
+
+	$css = bp_locate_template_asset( 'css/attachments-media-embeds.css' );
+
+	// Stop overriding the BuddyPress Template Stack.
+	bp_attachments_stop_overriding_template_stack();
+
+	// Bail if file wasn't found.
+	if ( false === $css ) {
+		return;
+	}
+
+	// phpcs:ignore WordPress.WP.AlternativeFunctions
+	$css = file_get_contents( $css['file'] );
+
+	printf( '<style type="text/css">%s</style>', wp_kses( $css, array( "\'", '\"' ) ) );
+}
+add_action( 'embed_head', 'bp_attachments_medium_embed_inline_styles', 20 );

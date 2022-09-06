@@ -46,7 +46,7 @@ class bpAdminAttachments {
 
 window.bp = window.bp || {};
 window.bp.Admin = window.bp.Admin || {};
-window.bp.Admin.Attachements = new bpAdminAttachments();
+window.bp.Admin.Attachments = new bpAdminAttachments();
 
-domReady( () => window.bp.Admin.Attachements.start() );
+domReady( () => window.bp.Admin.Attachments.start() );
 
