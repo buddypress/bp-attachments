@@ -32,11 +32,13 @@ const EditMediaItem = ( { medium, errorCallback } ) => {
 		name,
 		title,
 		description,
-		vignette,
 		icon,
+		media_type,
+		mime_type,
 		links: {
 			view,
 			download,
+			src
 		},
 	} = medium;
 	const [ editedMedium, editMedium ] = useState( {
@@ -45,6 +47,7 @@ const EditMediaItem = ( { medium, errorCallback } ) => {
 	} );
 	const { updateMedium } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
 	const isDisabled = title === editedMedium.title && description === editedMedium.description;
+	const hasNoPreview = -1 === [ 'image', 'video', 'audio' ].indexOf( media_type );
 
 	const saveMediumProps = ( event ) => {
 		event.preventDefault();
@@ -87,11 +90,21 @@ const EditMediaItem = ( { medium, errorCallback } ) => {
 						<li><a href={ download }>{ __( 'Download media', 'bp-attachments' ) }</a></li>
 					</ul>
 					<p>{ editedMedium.description }</p>
-					{ vignette && (
-						<img src={ vignette } className="bp-attachment-medium-vignette" />
-					) }
-					{ ! vignette && (
+					{ hasNoPreview && (
 						<img src={ icon } className="bp-attachment-medium-icon" />
+					) }
+					{ 'image' === media_type && src && (
+						<img src={ src } className="bp-attachment-medium-vignette" />
+					) }
+					{ 'audio' === media_type && src && (
+						<audio controls="controls" preload="metadata">
+							<source src={ src } type={ mime_type } />
+						</audio>
+					) }
+					{ 'video' === media_type && src && (
+						<video controls="controls" muted={ true } preload="metadata">
+							<source src={ src } type={ mime_type } />
+						</video>
 					) }
 				</div>
 			</div>
