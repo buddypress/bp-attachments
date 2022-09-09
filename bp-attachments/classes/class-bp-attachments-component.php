@@ -169,6 +169,9 @@ class BP_Attachments_Component extends BP_Component {
 			$this->directory_permastruct = $this->root_slug . '/%' . $this->rewrite_ids['directory'] . '%';
 		}
 
+		// Use a global to store attachment's URL query vars.
+		$this->query_vars = array();
+
 		// Use our own queried object to avoid conflicts with WordPress one.
 		$this->queried_object    = null;
 		$this->queried_object_id = 0;
@@ -512,6 +515,7 @@ class BP_Attachments_Component extends BP_Component {
 		foreach ( $this->rewrite_ids as $rewrite_arg ) {
 			$parse_array[ $rewrite_arg ] = $query->get( $rewrite_arg );
 		}
+		$this->query_vars['raw'] = $parse_array;
 
 		/*
 		 * Set the queried object if a view or download action is requested
@@ -556,21 +560,43 @@ class BP_Attachments_Component extends BP_Component {
 					 */
 					$item_id = apply_filters( 'bp_attachments_parse_querried_object_item', $parse_array );
 				}
+
+				// Set query vars’ item ID.
+				$this->query_vars['data']['item_id'] = $item_id;
 			}
 
 			if ( $action && $visibility && $object ) {
+				// Set query vars’ visibility & $object.
+				$this->query_vars['data']['visibility'] = $visibility;
+				$this->query_vars['data']['object']     = $object;
+
+				// Set item action variables.
+				$item_action_variables = explode( '/', $parse_array['bp_attachments_item_action_variables'] );
+
 				$relative_path = array_filter(
 					array_merge(
 						array( $object, $item_id ),
-						explode( '/', $parse_array['bp_attachments_item_action_variables'] )
+						$item_action_variables
 					)
 				);
 				$id            = array_pop( $relative_path );
-				$absolute_path = trailingslashit( bp_attachments_get_media_uploads_dir( $visibility )['path'] ) . implode( '/', $relative_path );
+				$rel_path      = implode( '/', $relative_path );
+				$absolute_path = trailingslashit( bp_attachments_get_media_uploads_dir( $visibility )['path'] ) . $rel_path;
+
+				// Set query vars’ relative path and action variables.
+				$this->query_vars['data']['relative_path']    = $rel_path;
+				$this->query_vars['data']['medium_id']        = array_pop( $item_action_variables );
+				$this->query_vars['data']['action_variables'] = $item_action_variables;
 
 				// Try to get the medium.
 				$medium = bp_attachments_get_medium( $id, $absolute_path );
 				if ( $medium ) {
+
+					// Set current directory.
+					if ( 'inode/directory' === $medium->mime_type ) {
+						$this->query_vars['data']['current_directory'] = $medium->name;
+					}
+
 					$this->queried_object    = $medium;
 					$this->queried_object_id = $medium->id;
 				}

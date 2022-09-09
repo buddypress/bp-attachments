@@ -1205,6 +1205,25 @@ function bp_attachments_delete_directory( $path = '', $visibility = 'public' ) {
 }
 
 /**
+ * Gets Attachments queried vars.
+ *
+ * @since 1.0.0
+ *
+ * @param  string $type `raw` to get raw vars, `data` to get parsed query information.
+ * @return array The Attachments queried vars.
+ */
+function bp_attachments_get_queried_vars( $type = 'raw' ) {
+	$bp         = buddypress();
+	$query_vars = array();
+
+	if ( isset( $bp->attachments->query_vars[ $type ] ) ) {
+		$query_vars = $bp->attachments->query_vars[ $type ];
+	}
+
+	return $query_vars;
+}
+
+/**
  * Gets the queried User Media object when it's being viewed, downloaded, embbeded.
  *
  * @since 1.0.0

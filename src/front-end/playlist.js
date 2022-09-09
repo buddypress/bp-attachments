@@ -7,6 +7,18 @@ const {
 
 class bpAttachmentsPlaylist {
 	/**
+	 * Setup the Playlist.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param {Object} items The preloaded playlist items.
+	 */
+	 constructor( items ) {
+		const { body } = items;
+		this.items = body;
+	}
+
+	/**
 	 * Init the playlist.
 	 *
 	 * @since 1.0.0
@@ -18,6 +30,8 @@ class bpAttachmentsPlaylist {
 
 window.bp = window.bp || {};
 window.bp.Attachments = window.bp.Attachments || {};
-window.bp.Attachments.Playlist = new bpAttachmentsPlaylist();
+
+const playlistItems = window.bpAttachmentsPlaylistItems || {};
+window.bp.Attachments.Playlist = new bpAttachmentsPlaylist( playlistItems );
 
 domReady( () => window.bp.Attachments.Playlist.start() );

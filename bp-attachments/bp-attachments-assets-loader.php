@@ -218,6 +218,46 @@ function bp_attachments_enqueue_medium_view_style() {
 	if ( bp_attachments_is_media_playlist_view() ) {
 		wp_enqueue_style( 'wp-mediaelement' );
 		wp_enqueue_script( 'bp-attachments-playlist' );
+
+		$qv           = bp_attachments_get_queried_vars( 'data' );
+		$dir_rel_path = implode(
+			'/',
+			array_intersect_key(
+				$qv,
+				array(
+					'visibility'        => true,
+					'relative_path'     => true,
+					'current_directory' => true,
+				)
+			)
+		);
+
+		$endpoint = add_query_arg(
+			array(
+				'directory' => $dir_rel_path,
+				'object'    => $qv['object'],
+				'user_id'   => $qv['item_id'],
+			),
+			sprintf(
+				'/%1$s/%2$s/attachments',
+				bp_rest_namespace(),
+				bp_rest_version()
+			)
+		);
+
+		// Preloads Playlist/Album/folder items.
+		$preload_data = array_reduce(
+			array( $endpoint ),
+			'rest_preload_api_request',
+			array()
+		);
+
+		wp_add_inline_script(
+			'bp-attachments-playlist',
+			'window.bpAttachmentsPlaylistItems = ' . wp_json_encode( current( $preload_data ) ) . ';',
+			'before'
+		);
+
 		add_action( 'wp_footer', 'wp_underscore_playlist_templates', 0 );
 	}
 }
