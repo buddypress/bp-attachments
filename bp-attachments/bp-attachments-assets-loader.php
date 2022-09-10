@@ -103,6 +103,7 @@ function bp_attachments_register_front_end_assets() {
 		$bp_attachments->js_url . 'front-end/playlist.js',
 		array(
 			'wp-dom-ready',
+			'lodash',
 		),
 		$bp_attachments->version,
 		true
@@ -217,6 +218,12 @@ function bp_attachments_enqueue_medium_view_style() {
 
 	if ( bp_attachments_is_media_playlist_view() ) {
 		wp_enqueue_style( 'wp-mediaelement' );
+		wp_add_inline_style(
+			'wp-mediaelement',
+			'.bp-attachments-medium .wp-playlist { display: flex; justify-content: space-evenly; }
+			.bp-attachments-medium .wp-playlist video { width: 60%; }
+			.bp-attachments-medium .wp-playlist .wp-playlist-tracks { width: 38%; }'
+		);
 		wp_enqueue_script( 'bp-attachments-playlist' );
 
 		$qv           = bp_attachments_get_queried_vars( 'data' );

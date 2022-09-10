@@ -169,7 +169,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		 *
 		 * @todo build a BP Attachments capacity management.
 		 */
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( 'manage_options' ) && 'edit' === $request->get_param( 'context' ) ) {
 			$retval = new WP_Error(
 				'bp_attachments_rest_authorization_require',
 				__( 'Sorry, you are not allowed to request media.', 'bp-attachments' ),

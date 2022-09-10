@@ -13,5 +13,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 <div class="wp-playlist wp-video-playlist wp-playlist-dark">
-	Hello Video Playlist!
+	<video controls="controls" preload="none"></video>
+	<div class="wp-playlist-tracks"></div>
 </div>
