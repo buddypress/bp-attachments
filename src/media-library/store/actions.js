@@ -424,6 +424,10 @@ export function * updateMedium( medium ) {
 			}
 		);
 
+		if ( !! medium.selected  ) {
+			update.selected = true;
+		}
+
 		return addMedium( update );
 	} catch ( error ) {
 		update = {

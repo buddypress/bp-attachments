@@ -35,6 +35,7 @@ const EditMediaItem = ( { medium, errorCallback } ) => {
 		icon,
 		media_type,
 		mime_type,
+		selected,
 		links: {
 			view,
 			download,
@@ -57,6 +58,7 @@ const EditMediaItem = ( { medium, errorCallback } ) => {
 			name: name,
 			title: editedMedium.title,
 			description: editedMedium.description,
+			selected: selected,
 		} ).then( ( response ) => {
 			if ( response.error ) {
 				errorCallback( false );

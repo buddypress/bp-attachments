@@ -12,6 +12,7 @@ const {
 const {
 	components: {
 		Button,
+		Modal,
 		TreeSelect,
 	},
 	element: {
@@ -35,6 +36,7 @@ const {
  */
 import { BP_ATTACHMENTS_STORE_KEY } from '../store';
 import { getDirectoryAncestors } from '../utils/functions';
+import EditMediaItem from './edit-item';
 
 /**
  * Toolbar element.
@@ -67,8 +69,10 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 		}
 	}, [] );
 	const [ page, setPage ] = useState( currentDirectory );
+	const [ isOpen, toggleModal ] = useState( false );
 	const canSelect = true !== currentDirectoryObject.readonly;
 	const hasSelectedMedia = isSelectable && selectedMedia.length !== 0;
+	const hasOneSelectedMedia = isSelectable && selectedMedia.length === 1;
 
 	if ( currentDirectory !== page ) {
 		setPage( currentDirectory );
@@ -152,7 +156,13 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 		} );
 
 		return toggleSelectable( false );
-	}
+	};
+
+	const onEditSelected = ( event ) => {
+		event.preventDefault();
+
+		toggleModal( true );
+	};
 
 	return (
 		<div className="media-toolbar wp-filter">
@@ -172,11 +182,24 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 						{ ! isSelectable ? __( 'Select', 'bp-attachments' ) : __( 'Cancel Selection', 'bp-attachments' ) }
 					</Button>
 				) }
+				{ canSelect && hasOneSelectedMedia && (
+					<Button variant="primary" className="media-button edit-selected-button" onClick={ ( e ) => onEditSelected( e ) }>
+						{ __( 'Edit', 'bp-attachments' ) }
+					</Button>
+				) }
 				{ canSelect && hasSelectedMedia && (
-					<Button variant="primary" className="media-button delete-selected-button" onClick={ ( e ) => onDeleteSelected( e ) }>
+					<Button variant="tertiary" className="media-button delete-selected-button" onClick={ ( e ) => onDeleteSelected( e ) }>
 						{ __( 'Delete selection', 'bp-attachments' ) }
 					</Button>
 				) }
+				{ isOpen && (
+						<Modal
+							title={ __( 'Media details', 'bp-attachments' ) }
+							onRequestClose={ () => toggleModal( false ) }
+						>
+							<EditMediaItem medium={ selectedMedia[0] } errorCallback={ toggleModal }/>
+						</Modal>
+					) }
 			</div>
 			{ !! tree.length && (
 				<div className="media-toolbar-primary">
