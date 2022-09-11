@@ -21,7 +21,7 @@ class bpAttachmentsPlaylist {
 	constructor( items ) {
 		const { body } = items;
 		this.items = body;
-		this.player = document.querySelector( '.bp-attachments-medium .wp-video-playlist video' );
+		this.player = document.querySelector( '#bp-medium-player' );
 	}
 
 	/**
@@ -64,7 +64,7 @@ class bpAttachmentsPlaylist {
 	 */
 	renderItems() {
 		let itemIndex = 0;
-		const container = document.querySelector( '.bp-attachments-medium .wp-video-playlist .wp-playlist-tracks' );
+		const container = document.querySelector( '.bp-attachments-medium .wp-playlist .wp-playlist-tracks' );
 
 		this.items.forEach( ( item ) => {
 			itemIndex += 1;

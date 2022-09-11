@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 ?>
-<div class="wp-playlist wp-video-playlist wp-playlist-dark">
-	<video controls="controls" preload="none"></video>
+<div class="wp-playlist wp-video-playlist wp-playlist-light">
+	<video id="bp-medium-player" controls="controls" preload="none"></video>
 	<div class="wp-playlist-tracks"></div>
 </div>

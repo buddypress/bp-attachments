@@ -221,7 +221,9 @@ function bp_attachments_enqueue_medium_view_style() {
 		wp_add_inline_style(
 			'wp-mediaelement',
 			'.bp-attachments-medium .wp-playlist { display: flex; justify-content: space-evenly; }
-			.bp-attachments-medium .wp-playlist video { width: 60%; }
+			.bp-attachments-medium .wp-audio-playlist { align-items: center; }
+			.bp-attachments-medium .wp-playlist audio { display: block; }
+			.bp-attachments-medium .wp-playlist #bp-medium-player { width: 60%; }
 			.bp-attachments-medium .wp-playlist .wp-playlist-tracks { width: 38%; }'
 		);
 		wp_enqueue_script( 'bp-attachments-playlist' );

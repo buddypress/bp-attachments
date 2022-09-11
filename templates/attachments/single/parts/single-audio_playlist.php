@@ -12,6 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 ?>
-<div class="wp-playlist wp-audio-playlist wp-playlist-dark">
-	Hello Audio Playlist!
+<div class="wp-playlist wp-audio-playlist wp-playlist-light">
+	<audio id="bp-medium-player" controls="controls" preload="none"></audio>
+	<div class="wp-playlist-tracks"></div>
 </div>
