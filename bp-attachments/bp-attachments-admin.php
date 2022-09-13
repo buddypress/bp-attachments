@@ -116,7 +116,7 @@ function bp_attachments_admin_media() {
 	);
 
 	echo ( '<div class="wrap" id="bp-media-library"></div>' );
-	bp_attachments_get_javascript_templates();
+	bp_attachments_get_javascript_template();
 }
 
 /**

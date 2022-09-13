@@ -67,13 +67,15 @@ function bp_attachments_stop_overriding_template_stack() {
  * Get & load the required JavaScript templates.
  *
  * @since 1.0.0
+ *
+ * @param string $name The template name to use.
  */
-function bp_attachments_get_javascript_templates() {
+function bp_attachments_get_javascript_template( $name = 'media-item' ) {
 	// Temporarly overrides the BuddyPress Template Stack.
 	bp_attachments_start_overriding_template_stack();
 
 	// Load the template parts.
-	bp_get_template_part( 'common/js-templates/attachments/media-item' );
+	bp_get_template_part( 'common/js-templates/attachments/' . $name );
 
 	// Stop overidding the BuddyPress Template Stack.
 	bp_attachments_stop_overriding_template_stack();
@@ -164,6 +166,25 @@ function bp_attachments_is_media_playlist_view() {
 	$playlist_types = array( 'video_playlist', 'audio_playlist' );
 
 	if ( 'view' === bp_attachments_current_medium_action() && isset( $medium->media_type ) && in_array( $medium->media_type, $playlist_types, true ) ) {
+		$retval = true;
+	}
+
+	return $retval;
+}
+
+/**
+ * Is this a BP Attachments media list view request?
+ *
+ * @since 1.0.0
+ *
+ * @return bool True if it's a BP Attachments media list view request. False otherwise.
+ */
+function bp_attachments_is_media_list_view() {
+	$retval     = false;
+	$medium     = bp_attachments_get_queried_object();
+	$list_types = array( 'album', 'folder' );
+
+	if ( 'view' === bp_attachments_current_medium_action() && isset( $medium->media_type ) && in_array( $medium->media_type, $list_types, true ) ) {
 		$retval = true;
 	}
 

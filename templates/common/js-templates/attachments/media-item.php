@@ -12,7 +12,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 ?>
-
 <script type="html/template" id="tmpl-bp-attachments-media-item">
 	<div class="item-preview">
 		<div class="vignette">

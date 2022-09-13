@@ -109,6 +109,17 @@ function bp_attachments_register_front_end_assets() {
 		true
 	);
 
+	wp_register_script(
+		'bp-attachments-list',
+		$bp_attachments->js_url . 'front-end/list.js',
+		array(
+			'wp-dom-ready',
+			'lodash',
+		),
+		$bp_attachments->version,
+		true
+	);
+
 	wp_register_style(
 		'bp-attachments-avatar-editor-styles',
 		$bp_attachments->assets_url . 'front-end/avatar-editor.css',
@@ -216,20 +227,12 @@ function bp_attachments_enqueue_medium_view_style() {
 	);
 	wp_enqueue_style( 'wp-block-post-author' );
 
-	if ( bp_attachments_is_media_playlist_view() ) {
-		wp_enqueue_style( 'wp-mediaelement' );
-		wp_add_inline_style(
-			'wp-mediaelement',
-			'.bp-attachments-medium .wp-playlist { display: flex; justify-content: space-evenly; }
-			.bp-attachments-medium .wp-audio-playlist { align-items: center; }
-			.bp-attachments-medium .wp-playlist audio { display: block; }
-			.bp-attachments-medium .wp-playlist #bp-medium-player { width: 60%; }
-			.bp-attachments-medium .wp-playlist .wp-playlist-tracks { width: 38%; }'
-		);
-		wp_enqueue_script( 'bp-attachments-playlist' );
+	$is_media_playlist = bp_attachments_is_media_playlist_view();
 
-		$qv           = bp_attachments_get_queried_vars( 'data' );
-		$dir_rel_path = implode(
+	if ( $is_media_playlist || bp_attachments_is_media_list_view() ) {
+		$script_handle = 'bp-attachments-list';
+		$qv            = bp_attachments_get_queried_vars( 'data' );
+		$dir_rel_path  = implode(
 			'/',
 			array_intersect_key(
 				$qv,
@@ -261,13 +264,40 @@ function bp_attachments_enqueue_medium_view_style() {
 			array()
 		);
 
+		if ( $is_media_playlist ) {
+			$script_handle = 'bp-attachments-playlist';
+
+			wp_enqueue_style( 'wp-mediaelement' );
+			wp_add_inline_style(
+				'wp-mediaelement',
+				'.bp-attachments-medium .wp-playlist { display: flex; justify-content: space-evenly; }
+				.bp-attachments-medium .wp-audio-playlist { align-items: center; }
+				.bp-attachments-medium .wp-playlist audio { display: block; }
+				.bp-attachments-medium .wp-playlist #bp-medium-player { width: 60%; }
+				.bp-attachments-medium .wp-playlist .wp-playlist-tracks { width: 38%; }'
+			);
+
+			add_action( 'wp_footer', 'wp_underscore_playlist_templates', 0 );
+		} else {
+			$medium_type                           = bp_attachments_get_medium_type();
+			$preload_data[ $endpoint ]['template'] = sprintf( 'bp-media-%s', esc_html( $medium_type ) );
+
+			if ( 'album' === $medium_type ) {
+				wp_enqueue_style( 'wp-block-gallery' );
+				wp_add_inline_style(
+					'wp-block-gallery',
+					'.bp-attachments-medium #bp-media-list { display: flex; justify-content: space-evenly; gap: 1em; }'
+				);
+			}
+		}
+
+		wp_enqueue_script( $script_handle );
+
 		wp_add_inline_script(
-			'bp-attachments-playlist',
-			'window.bpAttachmentsPlaylistItems = ' . wp_json_encode( current( $preload_data ) ) . ';',
+			$script_handle,
+			'window.bpAttachmentsItems = ' . wp_json_encode( current( $preload_data ) ) . ';',
 			'before'
 		);
-
-		add_action( 'wp_footer', 'wp_underscore_playlist_templates', 0 );
 	}
 }
 add_action( 'bp_enqueue_community_scripts', 'bp_attachments_enqueue_medium_view_style', 20 );

@@ -54,7 +54,7 @@ class bpAttachmentsPlaylist {
 	 */
 	renderItem( props ) {
 		const Template = setTemplate( 'wp-playlist-item' );
-		return Template( props )
+		return Template( props );
 	}
 
 	/**
@@ -108,7 +108,7 @@ class bpAttachmentsPlaylist {
 window.bp = window.bp || {};
 window.bp.Attachments = window.bp.Attachments || {};
 
-const playlistItems = window.bpAttachmentsPlaylistItems || {};
+const playlistItems = window.bpAttachmentsItems || {};
 window.bp.Attachments.Playlist = new bpAttachmentsPlaylist( playlistItems );
 
 domReady( () => window.bp.Attachments.Playlist.start() );
