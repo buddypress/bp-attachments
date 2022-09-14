@@ -73,3 +73,9 @@ body.attachments.view .bp-attachment-file dl.bp-attachment-meta dd:after {
 	display: block;
 	content: '';
 }
+
+body.attachments.view #bp-media-list {
+	overflow: auto;
+	outline: none;
+	padding-top: 0.5em;
+}

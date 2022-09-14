@@ -13,6 +13,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Register assets common to WP Admin & Front-end context.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_register_common_assets() {
+	$bp_attachments = buddypress()->attachments;
+
+	wp_register_style(
+		'bp-attachments-media-list-styles',
+		$bp_attachments->assets_url . 'front-end/media-list.css',
+		array(),
+		$bp_attachments->version
+	);
+}
+add_action( 'bp_admin_enqueue_scripts', 'bp_attachments_register_common_assets', 1 );
+add_action( 'bp_enqueue_scripts', 'bp_attachments_register_common_assets', 1 );
+
+/**
  * Register JavaScripts and Styles for WP Admin context.
  *
  * @since 1.0.0
@@ -52,11 +70,11 @@ function bp_attachments_register_admin_assets() {
 	wp_register_style(
 		'bp-attachments-admin',
 		$bp_attachments->assets_url . 'admin/style.css',
-		array( 'dashicons', 'wp-components' ),
+		array( 'dashicons', 'wp-components', 'bp-attachments-media-list-styles' ),
 		$bp_attachments->version
 	);
 }
-add_action( 'bp_admin_enqueue_scripts', 'bp_attachments_register_admin_assets', 1 );
+add_action( 'bp_admin_enqueue_scripts', 'bp_attachments_register_admin_assets', 2 );
 
 /**
  * Inline styles for the WP Admin BuddyPress settings page.
@@ -127,7 +145,7 @@ function bp_attachments_register_front_end_assets() {
 		$bp_attachments->version
 	);
 }
-add_action( 'bp_enqueue_scripts', 'bp_attachments_register_front_end_assets', 1 );
+add_action( 'bp_enqueue_scripts', 'bp_attachments_register_front_end_assets', 2 );
 
 /**
  * Enqueues the css and js required by the front-end interfaces.
@@ -288,6 +306,8 @@ function bp_attachments_enqueue_medium_view_style() {
 					'wp-block-gallery',
 					'.bp-attachments-medium #bp-media-list { display: flex; justify-content: space-evenly; gap: 1em; }'
 				);
+			} else {
+				wp_enqueue_style( 'bp-attachments-media-list-styles' );
 			}
 		}
 

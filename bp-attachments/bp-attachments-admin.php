@@ -115,7 +115,7 @@ function bp_attachments_admin_media() {
 		'window.bpAttachmentsMediaLibrarySettings = ' . wp_json_encode( $settings ) . ';'
 	);
 
-	echo ( '<div class="wrap" id="bp-media-library"></div>' );
+	echo ( '<div class="wrap bp-attachments-media-list" id="bp-media-library"></div>' );
 	bp_attachments_get_javascript_template();
 }
 
