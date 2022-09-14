@@ -507,7 +507,7 @@ a.file-item {
 	padding: 3.5px;
 }
 
-#bp-media-library .split-button .split-button-toggle i.dashicons-arrow-up-alt2{
+#bp-media-library .split-button .split-button-toggle i.dashicons-arrow-up-alt2 {
 	line-height: 20px;
 }
 
@@ -535,7 +535,7 @@ ul.bp-attachment-edit-item__preview_links li {
 	margin-right: 2em;
 }
 
-.bp-attachment-edit-item__preview img {
+.bp-attachment-edit-item__preview .bp-attachment-edit-item__preview_illustration.has-rich-preview img {
     max-width: 100%;
     height: auto;
 }
@@ -546,4 +546,30 @@ ul.bp-attachment-edit-item__preview_links li {
 
 .bp-attachment-edit-item__form-actions button {
 	margin-right: 1em;
+}
+
+.bp-attachment-edit-item__preview_content {
+    display: flex;
+}
+
+.bp-attachment-edit-item__preview_content.has-rich-preview {
+    flex-direction: column;
+}
+
+.bp-attachment-edit-item__preview_content.is-directory .bp-attachment-edit-item__preview_illustration {
+    width: calc(100% / 3 * 1);
+    margin-right: 2em;
+}
+
+.bp-attachment-edit-item__preview_content.has-rich-preview .bp-attachment-edit-item__preview_illustration {
+	text-align: center;
+}
+
+.bp-attachment-edit-item__preview_content.is-directory .bp-attachment-edit-item__preview_description {
+     width: calc(100% / 3 * 2);
+}
+
+.bp-attachment-edit-item__preview_content:not(.is-directory):not(.has-rich-preview) .bp-attachment-edit-item__preview_description {
+	margin: 0 2em;
+    width: 100%;
 }

@@ -49,11 +49,14 @@ const EditMediaItem = ( { medium, errorCallback } ) => {
 	const { updateMedium } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
 	const isDisabled = title === editedMedium.title && description === editedMedium.description;
 	const hasNoPreview = -1 === [ 'image', 'video', 'audio' ].indexOf( media_type );
-	let illustrationClasses = [ 'bp-attachment-edit-item__preview_illustration' ];
-	if ( ! hasNoPreview ) {
-		illustrationClasses.push( 'has-rich-preview' );
-	}
 	const isDirectory = 'inode/directory' === mime_type;
+	let contentClasses = [ 'bp-attachment-edit-item__preview_content' ];
+	if ( ! hasNoPreview ) {
+		contentClasses.push( 'has-rich-preview' );
+	}
+	if ( isDirectory ) {
+		contentClasses.push( 'is-directory' );
+	}
 
 	const saveMediumProps = ( event ) => {
 		event.preventDefault();
@@ -91,14 +94,14 @@ const EditMediaItem = ( { medium, errorCallback } ) => {
 		<div className="bp-attachment-edit-item">
 			<div className="bp-attachment-edit-item__preview">
 				<h3 className="bp-attachment-edit-item__preview_title">{ editedMedium.title }</h3>
-				<div className="bp-attachment-edit-item__preview_content">
-					<ul className="bp-attachment-edit-item__preview_links">
-						<li><ExternalLink href={ view }>{ isDirectory ? __( 'Open directory page', 'bp-attachments' ) : __( 'Open media page', 'bp-attachments' ) }</ExternalLink></li>
-						{ ! isDirectory && (
-							<li><a href={ download }>{ __( 'Download media', 'bp-attachments' ) }</a></li>
-						) }
-					</ul>
-					<div className={ illustrationClasses.join( ' ' ) }>
+				<ul className="bp-attachment-edit-item__preview_links">
+					<li><ExternalLink href={ view }>{ isDirectory ? __( 'Open directory page', 'bp-attachments' ) : __( 'Open media page', 'bp-attachments' ) }</ExternalLink></li>
+					{ ! isDirectory && (
+						<li><a href={ download }>{ __( 'Download media', 'bp-attachments' ) }</a></li>
+					) }
+				</ul>
+				<div className={ contentClasses.join( ' ' ) }>
+					<div className="bp-attachment-edit-item__preview_illustration">
 						{ hasNoPreview && (
 							<img src={ icon } className="bp-attachment-medium-icon" />
 						) }
