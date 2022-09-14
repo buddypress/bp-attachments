@@ -49,6 +49,11 @@ const EditMediaItem = ( { medium, errorCallback } ) => {
 	const { updateMedium } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
 	const isDisabled = title === editedMedium.title && description === editedMedium.description;
 	const hasNoPreview = -1 === [ 'image', 'video', 'audio' ].indexOf( media_type );
+	let illustrationClasses = [ 'bp-attachment-edit-item__preview_illustration' ];
+	if ( ! hasNoPreview ) {
+		illustrationClasses.push( 'has-rich-preview' );
+	}
+	const isDirectory = 'inode/directory' === mime_type;
 
 	const saveMediumProps = ( event ) => {
 		event.preventDefault();
@@ -86,28 +91,34 @@ const EditMediaItem = ( { medium, errorCallback } ) => {
 		<div className="bp-attachment-edit-item">
 			<div className="bp-attachment-edit-item__preview">
 				<h3 className="bp-attachment-edit-item__preview_title">{ editedMedium.title }</h3>
-				<div className="bp-attachment-edit-item__preview_vignette">
+				<div className="bp-attachment-edit-item__preview_content">
 					<ul className="bp-attachment-edit-item__preview_links">
-						<li><ExternalLink href={ view }>{ __( 'Open media page', 'bp-attachments' ) }</ExternalLink></li>
-						<li><a href={ download }>{ __( 'Download media', 'bp-attachments' ) }</a></li>
+						<li><ExternalLink href={ view }>{ isDirectory ? __( 'Open directory page', 'bp-attachments' ) : __( 'Open media page', 'bp-attachments' ) }</ExternalLink></li>
+						{ ! isDirectory && (
+							<li><a href={ download }>{ __( 'Download media', 'bp-attachments' ) }</a></li>
+						) }
 					</ul>
-					<p>{ editedMedium.description }</p>
-					{ hasNoPreview && (
-						<img src={ icon } className="bp-attachment-medium-icon" />
-					) }
-					{ 'image' === media_type && src && (
-						<img src={ src } className="bp-attachment-medium-vignette" />
-					) }
-					{ 'audio' === media_type && src && (
-						<audio controls="controls" preload="metadata">
-							<source src={ src } type={ mime_type } />
-						</audio>
-					) }
-					{ 'video' === media_type && src && (
-						<video controls="controls" muted={ true } preload="metadata">
-							<source src={ src } type={ mime_type } />
-						</video>
-					) }
+					<div className={ illustrationClasses.join( ' ' ) }>
+						{ hasNoPreview && (
+							<img src={ icon } className="bp-attachment-medium-icon" />
+						) }
+						{ 'image' === media_type && src && (
+							<img src={ src } className="bp-attachment-medium-vignette" />
+						) }
+						{ 'audio' === media_type && src && (
+							<audio controls="controls" preload="metadata" className="bp-attachment-medium-player">
+								<source src={ src } type={ mime_type } />
+							</audio>
+						) }
+						{ 'video' === media_type && src && (
+							<video controls="controls" muted={ true } preload="metadata" className="bp-attachment-medium-player">
+								<source src={ src } type={ mime_type } />
+							</video>
+						) }
+					</div>
+					<div className="bp-attachment-edit-item__preview_description">
+						<p>{ editedMedium.description }</p>
+					</div>
 				</div>
 			</div>
 			<div className="bp-attachment-edit-item__form">
