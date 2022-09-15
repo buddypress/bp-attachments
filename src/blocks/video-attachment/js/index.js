@@ -5,17 +5,8 @@ const {
 	blocks: {
 		registerBlockType,
 	},
-	blockEditor: {
-		useBlockProps,
-	},
-	components: {
-		Placeholder,
-	},
 	element: {
 		createElement,
-	},
-	i18n: {
-		__,
 	},
 } = wp;
 
@@ -23,6 +14,7 @@ const {
  * Internal dependencies.
  */
 import metadata from '../block.json';
+import editVideo from './edit'
 
 registerBlockType( metadata, {
 	icon: {
@@ -30,21 +22,5 @@ registerBlockType( metadata, {
 		foreground: '#d84800',
 		src: 'video-alt3',
 	},
-	edit: function( { attributes, setAttributes } ) {
-		const blockProps = useBlockProps();
-
-		return (
-			<figure { ...blockProps }>
-				<Placeholder
-					type="video"
-					icon="video-alt3"
-					label={ __( 'Community Video', 'bp-attachments' ) }
-				/>
-			</figure>
-		);
-	},
-	save: function( { attributes} ) {
-		const blockProps = useBlockProps.save();
-		return null;
-	}
+	edit: editVideo,
 } );

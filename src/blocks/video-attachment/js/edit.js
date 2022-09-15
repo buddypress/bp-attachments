@@ -21,19 +21,19 @@ const {
  */
 import AttachmentPlaceholder from '../../common/components/attachment-placeholder';
 
-const editImage = ( { attributes, setAttributes } ) => {
+const editVideo = ( { attributes, setAttributes } ) => {
 	const { align, src } = attributes;
 	const blockProps = useBlockProps( {
-		className: !! align && undefined !== align ? 'wp-block-bp-image-attachment align' + align : 'wp-block-bp-image-attachment',
+		className: !! align && undefined !== align ? 'wp-block-bp-video-attachment align' + align : 'wp-block-bp-video-attachment',
 	} );
 
 	if ( ! src ) {
 		return (
 			<figure { ...blockProps }>
 				<AttachmentPlaceholder
-					type="image"
-					icon="format-image"
-					label={ __( 'Community Image', 'bp-attachments' ) }
+					type="video"
+					icon="video-alt3"
+					label={ __( 'Community Video', 'bp-attachments' ) }
 					onSetAttributes={ setAttributes }
 				/>
 			</figure>
@@ -50,10 +50,10 @@ const editImage = ( { attributes, setAttributes } ) => {
 				/>
 			</BlockControls>
 			<figure { ...blockProps }>
-				<img src={ src } />
+				<video controls="controls" preload="metadata" src={ src } />
 			</figure>
 		</Fragment>
 	)
 };
 
-export default editImage;
+export default editVideo;

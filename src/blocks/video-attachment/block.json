@@ -10,15 +10,19 @@
 	"keywords": [ "BuddyPress", "community", "video", "movie", "media" ],
 	"textdomain": "bp-attachments",
 	"attributes": {
-		"link": {
+		"align": {
+			"type": "string"
+		},
+		"url": {
+			"type": "string"
+		},
+		"src": {
 			"type": "string"
 		}
 	},
 	"supports": {
-		"align": false,
 		"alignWide": false,
 		"anchor": false,
-		"className": false,
 		"html": false
 	},
 	"editorScript": "file:./bp-attachments/assets/blocks/video-attachment/js/index.js",

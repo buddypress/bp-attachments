@@ -1113,6 +1113,53 @@ function bp_attachments_member_after_edit_cover_image() {
 }
 
 /**
+ * Block rendering functions common helper to get medium data.
+ *
+ * @since 1.0.0
+ *
+ * @param array $attributes The block attributes.
+ * @return array The medium and the block wrapper attributes.
+ */
+function bp_attachments_get_block_attachment_data( $attributes = array() ) {
+	$attachment_data = array();
+	$attrs           = bp_parse_args(
+		$attributes,
+		array(
+			'src'             => '',
+			'url'             => '',
+			'align'           => '',
+			'attachment_type' => '',
+		)
+	);
+
+	// The `url` attribute is required as it lets us check the image still exists.
+	if ( ! $attrs['url'] ) {
+		return $attachment_data;
+	}
+
+	$medium_data = bp_attachments_get_medium_path( $attrs['url'], true );
+	if ( ! isset( $medium_data['id'], $medium_data['path'] ) ) {
+		return $attachment_data;
+	}
+
+	// Validate and get the Medium object.
+	$medium = bp_attachments_get_medium( $medium_data['id'], $medium_data['path'] );
+	if ( ! isset( $medium->media_type ) || $attrs['attachment_type'] !== $medium->media_type ) {
+		return $attachment_data;
+	}
+
+	$extra_wrapper_attributes = array();
+	if ( in_array( $attrs['align'], array( 'center', 'left', 'right' ), true ) ) {
+		$extra_wrapper_attributes = array( 'class' => 'align' . $attrs['align'] );
+	}
+
+	return array(
+		'medium'             => $medium,
+		'wrapper_attributes' => get_block_wrapper_attributes( $extra_wrapper_attributes ),
+	);
+}
+
+/**
  * Callback function to render the Image Attachment Block.
  *
  * NB: using such a callback will help us make sure the attached image still
@@ -1125,47 +1172,21 @@ function bp_attachments_member_after_edit_cover_image() {
  * @return string           HTML output.
  */
 function bp_attachments_render_image_attachment( $attributes = array() ) {
-	$attrs = bp_parse_args(
-		$attributes,
-		array(
-			'src'       => '',
-			'url'       => '',
-			'align'     => '',
-			'className' => '',
-		)
-	);
+	$attributes['attachment_type'] = 'image';
+	$attachment_data               = bp_attachments_get_block_attachment_data( $attributes );
 
-	// The `url` attribute is required as it lets us check the image still exists.
-	if ( ! $attrs['url'] ) {
+	if ( ! isset( $attachment_data['medium'] ) || ! isset( $attachment_data['wrapper_attributes'] ) ) {
 		return null;
 	}
-
-	$medium_data = bp_attachments_get_medium_path( $attrs['url'], true );
-	if ( ! isset( $medium_data['id'], $medium_data['path'] ) ) {
-		return null;
-	}
-
-	// Validate and get the Medium object.
-	$medium = bp_attachments_get_medium( $medium_data['id'], $medium_data['path'] );
-	if ( ! isset( $medium->media_type ) || 'image' !== $medium->media_type ) {
-		return null;
-	}
-
-	$extra_wrapper_attributes = array();
-	if ( in_array( $attrs['align'], array( 'center', 'left', 'right' ), true ) ) {
-		$extra_wrapper_attributes = array( 'class' => 'align' . $attrs['align'] );
-	}
-
-	$wrapper_attributes = get_block_wrapper_attributes( $extra_wrapper_attributes );
 
 	// Return the `bp/image-attachment` output.
 	return sprintf(
 		'<figure %1$s>
 			<a href="%2$s"><img src="%3$s" alt="" /></a>
 		</figure>',
-		$wrapper_attributes,
-		esc_url( $medium->links['view'] ),
-		esc_url_raw( $medium->links['src'] )
+		$attachment_data['wrapper_attributes'],
+		esc_url( $attachment_data['medium']->links['view'] ),
+		esc_url_raw( $attachment_data['medium']->links['src'] )
 	);
 }
 
@@ -1182,6 +1203,19 @@ function bp_attachments_render_image_attachment( $attributes = array() ) {
  * @return string           HTML output.
  */
 function bp_attachments_render_video_attachment( $attributes = array() ) {
-	$wrapper_attributes = get_block_wrapper_attributes();
-	return null;
+	$attributes['attachment_type'] = 'video';
+	$attachment_data               = bp_attachments_get_block_attachment_data( $attributes );
+
+	if ( ! isset( $attachment_data['medium'] ) || ! isset( $attachment_data['wrapper_attributes'] ) ) {
+		return null;
+	}
+
+	// Return the `bp/image-attachment` output.
+	return sprintf(
+		'<figure %1$s>
+			<video controls="controls" preload="metadata" src="%2$s" />
+		</figure>',
+		$attachment_data['wrapper_attributes'],
+		esc_url_raw( $attachment_data['medium']->links['src'] )
+	);
 }

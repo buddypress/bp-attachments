@@ -2,17 +2,19 @@
  * WordPress dependencies.
  */
 const {
+	apiFetch,
 	components: {
 		DropZone,
 		FormFileUpload,
+		Notice,
 		Placeholder,
 	},
 	data: {
-		useDispatch,
 		useSelect,
 	},
 	element: {
 		createElement,
+		useState,
 	},
 	i18n: {
 		__,
@@ -28,7 +30,7 @@ const {
  * @param {string} icon The dashicon name.
  * @param {string} label The label to use.
  */
-const AttachmentPlaceholder = ( { type, icon, label, onUploadedMedium, children } ) => {
+const AttachmentPlaceholder = ( { type, icon, label, onSetAttributes } ) => {
 	const {
 		bpAttachments: {
 			allowedExtByMediaList,
@@ -37,6 +39,55 @@ const AttachmentPlaceholder = ( { type, icon, label, onUploadedMedium, children 
 		return select( 'core/editor' ).getEditorSettings();
 	}, [] );
 	const allowedTypes = allowedExtByMediaList[ type + '_playlist' ] ? allowedExtByMediaList[ type + '_playlist' ] : allowedExtByMediaList.album;
+	const [ errorMessage, setErrorMessage ] = useState( '' );
+	const { userId, postId } = useSelect( ( select ) => {
+		const currentUser = select( 'core' ).getCurrentUser();
+
+		return {
+			userId: currentUser.id,
+			postId: select( 'core/editor' ).getCurrentPostId(),
+		};
+	}, [] );
+
+	const onUploadedMedium = ( file ) => {
+		const formData = new FormData();
+		formData.append( 'file', file );
+		formData.append( 'action', 'bp_attachments_media_upload' );
+		formData.append( 'object', 'members' );
+		formData.append( 'object_item', userId );
+		formData.append( 'visibility', 'public' );
+
+		if ( !! postId ) {
+			formData.append( 'attached_to_object_type', 'post' );
+			formData.append( 'attached_to_object_id', postId );
+		}
+
+		// Reset error message.
+		setErrorMessage( '' );
+
+		apiFetch( {
+			path: 'buddypress/v1/attachments',
+			method: 'POST',
+			body: formData,
+		} ).then( ( response ) => {
+			if ( response.links && response.links.src ) {
+				onSetAttributes( {
+					url: response.links.view,
+					src: response.links.src,
+				} );
+			}
+		} ).catch( ( error ) => {
+			if ( error.message ) {
+				const errorMessage = (
+					<Notice status="error" isDismissible={ false }>
+						<p>{ error.message }</p>
+					</Notice>
+				);
+
+				setErrorMessage( errorMessage );
+			}
+		} );
+	}
 
 	const uploadMedia = ( files ) => {
 		let media;
@@ -71,7 +122,7 @@ const AttachmentPlaceholder = ( { type, icon, label, onUploadedMedium, children 
 			>
 				{ __( 'Select a file', 'bp-attachments' ) }
 			</FormFileUpload>
-			{ children }
+			{ errorMessage }
 		</Placeholder>
 	);
 };
