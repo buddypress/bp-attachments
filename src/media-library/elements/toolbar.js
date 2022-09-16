@@ -151,8 +151,19 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 	const onDeleteSelected = ( event ) => {
 		event.preventDefault();
 
+		let bytes = 0;
+		let numSelectedMedia = selectedMedia.length;
+
 		selectedMedia.forEach( medium => {
-			deleteMedium( medium );
+			// Deleted folders do not have a size.
+			if ( !! medium.size ) {
+				bytes += parseInt( medium.size, 10 );
+			}
+
+			numSelectedMedia -= 1;
+
+			const totalBytes = 0 === numSelectedMedia ? bytes : 0;
+			deleteMedium( medium, totalBytes );
 		} );
 
 		return toggleSelectable( false );

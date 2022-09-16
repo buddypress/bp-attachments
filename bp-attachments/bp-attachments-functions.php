@@ -1186,9 +1186,12 @@ function bp_attachments_delete_directory( $path = '', $visibility = 'public' ) {
 		return $result;
 	}
 
-	$result    = true;
-	$directory = new RecursiveDirectoryIterator( $path, FilesystemIterator::SKIP_DOTS );
-	$iterator  = new RecursiveIteratorIterator( $directory, RecursiveIteratorIterator::CHILD_FIRST );
+	$result        = true;
+	$owner_id      = $path_parts[2];
+	$directory     = new RecursiveDirectoryIterator( $path, FilesystemIterator::SKIP_DOTS );
+	$iterator      = new RecursiveIteratorIterator( $directory, RecursiveIteratorIterator::CHILD_FIRST );
+	$removed_bytes = 0;
+
 	foreach ( $iterator as $item ) {
 		if ( false === $result ) {
 			break;
@@ -1197,8 +1200,19 @@ function bp_attachments_delete_directory( $path = '', $visibility = 'public' ) {
 		if ( $item->isDir() ) {
 			$result = rmdir( $item->getRealPath() );
 		} else {
+			$filename = $item->getPathname();
+
+			if ( ! preg_match( '#\.json$#', $filename ) && ! preg_match( '#\._revisions#', $filename ) ) {
+				$removed_bytes += $item->getSize();
+			}
+
 			$result = unlink( $item->getRealPath() );
 		}
+	}
+
+	// Decrease owner's files size.
+	if ( ! empty( $removed_bytes ) ) {
+		bp_attachments_user_decrease_files_size( $owner_id, $removed_bytes );
 	}
 
 	return rmdir( $path );

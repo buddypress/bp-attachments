@@ -93,6 +93,14 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 								'sanitize_callback' => 'intval',
 							),
 						),
+						'total_bytes'             => array(
+							'description' => __( 'The total bytes sent during an upload process.', 'bp-attachments' ),
+							'type'        => 'integer',
+							'default'     => 0,
+							'arg_options' => array(
+								'sanitize_callback' => 'intval',
+							),
+						),
 					),
 				),
 				'schema' => array( $this, 'get_public_item_schema' ),
@@ -112,6 +120,14 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 						'description' => __( 'Relative path to the BP Medium object.', 'bp-attachments' ),
 						'type'        => 'string',
 						'required'    => true,
+					),
+					'total_bytes'   => array(
+						'description' => __( 'The total bytes sent during an upload process.', 'bp-attachments' ),
+						'type'        => 'integer',
+						'default'     => 0,
+						'arg_options' => array(
+							'sanitize_callback' => 'intval',
+						),
 					),
 				),
 				array(
@@ -518,6 +534,11 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 			);
 		}
 
+		$total_bytes = $request->get_param( 'total_bytes' );
+		if ( ! empty( $total_bytes ) ) {
+			bp_attachments_user_raise_files_size( $media->owner_id, $total_bytes );
+		}
+
 		// Add the icon.
 		if ( 'inode/directory' !== $media->mime_type ) {
 			$media->icon = wp_mime_type_icon( $media->media_type );
@@ -735,8 +756,15 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 				$deleted = bp_attachments_delete_directory( $medium_data->abspath . '/._revisions_' . $medium_data->id, $medium_data->visibility );
 			}
 
-			// Delete file.
 			if ( true === $deleted && file_exists( $medium_data->abspath . '/' . $medium_data->name ) ) {
+				$total_bytes = $request->get_param( 'total_bytes' );
+
+				// Decrease owner's files size.
+				if ( ! empty( $total_bytes ) ) {
+					bp_attachments_user_decrease_files_size( $medium_data->owner_id, $total_bytes );
+				}
+
+				// Delete file.
 				$deleted = unlink( $medium_data->abspath . '/' . $medium_data->name );
 			}
 		} else {

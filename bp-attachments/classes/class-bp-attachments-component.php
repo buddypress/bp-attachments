@@ -60,6 +60,7 @@ class BP_Attachments_Component extends BP_Component {
 		// Files to include.
 		$includes = array(
 			'functions',
+			'users',
 			'assets-loader',
 			'templates',
 		);

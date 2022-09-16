@@ -51,6 +51,7 @@ const MediaLibraryUploader = ( { settings } ) => {
 
 	const uploadMedia = ( files ) => {
 		let media;
+		let bytes = 0;
 
 		if ( files.currentTarget && files.currentTarget.files ) {
 			media = [ ...files.currentTarget.files ];
@@ -58,8 +59,14 @@ const MediaLibraryUploader = ( { settings } ) => {
 			media = files;
 		}
 
+		let numMedia = media.length;
+
 		media.forEach( ( medium ) => {
-			createMedium( medium );
+			bytes += parseInt( medium.size, 10 );
+			numMedia -= 1;
+
+			const totalBytes = 0 === numMedia ? bytes : 0;
+			createMedium( medium, totalBytes );
 		} );
 
 		resetFormState();

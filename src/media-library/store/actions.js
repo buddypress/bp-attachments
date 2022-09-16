@@ -91,13 +91,15 @@ export function createFromAPI( path, data ) {
  *
  * @param {string} path Endpoint path.
  * @param {Object} data The data to be created.
+ * @param {integer} totalBytes The total amount of bytes per delete batches.
  * @return {Object} Object for action.
  */
-export function deleteFromAPI( path, relativePath ) {
+export function deleteFromAPI( path, relativePath, totalBytes ) {
 	return {
 		type: types.DELETE_FROM_API,
 		path,
 		relativePath,
+		totalBytes,
 	};
 }
 
@@ -279,9 +281,10 @@ export function addMediumError( error ) {
  * Creates a Medium uploading a file.
  *
  * @param {Object} file The file object to upload.
+ * @param {integer} totalBytes The total amount of bytes per upload batches.
  * @returns {Object} Object for action.
  */
-export function * createMedium( file ) {
+export function * createMedium( file, totalBytes ) {
 	let uploading = true, upload;
 	const store = select( STORE_KEY );
 	const { object, item, visibility } = store.getDestinationData();
@@ -297,6 +300,10 @@ export function * createMedium( file ) {
 
 	if ( visibility ) {
 		formData.append( 'visibility', visibility );
+	}
+
+	if ( totalBytes ) {
+		formData.append( 'total_bytes', totalBytes );
 	}
 
 	if ( trim( relativePath, '/' ) !== visibility + '/' + object + '/' + item ) {
@@ -529,15 +536,16 @@ export function removeMedium( id ) {
  * Deletes a Medium removing the file from the server's filesystem.
  *
  * @param {Object} file The file object to upload.
+ * @param {integer} totalBytes The total amount of bytes per delete batches.
  * @returns {Object} Object for action.
  */
-export function * deleteMedium( file ) {
+export function * deleteMedium( file, totalBytes ) {
 	const store = select( STORE_KEY );
 	const relativePath = store.getRelativePath();
 	let deleted;
 
 	try {
-		deleted = yield deleteFromAPI( '/buddypress/v1/attachments/' + file.id + '/', relativePath );
+		deleted = yield deleteFromAPI( '/buddypress/v1/attachments/' + file.id + '/', relativePath, totalBytes );
 
 		if ( 'inode/directory' === deleted.previous.mime_type ) {
 			yield removeItemTree( deleted.previous.id );

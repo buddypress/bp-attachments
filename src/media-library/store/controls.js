@@ -33,13 +33,14 @@ export const controls = {
 			}
 		);
 	},
-	DELETE_FROM_API( { path, relativePath } ) {
+	DELETE_FROM_API( { path, relativePath, totalBytes } ) {
 		return apiFetch(
 			{
 				path: path,
 				method: 'DELETE',
 				data: {
-					relative_path: relativePath
+					relative_path: relativePath,
+					total_bytes: totalBytes,
 				}
 			}
 		);
