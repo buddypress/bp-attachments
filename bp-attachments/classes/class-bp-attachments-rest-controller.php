@@ -122,7 +122,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 						'required'    => true,
 					),
 					'total_bytes'   => array(
-						'description' => __( 'The total bytes sent during an upload process.', 'bp-attachments' ),
+						'description' => __( 'The total bytes to remove after a delete process.', 'bp-attachments' ),
 						'type'        => 'integer',
 						'default'     => 0,
 						'arg_options' => array(
