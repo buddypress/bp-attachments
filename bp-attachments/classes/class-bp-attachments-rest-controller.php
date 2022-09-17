@@ -19,6 +19,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	/**
+	 * Curent Medium's data.
+	 *
+	 * @since 1.0.0
+	 * @var null|object
+	 */
+	protected $current_medium_data = null;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
@@ -179,13 +187,7 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	public function get_items_permissions_check( $request ) {
 		$retval = true;
 
-		/**
-		 * Restrict the endpoint to Site Admins during
-		 * development process.
-		 *
-		 * @todo build a BP Attachments capacity management.
-		 */
-		if ( ! current_user_can( 'manage_options' ) && 'edit' === $request->get_param( 'context' ) ) {
+		if ( ! bp_attachments_current_user_can( 'upload_bp_media' ) && 'edit' === $request->get_param( 'context' ) ) {
 			$retval = new WP_Error(
 				'bp_attachments_rest_authorization_require',
 				__( 'Sorry, you are not allowed to request media.', 'bp-attachments' ),
@@ -341,22 +343,16 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	 * @return bool|WP_Error
 	 */
 	public function create_item_permissions_check( $request ) {
-		$retval = true;
+		$retval = new WP_Error(
+			'bp_attachments_rest_authorization_required',
+			__( 'Sorry, you are not allowed to create media.', 'bp-attachments' ),
+			array(
+				'status' => rest_authorization_required_code(),
+			)
+		);
 
-		/**
-		 * Restrict the endpoint to Site Admins during
-		 * development process.
-		 *
-		 * @todo build a BP Attachments capacity management.
-		 */
-		if ( ! current_user_can( 'manage_options' ) ) {
-			$retval = new WP_Error(
-				'bp_attachments_rest_authorization_required',
-				__( 'Sorry, you are not allowed to create media.', 'bp-attachments' ),
-				array(
-					'status' => rest_authorization_required_code(),
-				)
-			);
+		if ( bp_attachments_current_user_can( 'upload_bp_media' ) ) {
+			$retval = true;
 		}
 
 		/**
@@ -612,7 +608,18 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	 * @return bool|WP_Error
 	 */
 	public function update_item_permissions_check( $request ) {
-		$retval = $this->create_item_permissions_check( $request );
+		$retval = new WP_Error(
+			'bp_attachments_rest_authorization_required',
+			__( 'Sorry, you are not allowed to edit media.', 'bp-attachments' ),
+			array(
+				'status' => rest_authorization_required_code(),
+			)
+		);
+
+		$this->$current_medium_data = $this->get_medium_json_data( $request );
+		if ( isset( $this->$current_medium_data->owner_id ) ) {
+			$retval = bp_attachments_current_user_can( 'edit_bp_medium', array( 'bp_medium' => $this->$current_medium_data ) );
+		}
 
 		/**
 		 * Filter the BP Attachments media `update_item` permissions check.
@@ -634,11 +641,16 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	 * @return WP_Error|WP_REST_Response Response object on success, WP_Error object on failure.
 	 */
 	public function update_item( $request ) {
-		$medium_data = $this->get_medium_json_data( $request );
+		if ( ! is_null( $this->$current_medium_data ) ) {
+			$medium_data = $this->$current_medium_data;
+		} else {
+			$medium_data = $this->get_medium_json_data( $request );
+		}
+
 		if ( ! $medium_data ) {
 			return new WP_Error(
 				'bp_attachments_rest_update_medium_failed',
-				__( 'Sorry, we were not able to update the media.', 'bp-attachments' ),
+				__( 'Sorry, we were not able to edit the media.', 'bp-attachments' ),
 				array(
 					'status' => 500,
 				)
@@ -686,22 +698,17 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	 * @return bool|WP_Error
 	 */
 	public function delete_item_permissions_check( $request ) {
-		$retval = true;
+		$retval = new WP_Error(
+			'bp_attachments_rest_authorization_require',
+			__( 'Sorry, you are not allowed to delete media.', 'bp-attachments' ),
+			array(
+				'status' => rest_authorization_required_code(),
+			)
+		);
 
-		/**
-		 * Restrict the endpoint to Site Admins during
-		 * development process.
-		 *
-		 * @todo build a BP Attachments capacity management.
-		 */
-		if ( ! current_user_can( 'manage_options' ) ) {
-			$retval = new WP_Error(
-				'bp_attachments_rest_authorization_require',
-				__( 'Sorry, you are not allowed to delete media.', 'bp-attachments' ),
-				array(
-					'status' => rest_authorization_required_code(),
-				)
-			);
+		$this->$current_medium_data = $this->get_medium_json_data( $request );
+		if ( isset( $this->$current_medium_data->owner_id ) ) {
+			$retval = bp_attachments_current_user_can( 'delete_bp_medium', array( 'bp_medium' => $this->$current_medium_data ) );
 		}
 
 		/**
@@ -732,7 +739,12 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 			)
 		);
 
-		$medium_data = $this->get_medium_json_data( $request );
+		if ( ! is_null( $this->$current_medium_data ) ) {
+			$medium_data = $this->$current_medium_data;
+		} else {
+			$medium_data = $this->get_medium_json_data( $request );
+		}
+
 		if ( ! $medium_data ) {
 			return $error;
 		}

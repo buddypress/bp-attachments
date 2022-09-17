@@ -104,3 +104,131 @@ function bp_attachments_user_decrease_files_size( $user_id, $bytes = 0 ) {
 
 	bp_update_user_meta( $user_id, '_bp_attachments_userfiles_size', $files_size );
 }
+
+/**
+ * BP Attachments user capabilities.
+ *
+ * @since 1.0.0
+ *
+ * @return array BP Attachments user capabilities list.
+ */
+function bp_attachments_user_media_caps() {
+	$caps = array(
+		'upload_bp_media',
+		'edit_bp_media',
+		'delete_bp_media',
+		'read_bp_media',
+		'download_bp_media',
+		'edit_bp_medium',
+		'delete_bp_medium',
+		'read_bp_medium',
+		'download_bp_medium',
+	);
+
+	return array_fill_keys( $caps, true );
+}
+
+/**
+ * Check the current user's BP Attachments Media capability.
+ *
+ * @since 1.0.0
+ *
+ * @param bool   $can        The default cap.
+ * @param string $capability The cap name to check.
+ * @param array  $args       An array containing extra information for extended checks.
+ * @return bool True if the user can. False otherwise.
+ */
+function bp_attachments_media_user_can( $can = false, $capability = '', $args = array() ) {
+	$current_user_id = bp_loggedin_user_id();
+	$built_in_caps   = bp_attachments_user_media_caps();
+
+	if ( ! isset( $built_in_caps[ $capability ] ) ) {
+		return $can;
+	}
+
+	// Set default values.
+	$can          = false;
+	$is_logged_in = is_user_logged_in();
+	$bp_medium    = null;
+
+	if ( isset( $args['bp_medium'] ) && is_object( $args['bp_medium'] ) ) {
+		$bp_medium = $args['bp_medium'];
+	}
+
+	switch ( $capability ) {
+		// Reading and downloading public media.
+		case 'read_bp_media':
+		case 'download_bp_media':
+			$can = bp_current_user_can( 'exist' );
+			break;
+
+		// Uploading media.
+		case 'upload_bp_media':
+			$can = $is_logged_in && ! empty( $current_user_id );
+			break;
+
+		// Edit and delete any media.
+		case 'edit_bp_media':
+		case 'delete_bp_media':
+			$can = bp_current_user_can( 'bp_moderate' );
+			break;
+
+		// Edit and delete a specific medium.
+		case 'edit_bp_medium':
+		case 'delete_bp_medium':
+			// Community owner can manage it.
+			$can = bp_current_user_can( 'bp_moderate' );
+
+			// BP Medium owner can manage it.
+			if ( ! $can && isset( $bp_medium->owner_id ) ) {
+				$can = (int) $current_user_id === (int) $bp_medium->owner_id;
+			}
+			break;
+
+		// Read and download a specific medium.
+		case 'read_bp_medium':
+		case 'download_bp_medium':
+			// Community owner can read and download it whatever the visibility.
+			$can = bp_current_user_can( 'bp_moderate' );
+
+			// BP Medium owner can read and download it whatever the visibility.
+			if ( ! $can && isset( $bp_medium->owner_id ) ) {
+				$can = (int) $current_user_id === (int) $bp_medium->owner_id;
+			}
+
+			if ( ! $can && isset( $bp_medium->visibility ) ) {
+				// A public medium can be read and downloaded by anyone.
+				if ( 'private' !== $bp_medium->visibility ) {
+					$can = bp_current_user_can( 'exist' );
+
+					// Private medium can be read and downloaded by allowed members.
+				} elseif ( isset( $args['component'] ) && bp_is_active( $args['component'] ) ) {
+					// A private medium shared with specific members.
+					if ( 'members' === $args['component'] ) {
+						$can = isset( $bp_medium->allowed_members ) && in_array( $current_user_id, $bp_medium->allowed_members, true );
+					}
+
+					// A private medium shared with friends.
+					if ( 'friends' === $args['component'] ) {
+						$can = isset( $bp_medium->owner_id ) && friends_check_friendship( $bp_medium->owner_id, $current_user_id );
+					}
+
+					// A private medium shared with groups.
+					if ( 'groups' === $args['component'] && isset( $args['item_id'] ) ) {
+						$group_id = (int) $args['item_id'];
+
+						if ( isset( $bp_medium->allowed_groups ) && in_array( $args['item_id'], $bp_medium->allowed_groups, true ) ) {
+							$can = (bool) groups_is_user_member( $current_user_id, $group_id );
+						}
+					}
+				}
+			}
+			break;
+		default:
+			$can = false;
+			break;
+	}
+
+	return $can;
+}
+add_filter( 'bp_attachments_current_user_can', 'bp_attachments_media_user_can', 1, 3 );

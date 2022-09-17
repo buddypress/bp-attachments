@@ -53,7 +53,7 @@ function bp_attachments_admin_menu() {
 	add_media_page(
 		__( 'Community Library', 'bp-attachments' ),
 		__( 'Community Library', 'bp-attachments' ),
-		'manage_options', // Restrict the menu to Site Admins during development process.
+		'exist',
 		'community-library',
 		'bp_attachments_admin_media',
 		10
