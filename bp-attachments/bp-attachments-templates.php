@@ -82,6 +82,17 @@ function bp_attachments_get_javascript_template( $name = 'media-item' ) {
 }
 
 /**
+ * Checks whether the current page is the user's personal library or not.
+ *
+ * @since 1.0.0
+ *
+ * @return bool True if the current page is the user's personal library. False otherwise.
+ */
+function bp_attachments_is_user_personal_library() {
+	return (bool) ( bp_is_user() && bp_is_current_component( 'attachments' ) );
+}
+
+/**
  * Overrides specific BuddyPress template parts when needed.
  *
  * @since 1.0.0
@@ -92,7 +103,10 @@ function bp_attachments_get_javascript_template( $name = 'media-item' ) {
 function bp_attachments_template_part_overrides( $templates = array() ) {
 	$is_overriding = false;
 
-	if ( in_array( 'members/single/profile/change-avatar.php', $templates, true ) ) {
+	if ( in_array( 'members/single/plugins.php', $templates, true ) && bp_attachments_is_user_personal_library() ) {
+		$is_overriding = true;
+		array_unshift( $templates, 'members/single/attachments.php' );
+	} elseif ( in_array( 'members/single/profile/change-avatar.php', $templates, true ) ) {
 		$is_overriding = true;
 		array_unshift( $templates, 'members/single/profile/edit-avatar.php' );
 	} elseif ( in_array( 'members/single/profile/change-cover-image.php', $templates, true ) ) {
@@ -224,27 +238,6 @@ function bp_attachments_is_medium_embed() {
 
 	return $retval;
 }
-
-/**
- * Outputs the displayed user media library.
- *
- * @since 1.0.0
- */
-function bp_attachements_output_personal_template() {
-	?>
-	<p>TBD</p>
-	<?php
-}
-
-/**
- * Sets the hook to handle the display of the user media library.
- *
- * @since 1.0.0
- */
-function bp_attachements_set_personal_template() {
-	add_action( 'bp_template_content', 'bp_attachements_output_personal_template' );
-}
-add_action( 'bp_attachments_personal_screen', 'bp_attachements_set_personal_template' );
 
 /**
  * Sets the Attachments content dummy post.
