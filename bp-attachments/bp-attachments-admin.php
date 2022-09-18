@@ -68,52 +68,10 @@ add_action( 'admin_menu', 'bp_attachments_admin_menu' );
  */
 function bp_attachments_admin_media() {
 	// Style.
-	wp_enqueue_style( 'bp-attachments-admin' );
+	wp_enqueue_style( 'bp-attachments-media-library' );
 
-	// JavaScript.
-	wp_enqueue_script( 'bp-attachments-media-library' );
-
-	$is_admin_screen = ! defined( 'IFRAME_REQUEST' ) && is_admin();
-	$context         = 'edit';
-	if ( ! $is_admin_screen ) {
-		$context = 'view';
-	}
-
-	// Preload the current user's data.
-	$preload_logged_in_user = array_reduce(
-		array(
-			sprintf( '/buddypress/v1/members/me?context=%s', $context ),
-			sprintf( '/buddypress/v1/attachments?context=%s', $context ),
-		),
-		'rest_preload_api_request',
-		array()
-	);
-
-	// Create the Fetch API Preloading middleware.
-	wp_add_inline_script(
-		'wp-api-fetch',
-		sprintf( 'wp.apiFetch.use( wp.apiFetch.createPreloadingMiddleware( %s ) );', wp_json_encode( $preload_logged_in_user ) ),
-		'after'
-	);
-
-	/**
-	 * Add a setting to inform whether the Media Library is used form
-	 * the Community Media Library Admin screen or not.
-	 */
-	$settings = apply_filters(
-		'bp_attachments_medium_library_admin',
-		array(
-			'isAdminScreen'         => $is_admin_screen,
-			'maxUploadFileSize'     => wp_max_upload_size(),
-			'allowedExtByMediaList' => bp_attachments_get_exts_by_medialist(),
-			'allowedExtTypes'       => bp_attachments_get_allowed_media_exts( '', true ),
-		)
-	);
-
-	wp_add_inline_script(
-		'bp-attachments-media-library',
-		'window.bpAttachmentsMediaLibrarySettings = ' . wp_json_encode( $settings ) . ';'
-	);
+	// Enqueue the Media Library.
+	bp_attachments_enqueue_media_library();
 
 	echo ( '<div class="wrap bp-attachments-media-list" id="bp-media-library"></div>' );
 	bp_attachments_get_javascript_template();

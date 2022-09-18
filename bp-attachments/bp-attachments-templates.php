@@ -82,6 +82,15 @@ function bp_attachments_get_javascript_template( $name = 'media-item' ) {
 }
 
 /**
+ * Print Media Library JavaScript Templates into the footer.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_print_media_library_templates() {
+	bp_attachments_get_javascript_template();
+}
+
+/**
  * Checks whether the current page is the user's personal library or not.
  *
  * @since 1.0.0

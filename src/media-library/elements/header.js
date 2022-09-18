@@ -36,7 +36,8 @@ const MediaLibraryHeader = ( { settings } ) => {
 	const toggleClass = true === isOpen ? 'split-button is-open' : 'split-button';
 	const dashiconClass = true === isOpen ? 'dashicons dashicons-arrow-up-alt2' : 'dashicons dashicons-arrow-down-alt2';
 	const canUpload = true !== currentDirectoryObject.readonly;
-	const { allowedExtByMediaList } = settings;
+	const { allowedExtByMediaList, isAdminScreen } = settings;
+	const hrClass = isAdminScreen ? 'wp-header-end' : 'screen-header-end';
 
 	const showUploadForm = ( e ) => {
 		e.preventDefault();
@@ -112,9 +113,18 @@ const MediaLibraryHeader = ( { settings } ) => {
 
 	return (
 		<Fragment>
-			<h1 className="wp-heading-inline">
-				{ __( 'Community Media Library', 'bp-attachments' ) }
-			</h1>
+			{ !! isAdminScreen && (
+				<h1 className="wp-heading-inline">
+					{ __( 'Community Media Library', 'bp-attachments' ) }
+				</h1>
+			) }
+
+			{ ! isAdminScreen && (
+				<h3 className="screen-heading">
+					{ __( 'Library', 'bp-attachments' ) }
+				</h3>
+			) }
+
 			{ !! canUpload && (
 				<div className={ toggleClass }>
 					<div className="split-button-head">
@@ -140,7 +150,7 @@ const MediaLibraryHeader = ( { settings } ) => {
 					</div>
 				</div>
 			) }
-			<hr className="wp-header-end"></hr>
+			<hr className={ hrClass }></hr>
 		</Fragment>
 	);
 };

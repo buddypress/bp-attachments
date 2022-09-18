@@ -12,4 +12,4 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 ?>
-<p>TBD</p>
+<div class="bp-attachments-media-list" id="bp-media-library"></div>

@@ -13,29 +13,42 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Locates a BP Attachments asset into templates / Template pack.
+ *
+ * @since 1.0.0
+ *
+ * @param string $asset The asset to locate.
+ * @return array|false An array containing the uri & patch to the asset. False if no asset was found.
+ */
+function bp_attachments_locate_template_asset( $asset = '' ) {
+	$asset_data = false;
+
+	if ( ! $asset ) {
+		return $asset_data;
+	}
+
+	// Temporarly overrides the BuddyPress Template Stack.
+	bp_attachments_start_overriding_template_stack();
+
+	$asset_data = bp_locate_template_asset( $asset );
+
+	// Stop overriding the BuddyPress Template Stack.
+	bp_attachments_stop_overriding_template_stack();
+
+	// If this replacement happens, this means the current template pack has not found the corresponding style.
+	if ( isset( $asset_data['uri'] ) ) {
+		$asset_data['uri'] = str_replace( bp_attachments_get_templates_dir(), bp_attachments_get_templates_url(), $asset_data['uri'] );
+	}
+
+	return $asset_data;
+}
+
+/**
  * Register assets common to WP Admin & Front-end context.
  *
  * @since 1.0.0
  */
 function bp_attachments_register_common_assets() {
-	$bp_attachments = buddypress()->attachments;
-
-	wp_register_style(
-		'bp-attachments-media-list-styles',
-		$bp_attachments->assets_url . 'front-end/media-list.css',
-		array(),
-		$bp_attachments->version
-	);
-}
-add_action( 'bp_admin_enqueue_scripts', 'bp_attachments_register_common_assets', 1 );
-add_action( 'bp_enqueue_scripts', 'bp_attachments_register_common_assets', 1 );
-
-/**
- * Register JavaScripts and Styles for WP Admin context.
- *
- * @since 1.0.0
- */
-function bp_attachments_register_admin_assets() {
 	$bp_attachments = buddypress()->attachments;
 
 	wp_register_script(
@@ -57,6 +70,31 @@ function bp_attachments_register_admin_assets() {
 		true
 	);
 
+	wp_register_style(
+		'bp-attachments-media-list-styles',
+		$bp_attachments->assets_url . 'front-end/media-list.css',
+		array(),
+		$bp_attachments->version
+	);
+
+	wp_register_style(
+		'bp-attachments-media-library',
+		$bp_attachments->assets_url . 'media-library/style.css',
+		array( 'dashicons', 'wp-components', 'bp-attachments-media-list-styles' ),
+		$bp_attachments->version
+	);
+}
+add_action( 'bp_admin_enqueue_scripts', 'bp_attachments_register_common_assets', 1 );
+add_action( 'bp_enqueue_scripts', 'bp_attachments_register_common_assets', 1 );
+
+/**
+ * Register JavaScripts and Styles for WP Admin context.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_register_admin_assets() {
+	$bp_attachments = buddypress()->attachments;
+
 	wp_register_script(
 		'bp-attachments-admin',
 		$bp_attachments->js_url . 'admin/index.js',
@@ -65,13 +103,6 @@ function bp_attachments_register_admin_assets() {
 		),
 		$bp_attachments->version,
 		true
-	);
-
-	wp_register_style(
-		'bp-attachments-admin',
-		$bp_attachments->assets_url . 'admin/style.css',
-		array( 'dashicons', 'wp-components', 'bp-attachments-media-list-styles' ),
-		$bp_attachments->version
 	);
 }
 add_action( 'bp_admin_enqueue_scripts', 'bp_attachments_register_admin_assets', 2 );
@@ -90,6 +121,49 @@ function bp_attachments_enqueue_admin_common_assets() {
 	);
 }
 add_action( 'bp_admin_enqueue_scripts', 'bp_attachments_enqueue_admin_common_assets', 20 );
+
+/**
+ * Enqueues the media library UI.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_enqueue_media_library() {
+	// JavaScript.
+	wp_enqueue_script( 'bp-attachments-media-library' );
+
+	// Preload the current user's data.
+	$preload_logged_in_user = array_reduce(
+		array(
+			'/buddypress/v1/members/me?context=edit',
+			'/buddypress/v1/attachments?context=edit',
+		),
+		'rest_preload_api_request',
+		array()
+	);
+
+	// Create the Fetch API Preloading middleware.
+	wp_add_inline_script(
+		'wp-api-fetch',
+		sprintf( 'wp.apiFetch.use( wp.apiFetch.createPreloadingMiddleware( %s ) );', wp_json_encode( $preload_logged_in_user ) ),
+		'after'
+	);
+
+	// Community Media library settings.
+	$settings = apply_filters(
+		'bp_attachments_media_library_settings',
+		array(
+			'isAdminScreen'         => is_admin(),
+			'maxUploadFileSize'     => wp_max_upload_size(),
+			'allowedExtByMediaList' => bp_attachments_get_exts_by_medialist(),
+			'allowedExtTypes'       => bp_attachments_get_allowed_media_exts( '', true ),
+		)
+	);
+
+	wp_add_inline_script(
+		'bp-attachments-media-library',
+		'window.bpAttachmentsMediaLibrarySettings = ' . wp_json_encode( $settings ) . ';'
+	);
+}
 
 /**
  * Register JavaScripts and Styles for Front-End context.
@@ -137,6 +211,17 @@ function bp_attachments_register_front_end_assets() {
 		$bp_attachments->version,
 		true
 	);
+
+	// Let the theme customize the Media Library styles.
+	$css = bp_attachments_locate_template_asset( 'css/attachments-media-library.css' );
+	if ( isset( $css['uri'] ) ) {
+		wp_register_style(
+			'bp-attachments-media-library-front',
+			$css['uri'],
+			array( 'bp-attachments-media-library' ),
+			$bp_attachments->version
+		);
+	}
 
 	wp_register_style(
 		'bp-attachments-avatar-editor-styles',
@@ -207,6 +292,15 @@ function bp_attachments_enqueue_front_end_assets() {
 			'bp-attachments-avatar-editor',
 			'window.bpAttachmentsAvatarEditorSettings = ' . wp_json_encode( $settings ) . ';'
 		);
+	}
+
+	if ( bp_attachments_is_user_personal_library() && bp_is_my_profile() ) {
+		// Style.
+		wp_enqueue_style( 'bp-attachments-media-library-front' );
+
+		bp_attachments_enqueue_media_library();
+
+		add_action( 'wp_footer', 'bp_attachments_print_media_library_templates', 1 );
 	}
 }
 add_action( 'bp_enqueue_community_scripts', 'bp_attachments_enqueue_front_end_assets' );
