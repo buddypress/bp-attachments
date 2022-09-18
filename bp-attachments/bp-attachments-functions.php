@@ -284,14 +284,14 @@ function bp_attachments_get_document_root() {
 }
 
 /**
- * Gets the root directory of private uploads.
+ * Gets the private uploads root directory.
  *
  * @since 1.0.0
  *
  * @param boolean $upload_checks True to perform upload checks. False otherwise.
  * @return string|WP_Error The private root directory if it exists a WP Error object otherwise.
  */
-function bp_attachments_get_private_root_dir( $upload_checks = true ) {
+function bp_attachments_get_private_root_dir( $upload_checks = false ) {
 	/**
 	 * Use this filter to override the private uploads root directory.
 	 *
@@ -379,7 +379,7 @@ function bp_attachments_get_media_uploads_dir( $type = 'public' ) {
 
 	if ( 'private' === $type ) {
 		if ( bp_attachments_can_do_private_uploads() ) {
-			$private_dir = bp_attachments_get_private_root_dir( false );
+			$private_dir = bp_attachments_get_private_root_dir();
 
 			if ( is_wp_error( $private_dir ) ) {
 				$bp_uploads_dir['bp_attachments_error_code'] = 16;

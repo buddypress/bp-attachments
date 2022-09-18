@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function bp_attachments_enable_private_uploads_callback() {
 	$option           = bp_attachments_can_do_private_uploads();
-	$private_dir      = bp_attachments_get_private_root_dir();
+	$private_dir      = bp_attachments_get_private_root_dir( true );
 	$private_dir_path = sprintf(
 		'<code>%s</code>',
 		trailingslashit( dirname( bp_attachments_get_document_root() ) ) . 'buddypress-private'
