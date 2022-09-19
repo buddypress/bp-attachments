@@ -105,7 +105,8 @@ body.personal.attachments #bp-media-library .split-button .split-button-body .sp
 }
 
 body.personal.attachments .bp-attachment-edit-item .bp-attachment-edit-item__preview_title,
-body.personal.attachments .bp-attachment-edit-item .bp-attachment-edit-item__form h3 {
+body.personal.attachments .bp-attachment-edit-item .bp-attachment-edit-item__form h3,
+body.personal.attachments #bp-media-directory-form h2 {
 	font-size: 1.3em;
     margin: 1em 0;
 }
@@ -117,4 +118,10 @@ body.personal.attachments .bp-attachment-edit-item  ul.bp-attachment-edit-item__
 
 body.personal.attachments .bp-attachment-edit-item  ul.bp-attachment-edit-item__preview_links li {
 	list-style: none;
+}
+
+body.personal.attachments #bp-media-directory-form button.close {
+	border: none;
+	background-color: transparent;
+	color: var(--wp--preset--color--foreground);
 }
