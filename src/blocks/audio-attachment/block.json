@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"version": "1.0.0",
+	"name": "bp/audio-attachment",
+	"title": "Community Audio",
+	"category": "media",
+	"icon": "video-alt3",
+	"description": "Insert a sound from your personal media library.",
+	"keywords": [ "BuddyPress", "community", "audio", "sound", "music", "media" ],
+	"textdomain": "bp-attachments",
+	"attributes": {
+		"align": {
+			"type": "string"
+		},
+		"url": {
+			"type": "string"
+		},
+		"src": {
+			"type": "string"
+		}
+	},
+	"supports": {
+		"alignWide": false,
+		"anchor": false,
+		"html": false
+	},
+	"editorScript": "file:./bp-attachments/assets/blocks/audio-attachment/js/index.js",
+	"style": "file:./bp-attachments/assets/blocks/audio-attachment/css/index.css"
+}

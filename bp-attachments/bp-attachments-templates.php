@@ -1212,10 +1212,40 @@ function bp_attachments_render_video_attachment( $attributes = array() ) {
 		return null;
 	}
 
-	// Return the `bp/image-attachment` output.
+	// Return the `bp/video-attachment` output.
 	return sprintf(
 		'<figure %1$s>
 			<video controls="controls" preload="metadata" src="%2$s" />
+		</figure>',
+		$attachment_data['wrapper_attributes'],
+		esc_url_raw( $attachment_data['medium']->links['src'] )
+	);
+}
+
+/**
+ * Callback function to render the Audio Attachment Block.
+ *
+ * NB: using such a callback will help us make sure the attached video still
+ * exists at the place it was when attached to the object before trying
+ * to render it.
+ *
+ * @since 1.0.0
+ *
+ * @param array $attributes The block attributes.
+ * @return string           HTML output.
+ */
+function bp_attachments_render_audio_attachment( $attributes = array() ) {
+	$attributes['attachment_type'] = 'audio';
+	$attachment_data               = bp_attachments_get_block_attachment_data( $attributes );
+
+	if ( ! isset( $attachment_data['medium'] ) || ! isset( $attachment_data['wrapper_attributes'] ) ) {
+		return null;
+	}
+
+	// Return the `bp/audio-attachment` output.
+	return sprintf(
+		'<figure %1$s>
+			<audio controls="controls" preload="metadata" src="%2$s" />
 		</figure>',
 		$attachment_data['wrapper_attributes'],
 		esc_url_raw( $attachment_data['medium']->links['src'] )
