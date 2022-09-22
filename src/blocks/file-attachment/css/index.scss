@@ -1,0 +1,40 @@
+/* Styles for the Image Attachment Block. */
+[data-type="bp/file-attachment"] {
+
+	.components-placeholder {
+
+		.components-placeholder__label {
+
+			.dashicon {
+				margin-right: 1em;
+				color: #d84800;
+			}
+		}
+	}
+}
+
+.wp-block-bp-file-attachment {
+	display: flex;
+	align-items: center;
+
+	.bp-attachment-file-icon {
+		margin-right: 2em;
+
+		img {
+			max-width: 100%;
+			height: auto;
+		}
+	}
+
+	.bp-attachment-file-title {
+		margin-bottom: 1em;
+	}
+
+	.bp-attachments-button {
+		text-align: center;
+
+		&:hover {
+			opacity: 0.9;
+		}
+	}
+}

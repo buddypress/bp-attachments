@@ -1146,7 +1146,7 @@ function bp_attachments_get_block_attachment_data( $attributes = array() ) {
 
 	// Validate and get the Medium object.
 	$medium = bp_attachments_get_medium( $medium_data['id'], $medium_data['path'] );
-	if ( ! isset( $medium->media_type ) || $attrs['attachment_type'] !== $medium->media_type ) {
+	if ( 'file' !== $attrs['attachment_type'] && ( ! isset( $medium->media_type ) || $attrs['attachment_type'] !== $medium->media_type ) ) {
 		return $attachment_data;
 	}
 
@@ -1225,7 +1225,7 @@ function bp_attachments_render_video_attachment( $attributes = array() ) {
 /**
  * Callback function to render the Audio Attachment Block.
  *
- * NB: using such a callback will help us make sure the attached video still
+ * NB: using such a callback will help us make sure the attached audio still
  * exists at the place it was when attached to the object before trying
  * to render it.
  *
@@ -1249,5 +1249,54 @@ function bp_attachments_render_audio_attachment( $attributes = array() ) {
 		</figure>',
 		$attachment_data['wrapper_attributes'],
 		esc_url_raw( $attachment_data['medium']->links['src'] )
+	);
+}
+
+/**
+ * Callback function to render the File Attachment Block.
+ *
+ * NB: using such a callback will help us make sure the attached file still
+ * exists at the place it was when attached to the object before trying
+ * to render it.
+ *
+ * @since 1.0.0
+ *
+ * @param array $attributes The block attributes.
+ * @return string           HTML output.
+ */
+function bp_attachments_render_file_attachment( $attributes = array() ) {
+	$attributes['attachment_type'] = 'file';
+	$attachment_data               = bp_attachments_get_block_attachment_data( $attributes );
+
+	if ( ! isset( $attachment_data['medium'] ) || ! isset( $attachment_data['wrapper_attributes'] ) ) {
+		return null;
+	}
+
+	$title = $attachment_data['medium']->icon;
+	if ( isset( $attributes['name'] ) && $attributes['name'] ) {
+		$title = $attributes['name'];
+	}
+
+	// Return the `bp/file-attachment` output.
+	return sprintf(
+		'<div %1$s>
+			<div class="bp-attachment-file-icon">
+				<a href="%2$s">
+					<img src="%3$s" />
+				</a>
+			</div>
+			<div class="bp-attachment-file-content">
+				<div class="bp-attachment-file-title">
+					<a href="%2$s">%4$s</a>
+				</div>
+				<a href="%5$s" class="wp-element-button bp-attachments-button">%6$s</a>
+			</div>
+		</div>',
+		$attachment_data['wrapper_attributes'],
+		esc_url_raw( $attachment_data['medium']->links['view'] ),
+		esc_url_raw( $attachment_data['medium']->icon ),
+		wp_kses( $title, array( 'strong' => true, 'em' => true ) ),
+		esc_url_raw( $attachment_data['medium']->links['download'] ),
+		esc_html__( 'Download', 'bp-attachments' )
 	);
 }

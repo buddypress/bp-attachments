@@ -1,0 +1,33 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"version": "1.0.0",
+	"name": "bp/file-attachment",
+	"title": "Community File",
+	"category": "media",
+	"icon": "media-text",
+	"description": "Insert a file from your personal media library.",
+	"keywords": [ "BuddyPress", "community", "file", "media" ],
+	"textdomain": "bp-attachments",
+	"attributes": {
+		"align": {
+			"type": "string"
+		},
+		"url": {
+			"type": "string"
+		},
+		"name": {
+			"type": "string"
+		},
+		"mediaType": {
+			"type": "string"
+		}
+	},
+	"supports": {
+		"alignWide": false,
+		"anchor": false,
+		"html": false
+	},
+	"editorScript": "file:./bp-attachments/assets/blocks/file-attachment/js/index.js",
+	"style": "file:./bp-attachments/assets/blocks/file-attachment/css/index.css"
+}

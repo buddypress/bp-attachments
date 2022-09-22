@@ -35,6 +35,7 @@ const AttachmentPlaceholder = ( { type, icon, label, onSetAttributes } ) => {
 		bpAttachments: {
 			allowedExtByMediaList,
 			allowedExtTypes,
+			mimeTypeImageBaseUrl,
 		},
 	} = useSelect( ( select ) => {
 		return select( 'core/editor' ).getEditorSettings();
@@ -73,10 +74,18 @@ const AttachmentPlaceholder = ( { type, icon, label, onSetAttributes } ) => {
 			body: formData,
 		} ).then( ( response ) => {
 			if ( response.links && response.links.src ) {
-				onSetAttributes( {
-					url: response.links.view,
-					src: response.links.src,
-				} );
+				if ( 'any' === type ) {
+					onSetAttributes( {
+						url: response.links.view,
+						name: response.title,
+						mediaType: response.icon.replace( mimeTypeImageBaseUrl, '' ).replace( '.png', '' ),
+					} );
+				} else {
+					onSetAttributes( {
+						url: response.links.view,
+						src: response.links.src,
+					} );
+				}
 			}
 		} ).catch( ( error ) => {
 			if ( error.message ) {

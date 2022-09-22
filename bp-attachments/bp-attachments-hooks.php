@@ -61,6 +61,7 @@ function bp_attachments_block_editor_settings( $settings = array() ) {
 	$settings['bpAttachments'] = array(
 		'allowedExtByMediaList' => bp_attachments_get_exts_by_medialist(),
 		'allowedExtTypes'       => bp_attachments_get_allowed_media_exts( '', true ),
+		'mimeTypeImageBaseUrl'  => includes_url( 'images/media' ),
 	);
 
 	return $settings;

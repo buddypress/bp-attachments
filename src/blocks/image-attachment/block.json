@@ -5,7 +5,7 @@
 	"name": "bp/image-attachment",
 	"title": "Community Image",
 	"category": "media",
-	"icon": "image",
+	"icon": "format-image",
 	"description": "Insert an image from your personal media library.",
 	"keywords": [ "BuddyPress", "community", "image", "img", "picture", "photo", "media" ],
 	"textdomain": "bp-attachments",

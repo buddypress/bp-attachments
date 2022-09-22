@@ -650,7 +650,7 @@ class BP_Attachments_Component extends BP_Component {
 				$block_type   = str_replace( '-attachment', '', $block_suffix );
 
 				// Only register blocks if the corresponding attachment type is allowed.
-				if ( ! isset( $allowed_types[ $block_type ] ) || ! $allowed_types[ $block_type ] ) {
+				if ( 'file' !== $block_type && ( ! isset( $allowed_types[ $block_type ] ) || ! $allowed_types[ $block_type ] ) ) {
 					continue;
 				}
 
