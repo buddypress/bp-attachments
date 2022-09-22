@@ -34,11 +34,13 @@ const AttachmentPlaceholder = ( { type, icon, label, onSetAttributes } ) => {
 	const {
 		bpAttachments: {
 			allowedExtByMediaList,
+			allowedExtTypes,
 		},
 	} = useSelect( ( select ) => {
 		return select( 'core/editor' ).getEditorSettings();
 	}, [] );
-	const allowedTypes = allowedExtByMediaList[ type + '_playlist' ] ? allowedExtByMediaList[ type + '_playlist' ] : allowedExtByMediaList.album;
+	const extList = allowedExtByMediaList[ type + '_playlist' ] ? allowedExtByMediaList[ type + '_playlist' ] : allowedExtByMediaList.album;
+	const allowedTypes = 'any' === type ? allowedExtTypes : extList;
 	const [ errorMessage, setErrorMessage ] = useState( '' );
 	const { userId, postId } = useSelect( ( select ) => {
 		const currentUser = select( 'core' ).getCurrentUser();
