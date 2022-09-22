@@ -1295,7 +1295,13 @@ function bp_attachments_render_file_attachment( $attributes = array() ) {
 		$attachment_data['wrapper_attributes'],
 		esc_url_raw( $attachment_data['medium']->links['view'] ),
 		esc_url_raw( $attachment_data['medium']->icon ),
-		wp_kses( $title, array( 'strong' => true, 'em' => true ) ),
+		wp_kses(
+			$title,
+			array(
+				'strong' => true,
+				'em'     => true,
+			)
+		),
 		esc_url_raw( $attachment_data['medium']->links['download'] ),
 		esc_html__( 'Download', 'bp-attachments' )
 	);
