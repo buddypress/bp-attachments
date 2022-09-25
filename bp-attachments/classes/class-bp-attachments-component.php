@@ -61,6 +61,7 @@ class BP_Attachments_Component extends BP_Component {
 		$includes = array(
 			'functions',
 			'users',
+			'template-loader',
 			'assets-loader',
 			'blocks',
 			'templates',
