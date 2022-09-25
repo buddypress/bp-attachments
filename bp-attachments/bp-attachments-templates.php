@@ -676,17 +676,6 @@ function bp_attachments_medium_download_url() {
 }
 
 /**
- * Checks whether avatar uploads feature is enabled.
- *
- * @since 1.0.0
- *
- * @return bool True if the avatar uploads feature is enabled. False otherwise.
- */
-function bp_attachments_is_avatar_uploads_enabled() {
-	return ! (int) bp_get_option( 'bp-disable-avatar-uploads' );
-}
-
-/**
  * BuddyPress Template Hook's wrapper firing before change-avatar content.
  *
  * @since 1.0.0

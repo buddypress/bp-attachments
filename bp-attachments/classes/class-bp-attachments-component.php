@@ -72,8 +72,6 @@ class BP_Attachments_Component extends BP_Component {
 			$includes[] = 'settings';
 		}
 
-		$includes[] = 'hooks';
-
 		parent::includes( $includes );
 	}
 
