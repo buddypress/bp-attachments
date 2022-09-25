@@ -62,6 +62,7 @@ class BP_Attachments_Component extends BP_Component {
 			'functions',
 			'users',
 			'assets-loader',
+			'blocks',
 			'templates',
 		);
 
