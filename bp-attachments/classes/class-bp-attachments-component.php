@@ -563,7 +563,12 @@ class BP_Attachments_Component extends BP_Component {
 				}
 
 				// Set query vars’ item ID.
-				$this->query_vars['data']['item_id'] = $item_id;
+				if ( $item_id ) {
+					$this->query_vars['data']['item_id'] = $item_id;
+				} else {
+					bp_do_404();
+					return;
+				}
 			}
 
 			if ( $action && $visibility && $object ) {
@@ -591,15 +596,18 @@ class BP_Attachments_Component extends BP_Component {
 
 				// Try to get the medium.
 				$medium = bp_attachments_get_medium( $id, $absolute_path );
-				if ( $medium ) {
 
-					// Set current directory.
+				if ( $medium ) {
+					// Eventually set the current directory.
 					if ( 'inode/directory' === $medium->mime_type ) {
 						$this->query_vars['data']['current_directory'] = $medium->name;
 					}
 
 					$this->queried_object    = $medium;
 					$this->queried_object_id = $medium->id;
+				} else {
+					bp_do_404();
+					return;
 				}
 			}
 		}
