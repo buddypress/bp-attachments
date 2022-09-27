@@ -516,17 +516,18 @@ class BP_Attachments_Component extends BP_Component {
 		foreach ( $this->rewrite_ids as $rewrite_arg ) {
 			$parse_array[ $rewrite_arg ] = $query->get( $rewrite_arg );
 		}
+
 		$this->query_vars['raw'] = $parse_array;
+		$visibility              = array_search( $parse_array['bp_attachments_visibility'], bp_attachments_get_item_visibilities(), true );
+		$object                  = array_search( $parse_array['bp_attachments_object'], bp_attachments_get_item_object_slugs(), true );
+		$action                  = array_search( $parse_array['bp_attachments_item_action'], bp_attachments_get_item_actions(), true );
+		$item_id                 = 0;
 
 		/*
 		 * Set the queried object if a view or download action is requested
 		 * for an existing User Media.
 		 */
-		if ( $parse_array['bp_attachments_item_action'] ) {
-			$visibility = array_search( $parse_array['bp_attachments_visibility'], bp_attachments_get_item_visibilities(), true );
-			$object     = array_search( $parse_array['bp_attachments_object'], bp_attachments_get_item_object_slugs(), true );
-			$action     = array_search( $parse_array['bp_attachments_item_action'], bp_attachments_get_item_actions(), true );
-
+		if ( $action ) {
 			$bp->current_action = $action;
 
 			if ( 'embed' === bp_attachments_get_item_action_key( $action ) ) {
@@ -534,7 +535,6 @@ class BP_Attachments_Component extends BP_Component {
 				$query->is_embed = true;
 			}
 
-			$item_id = 0;
 			if ( $parse_array['bp_attachments_object_item'] ) {
 				if ( 'members' === $object ) {
 					$item = get_user_by( 'slug', $parse_array['bp_attachments_object_item'] );
@@ -609,7 +609,13 @@ class BP_Attachments_Component extends BP_Component {
 					bp_do_404();
 					return;
 				}
+			} else {
+				bp_do_404();
+				return;
 			}
+		} elseif ( ( $visibility || $object ) & ! $item_id ) {
+			bp_do_404();
+			return;
 		}
 
 		parent::parse_query( $query );
