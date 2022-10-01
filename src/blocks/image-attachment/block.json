@@ -3,10 +3,10 @@
 	"apiVersion": 2,
 	"version": "1.0.0",
 	"name": "bp/image-attachment",
-	"title": "Community Image",
-	"category": "media",
+	"title": "Picture",
+	"category": "community-media",
 	"icon": "format-image",
-	"description": "Insert an image from your personal media library.",
+	"description": "Insert a picture from your personal media library.",
 	"keywords": [ "BuddyPress", "community", "image", "img", "picture", "photo", "media" ],
 	"textdomain": "bp-attachments",
 	"attributes": {

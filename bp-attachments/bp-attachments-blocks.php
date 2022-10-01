@@ -33,6 +33,28 @@ add_filter( 'block_editor_settings_all', 'bp_attachments_block_editor_settings',
 add_filter( 'bp_activity_block_editor_settings', 'bp_attachments_block_editor_settings', 10, 1 );
 
 /**
+ * Adds a "Community Media" Block category to house BP Attachments blocks.
+ *
+ * @since 1.0.0
+ *
+ * @param array $categories Array of block categories.
+ * @return array Array of block categories.
+ */
+function bp_attachments_block_category( $categories = array() ) {
+	return array_merge(
+		$categories,
+		array(
+			array(
+				'slug'  => 'community-media',
+				'title' => __( 'Community Media', 'bp-attachments' ),
+				'icon'  => 'buddicons-buddypress-logo',
+			),
+		)
+	);
+}
+add_filter( 'block_categories_all', 'bp_attachments_block_category', 1, 1 );
+
+/**
  * Block rendering functions common helper to get medium data.
  *
  * @since 1.0.0
