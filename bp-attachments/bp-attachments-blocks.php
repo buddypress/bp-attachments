@@ -53,6 +53,7 @@ function bp_attachments_block_category( $categories = array() ) {
 	);
 }
 add_filter( 'block_categories_all', 'bp_attachments_block_category', 1, 1 );
+add_filter( 'bp_activity_block_categories', 'bp_attachments_block_category', 1, 1 );
 
 /**
  * Block rendering functions common helper to get medium data.
