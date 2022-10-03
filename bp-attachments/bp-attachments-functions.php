@@ -774,8 +774,13 @@ function bp_attachments_update_medium( $medium ) {
 		return new WP_Error( 'bp_attachments_missing_media_path', __( 'The path to your media file is missing.', 'bp_attachments' ) );
 	}
 
-	$json_file  = $medium->json_file;
-	$parent_dir = $medium->abspath;
+	$json_file   = $medium->json_file;
+	$parent_dir  = $medium->abspath;
+	$medium_data = (object) array(
+		'id'         => $medium->id,
+		'abspath'    => $medium->abspath,
+		'visibility' => $medium->visibility,
+	);
 
 	// Do not write these properties into the json file.
 	unset( $medium->json_file, $medium->abspath, $medium->visibility );
@@ -790,6 +795,15 @@ function bp_attachments_update_medium( $medium ) {
 	if ( file_exists( $json_file ) ) {
 		file_put_contents( $json_file, wp_json_encode( $medium ) ); // phpcs:ignore
 	}
+
+	/**
+	 * Perform additional code once the Medium has been updated.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param object $medium_data An object containing data about the medium.
+	 */
+	do_action( 'bp_attachments_updated_medium', $medium_data );
 
 	return bp_attachments_get_medium( $medium->id, $parent_dir );
 }

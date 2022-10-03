@@ -755,6 +755,15 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 
 				// Delete file.
 				$deleted = unlink( $medium_data->abspath . '/' . $medium_data->name );
+
+				/**
+				 * Perform additional code once the Medium has been deleted.
+				 *
+				 * @since 1.0.0
+				 *
+				 * @param object $medium_data An object containing data about the medium.
+				 */
+				do_action( 'bp_attachments_deleted_medium', $medium_data );
 			}
 		} else {
 			if ( true === $deleted ) {
