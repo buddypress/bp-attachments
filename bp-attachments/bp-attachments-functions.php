@@ -1206,22 +1206,35 @@ function bp_attachments_delete_directory( $path = '', $visibility = 'public' ) {
 	$directory     = new RecursiveDirectoryIterator( $path, FilesystemIterator::SKIP_DOTS );
 	$iterator      = new RecursiveIteratorIterator( $directory, RecursiveIteratorIterator::CHILD_FIRST );
 	$removed_bytes = 0;
+	$deleted_media = array();
 
 	foreach ( $iterator as $item ) {
 		if ( false === $result ) {
 			break;
 		}
 
-		if ( $item->isDir() ) {
-			$result = rmdir( $item->getRealPath() );
-		} else {
-			$filename = $item->getPathname();
+		$filename            = $item->getPathname();
+		$is_json_or_revision = preg_match( '#\.json$#', $filename ) || preg_match( '#\._revisions#', $filename );
+		$name                = wp_basename( $filename );
+		$medium_data         = (object) array(
+			'id'         => md5( $name ),
+			'abspath'    => $item->getRealPath(),
+			'visibility' => $visibility,
+		);
 
-			if ( ! preg_match( '#\.json$#', $filename ) && ! preg_match( '#\._revisions#', $filename ) ) {
+		if ( $item->isDir() ) {
+			$result = rmdir( $medium_data->abspath );
+		} else {
+			// Get the removed bytes.
+			if ( ! $is_json_or_revision ) {
 				$removed_bytes += $item->getSize();
 			}
 
-			$result = unlink( $item->getRealPath() );
+			$result = unlink( $medium_data->abspath );
+		}
+
+		if ( ! $is_json_or_revision && true === $result ) {
+			$deleted_media[] = $medium_data;
 		}
 	}
 
@@ -1230,7 +1243,32 @@ function bp_attachments_delete_directory( $path = '', $visibility = 'public' ) {
 		bp_attachments_user_decrease_files_size( $owner_id, $removed_bytes );
 	}
 
-	return rmdir( $path );
+	$dirname     = wp_basename( $path );
+	$medium_data = (object) array(
+		'id'         => md5( $dirname ),
+		'abspath'    => $path,
+		'visibility' => $visibility,
+	);
+
+	// Remove the parent dir.
+	$result = rmdir( $path );
+
+	if ( $result ) {
+		$deleted_media[] = $medium_data;
+
+		foreach ( $deleted_media as $deleted_medium ) {
+			/**
+			 * Perform additional code once the Medium has been deleted.
+			 *
+			 * @since 1.0.0
+			 *
+			 * @param object $deleted_medium An object containing data about the medium.
+			 */
+			do_action( 'bp_attachments_deleted_medium', $deleted_medium );
+		}
+	}
+
+	return $result;
 }
 
 /**
