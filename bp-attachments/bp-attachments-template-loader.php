@@ -142,8 +142,8 @@ function bp_attachments_set_dummy_post() {
 
 	$medium_action = bp_attachments_current_medium_action();
 
-	// Downloads are intercepted before in the loading process.
-	if ( $medium_action && ! bp_attachments_is_medium_download() ) {
+	// Use the BP Attachments queried object global to set the medium title.
+	if ( $medium_action ) {
 		$medium = bp_attachments_get_queried_object();
 		$title  = $medium->title;
 	}
@@ -177,8 +177,8 @@ function bp_attachments_set_content_template() {
 
 	$medium_action = bp_attachments_current_medium_action();
 
-	// Downloads are intercepted before in the loading process.
-	if ( $medium_action && ! bp_attachments_is_medium_download() ) {
+	// Use the current action to set the template name.
+	if ( $medium_action ) {
 		$template = 'attachments/single/' . $medium_action;
 	}
 
