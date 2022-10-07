@@ -1309,6 +1309,31 @@ function bp_attachments_get_queried_object() {
 }
 
 /**
+ * Destroy the medium queried object and corresponding query vars.
+ *
+ * @since 1.0.0
+ *
+ * @param WP_Query $media_query The WordPress query object.
+ */
+function bp_attachments_destroy_queried_object( $media_query = null ) {
+	$bp                                 = buddypress();
+	$bp->attachments->queried_object    = null;
+	$bp->attachments->queried_object_id = 0;
+	$bp->current_component              = null;
+	$bp->current_action                 = '';
+
+	if ( ! is_null( $media_query ) && 1 === (int) $media_query->get( $bp->attachments->rewrite_ids['directory'] ) ) {
+		foreach ( $bp->attachments->rewrite_ids as $media_query_key ) {
+			if ( 'directory' === $media_query_key ) {
+				continue;
+			}
+
+			$media_query->set( $media_query_key, null );
+		}
+	}
+}
+
+/**
  * Formats file size for display.
  *
  * @since 1.0.0
@@ -1386,3 +1411,64 @@ function bp_attachments_is_cover_image_front_edit( $retval ) {
 	return $retval;
 }
 add_filter( 'bp_attachments_cover_image_is_edit', 'bp_attachments_is_cover_image_front_edit' );
+
+/**
+ * Handle medium download requests.
+ *
+ * @since 1.0.0
+ *
+ * @param WP_Query $media_query The WordPress query object.
+ */
+function bp_attachments_download_media( $media_query = null ) {
+	if ( ! bp_attachments_is_medium_download() ) {
+		return;
+	}
+
+	// Let's find the medium abasolute path.
+	$medium  = bp_attachments_get_queried_object();
+	$uploads = bp_attachments_get_media_uploads_dir( $medium->visibility );
+
+	if ( isset( $uploads['error'] ) && $uploads['error'] ) {
+		bp_attachments_destroy_queried_object( $media_query );
+		bp_do_404();
+		return;
+	}
+
+	$medium_qv = bp_attachments_get_queried_vars( 'data' );
+
+	if ( isset( $medium_qv['item_id'], $medium_qv['object'], $medium_qv['relative_path'] ) && $medium_qv['item_id'] && 'members' === $medium_qv['object'] ) {
+		$path = trailingslashit( $uploads['path'] ) . trailingslashit( $medium_qv['relative_path'] ) . $medium->name;
+
+		if ( ! file_exists( $path ) ) {
+			bp_attachments_destroy_queried_object( $media_query );
+			bp_do_404();
+			return;
+		}
+
+		if ( bp_attachments_current_user_can( 'download_bp_medium', array( 'bp_medium' => $medium ) ) ) {
+			/**
+			 * Hook here to run custom actions before download.
+			 *
+			 * @since 1.0.0
+			 */
+			do_action( 'bp_attachments_download_media', $medium );
+
+			status_header( 200 );
+			header( 'Cache-Control: cache, must-revalidate' );
+			header( 'Pragma: public' );
+			header( 'Content-Description: File Transfer' );
+			header( 'Content-Length: ' . $medium->size );
+			header( 'Content-Disposition: attachment; filename=' . $medium->name );
+			header( 'Content-Type: ' . $medium->mime_type );
+
+			while ( ob_get_level() > 0 ) {
+				ob_end_flush();
+			}
+
+			// phpcs:ignore WordPress.WP.AlternativeFunctions
+			readfile( $path );
+			die();
+		}
+	}
+}
+add_action( 'bp_attachments_parse_query', 'bp_attachments_download_media', 10, 1 );

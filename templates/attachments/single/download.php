@@ -13,6 +13,5 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 <div class="bp-attachments-medium">
-	<p><?php esc_html_e( 'You are not allowed to download this media', 'bp-attachments' ); ?></p>
-	<p>This template will be used to eventually output a password input.</p>
+	<p><?php esc_html_e( 'You need to log in to be able to download media.', 'bp-attachments' ); ?></p>
 </div>
