@@ -148,6 +148,8 @@ function bp_attachments_set_dummy_post() {
 		$title  = $medium->title;
 	}
 
+	$visibility = bp_attachments_current_medium_visibility();
+
 	bp_theme_compat_reset_post(
 		array(
 			'ID'             => 0,
@@ -156,7 +158,7 @@ function bp_attachments_set_dummy_post() {
 			'post_date'      => 0,
 			'post_content'   => '',
 			'post_type'      => 'page',
-			'post_status'    => 'publish',
+			'post_status'    => 'private' === $visibility ? 'private' : 'publish',
 			'is_page'        => true,
 			'comment_status' => 'closed',
 		)

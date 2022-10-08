@@ -41,6 +41,23 @@ function bp_attachments_current_medium_action() {
 }
 
 /**
+ * Is the BP Attachments medium's visibility private or public?
+ *
+ * @since 1.0.0
+ *
+ * @return string The BP Attachments medium's visibility. Default to `public`.
+ */
+function bp_attachments_current_medium_visibility() {
+	$visibility = get_query_var( 'bp_attachments_visibility' );
+
+	if ( ! $visibility ) {
+		$visibility = 'public';
+	}
+
+	return $visibility;
+}
+
+/**
  * Is this a BP Attachments item view request?
  *
  * @since 1.0.0
@@ -57,6 +74,18 @@ function bp_attachments_is_medium_view() {
 	return $retval;
 }
 
+/**
+ * Checks whether a user can view a displayed medium.
+ *
+ * @since 1.0.0
+ *
+ * @return bool True if a user can view a displayed medium. False otherwise.
+ */
+function bp_attachments_medium_can_view() {
+	$medium = bp_attachments_get_queried_object();
+
+	return bp_attachments_current_user_can( 'read_bp_medium', array( 'bp_medium' => $medium ) );
+}
 /**
  * Is this a BP Attachments media playlist view request?
  *
@@ -673,6 +702,23 @@ function bp_attachments_get_medium_download_url() {
  */
 function bp_attachments_medium_download_url() {
 	echo esc_url( bp_attachments_get_medium_download_url() );
+}
+
+/**
+ * Returns the login URL used to ask a vistor identify themself.
+ *
+ * @since 1.0.0
+ *
+ * @return string The login URL to use for a displayed private medium.
+ */
+function bp_attachments_medium_get_login_url() {
+	$current_medium_url = bp_attachments_medium_get_view_url();
+
+	if ( bp_attachments_is_medium_download() ) {
+		$current_medium_url = bp_attachments_get_medium_download_url();
+	}
+
+	return wp_login_url( $current_medium_url );
 }
 
 /**

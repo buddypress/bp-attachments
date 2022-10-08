@@ -13,5 +13,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 <div class="bp-attachments-medium">
-	<p><?php esc_html_e( 'You need to log in to be able to download media.', 'bp-attachments' ); ?></p>
+	<?php if ( ! is_user_logged_in() ) : ?>
+		<p class="info bp-feedback">
+			<span class="bp-icon" aria-hidden="true"></span>
+			<span class="bp-help-text">
+				<?php
+					printf(
+						esc_html__( 'You need to %s to be able to download this media.', 'bp-attachments' ),
+						sprintf(
+							'<a href="%1$s">%2$s</a>',
+							esc_url( bp_attachments_medium_get_login_url() ),
+							esc_html__( 'log in', 'bp-attachments' )
+						)
+					);
+				?>
+			</span>
+		</p>
+	<?php else : ?>
+		<p class="info bp-feedback">
+			<span class="bp-icon" aria-hidden="true"></span>
+			<span class="bp-help-text"><?php esc_html_e( 'This media is private and its owner has not shared it with you.', 'bp-attachments' ); ?></span>
+		</p>
+	<?php endif; ?>
 </div>
