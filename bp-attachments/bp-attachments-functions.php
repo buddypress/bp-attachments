@@ -1342,7 +1342,8 @@ function bp_attachments_destroy_queried_object( $media_query = null ) {
  * @return string         The formatted size.
  */
 function bp_attachments_format_file_size( $bytes = 0 ) {
-	$unit = ' KB';
+	/* Translators: %s is the file size in kilobytes */
+	$unit = __( '%s KB', 'bp-attachments' );
 
 	if ( ! $bytes ) {
 		return 0 . $unit;
@@ -1354,16 +1355,18 @@ function bp_attachments_format_file_size( $bytes = 0 ) {
 	$gigabytes = $megabytes / 1000;
 
 	if ( 1 < $gigabytes ) {
-		$unit  = ' GB';
+		/* Translators: %s is the file size in gigabytes */
+		$unit  = __( '%s GB', 'bp-attachments' );
 		$value = $gigabytes;
 	} elseif ( 1 < $megabytes ) {
-		$unit  = ' MB';
+		/* Translators: %s is the file size in megabytes */
+		$unit  = __( '%s MB', 'bp-attachments' );
 		$value = $megabytes;
 	} else {
 		$value = $kilobytes;
 	}
 
-	return number_format_i18n( $value, 2 ) . $unit;
+	return sprintf( $unit, number_format_i18n( $value, 2 ) );
 }
 
 /**
