@@ -25,7 +25,7 @@ class BP_attachments_REST_controller_UnitTestCase extends WP_Test_REST_Controlle
 		$this->endpoint     = new BP_Attachments_REST_Controller();
 		$this->endpoint_url = '/' . bp_rest_namespace() . '/' . bp_rest_version() . '/' . buddypress()->attachments->id;
 
-		$this->user = $this->factory->user->create( array(
+		$this->user = $this->bp_testcase::factory()->user->create( array(
 			'role'       => 'administrator',
 			'user_email' => 'admin@example.com',
 		) );
@@ -100,8 +100,31 @@ class BP_attachments_REST_controller_UnitTestCase extends WP_Test_REST_Controlle
 		$this->markTestSkipped();
 	}
 
+	/**
+	 * @group imath
+	 */
 	public function test_get_items() {
-		$this->markTestSkipped();
+		/*$request = new WP_REST_Request( 'GET', $this->endpoint_url );
+		$request->set_param( 'context', 'edit' );
+		$response = $this->server->dispatch( $request );
+
+		var_dump( $response->get_data() );*/
+
+		$u1 = $this->bp_testcase::factory()->user->create( array(
+			'role'       => 'subscriber',
+			'user_email' => 'u1@example.com',
+		) );
+
+		bp_update_user_meta( $u1, '_bp_attachments_userfiles_size', 1 );
+
+		var_dump( bp_attachments_list_members_root_dir() );
+
+		/*$this->assertEquals( 200, $response->get_status() );
+
+		$a_ids = wp_list_pluck( $response->get_data(), 'id' );
+
+		$this->assertTrue( count( $a_ids ) === 4 );
+		$this->assertContains( $this->activity_id, $a_ids );*/
 	}
 
 	public function test_get_item() {

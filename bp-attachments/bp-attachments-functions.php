@@ -1042,7 +1042,7 @@ function bp_attachments_list_member_root_objects( $user_id = 0, $object_dir = ''
 		);
 	}
 
-	if ( ! $list || 'member' === $object_dir ) {
+	if ( ! $list && 'member' === $object_dir ) {
 		$list = bp_attachments_get_directory_types( $user_id );
 	} elseif ( ! $object_dir ) {
 		// Fake a directory to let the member access to their media.
@@ -1063,6 +1063,63 @@ function bp_attachments_list_member_root_objects( $user_id = 0, $object_dir = ''
 	}
 
 	return $list;
+}
+
+/**
+ * Returns members root directory.
+ *
+ * @since 1.0.0
+ *
+ * @return array The members root directory.
+ */
+function bp_attachments_list_members_root_dir() {
+	$user_id = bp_loggedin_user_id();
+	$members = new BP_User_Query(
+		array(
+			'exclude'         => array( $user_id ),
+			'meta_key'        => '_bp_attachments_userfiles_size', // phpcs:ignore
+			'populate_extras' => false,
+		)
+	);
+
+	$member_root_dirs = array();
+	if ( $members->results ) {
+		foreach ( $members->results as $member ) {
+			$member_root_dirs[] = (object) array_merge(
+				array(
+					'id'            => 'member-' . $member->id,
+					'title'         => sprintf(
+						/* Translators: %s is the username */
+						__( '%s’s Media', 'bp-attachments' ),
+						$member->user_nicename
+					),
+					'media_type'    => 'avatar',
+					'name'          => 'member',
+					'last_modified' => bp_core_current_time( true, 'timestamp' ),
+					'description'   => sprintf(
+						/* Translators: %s is the username */
+						__( 'This directory contains all %s’s personal media.', 'bp-attachments' ),
+						$member->user_nicename
+					),
+					'icon'          => bp_core_fetch_avatar(
+						array(
+							'item_id' => $member->id,
+							'html'    => false,
+							'type'    => 'full',
+						)
+					),
+					'readonly'      => true,
+					'visibility'    => 'public',
+				),
+				bp_attachments_get_directory_common_props()
+			);
+		}
+	}
+
+	$current_admin_media = bp_attachments_list_member_root_objects( $user_id );
+	array_unshift( $member_root_dirs, $current_admin_media['member'] );
+
+	return $member_root_dirs;
 }
 
 /**

@@ -135,7 +135,7 @@ function bp_attachments_enqueue_media_library() {
 	$preload_logged_in_user = array_reduce(
 		array(
 			'/buddypress/v1/members/me?context=edit',
-			'/buddypress/v1/attachments?context=edit',
+			sprintf( '/buddypress/v1/attachments?context=%s', is_admin() ? 'edit' : 'view' ),
 		),
 		'rest_preload_api_request',
 		array()

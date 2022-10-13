@@ -194,11 +194,13 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	 * @return WP_REST_Response List of BP Attachments Media response data.
 	 */
 	public function get_items( $request ) {
-		$public_basedir = bp_attachments_uploads_dir_get()['basedir'];
-		$parent         = $request->get_param( 'directory' );
-		$object         = $request->get_param( 'object' );
-		$user_id        = $request->get_param( 'user_id' );
-		$dir            = '';
+		$public_basedir    = bp_attachments_uploads_dir_get()['basedir'];
+		$parent            = $request->get_param( 'directory' );
+		$object            = $request->get_param( 'object' );
+		$user_id           = $request->get_param( 'user_id' );
+		$requested_user_id = $user_id;
+		$dir               = '';
+		$context           = $request->get_param( 'context' );
 
 		if ( ! $user_id ) {
 			$user_id = bp_loggedin_user_id();
@@ -273,9 +275,19 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 			$dir   = bp_attachments_get_media_uploads_dir( $visibility )['path'] . '/' . $object . '/' . $object_id;
 			$dir   = trailingslashit( $dir ) . $parent;
 			$media = bp_attachments_list_media_in_directory( $dir, $object );
+
+			// Get the requested user root directories.
 		} else {
-			$media = bp_attachments_list_member_root_objects( $user_id, $parent );
-			unset( $parent );
+			/*
+			@todo List all members who uploaded media.
+			if ( ! $requested_user_id && bp_current_user_can( 'bp_moderate' ) && 'edit' === $context ) {
+				$media = bp_attachments_list_members_root_dir();
+
+			} else {
+			*/
+				$media = bp_attachments_list_member_root_objects( $user_id, 'member' );
+				unset( $parent );
+			// }
 		}
 
 		$retval = array();
