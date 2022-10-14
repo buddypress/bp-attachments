@@ -29,7 +29,7 @@ import EditMediaItem from './edit-item';
 const MediaItem = ( props ) => {
 	const Template = setTemplate( 'bp-attachments-media-item' );
 	const { medium, selected } = props;
-	const { toggleMediaSelection, requestMedia } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
+	const { toggleMediaSelection, requestMedia, setDisplayedUserId } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
 	const [ isOpen, toggleModal ] = useState( false );
 	const [ isSelected, selectMedia ] = useState( selected );
 	const { getRelativePath, isSelectable } = useSelect( ( select ) => {
@@ -55,6 +55,12 @@ const MediaItem = ( props ) => {
 		}
 
 		if ( 'inode/directory' === mimeType ) {
+			const displayedUserId = 0 === id.indexOf( 'member-' ) ? parseInt( id.replace( 'member-', '' ), 10 ) : 0;
+
+			if ( !! displayedUserId ) {
+				setDisplayedUserId( displayedUserId );
+			}
+
 			return requestMedia( { directory: name, path: getRelativePath, object: object, parent: id } );
 		}
 

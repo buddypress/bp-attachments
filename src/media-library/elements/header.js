@@ -29,13 +29,19 @@ import { BP_ATTACHMENTS_STORE_KEY } from '../store';
  */
 const MediaLibraryHeader = ( { settings } ) => {
 	const { updateFormState } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
-	const currentDirectoryObject = useSelect( ( select ) => {
-		return select( BP_ATTACHMENTS_STORE_KEY ).getCurrentDirectoryObject();
+	const { currentDirectoryObject, user, displayedUserId } = useSelect( ( select ) => {
+		const store = select( BP_ATTACHMENTS_STORE_KEY );
+
+		return {
+			currentDirectoryObject: store.getCurrentDirectoryObject(),
+			user: store.getLoggedInUser(),
+			displayedUserId: store.getDisplayedUserId(),
+		};
 	}, [] );
 	const [ isOpen, setOpen ] = useState( false );
 	const toggleClass = true === isOpen ? 'split-button is-open' : 'split-button';
 	const dashiconClass = true === isOpen ? 'dashicons dashicons-arrow-up-alt2' : 'dashicons dashicons-arrow-down-alt2';
-	const canUpload = true !== currentDirectoryObject.readonly;
+	const canUpload = true !== currentDirectoryObject.readonly && ( ! displayedUserId || displayedUserId === user.id );
 	const { allowedExtByMediaList, isAdminScreen } = settings;
 	const hrClass = isAdminScreen ? 'wp-header-end' : 'screen-header-end';
 

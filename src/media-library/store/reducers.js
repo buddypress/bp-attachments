@@ -15,6 +15,7 @@ import { TYPES as types } from './action-types';
  */
 const DEFAULT_STATE = {
 	user: {},
+	displayedUserId: 0,
 	tree: [],
 	currentDirectory: '',
 	files: [],
@@ -49,6 +50,12 @@ const DEFAULT_STATE = {
 			return {
 				...state,
 				user: action.user,
+			};
+
+		case types.SET_DISPLAYED_USER_ID:
+			return {
+				...state,
+				displayedUserId: parseInt( action.userId, 10 ),
 			};
 
 		case types.GET_MEDIA:

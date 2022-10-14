@@ -48,10 +48,12 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 		toggleSelectable,
 		toggleMediaSelection,
 		deleteMedium,
+		setDisplayedUserId,
 	} = useDispatch( BP_ATTACHMENTS_STORE_KEY );
 
 	const {
 		user,
+		displayedUserId,
 		currentDirectory,
 		currentDirectoryObject,
 		flatTree,
@@ -61,6 +63,7 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 		const store = select( BP_ATTACHMENTS_STORE_KEY )
 		return {
 			user: store.getLoggedInUser(),
+			displayedUserId: store.getDisplayedUserId(),
 			currentDirectory: store.getCurrentDirectory(),
 			currentDirectoryObject: store.getCurrentDirectoryObject(),
 			flatTree: store.getFlatTree(),
@@ -85,6 +88,10 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 
 	const changeDirectory = ( directory ) => {
 		setPage( directory );
+		const updateDisplayedUserId = 0 === directory.indexOf( 'member-' ) ? parseInt( directory.replace( 'member-', '' ), 10 ) : 0;
+		if ( !! updateDisplayedUserId ) {
+			setDisplayedUserId( updateDisplayedUserId );
+		}
 
 		const directoryItem = find( flatTree, { id: directory } );
 		let args = {};
@@ -132,6 +139,17 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 			if ( directoryItem.object ) {
 				args.object = directoryItem.object;
 			}
+
+			if ( !! updateDisplayedUserId || !! displayedUserId ) {
+				args.user_id = updateDisplayedUserId !== displayedUserId ? updateDisplayedUserId : displayedUserId;
+			}
+
+			/*
+			 * When changing the selected option to 'All members', reset the displayedUserId.
+			 * so that the Admin can go back to the list of members.
+			 */
+		} else if ( !! displayedUserId ) {
+			setDisplayedUserId( 0 );
 		}
 
 		return requestMedia( args );
@@ -215,7 +233,7 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 			{ !! tree.length && (
 				<div className="media-toolbar-primary">
 					<TreeSelect
-						noOptionLabel={ __( 'Home', 'bp-attachments' ) }
+						noOptionLabel={ !! displayedUserId ? __( 'All members', 'bp-attachments' ) : __( 'Home', 'bp-attachments' ) }
 						onChange={ ( directory ) => changeDirectory( directory ) }
 						selectedId={ page }
 						tree={ tree }
