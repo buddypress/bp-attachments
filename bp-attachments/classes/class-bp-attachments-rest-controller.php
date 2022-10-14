@@ -278,16 +278,14 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 
 			// Get the requested user root directories.
 		} else {
-			/*
-			@todo List all members who uploaded media.
+			// List all members who uploaded media.
 			if ( ! $requested_user_id && bp_current_user_can( 'bp_moderate' ) && 'edit' === $context ) {
 				$media = bp_attachments_list_members_root_dir();
 
 			} else {
-			*/
 				$media = bp_attachments_list_member_root_objects( $user_id, 'member' );
 				unset( $parent );
-			// }
+			}
 		}
 
 		$retval = array();

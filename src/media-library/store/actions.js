@@ -130,6 +130,19 @@ export function getLoggedInUser( user ) {
 }
 
 /**
+ * Returns an action object used to set the displayed user id.
+ *
+ * @param {integer} userId Displayed user ID.
+ * @return {Object} Object for action.
+ */
+export function setDisplayedUserId( userId ) {
+	return {
+		type: types.SET_DISPLAYED_USER_ID,
+		userId,
+	};
+}
+
+/**
  * Returns an action object used to get media.
  *
  * @param {Array} files The list of files.
@@ -486,6 +499,7 @@ export const parseResponseMedia = async ( response, relativePath, parent = '' ) 
  */
 export function * requestMedia( args = {} ) {
 	const path = '/buddypress/v1/attachments';
+	const displayedUserId = select( STORE_KEY ).getDisplayedUserId();
 	let relativePathHeader = '';
 	let parent = '';
 
@@ -500,6 +514,10 @@ export function * requestMedia( args = {} ) {
 	if ( args.parent ) {
 		parent = args.parent;
 		delete args.parent;
+	}
+
+	if ( !! displayedUserId ) {
+		args.user_id = displayedUserId;
 	}
 
 	delete args.path;

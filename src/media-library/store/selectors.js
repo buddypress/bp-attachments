@@ -65,6 +65,17 @@ export const getLoggedInUser = ( state ) => {
 };
 
 /**
+ * Returns the displayed user ID.
+ *
+ * @param {Object} state The current state.
+ * @return {integer} The displayed user ID.
+ */
+export const getDisplayedUserId = ( state ) => {
+	const { displayedUserId } = state;
+	return displayedUserId;
+};
+
+/**
  * Returns whether the display mode is Grid or not.
  *
  * @param {Object} state The current state.
