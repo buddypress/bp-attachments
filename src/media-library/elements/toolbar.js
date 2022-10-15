@@ -236,10 +236,10 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 			{ !! tree.length && (
 				<div className="media-toolbar-primary">
 					<TreeSelect
-						noOptionLabel={ !! displayedUserId ? __( 'All members', 'bp-attachments' ) : __( 'Home', 'bp-attachments' ) }
+						noOptionLabel={ !! canModerate ? __( 'All members', 'bp-attachments' ) : __( 'Home', 'bp-attachments' ) }
 						onChange={ ( directory ) => changeDirectory( directory ) }
 						selectedId={ page }
-						tree={ ! canModerate ? tree : filter( tree, { id: 'member-' + displayedUserId || user.id } ) }
+						tree={ ! canModerate ? tree : filter( tree, { id: 'member-' + displayedUserId } ) }
 					/>
 				</div>
 			) }
