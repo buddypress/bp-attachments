@@ -4,6 +4,7 @@
 const {
 	find,
 	reverse,
+	filter,
 } = lodash;
 
 /**
@@ -50,7 +51,6 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 		deleteMedium,
 		setDisplayedUserId,
 	} = useDispatch( BP_ATTACHMENTS_STORE_KEY );
-
 	const {
 		user,
 		displayedUserId,
@@ -59,6 +59,7 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 		flatTree,
 		isSelectable,
 		selectedMedia,
+		settings,
 	} = useSelect( ( select ) => {
 		const store = select( BP_ATTACHMENTS_STORE_KEY )
 		return {
@@ -69,6 +70,7 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 			flatTree: store.getFlatTree(),
 			isSelectable: store.isSelectable(),
 			selectedMedia: store.selectedMedia(),
+			settings: store.getSettings(),
 		}
 	}, [] );
 	const [ page, setPage ] = useState( currentDirectory );
@@ -76,6 +78,7 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 	const canSelect = true !== currentDirectoryObject.readonly;
 	const hasSelectedMedia = isSelectable && selectedMedia.length !== 0;
 	const hasOneSelectedMedia = isSelectable && selectedMedia.length === 1;
+	const canModerate = !! settings.isAdminScreen && !! user.capabilities && -1 !== user.capabilities.indexOf( 'bp_moderate' );
 
 	if ( currentDirectory !== page ) {
 		setPage( currentDirectory );
@@ -236,7 +239,7 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 						noOptionLabel={ !! displayedUserId ? __( 'All members', 'bp-attachments' ) : __( 'Home', 'bp-attachments' ) }
 						onChange={ ( directory ) => changeDirectory( directory ) }
 						selectedId={ page }
-						tree={ tree }
+						tree={ ! canModerate ? tree : filter( tree, { id: 'member-' + displayedUserId || user.id } ) }
 					/>
 				</div>
 			) }
