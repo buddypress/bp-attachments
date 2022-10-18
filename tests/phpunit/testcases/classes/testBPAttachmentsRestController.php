@@ -101,30 +101,10 @@ class BP_attachments_REST_controller_UnitTestCase extends WP_Test_REST_Controlle
 	}
 
 	/**
-	 * @group imath
+	 * @group rest_get_items
 	 */
 	public function test_get_items() {
-		/*$request = new WP_REST_Request( 'GET', $this->endpoint_url );
-		$request->set_param( 'context', 'edit' );
-		$response = $this->server->dispatch( $request );
-
-		var_dump( $response->get_data() );*/
-
-		$u1 = $this->bp_testcase::factory()->user->create( array(
-			'role'       => 'subscriber',
-			'user_email' => 'u1@example.com',
-		) );
-
-		bp_update_user_meta( $u1, '_bp_attachments_userfiles_size', 1 );
-
-		var_dump( bp_attachments_list_members_root_dir() );
-
-		/*$this->assertEquals( 200, $response->get_status() );
-
-		$a_ids = wp_list_pluck( $response->get_data(), 'id' );
-
-		$this->assertTrue( count( $a_ids ) === 4 );
-		$this->assertContains( $this->activity_id, $a_ids );*/
+		$this->markTestSkipped();
 	}
 
 	public function test_get_item() {
