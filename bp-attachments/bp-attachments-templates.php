@@ -678,6 +678,23 @@ function bp_attachments_medium_type() {
 }
 
 /**
+ * Returns the medium template part according to its visibility and type.
+ *
+ * @since 1.0.0
+ *
+ * @return string The part name to use for the queried medium.
+ */
+function bp_attachments_get_medium_part() {
+	$part = '';
+
+	if ( 'private' !== bp_attachments_current_medium_visibility() ) {
+		$part = bp_attachments_get_medium_type();
+	}
+
+	return $part;
+}
+
+/**
  * Returns the queried medium download url.
  *
  * @since 1.0.0
