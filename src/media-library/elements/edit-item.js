@@ -35,6 +35,7 @@ const EditMediaItem = ( { medium, errorCallback } ) => {
 		icon,
 		media_type,
 		mime_type,
+		visibility,
 		selected,
 		links: {
 			view,
@@ -48,7 +49,7 @@ const EditMediaItem = ( { medium, errorCallback } ) => {
 	} );
 	const { updateMedium } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
 	const isDisabled = title === editedMedium.title && description === editedMedium.description;
-	const hasNoPreview = -1 === [ 'image', 'video', 'audio' ].indexOf( media_type );
+	const hasNoPreview = -1 === [ 'image', 'video', 'audio' ].indexOf( media_type ) || 'private' === visibility;
 	const isDirectory = 'inode/directory' === mime_type;
 	let contentClasses = [ 'bp-attachment-edit-item__preview_content' ];
 	if ( ! hasNoPreview ) {
