@@ -13,17 +13,29 @@ import {
 	initTree,
 	getLoggedInUser as getLoggedInUserAction,
 	getMedia as getMediaAction,
+	setPagination as setPaginationAction,
 } from './actions';
 
 /**
- * Returns the requests context.
+ * Returns the request context.
  *
  * @access private
- * @returns {string} The requests context (view or edit).
+ * @returns {string} The request context (view or edit).
  */
 const _requestContext = () => {
 	const { isAdminScreen } = window.bpAttachmentsMediaLibrarySettings || {};
 	return isAdminScreen && true === isAdminScreen ? 'edit' : 'view';
+}
+
+/**
+ * Returns the request pagination.
+ *
+ * @access private
+ * @returns {Object} The request pagination.
+ */
+const _requestPagination = () => {
+	const { mediaLibrariesHeaders } = window.bpAttachmentsMediaLibrarySettings || {};
+	return mediaLibrariesHeaders;
 }
 
 /**
@@ -46,4 +58,5 @@ export function* getMedia() {
 	initTree( files );
 
 	yield getMediaAction( files, '' );
+	yield setPaginationAction( _requestPagination() );
 }

@@ -39,7 +39,7 @@ export function setSettings( settings ) {
 		type: types.SET_SETTINGS,
 		settings,
 	};
-}
+};
 
 /**
  * Returns an action object used to fetch media from the API.
@@ -54,7 +54,7 @@ export function fetchFromAPI( path, parse ) {
 		path,
 		parse,
 	};
-}
+};
 
 /**
  * Returns an action object used to create media via the API.
@@ -69,7 +69,7 @@ export function createFromAPI( path, data ) {
 		path,
 		data,
 	};
-}
+};
 
 /**
  * Returns an action object used to update media via the API.
@@ -84,7 +84,7 @@ export function createFromAPI( path, data ) {
 		path,
 		data,
 	};
-}
+};
 
 /**
  * Returns an action object used to delete a media via the API.
@@ -101,7 +101,7 @@ export function deleteFromAPI( path, relativePath, totalBytes ) {
 		relativePath,
 		totalBytes,
 	};
-}
+};
 
 /**
  * Returns an action object used to switch between Grid & List mode.
@@ -114,7 +114,7 @@ export function switchDisplayMode( isGrid ) {
 		type: types.SWITCH_DISPLAY_MODE,
 		isGrid,
 	};
-}
+};
 
 /**
  * Returns an action object used to get the logged in user.
@@ -127,7 +127,7 @@ export function getLoggedInUser( user ) {
 		type: types.GET_LOGGED_IN_USER,
 		user,
 	};
-}
+};
 
 /**
  * Returns an action object used to set the displayed user id.
@@ -140,7 +140,7 @@ export function setDisplayedUserId( userId ) {
 		type: types.SET_DISPLAYED_USER_ID,
 		userId,
 	};
-}
+};
 
 /**
  * Returns an action object used to get media.
@@ -170,7 +170,7 @@ export function updateFormState( params ) {
 		type: types.UPDATE_FORM_STATE,
 		params,
 	};
-}
+};
 
 /**
  * Prepare a directory to be added to the Tree.
@@ -192,7 +192,7 @@ const setItemTree = ( directory, parent ) => {
 	}
 
 	return itemTree;
-}
+};
 
 /**
  * Init the directories Tree.
@@ -208,7 +208,7 @@ export function initTree( items ) {
 			dispatch( STORE_KEY ).addItemTree( itemTree );
 		} );
 	}
-}
+};
 
 /**
  * Returns an action object used to add a directory item to the Items tree.
@@ -246,6 +246,19 @@ export function toggleSelectable( isSelectable ) {
 	return {
 		type: types.TOGGLE_SELECTABLE,
 		isSelectable,
+	};
+};
+
+/**
+ * Returns an action object used to set the Member Media Libraries pagination.
+ *
+ * @param {Object} pagination Pagination data.
+ * @return {Object} Object for action.
+ */
+export function setPagination( pagination ) {
+	return {
+		type: types.SET_MEMBER_MEDIA_LIBRARIES_PAGINATION,
+		pagination,
 	};
 };
 
@@ -348,7 +361,7 @@ export function * createMedium( file, totalBytes ) {
 
 		return addMediumError( upload );
 	}
-}
+};
 
 /**
  * Creates a new directory, photo album, audio or video playluist.
@@ -421,7 +434,7 @@ export function * createDirectory( directory ) {
 
 		return addMediumError( upload );
 	}
-}
+};
 
 /**
  * Updates a Medium.
@@ -459,7 +472,7 @@ export function * updateMedium( medium ) {
 
 		return addMediumError( update );
 	}
-}
+};
 
 /**
  * Parses the request response and edit Media store.
@@ -467,9 +480,10 @@ export function * updateMedium( medium ) {
  * @param {Object} response The request response.
  * @param {String} relativePath The relative path of the medium.
  * @param {String} parent The parent directory.
+ * @param {Object} pagination The request pagination.
  * @returns {void}
  */
-export const parseResponseMedia = async ( response, relativePath, parent = '' ) => {
+export const parseResponseMedia = async ( response, relativePath, parent = '', pagination ) => {
 	const items = await response.json().then( ( data ) => {
 		data.forEach( ( item ) => {
 			item.parent = parent;
@@ -489,7 +503,8 @@ export const parseResponseMedia = async ( response, relativePath, parent = '' ) 
 	}
 
 	dispatch( STORE_KEY ).getMedia( items, relativePath, parent );
-}
+	dispatch( STORE_KEY ).setPagination( pagination );
+};
 
 /**
  * Requests media according to specific arguments.
@@ -502,6 +517,7 @@ export function * requestMedia( args = {} ) {
 	const displayedUserId = select( STORE_KEY ).getDisplayedUserId();
 	let relativePathHeader = '';
 	let parent = '';
+	let pagination = {};
 
 	if ( ! args.context ) {
 		args.context = select( STORE_KEY ).getRequestsContext();
@@ -528,14 +544,22 @@ export function * requestMedia( args = {} ) {
 		// If the request is fetched using the fetch api, the header can be
 		// retrieved using the 'get' method.
 		relativePathHeader = response.headers.get( 'X-BP-Attachments-Relative-Path' );
+		pagination = {
+			membersDisplayedAmount: response.headers.get( 'X-BP-Attachments-Media-Libraries-Total' ),
+			totalMembersPage: response.headers.get( 'X-BP-Attachments-Media-Libraries-TotalPages' ),
+		};
 	} else {
 		// If the request was preloaded server-side and is returned by the
 		// preloading middleware, the header will be a simple property.
 		relativePathHeader = get( response, [ 'headers', 'X-BP-Attachments-Relative-Path' ], '' );
+		pagination = {
+			membersDisplayedAmount: get( response, [ 'headers', 'X-BP-Attachments-Media-Libraries-Total' ], 0 ),
+			totalMembersPage: get( response, [ 'headers', 'X-BP-Attachments-Media-Libraries-TotalPages' ], 0 ),
+		};
 	}
 
-	return parseResponseMedia( response, relativePathHeader, parent );
-}
+	return parseResponseMedia( response, relativePathHeader, parent, pagination );
+};
 
 /**
  * Returns an action object used to remove a medium from the state.
@@ -575,7 +599,7 @@ export function * deleteMedium( file, totalBytes ) {
 
 		return addMediumError( file );
 	}
-}
+};
 
 /**
  * Returns an action object used to remove an error.
@@ -588,4 +612,4 @@ export function removeMediumError( errorID ) {
 		type: types.REMOVE_ERROR,
 		errorID,
 	};
-}
+};

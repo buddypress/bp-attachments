@@ -131,8 +131,8 @@ function bp_attachments_enqueue_media_library() {
 	// JavaScript.
 	wp_enqueue_script( 'bp-attachments-media-library' );
 
-	// Preload the current user's data.
-	$preload_logged_in_user = array_reduce(
+	// Preload the current user's data & attachments one.
+	$preloaded_data = array_reduce(
 		array(
 			'/buddypress/v1/members/me?context=edit',
 			sprintf( '/buddypress/v1/attachments?context=%s', is_admin() ? 'edit' : 'view' ),
@@ -144,7 +144,7 @@ function bp_attachments_enqueue_media_library() {
 	// Create the Fetch API Preloading middleware.
 	wp_add_inline_script(
 		'wp-api-fetch',
-		sprintf( 'wp.apiFetch.use( wp.apiFetch.createPreloadingMiddleware( %s ) );', wp_json_encode( $preload_logged_in_user ) ),
+		sprintf( 'wp.apiFetch.use( wp.apiFetch.createPreloadingMiddleware( %s ) );', wp_json_encode( $preloaded_data ) ),
 		'after'
 	);
 
@@ -158,6 +158,14 @@ function bp_attachments_enqueue_media_library() {
 			'allowedExtTypes'       => bp_attachments_get_allowed_media_exts( '', true ),
 		)
 	);
+
+	$attachments_data = end( $preloaded_data );
+	if ( isset( $attachments_data['headers']['X-BP-Attachments-Media-Libraries-Total'], $attachments_data['headers']['X-BP-Attachments-Media-Libraries-TotalPages'] ) ) {
+		$settings['mediaLibrariesHeaders'] = array(
+			'membersDisplayedAmount' => $attachments_data['headers']['X-BP-Attachments-Media-Libraries-Total'],
+			'totalMembersPage'       => $attachments_data['headers']['X-BP-Attachments-Media-Libraries-TotalPages'],
+		);
+	}
 
 	wp_add_inline_script(
 		'bp-attachments-media-library',
