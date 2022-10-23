@@ -131,7 +131,7 @@ export const getErrors = ( state ) => {
 };
 
 /**
- * Returns the list community media objects.
+ * Returns the community media objects list.
  *
  * @param {Object} state The current state.
  * @return {array} The list of community media objects.
@@ -139,6 +139,17 @@ export const getErrors = ( state ) => {
 export const getMedia = ( state ) => {
 	const { files } = state;
 	return files;
+};
+
+/**
+ * Returns the number of community media objects.
+ *
+ * @param {Object} state The current state.
+ * @return {integer} The list of community media objects.
+ */
+export const countMedia = ( state ) => {
+	const { files } = state;
+	return files.length;
 };
 
 /**
@@ -288,4 +299,15 @@ export const getDestinationData = ( state ) => {
 		object: destinationData[1] ? destinationData[1] : 'members',
 		item: destinationData[2] ? destinationData[2] : '',
 	}
+};
+
+/**
+ * Returns the Member Media Libraries pagination data.
+ *
+ * @param {Object} state The current state.
+ * @return {Object} The Member Media Libraries pagination data.
+ */
+export const getPagination = ( state ) => {
+	const { pagination } = state;
+	return pagination;
 };

@@ -28,6 +28,11 @@ const DEFAULT_STATE = {
 	isGrid: true,
 	settings: {},
 	formState: {},
+	pagination: {
+		membersPage: 1,
+		membersDisplayedAmount: 0,
+		totalMembersPage: 0,
+	},
 };
 
 /**
@@ -168,6 +173,14 @@ const DEFAULT_STATE = {
 				files: [
 					...reject( state.files, [ 'id', action.id ] )
 				],
+			};
+
+		case types.SET_MEMBER_MEDIA_LIBRARIES_PAGINATION:
+			return {
+				...state,
+				pagination: {
+					...action.pagination
+				},
 			};
 	}
 

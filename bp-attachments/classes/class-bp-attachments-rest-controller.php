@@ -204,8 +204,8 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		$page              = $request->get_param( 'page' );
 		$per_page          = $request->get_param( 'per_page' );
 		$pagination        = array(
-			'X-BP-Attachments_Media_Libraries-Total'      => 0,
-			'X-BP-Attachments_Media_Libraries-TotalPages' => 0,
+			'X-BP-Attachments-Media-Libraries-Total'      => 0,
+			'X-BP-Attachments-Media-Libraries-TotalPages' => 0,
 		);
 
 		if ( ! $user_id ) {
@@ -309,8 +309,8 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 				}
 
 				// Set pagination.
-				$pagination['X-BP-Attachments_Media_Libraries-Total']      = $total_libraries;
-				$pagination['X-BP-Attachments_Media_Libraries-TotalPages'] = $max_pages;
+				$pagination['X-BP-Attachments-Media-Libraries-Total']      = $total_libraries;
+				$pagination['X-BP-Attachments-Media-Libraries-TotalPages'] = $max_pages;
 			} else {
 				$media = bp_attachments_list_member_root_objects( $user_id, 'member' );
 				unset( $parent );

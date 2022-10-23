@@ -26,6 +26,7 @@ import MediaLibraryUploader from './elements/uploader';
 import MediaLibraryDirectoryCreator from './elements/directory-creator';
 import MediaLibraryToolbar from './elements/toolbar';
 import MediaLibraryMain from './elements/main';
+import MediaLibraryFooter from './elements/footer';
 
 const MediaLibrary = ( { settings } ) => {
 	const { isGrid, globalSettings, tree } = useSelect( ( select ) => {
@@ -49,6 +50,7 @@ const MediaLibrary = ( { settings } ) => {
 			<MediaLibraryDirectoryCreator />
 			<MediaLibraryToolbar gridDisplay={ isGrid } tree={ tree } />
 			<MediaLibraryMain gridDisplay={ isGrid } tree={ tree } />
+			<MediaLibraryFooter settings={ globalSettings } />
 		</Fragment>
 	);
 };
