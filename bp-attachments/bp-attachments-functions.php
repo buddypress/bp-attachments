@@ -562,7 +562,7 @@ function bp_attachments_get_vignette_uri( $filename = '', $path = '' ) {
  * @since 1.0.0
  *
  * @param array $args {
- *     Associative array of arguments list used to buil a medium action URL.
+ *     Associative array of arguments list used to build a medium action URL.
  *
  *     @type string $visibility            The medium visibility, it can be `public` or `private`. Defaults to `public`.
  *     @type string $object                The BuddyPress object the medium relates to. Defaults to `members`.
@@ -1070,22 +1070,41 @@ function bp_attachments_list_member_root_objects( $user_id = 0, $object_dir = ''
  *
  * @since 1.0.0
  *
- * @return array The members root directory.
+ * @param array $paginate_args {
+ *     Associative array of pagination arguments for BP_User_Query.
+ *
+ *     @type int $per_page The amount of member media libraries to get for each page. Defaults to 20.
+ *     @type int $page     The requested page of results to return.
+ * }
+ * @return array The media libraries results an total.
  */
-function bp_attachments_list_members_root_dir() {
-	$user_id = bp_loggedin_user_id();
+function bp_attachments_list_member_media_libraries( $paginate_args = array() ) {
+	$user_id      = bp_loggedin_user_id();
+	$request_args = bp_parse_args(
+		$paginate_args,
+		array(
+			'per_page' => 20,
+			'page'     => 1,
+		)
+	);
+
+	// Perform the User Query to get the members who uploaded files so far.
 	$members = new BP_User_Query(
 		array(
+			'per_page'        => (int) $request_args['per_page'],
+			'page'            => (int) $request_args['page'],
 			'exclude'         => array( $user_id ),
 			'meta_key'        => '_bp_attachments_userfiles_size', // phpcs:ignore
 			'populate_extras' => false,
 		)
 	);
 
-	$member_root_dirs = array();
+	// Fill the media libraries with the results.
+	$member_media_libraries = array();
+
 	if ( $members->results ) {
 		foreach ( $members->results as $member ) {
-			$member_root_dirs[] = (object) array_merge(
+			$member_media_libraries[] = (object) array_merge(
 				array(
 					'id'            => 'member-' . $member->id,
 					'title'         => sprintf(
@@ -1117,9 +1136,13 @@ function bp_attachments_list_members_root_dir() {
 	}
 
 	$current_admin_media = bp_attachments_list_member_root_objects( $user_id );
-	array_unshift( $member_root_dirs, $current_admin_media['member'] );
+	array_unshift( $member_media_libraries, $current_admin_media['member'] );
 
-	return $member_root_dirs;
+	// Returns the libraries and count.
+	return array(
+		'libraries'       => $member_media_libraries,
+		'total_libraries' => $members->total_users,
+	);
 }
 
 /**

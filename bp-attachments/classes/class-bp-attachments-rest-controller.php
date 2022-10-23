@@ -201,6 +201,12 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		$requested_user_id = $user_id;
 		$dir               = '';
 		$context           = $request->get_param( 'context' );
+		$page              = $request->get_param( 'page' );
+		$per_page          = $request->get_param( 'per_page' );
+		$pagination        = array(
+			'X-BP-Attachments_Media_Libraries-Total'      => 0,
+			'X-BP-Attachments_Media_Libraries-TotalPages' => 0,
+		);
 
 		if ( ! $user_id ) {
 			$user_id = bp_loggedin_user_id();
@@ -280,8 +286,31 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		} else {
 			// List all members who uploaded media.
 			if ( ! $requested_user_id && bp_current_user_can( 'bp_moderate' ) && 'edit' === $context ) {
-				$media = bp_attachments_list_members_root_dir();
+				$page     = ! $page ? 1 : (int) $page;
+				$per_page = ! $per_page ? 1 : (int) $per_page;
 
+				$member_libraries = bp_attachments_list_member_media_libraries(
+					array(
+						'per_page' => $per_page,
+						'page'     => $page,
+					)
+				);
+
+				$media           = $member_libraries['libraries'];
+				$total_libraries = (int) $member_libraries['total_libraries'];
+				$max_pages       = ceil( $total_libraries / $per_page );
+
+				if ( $page > $max_pages && $total_libraries > 0 ) {
+					return new WP_Error(
+						'bp_rest_attachments_invalid_page_number',
+						__( 'The page number requested is larger than the number of pages available.', 'bp-attachments' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				// Set pagination.
+				$pagination['X-BP-Attachments_Media_Libraries-Total']      = $total_libraries;
+				$pagination['X-BP-Attachments_Media_Libraries-TotalPages'] = $max_pages;
 			} else {
 				$media = bp_attachments_list_member_root_objects( $user_id, 'member' );
 				unset( $parent );
@@ -318,6 +347,13 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		}
 
 		$response->header( 'X-BP-Attachments-Relative-Path', $relative_path );
+
+		if ( 2 === count( array_filter( $pagination ) ) ) {
+			foreach ( $pagination as $key_pagination => $value_pagination ) {
+				$response->header( $key_pagination, $value_pagination );
+			}
+		}
+
 		return $response;
 	}
 
@@ -912,6 +948,9 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 		$bp                           = buddypress();
 		$params                       = WP_REST_Controller::get_collection_params();
 		$params['context']['default'] = 'view';
+
+		// @todo replace this by 20!
+		$params['per_page']['default'] = 1;
 
 		$params['directory'] = array(
 			'description' => __( 'Relative path to the directory to only list its content.', 'bp-attachments' ),
