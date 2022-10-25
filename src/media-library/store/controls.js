@@ -15,6 +15,9 @@ export const controls = {
 	FETCH_FROM_API( { path, parse } ) {
 		return apiFetch( { path, parse } );
 	},
+	GET_FROM_API( { response } ) {
+		return response.json();
+	},
 	CREATE_FROM_API( { path, data } ) {
 		return apiFetch(
 			{

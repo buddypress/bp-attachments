@@ -42,6 +42,8 @@ const MediaLibraryFooter = ( { settings } ) => {
 
 	const onLoadMore = ( event ) => {
 		event.preventDefault();
+
+		console.log( pagination );
 	}
 
 	if ( ! pagination.membersDisplayedAmount ) {

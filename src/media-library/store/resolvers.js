@@ -2,7 +2,8 @@
  * External dependencies.
  */
 const {
-	filter,
+	get,
+	hasIn,
 } = lodash;
 
 /**
@@ -10,6 +11,7 @@ const {
  */
 import {
 	fetchFromAPI,
+	getFromAPI,
 	initTree,
 	getLoggedInUser as getLoggedInUserAction,
 	getMedia as getMediaAction,
@@ -25,18 +27,7 @@ import {
 const _requestContext = () => {
 	const { isAdminScreen } = window.bpAttachmentsMediaLibrarySettings || {};
 	return isAdminScreen && true === isAdminScreen ? 'edit' : 'view';
-}
-
-/**
- * Returns the request pagination.
- *
- * @access private
- * @returns {Object} The request pagination.
- */
-const _requestPagination = () => {
-	const { mediaLibrariesHeaders } = window.bpAttachmentsMediaLibrarySettings || {};
-	return mediaLibrariesHeaders;
-}
+};
 
 /**
  * Resolver for retrieving current user.
@@ -48,15 +39,26 @@ export function* getLoggedInUser() {
 };
 
 /**
- * Resolver for retrieving the media root directories.
+ * Resolver for retrieving the current user media library or all user media libraries.
  */
 export function* getMedia() {
 	const path = '/buddypress/v1/attachments?context=' + _requestContext();
-	const files = yield fetchFromAPI( path, true );
+	const response = yield fetchFromAPI( path, false );
+	const files = yield getFromAPI( response );
+	let pagination = {
+		membersPage: 1,
+	};
 
-	// Init the Directories tree.
+	if ( hasIn( response, [ 'headers', 'get' ] ) ) {
+		pagination.membersDisplayedAmount = parseInt( response.headers.get( 'X-BP-Attachments-Media-Libraries-Total' ), 10 );
+		pagination.totalMembersPage = parseInt( response.headers.get( 'X-BP-Attachments-Media-Libraries-TotalPages' ), 10 );
+	} else {
+		pagination.membersDisplayedAmount = parseInt( get( response, [ 'headers', 'X-BP-Attachments-Media-Libraries-Total' ], 0 ), 10 );
+		pagination.totalMembersPage = parseInt( get( response, [ 'headers', 'X-BP-Attachments-Media-Libraries-TotalPages' ], 0 ), 10 );
+	}
+
 	initTree( files );
 
 	yield getMediaAction( files, '' );
-	yield setPaginationAction( _requestPagination() );
-}
+	yield setPaginationAction( pagination );
+};
