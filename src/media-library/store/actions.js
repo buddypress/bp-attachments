@@ -57,6 +57,19 @@ export function fetchFromAPI( path, parse ) {
 };
 
 /**
+ * Returns an action object used to get media from the API.
+ *
+ * @param {Promise} response the API respose.
+ * @return {Object} Object for action.
+ */
+export function getFromAPI( response ) {
+	return {
+		type: types.GET_FROM_API,
+		response,
+	};
+};
+
+/**
  * Returns an action object used to create media via the API.
  *
  * @param {string} path Endpoint path.

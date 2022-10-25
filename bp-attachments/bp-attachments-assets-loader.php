@@ -159,14 +159,6 @@ function bp_attachments_enqueue_media_library() {
 		)
 	);
 
-	$attachments_data = end( $preloaded_data );
-	if ( isset( $attachments_data['headers']['X-BP-Attachments-Media-Libraries-Total'], $attachments_data['headers']['X-BP-Attachments-Media-Libraries-TotalPages'] ) ) {
-		$settings['mediaLibrariesHeaders'] = array(
-			'membersDisplayedAmount' => $attachments_data['headers']['X-BP-Attachments-Media-Libraries-Total'],
-			'totalMembersPage'       => $attachments_data['headers']['X-BP-Attachments-Media-Libraries-TotalPages'],
-		);
-	}
-
 	wp_add_inline_script(
 		'bp-attachments-media-library',
 		'window.bpAttachmentsMediaLibrarySettings = ' . wp_json_encode( $settings ) . ';'
