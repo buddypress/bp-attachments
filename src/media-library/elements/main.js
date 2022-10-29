@@ -25,7 +25,7 @@ import MediaLibraryNotices from './notices';
 /**
  * Main element.
  */
-const MediaLibraryMain = ( { gridDisplay, tree } ) => {
+const MediaLibraryMain = ( { gridDisplay } ) => {
 	const { items, isSelectable } = useSelect( ( select ) => {
 		const store = select( BP_ATTACHMENTS_STORE_KEY );
 
@@ -52,7 +52,6 @@ const MediaLibraryMain = ( { gridDisplay, tree } ) => {
 					isSelected={ item.selected || false }
 					object={ item.object || 'members' }
 					isSelectable={ isSelectable }
-					tree={ tree }
 					medium={ item }
 				/>
 			);

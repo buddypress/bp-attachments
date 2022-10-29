@@ -163,12 +163,13 @@ export function setDisplayedUserId( userId ) {
  * @param {Object} currentDirectory The current directory.
  * @return {Object} Object for action.
  */
-export function getMedia( files, relativePath, currentDirectory ) {
+export function getMedia( files, relativePath, currentDirectory, pagination ) {
 	return {
 		type: types.GET_MEDIA,
 		files,
 		relativePath,
 		currentDirectory,
+		pagination,
 	};
 };
 
@@ -215,6 +216,7 @@ const setItemTree = ( directory, parent ) => {
 export function initTree( items ) {
 	const tree = select( STORE_KEY ).getTree();
 	const directories = filter( items, { 'mime_type': 'inode/directory' } );
+
 	if ( ! tree.length ) {
 		directories.forEach( ( item ) => {
 			const itemTree = setItemTree( item, 0 );
@@ -502,7 +504,7 @@ export const parseResponseMedia = async ( response, relativePath, parent = '', p
 			item.parent = parent;
 
 			if ( 'inode/directory' === item.mime_type ) {
-				const itemTree = setItemTree( item, parent );
+				const itemTree = setItemTree( item, 0 === item.id.indexOf( 'member-' ) ? 0 : parent );
 				dispatch( STORE_KEY ).addItemTree( itemTree );
 			}
 		} );
@@ -511,11 +513,13 @@ export const parseResponseMedia = async ( response, relativePath, parent = '', p
 	} );
 
 	// Init the Tree when needed.
-	if ( ! relativePath && ! parent ) {
+	if ( ! relativePath && ! parent && 1 === parseInt( pagination.membersPage, 10 ) ) {
 		initTree( items );
 	}
 
-	dispatch( STORE_KEY ).getMedia( items, relativePath, parent );
+	dispatch( STORE_KEY ).getMedia( items, relativePath, parent, pagination );
+
+	// @todo this should be set above.
 	dispatch( STORE_KEY ).setPagination( pagination );
 };
 
@@ -569,6 +573,10 @@ export function * requestMedia( args = {} ) {
 			membersDisplayedAmount: get( response, [ 'headers', 'X-BP-Attachments-Media-Libraries-Total' ], 0 ),
 			totalMembersPage: get( response, [ 'headers', 'X-BP-Attachments-Media-Libraries-TotalPages' ], 0 ),
 		};
+	}
+
+	if ( !! pagination.totalMembersPage ) {
+		pagination.membersPage = ! args.page ? 1 : parseInt( args.page, 10 );
 	}
 
 	return parseResponseMedia( response, relativePathHeader, parent, pagination );

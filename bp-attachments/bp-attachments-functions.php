@@ -1135,13 +1135,15 @@ function bp_attachments_list_member_media_libraries( $paginate_args = array() ) 
 		}
 	}
 
-	$current_admin_media = bp_attachments_list_member_root_objects( $user_id );
-	array_unshift( $member_media_libraries, $current_admin_media['member'] );
+	if ( 1 === (int) $request_args['page'] ) {
+		$current_admin_media = bp_attachments_list_member_root_objects( $user_id );
+		array_unshift( $member_media_libraries, $current_admin_media['member'] );
+	}
 
 	// Returns the libraries and count.
 	return array(
 		'libraries'       => $member_media_libraries,
-		'total_libraries' => $members->total_users,
+		'total_libraries' => (int) $members->total_users + 1,
 	);
 }
 
