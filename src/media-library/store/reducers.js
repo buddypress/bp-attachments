@@ -64,9 +64,16 @@ const DEFAULT_STATE = {
 			};
 
 		case types.GET_MEDIA:
+			let media = [];
+			if ( action.pagination.membersPage && 1 < action.pagination.membersPage ) {
+				media = [ ...state.files, ...action.files ];
+			} else {
+				media = action.files;
+			}
+
 			return {
 				...state,
-				files: action.files,
+				files: media,
 				relativePath: action.relativePath,
 				currentDirectory: action.currentDirectory,
 			};

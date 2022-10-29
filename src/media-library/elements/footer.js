@@ -27,26 +27,33 @@ import { BP_ATTACHMENTS_STORE_KEY } from '../store';
  * Footer element.
  */
 const MediaLibraryFooter = ( { settings } ) => {
-	const { setPagination } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
-	const { user, displayedUserId, pagination, mediaCount } = useSelect( ( select ) => {
+	const { requestMedia } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
+	const {
+		user: {
+			capabilities,
+		},
+		pagination,
+		mediaCount,
+	} = useSelect( ( select ) => {
 		const store = select( BP_ATTACHMENTS_STORE_KEY );
 
 		return {
 			user: store.getLoggedInUser(),
-			displayedUserId: store.getDisplayedUserId(),
 			pagination: store.getPagination(),
 			mediaCount: store.countMedia(),
 		};
 	}, [] );
-	const { isAdminScreen } = settings;
+	const canPaginate = !! settings.isAdminScreen && !! capabilities && -1 !== capabilities.indexOf( 'bp_moderate' );
+	const totalUserLibraries = parseInt( pagination.membersDisplayedAmount, 10 );
 
 	const onLoadMore = ( event ) => {
 		event.preventDefault();
+		const { membersPage } = pagination;
 
-		console.log( pagination );
+		return requestMedia( { page: membersPage + 1 } );
 	}
 
-	if ( ! pagination.membersDisplayedAmount ) {
+	if ( ! canPaginate || ! pagination.membersDisplayedAmount ) {
 		return null;
 	}
 
@@ -58,13 +65,17 @@ const MediaLibraryFooter = ( { settings } ) => {
 					sprintf(
 						__( 'Showing %1$s of %2$s media libraries', 'bp-attachments' ),
 						mediaCount,
-						1 + parseInt( pagination.membersDisplayedAmount, 10 )
+						totalUserLibraries
 					)
 				}
 			</p>
-			<Button variant="primary" className="load-more" onClick={ ( e ) => onLoadMore( e ) }>
-				{ __( 'Load more', 'bp-attachments' ) }
-			</Button>
+			{
+				mediaCount !== totalUserLibraries && (
+					<Button variant="primary" className="load-more" onClick={ ( e ) => onLoadMore( e ) }>
+						{ __( 'Load more', 'bp-attachments' ) }
+					</Button>
+				)
+			}
 		</div>
 	);
 };

@@ -42,7 +42,7 @@ import EditMediaItem from './edit-item';
 /**
  * Toolbar element.
  */
-const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
+const MediaLibraryToolbar = ( { gridDisplay } ) => {
 	const {
 		switchDisplayMode,
 		requestMedia,
@@ -57,6 +57,7 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 		currentDirectory,
 		currentDirectoryObject,
 		flatTree,
+		tree,
 		isSelectable,
 		selectedMedia,
 		settings,
@@ -68,6 +69,7 @@ const MediaLibraryToolbar = ( { gridDisplay, tree } ) => {
 			currentDirectory: store.getCurrentDirectory(),
 			currentDirectoryObject: store.getCurrentDirectoryObject(),
 			flatTree: store.getFlatTree(),
+			tree: store.getTree(),
 			isSelectable: store.isSelectable(),
 			selectedMedia: store.selectedMedia(),
 			settings: store.getSettings(),

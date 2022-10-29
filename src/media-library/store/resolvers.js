@@ -59,6 +59,8 @@ export function* getMedia() {
 
 	initTree( files );
 
-	yield getMediaAction( files, '' );
+	yield getMediaAction( files, '', '', pagination );
+
+	// @todo this should be set above.
 	yield setPaginationAction( pagination );
 };

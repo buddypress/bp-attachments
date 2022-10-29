@@ -29,12 +29,11 @@ import MediaLibraryMain from './elements/main';
 import MediaLibraryFooter from './elements/footer';
 
 const MediaLibrary = ( { settings } ) => {
-	const { isGrid, globalSettings, tree } = useSelect( ( select ) => {
+	const { isGrid, globalSettings } = useSelect( ( select ) => {
 		const store = select( BP_ATTACHMENTS_STORE_KEY );
 		return {
 			isGrid: store.isGridDisplayMode(),
 			globalSettings: store.getSettings(),
-			tree: store.getTree(),
 		};
 	}, [] );
 
@@ -48,8 +47,8 @@ const MediaLibrary = ( { settings } ) => {
 			<MediaLibraryHeader settings={ globalSettings } />
 			<MediaLibraryUploader settings={ globalSettings } />
 			<MediaLibraryDirectoryCreator />
-			<MediaLibraryToolbar gridDisplay={ isGrid } tree={ tree } />
-			<MediaLibraryMain gridDisplay={ isGrid } tree={ tree } />
+			<MediaLibraryToolbar gridDisplay={ isGrid } />
+			<MediaLibraryMain gridDisplay={ isGrid } />
 			<MediaLibraryFooter settings={ globalSettings } />
 		</Fragment>
 	);
