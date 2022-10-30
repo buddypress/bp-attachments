@@ -15,7 +15,6 @@ import {
 	initTree,
 	getLoggedInUser as getLoggedInUserAction,
 	getMedia as getMediaAction,
-	setPagination as setPaginationAction,
 } from './actions';
 
 /**
@@ -60,7 +59,4 @@ export function* getMedia() {
 	initTree( files );
 
 	yield getMediaAction( files, '', '', pagination );
-
-	// @todo this should be set above.
-	yield setPaginationAction( pagination );
 };

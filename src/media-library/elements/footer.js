@@ -4,6 +4,7 @@
 const {
 	components: {
 		Button,
+		Spinner,
 	},
 	data: {
 		useDispatch,
@@ -34,6 +35,7 @@ const MediaLibraryFooter = ( { settings } ) => {
 		},
 		pagination,
 		mediaCount,
+		isQuerying,
 	} = useSelect( ( select ) => {
 		const store = select( BP_ATTACHMENTS_STORE_KEY );
 
@@ -41,6 +43,7 @@ const MediaLibraryFooter = ( { settings } ) => {
 			user: store.getLoggedInUser(),
 			pagination: store.getPagination(),
 			mediaCount: store.countMedia(),
+			isQuerying: store.isQuerying(),
 		};
 	}, [] );
 	const canPaginate = !! settings.isAdminScreen && !! capabilities && -1 !== capabilities.indexOf( 'bp_moderate' );
@@ -59,18 +62,22 @@ const MediaLibraryFooter = ( { settings } ) => {
 
 	return (
 		<div className="load-more-wrapper">
-			<span className="spinner"></span>
+			{
+				true === isQuerying && (
+					<Spinner />
+				)
+			}
 			<p className="load-more-count">
 				{
-					sprintf(
+					1 !== totalUserLibraries ? sprintf(
 						__( 'Showing %1$s of %2$s media libraries', 'bp-attachments' ),
 						mediaCount,
 						totalUserLibraries
-					)
+					) : __( 'Showing one media library', 'bp-attachments' )
 				}
 			</p>
 			{
-				mediaCount !== totalUserLibraries && (
+				mediaCount !== totalUserLibraries && ! isQuerying && (
 					<Button variant="primary" className="load-more" onClick={ ( e ) => onLoadMore( e ) }>
 						{ __( 'Load more', 'bp-attachments' ) }
 					</Button>
