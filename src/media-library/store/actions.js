@@ -265,19 +265,6 @@ export function toggleSelectable( isSelectable ) {
 };
 
 /**
- * Returns an action object used to set the Member Media Libraries pagination.
- *
- * @param {Object} pagination Pagination data.
- * @return {Object} Object for action.
- */
-export function setPagination( pagination ) {
-	return {
-		type: types.SET_MEMBER_MEDIA_LIBRARIES_PAGINATION,
-		pagination,
-	};
-};
-
-/**
  * Returns an action object used to switch between Selectable & Regular mode.
  *
  * @param {array} ids The list of media ID.
@@ -518,9 +505,6 @@ export const parseResponseMedia = async ( response, relativePath, parent = '', p
 	}
 
 	dispatch( STORE_KEY ).getMedia( items, relativePath, parent, pagination );
-
-	// @todo this should be set above.
-	dispatch( STORE_KEY ).setPagination( pagination );
 };
 
 /**
@@ -532,9 +516,12 @@ export const parseResponseMedia = async ( response, relativePath, parent = '', p
 export function * requestMedia( args = {} ) {
 	const path = '/buddypress/v1/attachments';
 	const displayedUserId = select( STORE_KEY ).getDisplayedUserId();
+	let querying = true;
 	let relativePathHeader = '';
 	let parent = '';
 	let pagination = {};
+
+	yield { type: 'SET_QUERY_STATUS', querying };
 
 	if ( ! args.context ) {
 		args.context = select( STORE_KEY ).getRequestsContext();
@@ -556,6 +543,7 @@ export function * requestMedia( args = {} ) {
 	delete args.path;
 
 	const response = yield fetchFromAPI( addQueryArgs( path, args ), false );
+	querying = false;
 
 	if ( hasIn( response, [ 'headers', 'get' ] ) ) {
 		// If the request is fetched using the fetch api, the header can be
@@ -579,6 +567,7 @@ export function * requestMedia( args = {} ) {
 		pagination.membersPage = ! args.page ? 1 : parseInt( args.page, 10 );
 	}
 
+	yield { type: 'SET_QUERY_STATUS', querying };
 	return parseResponseMedia( response, relativePathHeader, parent, pagination );
 };
 

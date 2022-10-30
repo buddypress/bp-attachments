@@ -83,18 +83,29 @@ export const getDisplayedUserId = ( state ) => {
  */
 export const getFormState = ( state ) => {
 	const { formState } = state;
-	return formState;
+	return formState || {};
 }
 
 /**
  * Returns whether an upload is being processed.
  *
  * @param {Object} state The current state.
- * @return {boolean} True if an uploads is being processed. False otherwise.
+ * @return {boolean} True if an upload is being processed. False otherwise.
  */
 export const isUploading = ( state ) => {
 	const { uploading } = state;
 	return uploading;
+};
+
+/**
+ * Returns whether a query is being processed.
+ *
+ * @param {Object} state The current state.
+ * @return {boolean} True if a query is being processed. False otherwise.
+ */
+ export const isQuerying = ( state ) => {
+	const { querying } = state;
+	return querying;
 };
 
 /**

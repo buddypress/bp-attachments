@@ -387,31 +387,31 @@ body.buddypress.media_page_community-library .components-modal__frame {
 }
 
 ul.bp-attachment-edit-item__preview_links {
-    display: flex;
+	display: flex;
 }
 
 ul.bp-attachment-edit-item__preview_links li {
-    margin: 0 1em 0 0;
+	margin: 0 1em 0 0;
 }
 
 .bp-attachment-edit-item {
-    display: flex;
-    flex-direction: row;
-    width: 90vw;
+	display: flex;
+	flex-direction: row;
+	width: 90vw;
 }
 
 .bp-attachment-edit-item__preview {
-    width: calc(100% / 3 * 2);
+	width: calc(100% / 3 * 2);
 	margin-right: 2em;
 }
 
 .bp-attachment-edit-item__preview .bp-attachment-edit-item__preview_content.has-rich-preview img {
-    max-width: 100%;
-    height: auto;
+	max-width: 100%;
+	height: auto;
 }
 
 .bp-attachment-edit-item__form {
-    width: calc(100% / 3 * 1);
+	width: calc(100% / 3 * 1);
 }
 
 .bp-attachment-edit-item__form-actions button {
@@ -419,16 +419,16 @@ ul.bp-attachment-edit-item__preview_links li {
 }
 
 .bp-attachment-edit-item__preview_content {
-    display: flex;
+	display: flex;
 }
 
 .bp-attachment-edit-item__preview_content.has-rich-preview {
-    flex-direction: column;
+	flex-direction: column;
 }
 
 .bp-attachment-edit-item__preview_content.is-directory .bp-attachment-edit-item__preview_illustration {
-    width: calc(100% / 3 * 1);
-    margin-right: 2em;
+	width: calc(100% / 3 * 1);
+	margin-right: 2em;
 }
 
 .bp-attachment-edit-item__preview_content.has-rich-preview .bp-attachment-edit-item__preview_illustration {
@@ -436,10 +436,25 @@ ul.bp-attachment-edit-item__preview_links li {
 }
 
 .bp-attachment-edit-item__preview_content.is-directory .bp-attachment-edit-item__preview_description {
-     width: calc(100% / 3 * 2);
+	 width: calc(100% / 3 * 2);
 }
 
 .bp-attachment-edit-item__preview_content:not(.is-directory):not(.has-rich-preview) .bp-attachment-edit-item__preview_description {
 	margin: 0 2em;
-    width: 100%;
+	width: 100%;
+}
+
+#bp-media-library .load-more-wrapper {
+	clear: both;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	padding: 1em 0;
+}
+
+#bp-media-library .load-more-wrapper .load-more-count {
+	min-width: 100%;
+	margin: 0 0 1em;
+	text-align: center;
 }

@@ -945,12 +945,10 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	 * @return array Collection parameters.
 	 */
 	public function get_collection_params() {
-		$bp                           = buddypress();
-		$params                       = WP_REST_Controller::get_collection_params();
-		$params['context']['default'] = 'view';
-
-		// @todo replace this by 20!
-		$params['per_page']['default'] = 1;
+		$bp                            = buddypress();
+		$params                        = WP_REST_Controller::get_collection_params();
+		$params['context']['default']  = 'view';
+		$params['per_page']['default'] = 20;
 
 		$params['directory'] = array(
 			'description' => __( 'Relative path to the directory to only list its content.', 'bp-attachments' ),

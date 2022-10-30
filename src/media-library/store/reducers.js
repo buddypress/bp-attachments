@@ -33,6 +33,7 @@ const DEFAULT_STATE = {
 		membersDisplayedAmount: 0,
 		totalMembersPage: 0,
 	},
+	querying: false,
 };
 
 /**
@@ -76,6 +77,9 @@ const DEFAULT_STATE = {
 				files: media,
 				relativePath: action.relativePath,
 				currentDirectory: action.currentDirectory,
+				pagination: {
+					...action.pagination
+				},
 			};
 
 		case types.FILL_TREE:
@@ -96,7 +100,9 @@ const DEFAULT_STATE = {
 		case types.UPDATE_FORM_STATE:
 			return {
 				...state,
-				formState: action.params,
+				formState: {
+					...action.params
+				},
 			};
 
 		case types.ADD_MEDIUM:
@@ -182,12 +188,10 @@ const DEFAULT_STATE = {
 				],
 			};
 
-		case types.SET_MEMBER_MEDIA_LIBRARIES_PAGINATION:
+		case types.SET_QUERY_STATUS:
 			return {
 				...state,
-				pagination: {
-					...action.pagination
-				},
+				querying: action.querying,
 			};
 	}
 
