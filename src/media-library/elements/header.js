@@ -31,9 +31,7 @@ const MediaLibraryHeader = ( { settings } ) => {
 	const { updateFormState } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
 	const {
 		currentDirectoryObject,
-		user: {
-			capabilities,
-		},
+		user,
 		displayedUserId,
 	} = useSelect( ( select ) => {
 		const store = select( BP_ATTACHMENTS_STORE_KEY );
@@ -50,7 +48,7 @@ const MediaLibraryHeader = ( { settings } ) => {
 	const canUpload = true !== currentDirectoryObject.readonly && ( ! displayedUserId || displayedUserId === user.id );
 	const { allowedExtByMediaList, isAdminScreen } = settings;
 	const hrClass = isAdminScreen ? 'wp-header-end' : 'screen-header-end';
-	const pageTitle = !! capabilities && -1 !== capabilities.indexOf( 'bp_moderate' ) ? __( 'Community Media Libraries', 'bp-attachments' ) : __( 'Community Media Library', 'bp-attachments' );
+	const pageTitle = !! user.capabilities && -1 !== user.capabilities.indexOf( 'bp_moderate' ) ? __( 'Community Media Libraries', 'bp-attachments' ) : __( 'Community Media Library', 'bp-attachments' );
 
 	const showUploadForm = ( e ) => {
 		e.preventDefault();
