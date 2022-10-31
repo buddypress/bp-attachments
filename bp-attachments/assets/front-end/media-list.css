@@ -157,30 +157,30 @@
 }
 
 .bp-attachments-media-list .media-items.list .media-item .item-description .media-description {
-    position: relative;
-    line-height: 18px;
-    max-height: 54px;
+	position: relative;
+	line-height: 18px;
+	max-height: 54px;
 	overflow: hidden;
-    text-align:justify;
-    margin-right: 0;
-    padding-right: 1em;
+	text-align:justify;
+	margin-right: 0;
+	padding-right: 1em;
 }
 
 .bp-attachments-media-list .media-items.list .media-item .item-description .media-description:before {
-    content: '...';
-    position: absolute;
-    right: 0;
-    bottom: 0;
+	content: '...';
+	position: absolute;
+	right: 0;
+	bottom: 0;
 }
 
 .bp-attachments-media-list .media-items.list .media-item .item-description .media-description:after {
-    content: '';
-    position: absolute;
-    right: 0;
-    width: 1em;
-    height: 1em;
-    margin-top: 0.2em;
-    background: rgba(255, 255, 255, 1);
+	content: '';
+	position: absolute;
+	right: 0;
+	width: 1em;
+	height: 1em;
+	margin-top: 0.2em;
+	background: rgba(255, 255, 255, 1);
 }
 
 .bp-attachments-media-list .media-items.list .media-item .vignette img.icon {
