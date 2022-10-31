@@ -21,6 +21,7 @@ const {
 import { BP_ATTACHMENTS_STORE_KEY } from '../store';
 import MediaItem from './item';
 import MediaLibraryNotices from './notices';
+import { bytesToSize } from '../utils/functions';
 
 /**
  * Main element.
@@ -34,6 +35,7 @@ const MediaLibraryMain = ( { gridDisplay } ) => {
 			isSelectable: store.isSelectable(),
 		};
 	}, [] );
+	const modeClass = true === gridDisplay ? ' grid' : ' list';
 
 	let mediaItems = null;
 	if ( items.length ) {
@@ -44,6 +46,8 @@ const MediaLibraryMain = ( { gridDisplay } ) => {
 					id={ item.id }
 					name={ item.name }
 					title={ item.title }
+					description={ item.description }
+					size={ bytesToSize( item.size ) }
 					mediaType={ item.media_type }
 					mimeType={ item.mime_type }
 					icon={ item.icon }
@@ -62,7 +66,7 @@ const MediaLibraryMain = ( { gridDisplay } ) => {
 	return (
 		<main className="bp-user-media">
 			<MediaLibraryNotices />
-			<div className={ isSelectable ? 'media-items mode-select' : 'media-items' }>
+			<div className={ isSelectable ? 'media-items mode-select' + modeClass : 'media-items' + modeClass }>
 				{ mediaItems }
 				{ ! items.length && (
 					<p className="no-media">{ __( 'No community media items found.', 'bp-attachments' ) }</p>
