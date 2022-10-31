@@ -27,8 +27,12 @@ import setTemplate from '../utils/set-template';
 import EditMediaItem from './edit-item';
 
 const MediaItem = ( props ) => {
-	const Template = setTemplate( 'bp-attachments-media-item' );
-	const { medium, selected } = props;
+	const {
+		medium,
+		selected,
+		isGrid,
+	} = props;
+	const Template = !! isGrid ? setTemplate( 'bp-attachments-media-item' ) : setTemplate( 'bp-attachments-list-media-item' );
 	const { toggleMediaSelection, requestMedia, setDisplayedUserId } = useDispatch( BP_ATTACHMENTS_STORE_KEY );
 	const [ isOpen, toggleModal ] = useState( false );
 	const [ isSelected, selectMedia ] = useState( selected );

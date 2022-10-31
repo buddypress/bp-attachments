@@ -76,6 +76,7 @@ function bp_attachments_get_javascript_template( $name = 'media-item' ) {
 
 	// Load the template parts.
 	bp_get_template_part( 'common/js-templates/attachments/' . $name );
+	bp_get_template_part( 'common/js-templates/attachments/list-' . $name );
 
 	// Stop overidding the BuddyPress Template Stack.
 	bp_attachments_stop_overriding_template_stack();
