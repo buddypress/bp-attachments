@@ -53,6 +53,7 @@ const MediaLibraryMain = ( { gridDisplay } ) => {
 					object={ item.object || 'members' }
 					isSelectable={ isSelectable }
 					medium={ item }
+					isGrid={ gridDisplay }
 				/>
 			);
 		} );
