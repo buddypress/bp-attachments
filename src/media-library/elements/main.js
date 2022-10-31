@@ -47,7 +47,7 @@ const MediaLibraryMain = ( { gridDisplay } ) => {
 					name={ item.name }
 					title={ item.title }
 					description={ item.description }
-					size={ bytesToSize( item.size ) }
+					size={ !! item.size ? bytesToSize( item.size ) : '' }
 					mediaType={ item.media_type }
 					mimeType={ item.mime_type }
 					icon={ item.icon }
