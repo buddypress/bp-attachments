@@ -50,9 +50,14 @@ add_action( 'admin_init', 'bp_attachments_version_updater', 1001 );
  * @since 1.0.0
  */
 function bp_attachments_admin_menu() {
+	$media_page_title = __( 'Community Library', 'bp-attachments' );
+	if ( bp_current_user_can( 'bp_moderate' ) ) {
+		$media_page_title = __( 'Community Libraries', 'bp-attachments' );
+	}
+
 	add_media_page(
-		__( 'Community Library', 'bp-attachments' ),
-		__( 'Community Library', 'bp-attachments' ),
+		$media_page_title,
+		$media_page_title,
 		'exist',
 		'community-library',
 		'bp_attachments_admin_media',
