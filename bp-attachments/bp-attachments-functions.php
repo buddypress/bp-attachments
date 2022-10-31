@@ -954,18 +954,19 @@ function bp_attachments_get_directory_common_props() {
  * @return array The list of supported directory types.
  */
 function bp_attachments_get_directory_types( $user_id = 0 ) {
-	$current_time    = bp_core_current_time( true, 'timestamp' );
-	$common_props    = bp_attachments_get_directory_common_props();
-	$directory_types = array();
+	$logged_in_user_id = (int) bp_loggedin_user_id();
+	$current_time      = bp_core_current_time( true, 'timestamp' );
+	$common_props      = bp_attachments_get_directory_common_props();
+	$directory_types   = array();
 
 	$directory_types[] = (object) array_merge(
 		array(
 			'id'            => 'public-' . $user_id,
-			'title'         => __( 'Public', 'bp-attachments' ),
+			'title'         => esc_html__( 'Public', 'bp-attachments' ),
 			'media_type'    => 'public',
 			'name'          => 'public',
 			'last_modified' => $current_time,
-			'description'   => __( 'This Public directory and its children are visible to everyone.', 'bp-attachments' ),
+			'description'   => esc_html__( 'This Public directory and its children are visible to everyone.', 'bp-attachments' ),
 			'icon'          => bp_attachments_get_directory_icon( 'public' ),
 			'readonly'      => false,
 			'visibility'    => 'public',
@@ -974,14 +975,23 @@ function bp_attachments_get_directory_types( $user_id = 0 ) {
 	);
 
 	if ( bp_attachments_can_do_private_uploads() ) {
+		$private_dir_description = __( 'This Private directory and its children are only visible to you. Files and folders within this private directory can be shared with the users you chose.', 'bp-attachments' );
+		if ( $user_id !== $logged_in_user_id ) {
+			$private_dir_description = sprintf(
+				/* Translators: %s is the user's username */
+				__( 'This Private directory and its children are only visible to %s. Files and folders within this private directory can be shared with the users they chose.', 'bp-attachments' ),
+				esc_html( bp_core_get_username( $user_id ) )
+			);
+		}
+
 		$directory_types[] = (object) array_merge(
 			array(
 				'id'            => 'private-' . $user_id,
-				'title'         => __( 'Private', 'bp-attachments' ),
+				'title'         => esc_html__( 'Private', 'bp-attachments' ),
 				'media_type'    => 'private',
 				'name'          => 'private',
 				'last_modified' => $current_time,
-				'description'   => __( 'This Private directory and its children are only visible to logged in users.', 'bp-attachments' ),
+				'description'   => esc_html( $private_dir_description ),
 				'icon'          => bp_attachments_get_directory_icon( 'private' ),
 				'readonly'      => false,
 				'visibility'    => 'private',
@@ -1049,11 +1059,11 @@ function bp_attachments_list_member_root_objects( $user_id = 0, $object_dir = ''
 		$list['member'] = (object) array_merge(
 			array(
 				'id'            => 'member-' . $user_id,
-				'title'         => __( 'My Media', 'bp-attachments' ),
+				'title'         => esc_html__( 'My Media', 'bp-attachments' ),
 				'media_type'    => 'avatar',
 				'name'          => 'member',
 				'last_modified' => $current_time,
-				'description'   => __( 'This directory contains all your personal media.', 'bp-attachments' ),
+				'description'   => esc_html__( 'This directory contains all your personal media.', 'bp-attachments' ),
 				'icon'          => bp_attachments_get_directory_icon( 'member' ),
 				'readonly'      => true,
 				'visibility'    => 'public',
@@ -1079,6 +1089,7 @@ function bp_attachments_list_member_root_objects( $user_id = 0, $object_dir = ''
  * @return array The media libraries results an total.
  */
 function bp_attachments_list_member_media_libraries( $paginate_args = array() ) {
+	$common_props = bp_attachments_get_directory_common_props();
 	$user_id      = bp_loggedin_user_id();
 	$request_args = bp_parse_args(
 		$paginate_args,
@@ -1095,7 +1106,7 @@ function bp_attachments_list_member_media_libraries( $paginate_args = array() ) 
 			'page'            => (int) $request_args['page'],
 			'exclude'         => array( $user_id ),
 			'meta_key'        => '_bp_attachments_userfiles_size', // phpcs:ignore
-			'populate_extras' => false,
+			'populate_extras' => true,
 		)
 	);
 
@@ -1103,13 +1114,16 @@ function bp_attachments_list_member_media_libraries( $paginate_args = array() ) 
 	$member_media_libraries = array();
 
 	if ( $members->results ) {
+		// Size is used for user's disk usage.
+		unset( $common_props['size'] );
+
 		foreach ( $members->results as $member ) {
 			$member_media_libraries[] = (object) array_merge(
 				array(
 					'id'            => 'member-' . $member->id,
 					'title'         => sprintf(
 						/* Translators: %s is the username */
-						__( '%s’s Media', 'bp-attachments' ),
+						esc_html__( '%s’s Media', 'bp-attachments' ),
 						$member->user_nicename
 					),
 					'media_type'    => 'avatar',
@@ -1117,9 +1131,10 @@ function bp_attachments_list_member_media_libraries( $paginate_args = array() ) 
 					'last_modified' => bp_core_current_time( true, 'timestamp' ),
 					'description'   => sprintf(
 						/* Translators: %s is the username */
-						__( 'This directory contains all %s’s personal media.', 'bp-attachments' ),
+						esc_html__( 'This directory contains all %s’s personal media.', 'bp-attachments' ),
 						$member->user_nicename
 					),
+					'size'          => (int) $member->meta_value,
 					'icon'          => bp_core_fetch_avatar(
 						array(
 							'item_id' => $member->id,
@@ -1130,13 +1145,14 @@ function bp_attachments_list_member_media_libraries( $paginate_args = array() ) 
 					'readonly'      => true,
 					'visibility'    => 'public',
 				),
-				bp_attachments_get_directory_common_props()
+				$common_props
 			);
 		}
 	}
 
 	if ( 1 === (int) $request_args['page'] ) {
-		$current_admin_media = bp_attachments_list_member_root_objects( $user_id );
+		$current_admin_media                 = bp_attachments_list_member_root_objects( $user_id );
+		$current_admin_media['member']->size = (int) bp_get_user_meta( $user_id, '_bp_attachments_userfiles_size', true );
 		array_unshift( $member_media_libraries, $current_admin_media['member'] );
 	}
 

@@ -167,7 +167,8 @@
 	width: 280px;
 }
 
-#bp-media-library .media-items.mode-select .vignette {
+#bp-media-library .media-items.mode-select .vignette,
+#bp-media-library .media-items.list.mode-select .item-description {
 	opacity: 0.65;
 }
 
