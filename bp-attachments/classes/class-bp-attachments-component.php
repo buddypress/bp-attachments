@@ -27,7 +27,11 @@ class BP_Attachments_Component extends BP_Component {
 		parent::start(
 			'attachments',
 			__( 'Attachments', 'bp-attachments' ),
-			plugin_dir_path( dirname( __FILE__ ) )
+			plugin_dir_path( dirname( __FILE__ ) ),
+			array(
+				'adminbar_myaccount_order' => 30,
+				'features'                 => array( 'profile-images' ),
+			)
 		);
 	}
 
@@ -67,6 +71,10 @@ class BP_Attachments_Component extends BP_Component {
 			'blocks',
 			'templates',
 		);
+
+		if ( bp_is_active( $this->id, 'profile-images' ) ) {
+			$includes[] = 'profile-images';
+		}
 
 		if ( is_admin() ) {
 			$includes[] = 'admin';
@@ -198,7 +206,7 @@ class BP_Attachments_Component extends BP_Component {
 		$main_nav = array(
 			'name'                => __( 'Media', 'bp-attachments' ),
 			'slug'                => $this->slug,
-			'position'            => 80,
+			'position'            => 30,
 			'screen_function'     => 'bp_attachments_personal_screen',
 			'default_subnav_slug' => 'personal',
 			'item_css_id'         => $this->id,
@@ -631,7 +639,13 @@ class BP_Attachments_Component extends BP_Component {
 	 *                           description.
 	 */
 	public function rest_api_init( $controllers = array() ) {
-		parent::rest_api_init( array( 'BP_Attachments_REST_Controller', 'BP_Attachments_Profile_Image_REST_Controller' ) );
+		$controllers = array( 'BP_Attachments_REST_Controller' );
+
+		if ( bp_is_active( $this->id, 'profile-images' ) ) {
+			$controllers[] = 'BP_Attachments_Profile_Image_REST_Controller';
+		}
+
+		parent::rest_api_init( $controllers );
 	}
 
 	/**
