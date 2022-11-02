@@ -60,7 +60,9 @@ function bp_attachments_is_cover_image_front_edit( $retval ) {
 
 	return $retval;
 }
-//add_filter( 'bp_attachments_cover_image_is_edit', 'bp_attachments_is_cover_image_front_edit' );
+// phpcs:disable
+// add_filter( 'bp_attachments_cover_image_is_edit', 'bp_attachments_is_cover_image_front_edit' );
+// phpcs:enable
 
 /**
  * Register JavaScripts and Styles profile images features for Front-End context.
@@ -181,6 +183,7 @@ function bp_attachments_profile_images_template_part_overrides( $is_overriding =
 		array_unshift( $templates, 'members/single/member-header-edit.php' );
 	}
 
+	// phpcs:disable
 	/*
 	 * @todo cover image overrides.
 	 *
@@ -192,6 +195,7 @@ function bp_attachments_profile_images_template_part_overrides( $is_overriding =
 	 *	array_unshift( $templates, 'members/single/cover-image-header-edit.php' );
 	 * }
 	 */
+	// phpcs:enable
 
 	return $is_overriding;
 }
