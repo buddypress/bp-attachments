@@ -104,18 +104,16 @@ function bp_attachments_template_part_overrides( $templates = array() ) {
 	if ( in_array( 'members/single/plugins.php', $templates, true ) && bp_attachments_is_user_personal_library() ) {
 		$is_overriding = true;
 		array_unshift( $templates, 'members/single/attachments.php' );
-	} elseif ( in_array( 'members/single/profile/change-avatar.php', $templates, true ) ) {
-		$is_overriding = true;
-		array_unshift( $templates, 'members/single/profile/edit-avatar.php' );
-	} elseif ( in_array( 'members/single/profile/change-cover-image.php', $templates, true ) ) {
-		$is_overriding = true;
-		array_unshift( $templates, 'members/single/profile/edit-cover-image.php' );
-	} elseif ( in_array( 'members/single/cover-image-header.php', $templates, true ) && ( bp_is_user_change_avatar() || bp_is_user_change_cover_image() ) ) {
-		$is_overriding = true;
-		array_unshift( $templates, 'members/single/cover-image-header-edit.php' );
-	} elseif ( in_array( 'members/single/member-header.php', $templates, true ) && bp_is_user_change_avatar() ) {
-		$is_overriding = true;
-		array_unshift( $templates, 'members/single/member-header-edit.php' );
+	} else {
+		/**
+		 * Filter used to override other optional BP Attachments templates.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param bool $is_overriding Whether the template is being overriden.
+		 * @param array $templates The list of requested template parts, passed by reference.
+		 */
+		$is_overriding = apply_filters_ref_array( 'bp_attachments_template_part_overrides', array( $is_overriding, &$templates ) );
 	}
 
 	if ( $is_overriding ) {

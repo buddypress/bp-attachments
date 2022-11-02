@@ -1468,52 +1468,6 @@ function bp_attachments_format_file_size( $bytes = 0 ) {
 }
 
 /**
- * Checks whether avatar uploads feature is enabled.
- *
- * @since 1.0.0
- *
- * @return bool True if the avatar uploads feature is enabled. False otherwise.
- */
-function bp_attachments_is_avatar_uploads_enabled() {
-	return ! (int) bp_get_option( 'bp-disable-avatar-uploads' );
-}
-
-/**
- * Only disable BuddyPress Member's avatar upload feature.
- *
- * @since 1.0.0
- *
- * @param bool $retval True if the BP Avatar UI should be loaded. False otherwise.
- * @return bool
- */
-function bp_attachments_is_avatar_front_edit( $retval ) {
-	if ( true === $retval ) {
-		$retval = ! bp_is_user_change_avatar();
-	}
-
-	return $retval;
-}
-add_filter( 'bp_avatar_is_front_edit', 'bp_attachments_is_avatar_front_edit' );
-
-
-/**
- * Only disable BuddyPress Member's cover image upload feature.
- *
- * @since 1.0.0
- *
- * @param bool $retval True if the BP Cover Image UI should be loaded. False otherwise.
- * @return bool
- */
-function bp_attachments_is_cover_image_front_edit( $retval ) {
-	if ( true === $retval ) {
-		$retval = ! bp_is_user_change_cover_image();
-	}
-
-	return $retval;
-}
-add_filter( 'bp_attachments_cover_image_is_edit', 'bp_attachments_is_cover_image_front_edit' );
-
-/**
  * Handle medium download requests.
  *
  * @since 1.0.0
