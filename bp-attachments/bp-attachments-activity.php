@@ -29,6 +29,24 @@ function bp_attachments_activity_register_front_end_assets() {
 		$bp_attachments->version,
 		true
 	);
+
+	$path = sprintf(
+		'/%1$s/%2$s/%3$s',
+		bp_rest_namespace(),
+		bp_rest_version(),
+		buddypress()->attachments->id
+	);
+
+	wp_localize_script(
+		'bp-attachments-activity',
+		'bpAttachmentsActivitySettings',
+		array(
+			'path'            => ltrim( $path, '/' ),
+			'root'            => esc_url_raw( get_rest_url() ),
+			'nonce'           => wp_create_nonce( 'wp_rest' ),
+			'allowedExtTypes' => bp_attachments_get_allowed_media_exts( '', true ),
+		)
+	);
 }
 
 /**
