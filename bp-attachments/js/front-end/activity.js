@@ -1,0 +1,2 @@
+!function(){const{domReady:t}=wp;window.bp=window.bp||{},window.bp.Attachments=window.bp.Attachments||{},window.bp.Attachments.Activity=new class{upload(t){const{model:{attributes:{user_id:o,item_id:i,object:n}}}=t;console.log(o)}start(){this.ActivityButtons.on("display:bpAttachments",(t=>this.upload(t)))}constructor(){const{bp:{Nouveau:{Activity:{postForm:{buttons:t}}}}}=window;this.ActivityButtons=t}},t((()=>window.bp.Attachments.Activity.start()))}();
+//# sourceMappingURL=activity.js.map

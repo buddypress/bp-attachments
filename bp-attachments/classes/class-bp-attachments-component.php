@@ -76,6 +76,10 @@ class BP_Attachments_Component extends BP_Component {
 			$includes[] = 'profile-images';
 		}
 
+		if ( bp_is_active( 'activity' ) ) {
+			$includes[] = 'activity';
+		}
+
 		if ( is_admin() ) {
 			$includes[] = 'admin';
 			$includes[] = 'settings';
