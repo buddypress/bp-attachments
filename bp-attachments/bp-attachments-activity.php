@@ -20,11 +20,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 function bp_attachments_activity_register_front_end_assets() {
 	$bp_attachments = buddypress()->attachments;
 
+	// Let the theme customize the Media Library styles.
+	$css = bp_attachments_locate_template_asset( 'css/attachments-media-activity.css' );
+	if ( isset( $css['uri'] ) ) {
+		wp_register_style(
+			'bp-attachments-activity',
+			$css['uri'],
+			array(),
+			$bp_attachments->version
+		);
+	}
+
 	wp_register_script(
 		'bp-attachments-activity',
 		$bp_attachments->js_url . 'front-end/activity.js',
 		array(
 			'wp-dom-ready',
+			'wp-i18n',
+			'lodash',
 		),
 		$bp_attachments->version,
 		true
@@ -71,6 +84,25 @@ function bp_attachments_activity_button( $buttons = array() ) {
 		)
 	);
 }
+
+/**
+ * Print Activity Attachment JS templates into page's footer.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_activity_print_js_templates() {
+	bp_attachments_get_javascript_template( 'activity-media-preview' );
+}
+
+/**
+ * Only print Activity Attachment JS templates once the Post Form is loaded.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_activity_after_post_form() {
+	add_action( 'wp_footer', 'bp_attachments_activity_print_js_templates' );
+}
+add_action( 'bp_after_activity_post_form', 'bp_attachments_activity_after_post_form' );
 
 /**
  * Loads the Activity Attachments button only in Nouveau & for the activity context.
