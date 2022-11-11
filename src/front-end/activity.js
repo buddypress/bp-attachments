@@ -5,6 +5,12 @@ const {
 	domReady,
 } = wp;
 
+/**
+ * Internal dependencies.
+ */
+import setTemplate from '../media-library/utils/set-template';
+import bytesToSize from '../media-library/utils/functions';
+
 class bpAttachmentsActivity {
 	/**
 	 * Setup the Activity Buttons.
@@ -31,21 +37,48 @@ class bpAttachmentsActivity {
 		this.allowedTypes = allowedExtTypes;
 	}
 
+	/**
+	 * Renders the Medium preview.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param {Object} props The medium properties.
+	 * @returns {string} HTML output.
+	 */
+	 renderItemPreview( props ) {
+		const Template = setTemplate( 'bp-media-preview' );
+		return Template( props );
+	}
+
+	/**
+	 * Returns the file Input to use to upload attachments media.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @returns {HTMLInputElement} The file Input element.
+	 */
 	getFileInput() {
 		let fileInput;
 
-		if ( !! document.querySelector( '#bp-attachments-activity-file' ) ) {
-			fileInput = document.querySelector( '#bp-attachments-activity-file' );
+		if ( !! document.querySelector( '#bp-attachments-activity-medium' ) ) {
+			fileInput = document.querySelector( '#bp-attachments-activity-medium' );
 		} else {
 			fileInput = document.createElement( 'input' );
 			fileInput.type = 'file';
-			fileInput.id = 'bp-attachments-activity-file';
-			fileInput.name = '_bp_attachments_activity_file';
+			fileInput.id = 'bp-attachments-activity-medium';
+			fileInput.name = '_bp_attachments_activity_medium';
 			fileInput.style = 'display: none;';
 			fileInput.accept = this.allowedTypes;
 
-			// Add it to the DOM.
+			// Add the File input to the DOM.
 			this.container.append( fileInput );
+
+			// Add the preview placeholder.
+			const previewPlaceholder = document.createElement( 'div' );
+			previewPlaceholder.id = 'bp-attachments-activity-medium-preview';
+
+			// Add the placeholder to the DOM.
+			this.container.append( previewPlaceholder );
 		}
 
 		return fileInput;
@@ -90,7 +123,12 @@ class bpAttachmentsActivity {
 					( response ) => response.json()
 				).then(
 					( data ) => {
-						console.log( data );
+						if ( data.size ) {
+							data.size = bytesToSize( data.size );
+						}
+
+						// Render the media preview.
+						document.querySelector( '#bp-attachments-activity-medium-preview' ).innerHTML = this.renderItemPreview( data );
 					}
 				).catch( ( error ) => {
 					console.log( error );
