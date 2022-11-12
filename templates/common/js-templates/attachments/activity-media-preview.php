@@ -13,6 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 <script type="html/template" id="tmpl-bp-media-preview">
+	<button id="bp-attachments-activity-medium-exit" type="button" class="close bp-tooltip bp-icons" data-bp-action="remove" data-bp-tooltip="<?php esc_attr_e( 'Remove media', 'bp-attachments' ); ?>">
+		<span class="bp-screen-reader-text"><?php esc_html_e( 'Remove media', 'bp-attachments' ); ?></span>
+	</button>
 	<# if ( !! data.links && !! data.links.view ) { #>
 		<input type="hidden" id="bp-attachments-activity-medium-url" name="_bp_attachments_activity_medium_url" value="{{{ data.links.view }}}" />
 	<# } #>

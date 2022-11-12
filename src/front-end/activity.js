@@ -35,6 +35,7 @@ class bpAttachmentsActivity {
 		this.endpoint = root + path;
 		this.nonce = nonce;
 		this.allowedTypes = allowedExtTypes;
+		this.uploadedFiles = [];
 	}
 
 	/**
@@ -104,7 +105,10 @@ class bpAttachmentsActivity {
 		fileInput.addEventListener( 'change', ( event ) => {
 			const medium = event.target.files[0];
 
-			if ( !! medium ) {
+			// Make sure to only upload once a file.
+			if ( !! medium && -1 === this.uploadedFiles.indexOf( medium.name ) ) {
+				this.uploadedFiles.push( medium.name );
+
 				const formData = new FormData();
 				formData.append( 'file', medium );
 				formData.append( 'action', 'bp_attachments_media_upload' );
@@ -112,6 +116,11 @@ class bpAttachmentsActivity {
 				formData.append( 'object_item', user_id );
 				formData.append( 'visibility', 'public' );
 				formData.append( 'total_bytes', medium.size );
+
+				const previousErrors = backboneEvent.model.get( 'errors' );
+				if ( previousErrors && previousErrors.origin && 'bpAttachments' === previousErrors.origin ) {
+					backboneEvent.model.unset( 'errors' );
+				}
 
 				fetch( this.endpoint, {
 					method: 'POST',
@@ -123,6 +132,11 @@ class bpAttachmentsActivity {
 					( response ) => response.json()
 				).then(
 					( data ) => {
+						if ( data.code && data.message ) {
+							backboneEvent.model.set( 'errors', { type: 'error', value: data.message, origin: 'bpAttachments' } );
+							return;
+						}
+
 						if ( data.size ) {
 							data.size = bytesToSize( data.size );
 						}
@@ -130,13 +144,25 @@ class bpAttachmentsActivity {
 						// Render the media preview.
 						document.querySelector( '#bp-attachments-activity-medium-preview' ).innerHTML = this.renderItemPreview( data );
 					}
-				).catch( ( error ) => {
-					console.log( error );
+				).finally( () => {
+					event.target.value = '';
 				} );
 			}
 		} );
 
 		fileInput.click();
+	}
+
+	/**
+	 * Remove all Medium preview content.
+	 *
+	 * @since 1.0.0
+	 */
+	reset() {
+		const fileInput = this.getFileInput();
+		fileInput.value = '';
+
+		document.querySelector( '#bp-attachments-activity-medium-preview' ).innerHTML = '';
 	}
 
 	/**
@@ -150,6 +176,22 @@ class bpAttachmentsActivity {
 		this.ActivityButtons.on(
 			'display:bpAttachments',
 			( backboneEvent ) => this.upload( backboneEvent, fileInput )
+		);
+
+		this.ActivityButtons.on(
+			'resetForm:bpAttachments',
+			() => this.reset()
+		);
+
+		this.container.addEventListener(
+			'click',
+			( event ) => {
+				if ( 'bp-attachments-activity-medium-exit' === event.target.getAttribute( 'id' ) ) {
+					event.preventDefault();
+
+					return this.reset();
+				}
+			}
 		);
 	 }
 }

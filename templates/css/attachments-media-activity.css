@@ -37,3 +37,31 @@ div#bp-attachments-activity-medium-preview dl.bp-attachment-meta dd:after {
 	content: '';
 	display: block;
 }
+
+div#bp-attachments-activity-medium-preview {
+    position: relative;
+}
+
+div#bp-attachments-activity-medium-preview #bp-attachments-activity-medium-exit {
+    background-color: transparent;
+	border: 0;
+	cursor: pointer;
+	height: 48px;
+	outline: none;
+	padding: 0;
+	position: absolute;
+	right: 2px;
+	text-align: center;
+	top: 2px;
+	width: 48px;
+	z-index: 1;
+}
+
+div#bp-attachments-activity-medium-preview #bp-attachments-activity-medium-exit:before {
+    font: normal 30px/1 dashicons !important;
+	color: #50575e;
+	display: inline-block;
+	content: "\f335";
+	font-weight: 300;
+	margin-top: 1px;
+}
