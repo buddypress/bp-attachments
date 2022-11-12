@@ -52,57 +52,39 @@ class bpAttachmentsActivity {
 	}
 
 	/**
-	 * Returns the file Input to use to upload attachments media.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @returns {HTMLInputElement} The file Input element.
-	 */
-	getFileInput() {
-		let fileInput;
-
-		if ( !! document.querySelector( '#bp-attachments-activity-medium' ) ) {
-			fileInput = document.querySelector( '#bp-attachments-activity-medium' );
-		} else {
-			fileInput = document.createElement( 'input' );
-			fileInput.type = 'file';
-			fileInput.id = 'bp-attachments-activity-medium';
-			fileInput.name = '_bp_attachments_activity_medium';
-			fileInput.style = 'display: none;';
-			fileInput.accept = this.allowedTypes;
-
-			// Add the File input to the DOM.
-			this.container.append( fileInput );
-
-			// Add the preview placeholder.
-			const previewPlaceholder = document.createElement( 'div' );
-			previewPlaceholder.id = 'bp-attachments-activity-medium-preview';
-
-			// Add the placeholder to the DOM.
-			this.container.append( previewPlaceholder );
-		}
-
-		return fileInput;
-	}
-
-	/**
 	 * Open the file browser and process the upload.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @param {Object} backboneEvent
-	 * @param {HTMLInputElement} fileInput
 	 */
-	upload( backboneEvent, fileInput ) {
+	upload( backboneEvent ) {
 		const {
+			collection: {
+				models,
+			},
 			model: {
 				attributes: {
 					user_id,
 				}
-			}
+			},
 		} = backboneEvent;
+		const fileInput = document.createElement( 'input' );
+		fileInput.type = 'file';
+		fileInput.id = 'bp-attachments-activity-medium';
+		fileInput.name = '_bp_attachments_activity_medium';
+		fileInput.style = 'display: none;';
+		fileInput.accept = this.allowedTypes;
+
+		// Add the File input to the DOM & simulate a click.
+		if ( ! this.container.querySelector( '#bp-attachments-activity-medium' ) ) {
+			this.container.append( fileInput );
+			fileInput.click();
+		}
 
 		fileInput.addEventListener( 'change', ( event ) => {
+			event.preventDefault();
+
 			const medium = event.target.files[0];
 
 			// Make sure to only upload once a file.
@@ -145,12 +127,16 @@ class bpAttachmentsActivity {
 						document.querySelector( '#bp-attachments-activity-medium-preview' ).innerHTML = this.renderItemPreview( data );
 					}
 				).finally( () => {
-					event.target.value = '';
+					this.container.querySelector( '#bp-attachments-activity-medium' ).remove();
+
+					models.forEach( ( buttonModel ) => {
+						if ( 'bpAttachments' === buttonModel.get( 'id' ) ) {
+							buttonModel.set( 'active', false );
+						}
+					} );
 				} );
 			}
 		} );
-
-		fileInput.click();
 	}
 
 	/**
@@ -159,9 +145,6 @@ class bpAttachmentsActivity {
 	 * @since 1.0.0
 	 */
 	reset() {
-		const fileInput = this.getFileInput();
-		fileInput.value = '';
-
 		document.querySelector( '#bp-attachments-activity-medium-preview' ).innerHTML = '';
 	}
 
@@ -171,11 +154,16 @@ class bpAttachmentsActivity {
 	 * @since 1.0.0
 	 */
 	 start() {
-		const fileInput = this.getFileInput();
+		// Add the preview placeholder.
+		const previewPlaceholder = document.createElement( 'div' );
+		previewPlaceholder.id = 'bp-attachments-activity-medium-preview';
+
+		// Add the placeholder to the DOM.
+		this.container.append( previewPlaceholder );
 
 		this.ActivityButtons.on(
 			'display:bpAttachments',
-			( backboneEvent ) => this.upload( backboneEvent, fileInput )
+			( backboneEvent ) => this.upload( backboneEvent )
 		);
 
 		this.ActivityButtons.on(
