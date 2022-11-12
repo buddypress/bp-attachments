@@ -295,3 +295,24 @@ function bp_attachments_set_media_blocks_attached_activity( $activity = null ) {
 	}
 }
 add_action( 'bp_activity_after_save', 'bp_attachments_set_media_blocks_attached_activity', 10, 1 );
+
+/**
+ * Serialize an Attachments block.
+ *
+ * @since 1.0.0
+ *
+ * @param array $args Parsed Block.
+ * @return string The serialized block.
+ */
+function bp_attachments_get_serialized_block( $args = array() ) {
+	$block = bp_parse_args(
+		$args,
+		array(
+			'blockName'    => 'core/paragraph',
+			'innerContent' => array(),
+			'attrs'        => array(),
+		)
+	);
+
+	return serialize_block( $block );
+}

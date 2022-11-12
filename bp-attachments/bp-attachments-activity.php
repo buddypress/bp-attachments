@@ -102,7 +102,75 @@ function bp_attachments_activity_print_js_templates() {
 function bp_attachments_activity_after_post_form() {
 	add_action( 'wp_footer', 'bp_attachments_activity_print_js_templates' );
 }
-add_action( 'bp_after_activity_post_form', 'bp_attachments_activity_after_post_form' );
+
+/**
+ * Eventually attach a medium to an activity.
+ *
+ * @since 1.0.0
+ *
+ * @param array $args The arguments used to post an activity update.
+ * @return array The arguments used to post an activity update.
+ */
+function bp_attachments_activity_attach_media( $args = array() ) {
+	if ( 'nouveau' === bp_get_theme_compat_id() && isset( $_POST['_bp_attachments_activity_medium_url'] ) ) { // phpcs:ignore
+		$medium_url = esc_url_raw( wp_unslash( $_POST['_bp_attachments_activity_medium_url'] ) ); // phpcs:ignore
+
+		if ( ! $medium_url ) {
+			return $args;
+		}
+
+		$medium_pathinfo = bp_attachments_get_medium_path( $medium_url, true );
+
+		// Validate the medium.
+		$medium       = bp_attachments_get_medium( $medium_pathinfo['id'], $medium_pathinfo['path'] );
+		$medium_block = '';
+		if ( isset( $medium->media_type ) ) {
+			switch ( $medium->media_type ) {
+				case 'image':
+					$medium_block = bp_attachments_get_serialized_block(
+						array(
+							'blockName' => 'bp/image-attachment',
+							'attrs'     => array(
+								'align' => 'center',
+								'url'   => $medium_url,
+								'src'   => $medium->vignette ? $medium->vignette : $medium->icon,
+							),
+						)
+					);
+					break;
+				default:
+					$medium_block = bp_attachments_get_serialized_block(
+						array(
+							'blockName' => 'bp/file-attachment',
+							'attrs'     => array(
+								'url'       => $medium_url,
+								'name'      => $medium->name,
+								'mediaType' => $medium->media_type,
+							),
+						)
+					);
+					break;
+			}
+		}
+
+		$content = '';
+		if ( isset( $args['content'] ) && $args['content'] ) {
+			$content = bp_attachments_get_serialized_block(
+				array(
+					'innerContent' => array( '<p>' . $args['content'] . '</p>' ),
+				)
+			);
+		}
+
+		if ( $medium_block ) {
+			$args['content'] = $content . "\n" . $medium_block;
+		}
+	}
+
+	return $args;
+}
+add_filter( 'bp_before_activity_post_update_parse_args', 'bp_attachments_activity_attach_media' );
+add_filter( 'bp_before_groups_post_update_parse_args', 'bp_attachments_activity_attach_media' );
 
 /**
  * Loads the Activity Attachments button only in Nouveau & for the activity context.
@@ -116,5 +184,6 @@ function bp_attachments_activity_loader() {
 
 	add_filter( 'bp_nouveau_activity_buttons', 'bp_attachments_activity_button' );
 	add_action( 'bp_attachments_register_front_end_assets', 'bp_attachments_activity_register_front_end_assets', 3 );
+	add_action( 'bp_after_activity_post_form', 'bp_attachments_activity_after_post_form' );
 }
 add_action( 'bp_screens', 'bp_attachments_activity_loader' );
