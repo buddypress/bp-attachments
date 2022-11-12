@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<# } #>
 	<div class="bp-attachment-file-icon">
 		<# if ( '' !== data.vignette ) { #>
-			<div class="icon" style="background-image: url({{ data.vignette }})">
+			<div class="icon vignette" style="background-image: url({{ data.vignette }})">
 			</div>
 		<# } else { #>
 			<div class="icon" style="background-image: url({{ data.icon }})">

@@ -127,13 +127,15 @@ function bp_attachments_activity_attach_media( $args = array() ) {
 		if ( isset( $medium->media_type ) ) {
 			switch ( $medium->media_type ) {
 				case 'image':
+				case 'audio':
+				case 'video':
 					$medium_block = bp_attachments_get_serialized_block(
 						array(
-							'blockName' => 'bp/image-attachment',
+							'blockName' => sprintf( 'bp/%s-attachment', $medium->media_type ),
 							'attrs'     => array(
 								'align' => 'center',
 								'url'   => $medium_url,
-								'src'   => $medium->vignette ? $medium->vignette : $medium->icon,
+								'src'   => $medium->links['src'],
 							),
 						)
 					);
