@@ -12,6 +12,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// The BP Attachments plugin needs BuddyPress Activity Block functions.
+add_filter( 'bp_is_activity_blocks_active', '__return_true' );
+
 /**
  * Register JavaScripts and Styles for Activity Front-End context.
  *
