@@ -74,6 +74,11 @@ function bp_attachments_activity_register_front_end_assets() {
  * @return array The array containing the Nouveau button params.
  */
 function bp_attachments_activity_button( $buttons = array() ) {
+	// Only add the button for logged in users.
+	if ( ! is_user_logged_in() ) {
+		return $buttons;
+	}
+
 	return array_merge(
 		$buttons,
 		array(
