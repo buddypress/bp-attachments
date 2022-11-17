@@ -80,6 +80,10 @@ class BP_Attachments_Component extends BP_Component {
 			$includes[] = 'activity';
 		}
 
+		if ( bp_is_active( 'messages' ) ) {
+			$includes[] = 'messages';
+		}
+
 		if ( is_admin() ) {
 			$includes[] = 'admin';
 			$includes[] = 'settings';

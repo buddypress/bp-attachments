@@ -45,7 +45,7 @@ div#bp-attachments-activity-medium-preview {
     position: relative;
 }
 
-div#bp-attachments-activity-medium-preview #bp-attachments-activity-medium-exit {
+div#bp-attachments-activity-medium-preview #bp-attachments-medium-preview-exit {
     background-color: transparent;
 	border: 0;
 	cursor: pointer;
@@ -60,7 +60,7 @@ div#bp-attachments-activity-medium-preview #bp-attachments-activity-medium-exit 
 	z-index: 1;
 }
 
-div#bp-attachments-activity-medium-preview #bp-attachments-activity-medium-exit:before {
+div#bp-attachments-activity-medium-preview #bp-attachments-medium-preview-exit:before {
     font: normal 30px/1 dashicons !important;
 	color: #50575e;
 	display: inline-block;

@@ -174,7 +174,7 @@ class bpAttachmentsActivity {
 		this.container.addEventListener(
 			'click',
 			( event ) => {
-				if ( 'bp-attachments-activity-medium-exit' === event.target.getAttribute( 'id' ) ) {
+				if ( 'bp-attachments-medium-preview-exit' === event.target.getAttribute( 'id' ) ) {
 					event.preventDefault();
 
 					return this.reset();

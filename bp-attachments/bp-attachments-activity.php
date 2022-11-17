@@ -99,7 +99,7 @@ function bp_attachments_activity_button( $buttons = array() ) {
  * @since 1.0.0
  */
 function bp_attachments_activity_print_js_templates() {
-	bp_attachments_get_javascript_template( 'activity-media-preview' );
+	bp_attachments_get_javascript_template( 'media-preview' );
 }
 
 /**
@@ -120,8 +120,8 @@ function bp_attachments_activity_after_post_form() {
  * @return array The arguments used to post an activity update.
  */
 function bp_attachments_activity_attach_media( $args = array() ) {
-	if ( 'nouveau' === bp_get_theme_compat_id() && isset( $_POST['_bp_attachments_activity_medium_url'] ) ) { // phpcs:ignore
-		$medium_url = esc_url_raw( wp_unslash( $_POST['_bp_attachments_activity_medium_url'] ) ); // phpcs:ignore
+	if ( 'nouveau' === bp_get_theme_compat_id() && isset( $_POST['_bp_attachments_medium_url'] ) ) { // phpcs:ignore
+		$medium_url = esc_url_raw( wp_unslash( $_POST['_bp_attachments_medium_url'] ) ); // phpcs:ignore
 
 		if ( ! $medium_url ) {
 			return $args;
