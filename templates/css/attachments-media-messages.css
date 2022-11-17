@@ -1,0 +1,80 @@
+div.bp-attachments-messages-button-container {
+	margin-bottom: 1em;
+}
+
+div.bp-attachments-messages-button-container button.bp-attachments-messages-file {
+    padding: 5px 10px;
+    width: auto;
+    height: auto;
+}
+
+div#bp-attachments-messages-medium-preview {
+	display: flex;
+	gap: 1em;
+	align-items: center;
+}
+
+div#bp-attachments-messages-medium-preview {
+	margin: 0.5em;
+}
+
+div#bp-attachments-messages-medium-preview .bp-attachment-file-icon .icon {
+	background: rgba(255, 255, 255, 0.8);
+	background-repeat: no-repeat;
+	background-position: center;
+	box-shadow: inset 0 0 0 1px rgb(0 0 0 / 15%);
+	box-sizing: border-box;
+	width: 100px;
+	height: 100px;
+}
+
+div#bp-attachments-messages-medium-preview .bp-attachment-file-icon .icon.vignette {
+	background-size: contain;
+}
+
+div#bp-attachments-messages-medium-preview dl.bp-attachment-meta {
+	font-size: 80%;
+}
+
+div#bp-attachments-messages-medium-preview dl.bp-attachment-meta dt {
+	display: inline;
+	font-weight: bold;
+}
+
+div#bp-attachments-messages-medium-preview dl.bp-attachment-meta dd {
+	display: inline;
+	margin-left: 0.5em;
+}
+
+div#bp-attachments-messages-medium-preview dl.bp-attachment-meta dd:after {
+	content: '';
+	display: block;
+}
+
+div#bp-attachments-messages-medium-preview {
+    position: relative;
+}
+
+div#bp-attachments-messages-medium-preview #bp-attachments-medium-preview-exit {
+    background-color: transparent;
+	border: 0;
+	cursor: pointer;
+	height: 48px;
+	outline: none;
+	padding: 0;
+	position: absolute;
+	right: 2px;
+	text-align: center;
+	top: 2px;
+	width: 48px;
+	z-index: 1;
+}
+
+div#bp-attachments-messages-medium-preview #bp-attachments-medium-preview-exit:before {
+    font: normal 30px/1 dashicons !important;
+	color: #50575e;
+	display: inline-block;
+	content: "\f335";
+	font-weight: 300;
+	margin-top: 1px;
+}
