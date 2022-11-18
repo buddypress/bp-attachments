@@ -65,8 +65,9 @@ class bpAttachmentsMessages {
 		if ( ! this.container.querySelector( '#bp-attachments-messages-medium' ) ) {
 			this.reset();
 			this.container.append( fileInput );
-			fileInput.click();
 		}
+
+		fileInput.click();
 
 		fileInput.addEventListener(
 			'change',
@@ -77,6 +78,7 @@ class bpAttachmentsMessages {
 
 				// Make sure to only upload once a file.
 				if ( !! medium && -1 === this.uploadedFiles.indexOf( medium.name ) ) {
+					this.container.querySelector( '.bp-attachments-messages-file' ).style = "visibility: hidden;";
 					this.uploadedFiles.push( medium.name );
 
 					const formData = new FormData();
@@ -123,6 +125,15 @@ class bpAttachmentsMessages {
 	 * @since 1.0.0
 	 */
 	 start() {
+		const {
+			bp: {
+				Nouveau: {
+					Messages: {
+						views,
+					},
+				},
+			},
+		} = window;
 		// Add the preview placeholder.
 		const previewPlaceholder = document.createElement( 'div' );
 		previewPlaceholder.id = 'bp-attachments-messages-medium-preview';
@@ -135,7 +146,6 @@ class bpAttachmentsMessages {
 
 					this.container = event.target.closest( '.bp-attachments-messages-button-container' );
 					this.container.prepend( previewPlaceholder );
-					event.target.style = 'visibility: hidden;';
 
 					return this.upload();
 				}
@@ -146,6 +156,14 @@ class bpAttachmentsMessages {
 
 					return this.reset();
 				}
+			}
+		);
+
+		views.on(
+			'compose:resetForm',
+			() => {
+				this.reset();
+				this.container.querySelector( '.bp-attachments-messages-file' ).style = "visibility: visible;";
 			}
 		);
 	}
