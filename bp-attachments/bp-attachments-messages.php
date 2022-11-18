@@ -95,15 +95,48 @@ function bp_attachments_messages_attach_media( $args = array() ) {
 		// Validate the medium.
 		$medium = bp_attachments_get_medium( $medium_pathinfo['id'], $medium_pathinfo['path'] );
 
+		$dashicon = 'dashicons-media-';
+		if ( 'image' === $medium->media_type ) {
+			$dashicon = 'dashicons-format-image';
+		} else {
+			$dashicon .= esc_html( $medium->media_type );
+		}
+
 		if ( isset( $medium->media_type ) ) {
-			$args['content']              .= "\n" . sprintf( '<div><a href="%1$s">%2$s</a></div>', esc_url_raw( $medium->links['download'] ), esc_html( $medium->title ) );
-			$args['bp_attachments_medium'] = $medium;
+			$args['content']                   .= "\n" . sprintf(
+				'<div class="bp-attachments-messages-attached-media"><span class="dashicons %1$s"></span> <a href="%2$s">%3$s</a></div>',
+				$dashicon,
+				esc_url_raw( $medium->links['download'] ),
+				esc_html( $medium->title )
+			);
+			$args['bp_attachments_medium_info'] = $medium_pathinfo;
 		}
 	}
 
 	return $args;
 }
 add_filter( 'bp_before_messages_new_message_parse_args', 'bp_attachments_messages_attach_media' );
+
+/**
+ * Attached a medium to a messages thread.
+ *
+ * @since 1.0.0
+ *
+ * @param BP_Messages_Message $message Message object. Passed by reference.
+ * @param array               $r       Parsed function arguments.
+ */
+function bp_attachments_set_media_attached_messages_thread( $message, $r ) {
+	if ( ! isset( $message->thread_id ) || ! isset( $r['bp_attachments_medium_info']['id'] ) || ! isset( $r['bp_attachments_medium_info']['path'] ) ) {
+		return;
+	}
+
+	$medium_id   = $r['bp_attachments_medium_info']['id'];
+	$medium_path = $r['bp_attachments_medium_info']['path'];
+	$medium_json = trailingslashit( $medium_path ) . $medium_id . '.json';
+
+	bp_attachments_update_medium_attached_items( $medium_json, 'messages', $message->thread_id );
+}
+add_action( 'messages_message_sent', 'bp_attachments_set_media_attached_messages_thread', 10, 2 );
 
 /**
  * Prepend a button HTML markup to the WP Editor used by the Messages UI.

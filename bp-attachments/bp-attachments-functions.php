@@ -809,6 +809,46 @@ function bp_attachments_update_medium( $medium ) {
 }
 
 /**
+ * Update the list of attached BP Component's single item IDs.
+ *
+ * @since 1.0.0
+ *
+ * @param string $medium_json Path to the medium's json data file.
+ * @param string $component   BP Component's ID.
+ * @param int    $item_id     BP Component's single item ID.
+ * @return bool True if the attached items has been updated. False otherwise.
+ */
+function bp_attachments_update_medium_attached_items( $medium_json, $component, $item_id ) {
+	if ( ! file_exists( $medium_json ) || ! bp_is_active( $component ) || ! $item_id ) {
+		return false;
+	}
+
+	// Get data about the medium.
+	$medium_data = wp_json_file_decode( $medium_json );
+	$attributes  = array(
+		'object_type' => $component,
+		'object_id'   => (int) $item_id,
+	);
+
+	$is_existing = false;
+	if ( isset( $medium_data->attached_to ) ) {
+		$is_existing = ! empty( wp_list_filter( $medium_data->attached_to, $attributes ) );
+	} else {
+		$medium_data->attached_to = array();
+	}
+
+	if ( ! $is_existing ) {
+		$medium_data->attached_to[] = (object) $attributes;
+		$media                      = bp_attachments_sanitize_media( $medium_data );
+
+		file_put_contents( $medium_json, wp_json_encode( $media ) ); // phpcs:ignore
+		return true;
+	}
+
+	return false;
+}
+
+/**
  * List all media items (including sub-directories) of a directory.
  *
  * Not Used anymore.
