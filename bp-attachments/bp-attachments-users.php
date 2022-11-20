@@ -202,23 +202,34 @@ function bp_attachments_media_user_can( $can = false, $capability = '', $args = 
 					$can = bp_current_user_can( 'exist' );
 
 					// Private medium can be read and downloaded by allowed members.
-				} elseif ( isset( $args['component'] ) && bp_is_active( $args['component'] ) ) {
-					// A private medium shared with specific members.
-					if ( 'members' === $args['component'] ) {
-						$can = isset( $bp_medium->allowed_members ) && in_array( $current_user_id, $bp_medium->allowed_members, true );
-					}
+				} elseif ( isset( $bp_medium->attached_to ) && is_array( $bp_medium->attached_to ) ) {
+					// Loop through attached objects to check user's capability to view/download the private medium.
+					foreach ( $bp_medium->attached_to as $attached_item ) {
+						if ( true === $can || ! isset( $attached_item->object_type, $attached_item->object_id ) || ! bp_is_active( $attached_item->object_type ) ) {
+							continue;
+						}
 
-					// A private medium shared with friends.
-					if ( 'friends' === $args['component'] ) {
-						$can = isset( $bp_medium->owner_id ) && friends_check_friendship( $bp_medium->owner_id, $current_user_id );
-					}
+						switch ( $attached_item->object_type ) {
+							case 'messages':
+								$thread_id = (int) $attached_item->object_id;
 
-					// A private medium shared with groups.
-					if ( 'groups' === $args['component'] && isset( $args['item_id'] ) ) {
-						$group_id = (int) $args['item_id'];
+								// Check the private message thread's recipients.
+								$thread     = new BP_Messages_Thread( $thread_id );
+								$recipients = $thread->get_recipients();
+								$can        = (bool) wp_filter_object_list( $recipients, array( 'user_id' => $current_user_id ) );
+								break;
 
-						if ( isset( $bp_medium->allowed_groups ) && in_array( $args['item_id'], $bp_medium->allowed_groups, true ) ) {
-							$can = (bool) groups_is_user_member( $current_user_id, $group_id );
+							default:
+								/**
+								 * Use this filter to deal with the user's capability and your custom component.
+								 *
+								 * @since 1.0.0
+								 *
+								 * @param bool      $can       Whether the user can access to the media or not. Default: `false`.
+								 * @param BP_Medium $bp_medium The Medium object.
+								 */
+								$can = apply_filters( 'bp_attachments_current_user_can_for_' . $attached_item->object_type, $can, $bp_medium );
+								break;
 						}
 					}
 				}
