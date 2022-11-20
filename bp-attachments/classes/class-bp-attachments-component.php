@@ -19,11 +19,20 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class BP_Attachments_Component extends BP_Component {
 	/**
+	 * Whether private uploads are enabled or not.
+	 *
+	 * @var bool
+	 */
+	public $private_uploads = false;
+
+	/**
 	 * Construct the BP Attachments component.
 	 *
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		$this->private_uploads = (bool) bp_get_option( '_bp_attachments_can_upload_privately', false );
+
 		parent::start(
 			'attachments',
 			__( 'Attachments', 'bp-attachments' ),
@@ -80,7 +89,7 @@ class BP_Attachments_Component extends BP_Component {
 			$includes[] = 'activity';
 		}
 
-		if ( bp_is_active( 'messages' ) ) {
+		if ( $this->private_uploads && bp_is_active( 'messages' ) ) {
 			$includes[] = 'messages';
 		}
 

@@ -244,7 +244,7 @@ function bp_attachments_is_file_type_allowed( $file, $filename, $media_type = ''
  * @return boolean True if users can upload private attachments. False otherwise.
  */
 function bp_attachments_can_do_private_uploads() {
-	return (bool) bp_get_option( '_bp_attachments_can_upload_privately', false );
+	return (bool) buddypress()->attachments->private_uploads;
 }
 
 /**
