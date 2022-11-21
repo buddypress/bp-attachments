@@ -268,3 +268,49 @@ function bp_attachments_get_serialized_block( $args = array() ) {
 
 	return serialize_block( $block );
 }
+
+/**
+ * Returns a serialised medium block.
+ *
+ * @since 1.0.0
+ *
+ * @param BP_Medium $medium The BP Medium object.
+ * @return string The serialized medium block.
+ */
+function bp_attachments_get_serialized_medium_block( $medium ) {
+	$medium_block = '';
+
+	if ( isset( $medium->name, $medium->media_type, $medium->links ) ) {
+		$public_media_types_src = array( 'image', 'audio', 'video' );
+		$attrs                  = array(
+			'url' => $medium->links['view'],
+		);
+
+		if ( 'public' === $medium->visibility && in_array( $medium->media_type, $public_media_types_src, true ) ) {
+			$attrs['src']   = $medium->links['src'];
+			$attrs['align'] = 'center';
+			$block_name     = sprintf( 'bp/%s-attachment', $medium->media_type );
+		} else {
+			$attrs['name']      = $medium->name;
+			$attrs['mediaType'] = $medium->media_type;
+			$block_name         = 'bp/file-attachment';
+		}
+
+		$medium_block = bp_attachments_get_serialized_block(
+			array(
+				'blockName' => $block_name,
+				'attrs'     => $attrs,
+			)
+		);
+	}
+
+	/**
+	 * Filter here to edit the serialized medium block.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string    $medium_block The serialized medium block.
+	 * @param BP_Medium $medium       The BP Medium object.
+	 */
+	return apply_filters( 'bp_attachments_get_serialized_medium_block', $medium_block, $medium );
+}

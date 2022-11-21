@@ -39,7 +39,7 @@ class BP_Attachments_Component extends BP_Component {
 			plugin_dir_path( dirname( __FILE__ ) ),
 			array(
 				'adminbar_myaccount_order' => 30,
-				'features'                 => array( 'profile-images' ),
+				'features'                 => array( 'tracking', 'profile-images' ),
 			)
 		);
 	}
@@ -80,6 +80,11 @@ class BP_Attachments_Component extends BP_Component {
 			'blocks',
 			'templates',
 		);
+
+		// Tacking attachments allowes public directory and more sharing options.
+		if ( bp_is_active( $this->id, 'tracking' ) ) {
+			$includes[] = 'tracking';
+		}
 
 		if ( bp_is_active( $this->id, 'profile-images' ) ) {
 			$includes[] = 'profile-images';
