@@ -758,7 +758,18 @@ function bp_attachments_create_media( $media = null ) {
 		mkdir( $revisions );
 	}
 
-	return bp_attachments_get_medium( $media->id, $parent_dir );
+	$bp_medium = bp_attachments_get_medium( $media->id, $parent_dir );
+
+	/**
+	 * Fires once the BP Medium has been created.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param BP_Medium $bp_medium The BuddyPress medium object.
+	 */
+	do_action( 'bp_attachments_created_media', $bp_medium );
+
+	return $bp_medium;
 }
 
 /**
