@@ -78,3 +78,29 @@ function bp_attachments_tracking_record_created_medium( $medium ) {
 	return $wpdb->insert_id;
 }
 add_action( 'bp_attachments_created_media', 'bp_attachments_tracking_record_created_medium', 10, 1 );
+
+/**
+ * Exclude Uploaded attachments from activity loops.
+ *
+ * @todo This will need to further thoughts. Imho, we should:
+ * - Register activity types.
+ * - Add Activity Action strings callback.
+ * - Leave an option to allow Attachments to be displayed into activity streams.
+ *
+ * @since 1.0.0
+ *
+ * @param array $where_conditions Activity loop conditions for the MySQL WHERE statement.
+ * @return array Activity loop conditions for the MySQL WHERE statement.
+ */
+function bp_attachments_tracking_exclude_from_activities( $where_conditions ) {
+	if ( isset( $where_conditions['excluded_types'] ) ) {
+		preg_match( '/a\.type NOT IN \([^\)](.*?)[^\)]\)/', $where_conditions['excluded_types'], $matches );
+		if ( isset( $matches[0], $matches[1] ) && $matches[0] && $matches[1] ) {
+			$excluded_types                     = '\'' . trim( $matches[1], '\'' ) . '\'';
+			$where_conditions['excluded_types'] = str_replace( $excluded_types, $excluded_types . ', \'uploaded_attachment\'', $where_conditions['excluded_types'] );
+		}
+	}
+
+	return $where_conditions;
+}
+add_filter( 'bp_activity_get_where_conditions', 'bp_attachments_tracking_exclude_from_activities', 1, 1 );
