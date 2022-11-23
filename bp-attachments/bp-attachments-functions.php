@@ -873,7 +873,7 @@ function bp_attachments_list_dir_media( $dir = '' ) {
 		$media_name = $media->getfilename();
 		$path       = $media->getPathname();
 		$id         = md5( $media_name );
-		$mime_type  = bp_attachements_get_mime_type( $path );
+		$mime_type  = bp_attachments_get_mime_type( $path );
 
 		if ( 'directory' === $mime_type ) {
 			$mime_type = 'inode/directory';

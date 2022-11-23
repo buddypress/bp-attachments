@@ -168,8 +168,8 @@ class BP_Attachments_Component extends BP_Component {
 		$args = array(
 			'slug'                  => $this->id,
 			'has_directory'         => false,
-			'notification_callback' => 'bp_attachements_format_notifications',
-			'directory_title'       => __( 'User Media', 'bp-attachments' ),
+			'notification_callback' => 'bp_attachments_format_notifications',
+			'directory_title'       => __( 'Community Media', 'bp-attachments' ),
 		);
 
 		parent::setup_globals( $args + $rewrite_args );

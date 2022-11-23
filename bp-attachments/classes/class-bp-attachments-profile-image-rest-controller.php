@@ -129,7 +129,7 @@ class BP_Attachments_Profile_Image_REST_Controller extends WP_REST_Controller {
 		if ( 'POST' === $request->get_method() && bp_disable_avatar_uploads() ) {
 			$retval = new WP_Error(
 				'bp_attachments_rest_member_avatar_disabled',
-				__( 'Sorry, member avatar upload is disabled.', 'bp-attachements' ),
+				__( 'Sorry, member avatar upload is disabled.', 'bp-attachments' ),
 				array(
 					'status' => 500,
 				)
@@ -137,7 +137,7 @@ class BP_Attachments_Profile_Image_REST_Controller extends WP_REST_Controller {
 		} else {
 			$retval = new WP_Error(
 				'bp_attachments_rest_invalid_member_id',
-				__( 'Invalid member ID.', 'bp-attachements' ),
+				__( 'Invalid member ID.', 'bp-attachments' ),
 				array(
 					'status' => 404,
 				)
@@ -154,7 +154,7 @@ class BP_Attachments_Profile_Image_REST_Controller extends WP_REST_Controller {
 				if ( ! bp_attachments_current_user_can( 'edit_avatar', $args ) ) {
 					$retval = new WP_Error(
 						'bp_attachments_rest_member_avatar_disabled',
-						__( 'Sorry, you are not allowed to change this member’s profile image.', 'bp-attachements' ),
+						__( 'Sorry, you are not allowed to change this member’s profile image.', 'bp-attachments' ),
 						array(
 							'status' => 500,
 						)
