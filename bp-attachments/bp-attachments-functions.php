@@ -1383,7 +1383,9 @@ function bp_attachments_delete_directory( $path = '', $visibility = 'public' ) {
 		}
 
 		if ( ! $is_json_or_revision && true === $result ) {
-			$deleted_media[] = $medium_data;
+			$medium_data->abspath  = dirname( $medium_data->abspath );
+			$medium_data->owner_id = $owner_id;
+			$deleted_media[]       = $medium_data;
 		}
 	}
 
