@@ -139,6 +139,48 @@ function bp_attachments_tracking_erase_deleted_medium( $medium ) {
 add_action( 'bp_attachments_deleted_medium', 'bp_attachments_tracking_erase_deleted_medium', 10, 1 );
 
 /**
+ * Retrieves Attachments Tracking records.
+ *
+ * NB: it only supports public records about the Members component for now.
+ *
+ * @since 1.0.0
+ *
+ * @param array $args {
+ *     Associative array of arguments list used to build a medium action URL.
+ *
+ *     @type string $visibility The media visibility. It can be `public` or `private`. Forced to `public`.
+ *     @type string $component  The component the media is attached to. Forced to `members`.
+ *     @type string $type       The media type to retrieve. It can be `any`, `image`, `video`, `audio` or `file`.
+ * }
+ * @return array The list of records matching arguments.
+ */
+function bp_attachments_tracking_retrieve_records( $args = array() ) {
+	global $wpdb;
+
+	$r = array_merge(
+		bp_parse_args(
+			$args,
+			array(
+				'type' => 'any',
+			)
+		),
+		array(
+			'visibility' => 'public',
+			'component'  => 'members',
+		)
+	);
+
+	$sql = array(
+		'select' => sprintf( 'SELECT * FROM %s', bp_attachments_tracking_get_table() ),
+		'where'  => array(
+			'visibility' => $wpdb->prepare( 'hide_sitewide = %d', 'public' !== $r['visibility'] ),
+		),
+	);
+
+	// @todo
+}
+
+/**
  * Exclude Uploaded attachments from activity loops.
  *
  * @todo This will need to further thoughts. Imho, we should:
