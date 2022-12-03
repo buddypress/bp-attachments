@@ -43,7 +43,8 @@ function bp_attachments_tracking_get_meta_table() {
 function bp_attachments_tracking_record_created_medium( $medium ) {
 	global $wpdb;
 
-	if ( ! isset( $medium->owner_id, $medium->media_type, $medium->links, $medium->visibility ) ) {
+	// Folders are not tracked for now.
+	if ( ! isset( $medium->owner_id, $medium->media_type, $medium->links, $medium->visibility ) || 'folder' === $medium->media_type ) {
 		return false;
 	}
 
