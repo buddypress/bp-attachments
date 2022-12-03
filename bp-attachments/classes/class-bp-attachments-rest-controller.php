@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	/**
-	 * Curent Medium's data.
+	 * Current Medium's data.
 	 *
 	 * @since 1.0.0
 	 * @var null|object
@@ -639,9 +639,9 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 			)
 		);
 
-		$this->$current_medium_data = $this->get_medium_json_data( $request );
-		if ( isset( $this->$current_medium_data->owner_id ) ) {
-			$retval = bp_attachments_current_user_can( 'edit_bp_medium', array( 'bp_medium' => $this->$current_medium_data ) );
+		$this->current_medium_data = $this->get_medium_json_data( $request );
+		if ( isset( $this->current_medium_data->owner_id ) ) {
+			$retval = bp_attachments_current_user_can( 'edit_bp_medium', array( 'bp_medium' => $this->current_medium_data ) );
 		}
 
 		/**
@@ -664,8 +664,8 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 	 * @return WP_Error|WP_REST_Response Response object on success, WP_Error object on failure.
 	 */
 	public function update_item( $request ) {
-		if ( ! is_null( $this->$current_medium_data ) ) {
-			$medium_data = $this->$current_medium_data;
+		if ( ! is_null( $this->current_medium_data ) ) {
+			$medium_data = $this->current_medium_data;
 		} else {
 			$medium_data = $this->get_medium_json_data( $request );
 		}
@@ -729,9 +729,9 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 			)
 		);
 
-		$this->$current_medium_data = $this->get_medium_json_data( $request );
-		if ( isset( $this->$current_medium_data->owner_id ) ) {
-			$retval = bp_attachments_current_user_can( 'delete_bp_medium', array( 'bp_medium' => $this->$current_medium_data ) );
+		$this->current_medium_data = $this->get_medium_json_data( $request );
+		if ( isset( $this->current_medium_data->owner_id ) ) {
+			$retval = bp_attachments_current_user_can( 'delete_bp_medium', array( 'bp_medium' => $this->current_medium_data ) );
 		}
 
 		/**
@@ -762,8 +762,8 @@ class BP_Attachments_REST_Controller extends WP_REST_Attachments_Controller {
 			)
 		);
 
-		if ( ! is_null( $this->$current_medium_data ) ) {
-			$medium_data = $this->$current_medium_data;
+		if ( ! is_null( $this->current_medium_data ) ) {
+			$medium_data = $this->current_medium_data;
 		} else {
 			$medium_data = $this->get_medium_json_data( $request );
 		}
