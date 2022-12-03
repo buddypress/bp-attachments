@@ -202,6 +202,7 @@ add_action( 'bp_screens', 'bp_attachments_activity_loader' );
  * Looks inside a saved activity content to eventually attached its ID to found media.
  *
  * @since 1.0.0
+ * @todo This function should use `bp_attachments_update_medium_attached_items()`
  *
  * @param BP_Activity_Activity $activity The saved activity object.
  */

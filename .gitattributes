@@ -1,5 +1,6 @@
 /.github export-ignore
-/bp-attachments/bp-attachments-groups.php
+/bp-attachments/bp-attachments-groups.php export-ignore
+/bp-attachments/bp-attachments-friends.php export-ignore
 /src export-ignore
 /tests export-ignore
 /.editorconfig export-ignore

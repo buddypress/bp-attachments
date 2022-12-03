@@ -1,12 +1,12 @@
 <?php
 /**
- * BP Attachments Functions.
+ * BP Attachments Groups Functions.
  *
  * WIP: for now this file is ignored. Groups support should happen in a future version of the plugin.
  *
  * @package \bp-attachments\bp-attachments-groups
  *
- * @since 1.0.0
+ * @since ?.0.0
  */
 
 // Exit if accessed directly.
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Get translated BP Attachments groups slug.
  *
- * @since 1.0.0
+ * @since ?.0.0
  *
  * @param array $slugs An assiociative array keyed with component names where the value is the object slug.
  * @return array The available attachments objects slugs.
@@ -35,7 +35,7 @@ add_filter( 'bp_attachments_get_item_object_slugs', 'bp_attachments_get_item_gro
 /**
  * Checks if a user can create a media attached to the requested Group.
  *
- * @since 1.0.0
+ * @since ?.0.0
  *
  * @param bool       $can_upload  True if the user create a media attached to the requested object. False otherwise.
  * @param string     $object      The requested object type eg: `groups`, `members`...
@@ -58,7 +58,7 @@ add_filter( 'bp_attachments_rest_can_create_dir_to_object', 'bp_attachments_rest
 /**
  * Ajust the uploads sub-directory for Groups.
  *
- * @since 1.0.0
+ * @since ?.0.0
  *
  * @param array $upload_dir {@see `wp_upload_dir()`}.
  * @param array $media_args {
@@ -132,7 +132,7 @@ add_filter( 'bp_attachments_media_uploads_dir', 'bp_attachments_groups_media_upl
 /**
  * Include groups directories to the user's root directories.
  *
- * @since 1.0.0
+ * @since ?.0.0
  *
  * @param array  $list         An empty array.
  * @param string $object_dir   An empty string or the `groups` ID to list the member's Groups Media.
@@ -202,7 +202,7 @@ add_filter( 'bp_attachments_list_member_root_objects', 'bp_attachments_groups_li
 /**
  * Setup a group’s directory visibility.
  *
- * @since 1.0.0
+ * @since ?.0.0
  *
  * @param array  $properties {
  *     An array of arguments.
