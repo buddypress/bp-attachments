@@ -35,6 +35,8 @@ function bp_attachments_tracking_get_meta_table() {
 /**
  * Inserts a new record into the Media Tracking table.
  *
+ * @todo The `component` field should be filled according to the name of the uploads subdir (eg: `members`, `friends`, `groups`).
+ *
  * @since 1.0.0
  *
  * @param BP_Medium $medium The BP Medium object.
