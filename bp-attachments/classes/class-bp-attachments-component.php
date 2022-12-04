@@ -667,6 +667,10 @@ class BP_Attachments_Component extends BP_Component {
 			$controllers[] = 'BP_Attachments_Profile_Image_REST_Controller';
 		}
 
+		if ( bp_is_active( $this->id, 'tracking' ) ) {
+			$controllers[] = 'BP_Attachments_Tracking_REST_Controller';
+		}
+
 		parent::rest_api_init( $controllers );
 	}
 
