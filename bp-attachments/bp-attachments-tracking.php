@@ -35,9 +35,12 @@ function bp_attachments_tracking_get_meta_table() {
 /**
  * Returns the tracking action using a Block format.
  *
+ * NB: the Tracked Medium type stored into the action field of the BP Activity table.
+ *
  * @since 1.0.0
  *
  * @param string $media_type The media type. It can be `image`, `video`, `audio` or `file`.
+ * @return string The serialized as Block media type.
  */
 function bp_attachments_tracking_get_action( $media_type = 'file' ) {
 	return bp_attachments_get_serialized_block(
@@ -49,6 +52,45 @@ function bp_attachments_tracking_get_action( $media_type = 'file' ) {
 			),
 		)
 	);
+}
+
+/**
+ * Returns the Tracked Medium type stored into the action field of the BP Activity table.
+ *
+ * @since 1.0.0
+ *
+ * @param string $action The serialized Tracked Medium type stored into the action field of the BP Activity table.
+ * @return string The rendered Tracked Medium type stored into the action field of the BP Activity table.
+ */
+function bp_attachments_tracking_render_action( $action = '' ) {
+	$type   = 'file';
+	$blocks = parse_blocks( stripslashes_deep( $action ) );
+	$block  = reset( $blocks );
+
+	if ( isset( $block['attrs']['type'] ) && $block['attrs']['type'] ) {
+		$type = $block['attrs']['type'];
+	}
+
+	return $type;
+}
+
+/**
+ * Renders a Tracked medium.
+ *
+ * @since 1.0.0
+ *
+ * @param string $content The serialized Tracked Medium content.
+ * @return string The rendered Tracked Medium content.
+ */
+function bp_attachments_tracking_render_media( $content = '' ) {
+	$blocks = parse_blocks( stripslashes_deep( $content ) );
+	$output = '';
+
+	foreach ( $blocks as $block ) {
+		$output .= render_block( $block );
+	}
+
+	return $output;
 }
 
 /**
@@ -292,6 +334,17 @@ function bp_attachments_enqueue_tracking_assets() {
 		return;
 	}
 
-	// @todo Enqueue assets.
+	$endpoint = sprintf(
+		'/%1$s/%2$s/attachments/tracking',
+		bp_rest_namespace(),
+		bp_rest_version()
+	);
+
+	// Preloads Community media tracked items.
+	$preload_data = array_reduce(
+		array( $endpoint ),
+		'rest_preload_api_request',
+		array()
+	);
 }
 add_action( 'bp_enqueue_community_scripts', 'bp_attachments_enqueue_tracking_assets', 30 );
