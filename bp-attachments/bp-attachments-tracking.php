@@ -33,6 +33,25 @@ function bp_attachments_tracking_get_meta_table() {
 }
 
 /**
+ * Returns the tracking action using a Block format.
+ *
+ * @since 1.0.0
+ *
+ * @param string $media_type The media type. It can be `image`, `video`, `audio` or `file`.
+ */
+function bp_attachments_tracking_get_action( $media_type = 'file' ) {
+	return bp_attachments_get_serialized_block(
+		array(
+			'blockName'    => 'bp/attachments-action',
+			'innerContent' => array(),
+			'attrs'        => array(
+				'type' => $media_type,
+			),
+		)
+	);
+}
+
+/**
  * Inserts a new record into the Media Tracking table.
  *
  * @todo The `component` field should be filled according to the name of the uploads subdir (eg: `members`, `friends`, `groups`).
@@ -50,21 +69,13 @@ function bp_attachments_tracking_record_created_medium( $medium ) {
 		return false;
 	}
 
-	$inserted = $wpdb->insert( // phpcs:ignore
+	$inserted = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		bp_attachments_tracking_get_table(),
 		array(
 			'user_id'       => $medium->owner_id,
 			'component'     => buddypress()->members->id,
 			'type'          => 'uploaded_attachment',
-			'action'        => bp_attachments_get_serialized_block(
-				array(
-					'blockName'    => 'bp/attachments-action',
-					'innerContent' => array(),
-					'attrs'        => array(
-						'type' => $medium->media_type,
-					),
-				)
-			),
+			'action'        => bp_attachments_tracking_get_action( $medium->media_type ),
 			'content'       => bp_attachments_get_serialized_medium_block( $medium ),
 			'primary_link'  => $medium->links['view'],
 			'item_id'       => 0,
@@ -121,7 +132,7 @@ function bp_attachments_tracking_erase_deleted_medium( $medium ) {
 		)
 	);
 
-	$deleted = $wpdb->delete( // phpcs:ignore
+	$deleted = $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		bp_attachments_tracking_get_table(),
 		array(
 			'type'         => 'uploaded_attachment',
@@ -151,17 +162,30 @@ add_action( 'bp_attachments_deleted_medium', 'bp_attachments_tracking_erase_dele
  *     @type string $visibility The media visibility. It can be `public` or `private`. Forced to `public`.
  *     @type string $component  The component the media is attached to. Forced to `members`.
  *     @type string $type       The media type to retrieve. It can be `any`, `image`, `video`, `audio` or `file`.
+ *     @type int    $page       Which page of results to fetch. Default: 1.
+ *     @type int    $per_page   Number of results per page. Default: 25.
+ *     @type string $sort       ASC or DESC. Default: 'DESC'.
+ *     @type string $order      Column to order results by.
  * }
  * @return array The list of records matching arguments.
  */
 function bp_attachments_tracking_retrieve_records( $args = array() ) {
 	global $wpdb;
 
+	$results = array(
+		'media' => null,
+		'total' => null,
+	);
+
 	$r = array_merge(
 		bp_parse_args(
 			$args,
 			array(
-				'type' => 'any',
+				'page'     => 1,
+				'per_page' => 25,
+				'sort'     => 'DESC',          // ASC or DESC.
+				'order'    => 'date_recorded', // Column to order by.
+				'type'     => 'any',
 			)
 		),
 		array(
@@ -170,14 +194,66 @@ function bp_attachments_tracking_retrieve_records( $args = array() ) {
 		)
 	);
 
+	$table = bp_attachments_tracking_get_table();
+
+	// Sanitize 'order'.
+	$order = 'date_recorded';
+	$sort  = $r['sort'];
+	if ( 'DESC' !== $sort ) {
+		$sort = bp_esc_sql_order( $sort );
+	}
+
+	switch ( $r['order'] ) {
+		case 'user_id':
+		case 'component':
+		case 'type':
+		case 'action':
+		case 'content':
+		case 'primary_link':
+		case 'item_id':
+		case 'secondary_item_id':
+		case 'hide_sitewide':
+		case 'mptt_left':
+		case 'mptt_right':
+		case 'is_spam':
+			break;
+
+		default:
+			$order = $r['order'];
+			break;
+	}
+
 	$sql = array(
-		'select' => sprintf( 'SELECT * FROM %s', bp_attachments_tracking_get_table() ),
-		'where'  => array(
-			'visibility' => $wpdb->prepare( 'hide_sitewide = %d', 'public' !== $r['visibility'] ),
+		'select'   => sprintf( 'SELECT * FROM %s a', $table ),
+		'where'    => array(
+			'component'     => $wpdb->prepare( 'a.component = %s', $r['component'] ),
+			'activity_type' => 'a.type = \'uploaded_attachment\'',
+			'visibility'    => $wpdb->prepare( 'a.hide_sitewide = %d', 'public' !== $r['visibility'] ),
 		),
+		'order_by' => sprintf( 'ORDER BY a.%1$s %2$s', sanitize_key( $order ), $sort ),
+		'limit'    => '',
 	);
 
-	// @todo
+	if ( $r['page'] && $r['per_page'] ) {
+		$page         = (int) $r['page'];
+		$per_page     = (int) $r['per_page'];
+		$sql['limit'] = $wpdb->prepare( 'LIMIT %d, %d', absint( ( $page - 1 ) * $per_page ), $per_page );
+	}
+
+	$supported_types = array( 'image', 'video', 'audio', 'file' );
+	if ( 'any' !== $r['type'] && in_array( $r['type'], $supported_types, true ) ) {
+		$sql['where']['media_type'] = $wpdb->prepare( 'a.action = %s', bp_attachments_tracking_get_action( $r['type'] ) );
+	}
+
+	// Join parts.
+	$sql['where'] = 'WHERE ' . implode( ' AND ', $sql['where'] );
+	$query        = implode( ' ', $sql );
+
+	// Fetch results and total.
+	$results['media'] = $wpdb->get_results( $query ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL
+	$results['total'] = (int) $wpdb->get_var( "SELECT count(DISTINCT a.id) FROM {$table} a {$sql['where']}" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL
+
+	return $results;
 }
 
 /**
@@ -205,3 +281,17 @@ function bp_attachments_tracking_exclude_from_activities( $where_conditions ) {
 	return $where_conditions;
 }
 add_filter( 'bp_activity_get_where_conditions', 'bp_attachments_tracking_exclude_from_activities', 1, 1 );
+
+/**
+ * Enqueue the community directory assets.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_enqueue_tracking_assets() {
+	if ( ! bp_attachments_is_community_media_directory() ) {
+		return;
+	}
+
+	// @todo Enqueue assets.
+}
+add_action( 'bp_enqueue_community_scripts', 'bp_attachments_enqueue_tracking_assets', 30 );

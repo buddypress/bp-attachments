@@ -245,7 +245,7 @@ add_action( 'bp_enqueue_community_scripts', 'bp_attachments_enqueue_front_end_as
  *
  * @since 1.0.0
  */
-function bp_attachments_enqueue_medium_view_style() {
+function bp_attachments_enqueue_medium_view_assets() {
 	if ( ! bp_attachments_is_medium_view() ) {
 		return;
 	}
@@ -349,7 +349,7 @@ function bp_attachments_enqueue_medium_view_style() {
 		);
 	}
 }
-add_action( 'bp_enqueue_community_scripts', 'bp_attachments_enqueue_medium_view_style', 20 );
+add_action( 'bp_enqueue_community_scripts', 'bp_attachments_enqueue_medium_view_assets', 20 );
 
 /**
  * Add inline styles for BP Attachments embeds.

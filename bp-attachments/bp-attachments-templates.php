@@ -13,6 +13,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Checks whether the current page is the community media directory or not.
+ *
+ * @since 1.0.0
+ *
+ * @return bool True if the current page is the community media directory. False otherwise.
+ */
+function bp_attachments_is_community_media_directory() {
+	return (bool) ( bp_is_directory() && bp_is_current_component( 'attachments' ) && ! bp_current_action() );
+}
+
+/**
  * Checks whether the current page is the user's personal library or not.
  *
  * @since 1.0.0
