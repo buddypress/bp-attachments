@@ -68,3 +68,31 @@ div#bp-attachments-activity-medium-preview #bp-attachments-medium-preview-exit:b
 	font-weight: 300;
 	margin-top: 1px;
 }
+
+body.activity.buddypress figure.wp-block-bp-image-attachment img,
+body.activity.buddypress figure.wp-block-bp-video-attachment video {
+	margin-top: 1em;
+	max-width: 100%;
+}
+
+body.activity.buddypress div.wp-block-bp-file-attachment {
+	display: flex;
+	align-items: center;
+}
+
+body.activity.buddypress div.wp-block-bp-file-attachment .bp-attachment-file-icon {
+	margin-right: 2em;
+}
+
+body.activity.buddypress div.wp-block-bp-file-attachment .bp-attachments-button {
+	display: block;
+	width: fit-content;
+	padding: 0.5em 1em;
+	margin-top: 0.5em;
+}
+
+body.activity.buddypress figure.aligncenter {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}

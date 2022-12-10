@@ -333,6 +333,7 @@ a.file-item {
 	margin: 0;
 	white-space: nowrap;
 	-webkit-appearance: none;
+	appearance: none;
 	line-height: 20px;
 	height: auto;
 	padding: 4px 8px;
