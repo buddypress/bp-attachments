@@ -19,8 +19,9 @@
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Domain Path:       /languages/
  * GitHub Plugin URI: https://github.com/buddypress/bp-attachments
- * Requires at least: 5.9
+ * Requires at least: 6.1
  * Requires PHP:      5.6
+ * Requires Plugins:  buddypress
  */
 
 // Exit if accessed directly.
@@ -199,4 +200,4 @@ register_activation_hook( __FILE__, array( 'BP_Attachments', 'activate' ) );
 register_deactivation_hook( __FILE__, array( 'BP_Attachments', 'deactivate' ) );
 
 // Displays a notice to inform BP Attachments needs to be activated after BuddyPress.
-add_action( 'admin_notices', array( '\BP_Attachments', 'admin_notice' ) );
+add_action( 'admin_notices', array( 'BP_Attachments', 'admin_notice' ) );
