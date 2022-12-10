@@ -78,3 +78,24 @@ div#bp-attachments-messages-medium-preview #bp-attachments-medium-preview-exit:b
 	font-weight: 300;
 	margin-top: 1px;
 }
+
+figure.wp-block-bp-image-attachment img {
+	margin-top: 1em;
+	max-width: 100%;
+}
+
+#buddypress .bp-messages-content #bp-message-thread-list li .message-content figure.bp-attachments-messages-attached-media span.dashicons {
+	padding: 0;
+}
+
+figure.bp-attachments-messages-attached-media span.dashicons {
+	vertical-align: text-bottom;
+}
+
+#buddypress .bp-messages-content #bp-message-thread-list li .message-content figure.bp-attachments-messages-attached-media a {
+	padding: 0;
+}
+
+figure.bp-attachments-messages-attached-media a {
+	border-bottom: solid 1px currentColor;
+}

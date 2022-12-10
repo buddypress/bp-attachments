@@ -104,7 +104,9 @@ function bp_attachments_messages_attach_media( $args = array() ) {
 
 		if ( isset( $medium->media_type ) ) {
 			$args['content']                   .= "\n" . sprintf(
-				'<div class="bp-attachments-messages-attached-media"><span class="dashicons %1$s"></span> <a href="%2$s">%3$s</a></div>',
+				'<figure class="bp-attachments-messages-attached-media">
+					<span class="dashicons %1$s"></span> <a href="%2$s">%3$s</a>
+				</figure>',
 				$dashicon,
 				esc_url_raw( $medium->links['download'] ),
 				esc_html( $medium->title )
@@ -151,6 +153,26 @@ function bp_attachments_messages_prepend_button( $editor = '' ) {
 		<button class="dashicons dashicons-admin-media bp-attachments-messages-file" type="button"></button>
 	</div>' . $editor;
 }
+
+/**
+ * Include the `<figure>` tag to Messsages allowed tags.
+ *
+ * @since 1.0.0
+ *
+ * @param array $allowed_tags The Messages allowed tags.
+ * @return array The Messages allowed tags.
+ */
+function bp_attachments_messages_allowed_tags( $allowed_tags = array() ) {
+	return array_merge(
+		$allowed_tags,
+		array(
+			'figure' => array(
+				'class' => true,
+			),
+		)
+	);
+}
+add_filter( 'bp_messages_allowed_tags', 'bp_attachments_messages_allowed_tags' );
 
 /**
  * Loads the Messages Attachments button only in Nouveau & for the messages context.
