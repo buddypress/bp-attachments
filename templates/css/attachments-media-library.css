@@ -44,7 +44,6 @@ body.personal.attachments #bp-media-library .wp-filter .view-switch a:before {
     color: var(--wp--preset--color--tertiary);
     display: inline-block;
     font: normal 20px/1 dashicons;
-    speak: never;
     vertical-align: middle;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -60,6 +59,10 @@ body.personal.attachments #bp-media-library .wp-filter .view-switch .view-list:b
 
 body.personal.attachments #bp-media-library .wp-filter .view-switch .view-grid:before {
     content: "\f509";
+}
+
+body.personal.attachments #bp-media-library .media-toolbar-primary .components-select-control__input {
+	width: 200px;
 }
 
 body.personal.attachments #bp-media-library .components-button.is-secondary,
@@ -83,6 +86,10 @@ body.personal.attachments #bp-media-library .media-items.mode-select .selected {
 body.personal.attachments #bp-media-library .media-items.mode-select .selected .check {
     background-color: var(--wp--preset--color--primary);
     box-shadow: 0 0 0 1px #fff, 0 0 0 2px var(--wp--preset--color--foreground);
+}
+
+body.personal.attachments #buddypress #bp-media-library a.button.split-button-primary {
+	border: 1px solid var(--wp--preset--color--foreground);
 }
 
 body.personal.attachments #bp-media-library .split-button .split-button-toggle {

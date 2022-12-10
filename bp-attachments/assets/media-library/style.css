@@ -373,9 +373,8 @@ a.file-item {
 }
 
 #bp-media-library .split-button .split-button-toggle i {
-	line-height: 25px;
-	margin-bottom: 1px;
-	padding: 3.5px;
+	line-height: 20px;
+	padding: 4px;
 }
 
 #bp-media-library .split-button .split-button-toggle i.dashicons-arrow-up-alt2 {
