@@ -1,8 +1,8 @@
 <?php
 /**
- * BP Attachments Entry JavaScript Template.
+ * BP Attachments file folder JavaScript Template.
  *
- * @package \templates\buddypress\common\js-templates\attachments\media-item
+ * @package \templates\buddypress\common\js-templates\attachments\file-medium
  *
  * @since 1.0.0
  */

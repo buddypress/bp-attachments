@@ -12,5 +12,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 ?>
+<div id="bp-media-directory" class="bp-attachments-media-list"></div>
 
-<p>It works!</p>
+<?php bp_attachments_get_javascript_template( 'media-directory' );
