@@ -1,0 +1,49 @@
+body.buddypress.attachments.directory figure.wp-block-bp-image-attachment img,
+body.buddypress.attachments.directory figure.wp-block-bp-video-attachment video {
+	margin-top: 1em;
+	max-width: 100%;
+}
+
+body.buddypress.attachments.directory div.wp-block-bp-file-attachment {
+	display: flex;
+	align-items: center;
+}
+
+body.buddypress.attachments.directory div.wp-block-bp-file-attachment .bp-attachment-file-icon {
+	margin-right: 2em;
+}
+
+body.buddypress.attachments.directory div.wp-block-bp-file-attachment .bp-attachments-button {
+	display: block;
+	width: fit-content;
+	padding: 0.5em 1em;
+	margin-top: 0.5em;
+}
+
+body.buddypress.attachments.directory figure.aligncenter {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+body.buddypress.attachments.directory .bp-attachments-media-list {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+body.buddypress.attachments.directory .bp-attachments-media-list .bp-media-item {
+	margin: 0.5em;
+	flex: 0 0 auto;
+    width: 30%;
+    max-width: 30%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+	background: #eee;
+	box-shadow: inset 0 0 15px rgb(0 0 0 / 10%), inset 0 0 0 1px rgb(0 0 0 / 5%);
+	box-sizing: border-box;
+}
+
+body.buddypress.attachments.directory .bp-attachments-media-list .bp-media-item figure {
+	padding: 0.5em;
+}

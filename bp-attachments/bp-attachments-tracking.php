@@ -325,6 +325,38 @@ function bp_attachments_tracking_exclude_from_activities( $where_conditions ) {
 add_filter( 'bp_activity_get_where_conditions', 'bp_attachments_tracking_exclude_from_activities', 1, 1 );
 
 /**
+ * Register the community directory assets.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_tracking_register_assets() {
+	$bp_attachments = buddypress()->attachments;
+
+	wp_register_script(
+		'bp-attachments-directory',
+		$bp_attachments->js_url . 'front-end/directory.js',
+		array(
+			'wp-dom-ready',
+			'lodash',
+		),
+		$bp_attachments->version,
+		true
+	);
+
+	// Let the theme customize the Media Directory styles.
+	$css = bp_attachments_locate_template_asset( 'css/attachments-media-directory.css' );
+	if ( isset( $css['uri'] ) ) {
+		wp_register_style(
+			'bp-attachments-directory',
+			$css['uri'],
+			array(),
+			$bp_attachments->version
+		);
+	}
+}
+add_action( 'bp_attachments_register_front_end_assets', 'bp_attachments_tracking_register_assets', 1 );
+
+/**
  * Enqueue the community directory assets.
  *
  * @since 1.0.0
@@ -333,6 +365,8 @@ function bp_attachments_enqueue_tracking_assets() {
 	if ( ! bp_attachments_is_community_media_directory() ) {
 		return;
 	}
+
+	wp_enqueue_style( 'bp-attachments-directory' );
 
 	$endpoint = sprintf(
 		'/%1$s/%2$s/attachments/tracking',
@@ -345,6 +379,14 @@ function bp_attachments_enqueue_tracking_assets() {
 		array( $endpoint ),
 		'rest_preload_api_request',
 		array()
+	);
+
+	wp_enqueue_script( 'bp-attachments-directory' );
+
+	wp_add_inline_script(
+		'bp-attachments-directory',
+		'window.bpAttachmentsDirectoryItems = ' . wp_json_encode( current( $preload_data ) ) . ';',
+		'before'
 	);
 }
 add_action( 'bp_enqueue_community_scripts', 'bp_attachments_enqueue_tracking_assets', 30 );
