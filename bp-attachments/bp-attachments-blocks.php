@@ -122,8 +122,7 @@ function bp_attachments_render_image_attachment( $attributes = array() ) {
 		return null;
 	}
 
-	// Return the `bp/image-attachment` output.
-	return sprintf(
+	$return = sprintf(
 		'<figure %1$s>
 			<a href="%2$s"><img src="%3$s" alt="" /></a>
 		</figure>',
@@ -131,6 +130,17 @@ function bp_attachments_render_image_attachment( $attributes = array() ) {
 		esc_url( $attachment_data['medium']->links['view'] ),
 		esc_url_raw( $attachment_data['medium']->links['src'] )
 	);
+
+	/**
+	 * Filter here to edit the rendered `bp/image-attachment` block output.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $return          The block output.
+	 * @param array  $attributes      The block attributes.
+	 * @param array  $attachment_data The block attachment's data.
+	 */
+	return apply_filters( 'bp_attachments_rendered_image_content', $return, $attributes, $attachment_data );
 }
 
 /**
@@ -153,14 +163,24 @@ function bp_attachments_render_video_attachment( $attributes = array() ) {
 		return null;
 	}
 
-	// Return the `bp/video-attachment` output.
-	return sprintf(
+	$return = sprintf(
 		'<figure %1$s>
 			<video controls="controls" preload="metadata" src="%2$s" />
 		</figure>',
 		$attachment_data['wrapper_attributes'],
 		esc_url_raw( $attachment_data['medium']->links['src'] )
 	);
+
+	/**
+	 * Filter here to edit the rendered `bp/video-attachment` block output.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $return          The block output.
+	 * @param array  $attributes      The block attributes.
+	 * @param array  $attachment_data The block attachment's data.
+	 */
+	return apply_filters( 'bp_attachments_rendered_video_content', $return, $attributes, $attachment_data );
 }
 
 /**
@@ -183,14 +203,24 @@ function bp_attachments_render_audio_attachment( $attributes = array() ) {
 		return null;
 	}
 
-	// Return the `bp/audio-attachment` output.
-	return sprintf(
+	$return = sprintf(
 		'<figure %1$s>
 			<audio controls="controls" preload="metadata" src="%2$s" />
 		</figure>',
 		$attachment_data['wrapper_attributes'],
 		esc_url_raw( $attachment_data['medium']->links['src'] )
 	);
+
+	/**
+	 * Filter here to edit the rendered `bp/audio-attachment` block output.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $return          The block output.
+	 * @param array  $attributes      The block attributes.
+	 * @param array  $attachment_data The block attachment's data.
+	 */
+	return apply_filters( 'bp_attachments_rendered_audio_content', $return, $attributes, $attachment_data );
 }
 
 /**
@@ -218,8 +248,7 @@ function bp_attachments_render_file_attachment( $attributes = array() ) {
 		$title = $attributes['name'];
 	}
 
-	// Return the `bp/file-attachment` output.
-	return sprintf(
+	$return = sprintf(
 		'<div %1$s>
 			<div class="bp-attachment-file-icon">
 				<a href="%2$s">
@@ -246,6 +275,17 @@ function bp_attachments_render_file_attachment( $attributes = array() ) {
 		esc_url_raw( $attachment_data['medium']->links['download'] ),
 		esc_html__( 'Download', 'bp-attachments' )
 	);
+
+	/**
+	 * Filter here to edit the rendered `bp/file-attachment` block output.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $return          The block output.
+	 * @param array  $attributes      The block attributes.
+	 * @param array  $attachment_data The block attachment's data.
+	 */
+	return apply_filters( 'bp_attachments_rendered_file_content', $return, $attributes, $attachment_data );
 }
 
 /**

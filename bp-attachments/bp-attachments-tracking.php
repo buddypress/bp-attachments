@@ -390,3 +390,32 @@ function bp_attachments_enqueue_tracking_assets() {
 	);
 }
 add_action( 'bp_enqueue_community_scripts', 'bp_attachments_enqueue_tracking_assets', 30 );
+
+/**
+ * Replaces the Audio, Video, and File BP Attachments block output with their icon.
+ *
+ * @since 1.0.0
+ *
+ * @param string $output          The block output.
+ * @param array  $attributes      The block attributes.
+ * @param array  $attachment_data The block attachment's data.
+ * @return string The block output.
+ */
+function bp_attachments_tracking_rendered_media_item_content( $output, $attributes, $attachment_data ) {
+	if ( bp_attachments_is_community_media_directory() && isset( $attachment_data['medium']->links['view'], $attachment_data['wrapper_attributes'] ) ) {
+		$output = sprintf(
+			'<figure %1$s>
+				<a href="%2$s"><img src="%3$s" alt="" /></a>
+			</figure>',
+			$attachment_data['wrapper_attributes'],
+			esc_url( $attachment_data['medium']->links['view'] ),
+			esc_url_raw( $attachment_data['medium']->icon )
+		);
+
+	}
+
+	return $output;
+}
+add_filter( 'bp_attachments_rendered_audio_content', 'bp_attachments_tracking_rendered_media_item_content', 10, 3 );
+add_filter( 'bp_attachments_rendered_video_content', 'bp_attachments_tracking_rendered_media_item_content', 10, 3 );
+add_filter( 'bp_attachments_rendered_file_content', 'bp_attachments_tracking_rendered_media_item_content', 10, 3 );

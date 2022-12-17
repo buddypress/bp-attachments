@@ -47,6 +47,10 @@ class bpAttachmentsDirectory {
 		this.items.forEach( ( item ) => {
 			this.container.innerHTML += this.renderItem( item );
 		} );
+
+		document.querySelectorAll( '.bp-media-item' ).forEach( ( renderedItem ) => {
+			renderedItem.style.height = renderedItem.clientWidth + 'px';
+		} );
 	}
 
 	/**
