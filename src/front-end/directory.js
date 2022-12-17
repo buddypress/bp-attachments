@@ -49,7 +49,12 @@ class bpAttachmentsDirectory {
 		} );
 
 		document.querySelectorAll( '.bp-media-item' ).forEach( ( renderedItem ) => {
-			renderedItem.style.height = renderedItem.clientWidth + 'px';
+			// Only show existing media.
+			if ( 5 < renderedItem.innerHTML.length ) {
+				renderedItem.style.height = renderedItem.clientWidth + 'px';
+			} else {
+				renderedItem.style.display = 'none';
+			}
 		} );
 	}
 
