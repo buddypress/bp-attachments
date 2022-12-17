@@ -4,6 +4,7 @@ body.buddypress.attachments.directory .bp-attachments-media-list {
 }
 
 body.buddypress.attachments.directory .bp-attachments-media-list .bp-media-item {
+	position: relative;
 	margin: 0.5em;
 	flex: 0 0 auto;
     width: 30%;
@@ -56,4 +57,44 @@ body.buddypress.attachments.directory div.wp-block-bp-file-attachment .bp-attach
 	margin-top: 0.5em;
 }
 
+body.buddypress.attachments.directory .bp-attachments-media-list .bp-media-item .bp-media-item-title {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	overflow: hidden;
+	height: 24px;
+	line-height: 1;
+	word-wrap: break-word;
+	background: rgba(255, 255, 255, 0.8);
+	box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+	box-sizing: border-box;
+	padding: 6px;
+	word-wrap: break-word;
+	text-align: center;
+	font-weight: 600;
+	font-size: 14px;
+}
+body.buddypress.attachments.directory .bp-attachments-media-list .bp-media-item .bp-media-item-title a {
+	display: block;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
 
+body.buddypress.attachments.directory .bp-attachments-media-list .bp-media-item .bp-media-item-author {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 36px;
+	height: 36px;
+	overflow: hidden;
+	margin: 6px;
+}
+
+body.buddypress.attachments.directory .bp-attachments-media-list .bp-media-item .bp-media-item-author .profile-photo {
+	width: 24px;
+	height: 24px;
+	border: solid 1px #fff;
+	background-color: #fff;
+}

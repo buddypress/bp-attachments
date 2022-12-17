@@ -369,7 +369,7 @@ function bp_attachments_enqueue_tracking_assets() {
 	wp_enqueue_style( 'bp-attachments-directory' );
 
 	$endpoint = sprintf(
-		'/%1$s/%2$s/attachments/tracking',
+		'/%1$s/%2$s/attachments/tracking?_embed',
 		bp_rest_namespace(),
 		bp_rest_version()
 	);
@@ -403,19 +403,31 @@ add_action( 'bp_enqueue_community_scripts', 'bp_attachments_enqueue_tracking_ass
  */
 function bp_attachments_tracking_rendered_media_item_content( $output, $attributes, $attachment_data ) {
 	if ( bp_attachments_is_community_media_directory() && isset( $attachment_data['medium']->links['view'], $attachment_data['wrapper_attributes'] ) ) {
-		$output = sprintf(
-			'<figure %1$s>
-				<a href="%2$s"><img src="%3$s" alt="" /></a>
-			</figure>',
-			$attachment_data['wrapper_attributes'],
-			esc_url( $attachment_data['medium']->links['view'] ),
-			esc_url_raw( $attachment_data['medium']->icon )
-		);
+		if ( 'bp_attachments_rendered_image_content' !== current_filter() ) {
+			$output = sprintf(
+				'<figure %1$s>
+					<a href="%2$s"><img src="%3$s" alt="" /></a>
+				</figure>',
+				$attachment_data['wrapper_attributes'],
+				esc_url( $attachment_data['medium']->links['view'] ),
+				esc_url_raw( $attachment_data['medium']->icon )
+			);
+		}
 
+		if ( isset( $attachment_data['medium']->title ) ) {
+			$output .= sprintf(
+				'<div class="bp-media-item-title">
+					<a href="%1$s">%2$s</a>
+				</div>',
+				esc_url( $attachment_data['medium']->links['view'] ),
+				esc_html( $attachment_data['medium']->title )
+			);
+		}
 	}
 
 	return $output;
 }
 add_filter( 'bp_attachments_rendered_audio_content', 'bp_attachments_tracking_rendered_media_item_content', 10, 3 );
 add_filter( 'bp_attachments_rendered_video_content', 'bp_attachments_tracking_rendered_media_item_content', 10, 3 );
+add_filter( 'bp_attachments_rendered_image_content', 'bp_attachments_tracking_rendered_media_item_content', 10, 3 );
 add_filter( 'bp_attachments_rendered_file_content', 'bp_attachments_tracking_rendered_media_item_content', 10, 3 );
