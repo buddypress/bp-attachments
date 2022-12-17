@@ -34,6 +34,10 @@ class bpAttachmentsDirectory {
 	 * @returns {string} HTML output.
 	 */
 	renderItem( props ) {
+		if ( props._embedded && props._embedded.owner ) {
+			props.owner = props._embedded.owner.at( 0 );
+		}
+
 		const Template = setTemplate( this.template );
 		return Template( props );
 	}
@@ -50,7 +54,7 @@ class bpAttachmentsDirectory {
 
 		document.querySelectorAll( '.bp-media-item' ).forEach( ( renderedItem ) => {
 			// Only show existing media.
-			if ( 5 < renderedItem.innerHTML.length ) {
+			if ( !! renderedItem.innerHTML.trim() ) {
 				renderedItem.style.height = renderedItem.clientWidth + 'px';
 			} else {
 				renderedItem.style.display = 'none';

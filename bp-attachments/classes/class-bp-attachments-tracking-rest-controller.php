@@ -166,6 +166,8 @@ class BP_Attachments_Tracking_REST_Controller extends WP_REST_Controller {
 		$data     = $this->filter_response_by_context( $data, $context );
 		$response = rest_ensure_response( $data );
 
+		$response->add_links( $this->prepare_links( $medium ) );
+
 		/**
 		 * Filter a medium value returned from the API.
 		 *
@@ -176,6 +178,35 @@ class BP_Attachments_Tracking_REST_Controller extends WP_REST_Controller {
 		 * @param Object           $medium   The medium object.
 		 */
 		return apply_filters( 'bp_attachments_tracking_rest_media_prepare_value', $response, $request, $medium );
+	}
+
+	/**
+	 * Prepare links for the request.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param Object $medium Medium object.
+	 * @return array
+	 */
+	protected function prepare_links( $medium ) {
+		$base = sprintf( '/%1$s/%2$s/', $this->namespace, $this->rest_base );
+
+		// Entity meta.
+		$links = array(
+			'collection' => array(
+				'href' => rest_url( $base ),
+			),
+		);
+
+		// Embeds.
+		if ( ! empty( $medium->user_id ) ) {
+			$links['owner'] = array(
+				'href'       => bp_rest_get_object_url( absint( $medium->user_id ), 'members' ),
+				'embeddable' => true,
+			);
+		}
+
+		return $links;
 	}
 
 	/**
