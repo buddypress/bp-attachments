@@ -1,3 +1,9 @@
+body.buddypress.attachments.directory #bp-attachments-nav {
+	border: none;
+	border-bottom: 1px solid var(--wp--preset--color--primary);
+	box-shadow: none;
+}
+
 body.buddypress.attachments.directory .bp-attachments-media-list {
 	display: flex;
 	flex-wrap: wrap;
