@@ -431,3 +431,62 @@ add_filter( 'bp_attachments_rendered_audio_content', 'bp_attachments_tracking_re
 add_filter( 'bp_attachments_rendered_video_content', 'bp_attachments_tracking_rendered_media_item_content', 10, 3 );
 add_filter( 'bp_attachments_rendered_image_content', 'bp_attachments_tracking_rendered_media_item_content', 10, 3 );
 add_filter( 'bp_attachments_rendered_file_content', 'bp_attachments_tracking_rendered_media_item_content', 10, 3 );
+
+/**
+ * Get the BP Attachments directory nav items.
+ *
+ * @since 1.0.0
+ *
+ * @return array The BP Attachments directory nav items.
+ */
+function bp_attachments_tracking_get_directory_nav_items() {
+	$default_nav_items = array(
+		'image' => __( 'Images', 'bp-attachments' ),
+		'video' => __( 'Movies', 'bp-attachments' ),
+		'audio' => __( 'Sounds', 'bp-attachments' ),
+	);
+
+	$allowed_media_types = bp_attachments_get_allowed_media_types();
+	$nav_items           = array_intersect_key( $default_nav_items, $allowed_media_types );
+	$file_types          = array(
+		'document'    => true,
+		'spreadsheet' => true,
+		'interactive' => true,
+		'text'        => true,
+		'archive'     => true,
+	);
+
+	if ( array_intersect_key( $default_nav_items, $allowed_media_types ) ) {
+		$nav_items['file'] = __( 'Other files', 'bp-attachments' );
+	}
+
+	/**
+	 * Use this filter to remove nav items if needed.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $nav_items The BP Attachments directory nav items.
+	 */
+	return apply_filters( 'bp_attachments_tracking_get_directory_nav_items', $nav_items );
+}
+
+/**
+ * Output the BP Attachments directory nav.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_tracking_output_directory_nav() {
+	$nav_items = bp_attachments_tracking_get_directory_nav_items();
+	?>
+	<nav id="bp-attachments-nav" class="main-navs bp-navs dir-navs" role="navigation" aria-label="<?php esc_attr_e( 'Attachments Directory menu', 'bp-attachments' ); ?>">
+		<ul class="component-navigation">
+			<li id="bp-attachments-any" class="selected" data-bp-scope="any" data-bp-object="attachments"><a href="#any-attachments"><?php esc_html_e( 'All Media', 'bp-attachments' ); ?></a></li>
+
+			<?php foreach ( $nav_items as $key_nav => $nav_text ) : ?>
+				<li id="bp-attachments-<?php echo esc_attr( $key_nav ); ?>" data-bp-scope="<?php echo esc_attr( $key_nav ); ?>" data-bp-object="attachments"><a href="#<?php echo esc_attr( $key_nav ); ?>-attachments"><?php echo esc_html( $nav_text ); ?></a></li>
+			<?php endforeach; ?>
+
+		</ul><!-- .component-navigation -->
+	</nav><!-- #bp-attachments-nav -->
+	<?php
+}
