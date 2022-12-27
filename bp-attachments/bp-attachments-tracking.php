@@ -43,6 +43,10 @@ function bp_attachments_tracking_get_meta_table() {
  * @return string The serialized as Block media type.
  */
 function bp_attachments_tracking_get_action( $media_type = 'file' ) {
+	if ( ! in_array( $media_type, array( 'image', 'video', 'audio', 'file' ), true ) ) {
+		$media_type = 'file';
+	}
+
 	return bp_attachments_get_serialized_block(
 		array(
 			'blockName'    => 'bp/attachments-action',
@@ -336,8 +340,9 @@ function bp_attachments_tracking_register_assets() {
 		'bp-attachments-directory',
 		$bp_attachments->js_url . 'front-end/directory.js',
 		array(
-			'wp-dom-ready',
 			'lodash',
+			'wp-dom-ready',
+			'wp-url',
 		),
 		$bp_attachments->version,
 		true
@@ -355,6 +360,34 @@ function bp_attachments_tracking_register_assets() {
 	}
 }
 add_action( 'bp_attachments_register_front_end_assets', 'bp_attachments_tracking_register_assets', 1 );
+
+/**
+ * Removes BP Generic JavaScript dependencies from the Community Media directory.
+ *
+ * @since 1.0.0
+ *
+ * @param array $scripts The BP Generic JavaScript dependencies.
+ * @return arrray Potentialy less Generic JavaScript dependencies.
+ */
+function bp_attachments_tracking_unregister_common_scripts( $scripts = array() ) {
+	if ( bp_attachments_is_community_media_directory() ) {
+		return array_diff_key(
+			$scripts,
+			array(
+				'bp-confirm'          => false,
+				'bp-jquery-query'     => false,
+				'bp-jquery-cookie'    => false,
+				'bp-jquery-scroll-to' => false,
+				'jquery-caret'        => false,
+				'jquery-atwho'        => false,
+				'bp-livestamp'        => false,
+			)
+		);
+	}
+
+	return $scripts;
+}
+add_filter( 'bp_core_register_common_scripts', 'bp_attachments_tracking_unregister_common_scripts', 0, 1 );
 
 /**
  * Enqueue the community directory assets.
@@ -381,11 +414,18 @@ function bp_attachments_enqueue_tracking_assets() {
 		array()
 	);
 
+	$settings = array(
+		'path'  => ltrim( $endpoint, '/' ),
+		'root'  => esc_url_raw( get_rest_url() ),
+		'nonce' => wp_create_nonce( 'wp_rest' ),
+		'items' => current( $preload_data ),
+	);
+
 	wp_enqueue_script( 'bp-attachments-directory' );
 
 	wp_add_inline_script(
 		'bp-attachments-directory',
-		'window.bpAttachmentsDirectoryItems = ' . wp_json_encode( current( $preload_data ) ) . ';',
+		'window.bpAttachmentsDirectorySettings = ' . wp_json_encode( $settings ) . ';',
 		'before'
 	);
 }

@@ -20,7 +20,15 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return bool True if the current page is the community media directory. False otherwise.
  */
 function bp_attachments_is_community_media_directory() {
-	return (bool) ( bp_is_directory() && bp_is_current_component( 'attachments' ) && ! bp_current_action() );
+	$retval = (bool) ( bp_is_directory() && bp_is_current_component( 'attachments' ) && ! bp_current_action() );
+
+	if ( ! $retval && defined( 'REST_REQUEST' ) && REST_REQUEST && isset( $_SERVER['HTTP_REFERER'] ) ) {
+		$referer = esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) );
+		$path    = wp_parse_url( $referer, PHP_URL_PATH );
+		$retval  = buddypress()->attachments->root_slug === trim( $path, '/' );
+	}
+
+	return $retval;
 }
 
 /**
