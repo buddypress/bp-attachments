@@ -3,6 +3,11 @@
  */
 const {
 	domReady,
+	url: {
+		addQueryArgs,
+		getPath,
+		getQueryArgs,
+	},
 } = wp;
 
 /**
@@ -18,11 +23,29 @@ class bpAttachmentsDirectory {
 	 *
 	 * @param {Object} preloadedData The preloaded data.
 	 */
-	constructor( preloadedData ) {
-		const { body } = preloadedData;
+	constructor( { path, root, nonce, items } ) {
+		const { body } = items;
 		this.items = body;
+		this.queryArgs = { ...getQueryArgs( path ), page: 1, per_page: 20 };
+		this.endpoint = getPath( root.replace( '/wp-json', '' ) + path );
+		this.root = root;
+		this.nonce = nonce;
+		this.scope = 'any';
+		this.isFetching = false;
+		this.totalItems = 0;
+		this.totalPages = 0;
 		this.template = 'bp-media-item';
 		this.container = document.querySelector( '#bp-media-directory' );
+
+		if ( 'headers' in items ) {
+			Object.keys( items.headers ).forEach( ( header ) => {
+				if ( 'X-WP-Total' === header ) {
+					this.totalItems = parseInt( items.headers[ header ], 10 );
+				} else if ( 'X-WP-TotalPages' === header ) {
+					this.totalPages = parseInt( items.headers[ header ], 10 );
+				}
+			} );
+		}
 	}
 
 	/**
@@ -47,8 +70,8 @@ class bpAttachmentsDirectory {
 	 *
 	 * @since 1.0.0
 	 */
-	renderItems() {
-		this.items.forEach( ( item ) => {
+	renderItems( items ) {
+		items.forEach( ( item ) => {
 			this.container.innerHTML += this.renderItem( item );
 		} );
 
@@ -63,23 +86,115 @@ class bpAttachmentsDirectory {
 	}
 
 	/**
+	 * Fetch community media according to query arguments.
+	 *
+	 * @since 1.0.0
+	 */
+	query() {
+		// Prevent multiple fetching.
+		this.isFetching = true;
+		const currentPage = parseInt( this.queryArgs.page, 10 );
+		const queryArgs = { ...this.queryArgs };
+
+		if ( 1 === queryArgs.page ) {
+			delete queryArgs.page;
+		}
+
+		setTimeout( () => {
+			fetch( addQueryArgs( this.root + this.endpoint, queryArgs ), {
+				method: 'GET',
+				headers: {
+					'X-WP-Nonce' : this.nonce,
+				}
+			} ).then(
+				( response ) => {
+					if ( 200 !== response.status ) {
+						return [];
+					}
+
+					this.totalItems = parseInt( response.headers.get( 'X-WP-Total' ), 10 );
+					this.totalPages = parseInt( response.headers.get( 'X-WP-TotalPages' ), 10 );
+
+					// Release the JSON data.
+					return response.json();
+				}
+			).then(
+				( data ) => {
+					if ( 1 === currentPage ) {
+						this.items = data;
+					} else {
+						this.items = [ ...this.items, data ];
+					}
+
+					this.renderItems( data );
+
+					// Make fetching available again.
+					this.isFetching = false;
+				}
+			).catch(
+				() => {
+					// Update query results.
+					this.items = [];
+					this.totalItems = 0;
+					this.totalPages = 1;
+				}
+			);
+		}, 500 );
+	}
+
+	/**
+	 * Add listeners to catch interface changes made by the user.
+	 *
+	 * @since 1.0.0
+	 */
+	setupListeners() {
+		document.addEventListener( 'click', ( e ) => {
+			const mainNavItem = e.target.closest( 'li[data-bp-scope]' );
+
+			if ( null !== mainNavItem && this.scope !== mainNavItem.dataset.bpScope ) {
+				e.preventDefault();
+
+				this.scope = mainNavItem.dataset.bpScope;
+				this.queryArgs.type = mainNavItem.dataset.bpScope;
+				this.container.innerHTML = '';
+
+				mainNavItem.closest( '.component-navigation' ).childNodes.forEach( ( child ) => {
+					if ( !! child.classList ) {
+						if ( mainNavItem.dataset.bpScope === child.dataset.bpScope ) {
+							child.classList.add( 'selected' )
+						} else {
+							child.classList.remove( 'selected' );
+						}
+					}
+				} );
+
+				// Reset the page argument before querying.
+				this.queryArgs.page = 1;
+				this.query();
+			}
+		} );
+	}
+
+	/**
 	 * Init the Directory.
 	 *
 	 * @since 1.0.0
 	 */
 	 start() {
+		this.setupListeners();
+
 		if ( ! this.items || ! this.items.length ) {
 			return;
 		}
 
-		this.renderItems();
+		this.renderItems( this.items );
 	 }
 }
 
 window.bp = window.bp || {};
 window.bp.Attachments = window.bp.Attachments || {};
 
-const preloadedData = window.bpAttachmentsDirectoryItems || {};
-window.bp.Attachments.Directory = new bpAttachmentsDirectory( preloadedData );
+const directorySettings = window.bpAttachmentsDirectorySettings || {};
+window.bp.Attachments.Directory = new bpAttachmentsDirectory( directorySettings );
 
 domReady( () => window.bp.Attachments.Directory.start() );

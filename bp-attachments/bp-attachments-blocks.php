@@ -323,13 +323,13 @@ function bp_attachments_get_serialized_medium_block( $medium ) {
 	if ( isset( $medium->name, $medium->media_type, $medium->links ) ) {
 		$public_media_types_src = array( 'image', 'audio', 'video' );
 		$attrs                  = array(
-			'url' => $medium->links['view'],
+			'url'   => $medium->links['view'],
+			'align' => 'center',
 		);
 
 		if ( 'public' === $medium->visibility && in_array( $medium->media_type, $public_media_types_src, true ) ) {
-			$attrs['src']   = $medium->links['src'];
-			$attrs['align'] = 'center';
-			$block_name     = sprintf( 'bp/%s-attachment', $medium->media_type );
+			$attrs['src'] = $medium->links['src'];
+			$block_name   = sprintf( 'bp/%s-attachment', $medium->media_type );
 		} else {
 			$attrs['name']      = $medium->name;
 			$attrs['mediaType'] = $medium->media_type;
