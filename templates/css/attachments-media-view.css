@@ -9,6 +9,18 @@ body.attachments.view .bp-attachment-video {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	flex-direction: column;
+}
+
+body.attachments.view .bp-attachment-audio figcaption,
+body.attachments.view .bp-attachment-video figcaption {
+	font-size: small;
+	margin: 0.5em auto;
+}
+
+body.attachments.view .bp-attachment-audio figcaption a,
+body.attachments.view .bp-attachment-video figcaption a {
+	border-bottom: solid 1px;
 }
 
 body.attachments.view .bp-attachments-medium-description {

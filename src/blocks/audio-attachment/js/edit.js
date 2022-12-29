@@ -51,6 +51,9 @@ const editAudio = ( { attributes, setAttributes } ) => {
 			</BlockControls>
 			<figure { ...blockProps }>
 				<audio controls="controls" preload="metadata" src={ src } />
+				<figcaption class="wp-element-caption">
+					{ __( 'If your browser does not take in charge this media format. Please download it to play it from your computer.', 'bp-attachments' ) }
+				</figcaption>
 			</figure>
 		</Fragment>
 	)

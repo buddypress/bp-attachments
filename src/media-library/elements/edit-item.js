@@ -111,12 +111,12 @@ const EditMediaItem = ( { medium, errorCallback } ) => {
 						) }
 						{ 'audio' === media_type && src && (
 							<audio controls="controls" preload="metadata" className="bp-attachment-medium-player">
-								<source src={ src } type={ mime_type } />
+								<source src={ src } />
 							</audio>
 						) }
 						{ 'video' === media_type && src && (
 							<video controls="controls" muted={ true } preload="metadata" className="bp-attachment-medium-player">
-								<source src={ src } type={ mime_type } />
+								<source src={ src } />
 							</video>
 						) }
 					</div>

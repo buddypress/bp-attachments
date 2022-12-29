@@ -165,10 +165,12 @@ function bp_attachments_render_video_attachment( $attributes = array() ) {
 
 	$return = sprintf(
 		'<figure %1$s>
-			<video controls="controls" preload="metadata" src="%2$s" />
+			<video controls="controls" preload="metadata" src="%2$s"></video>
+			<figcaption class="wp-element-caption">%3$s</figcaption>
 		</figure>',
 		$attachment_data['wrapper_attributes'],
-		esc_url_raw( $attachment_data['medium']->links['src'] )
+		esc_url_raw( $attachment_data['medium']->links['src'] ),
+		bp_attachments_get_medium_fallback_text( $attachment_data['medium']->links['download'] )
 	);
 
 	/**
@@ -205,10 +207,12 @@ function bp_attachments_render_audio_attachment( $attributes = array() ) {
 
 	$return = sprintf(
 		'<figure %1$s>
-			<audio controls="controls" preload="metadata" src="%2$s" />
+			<audio controls="controls" preload="metadata" src="%2$s"></audio>
+			<figcaption class="wp-element-caption">%3$s</figcaption>
 		</figure>',
 		$attachment_data['wrapper_attributes'],
-		esc_url_raw( $attachment_data['medium']->links['src'] )
+		esc_url_raw( $attachment_data['medium']->links['src'] ),
+		bp_attachments_get_medium_fallback_text( $attachment_data['medium']->links['download'] )
 	);
 
 	/**

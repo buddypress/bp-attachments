@@ -580,13 +580,25 @@ function bp_attachments_medium_classes() {
 	$classes = array( 'bp-embed-media', 'wp-embed-featured-image' );
 	$medium  = bp_attachments_get_queried_object();
 
-	if ( ( isset( $medium->orientation ) && 'landscape' === $medium->orientation ) || 'audio' === $medium->media_type ) {
+	if ( ( isset( $medium->orientation ) && 'landscape' === $medium->orientation ) || 'audio' === $medium->media_type || 'video' === $medium->media_type ) {
 		$classes[] = 'rectangular';
 	} else {
 		$classes[] = 'square';
 	}
 
 	echo implode( ' ', array_map( 'sanitize_html_class', $classes ) );
+}
+
+function bp_attachments_get_medium_fallback_text( $download_url = '' ) {
+	return sprintf(
+		/* translators: %s is the link to download the media */
+		esc_html__( 'If your browser does not take in charge this media format. Please %s to play it from your computer.', 'bp-attachments' ),
+		sprintf(
+			'<a href="%1$s">%2$s</a>',
+			esc_url( $download_url ),
+			esc_html__( 'download it', 'bp-attachments' )
+		)
+	);
 }
 
 /**
@@ -614,39 +626,21 @@ function bp_attachments_get_medium_output() {
 		case 'video' === $medium->media_type && isset( $medium->links['src'] ):
 			$output = sprintf(
 				'<video controls="controls" muted="true" preload="metadata">
-					<source src="%1$s" type="%2$s">
-					<p>%3$s</p>
-				</video>',
+					<source src="%1$s">
+				</video>
+				<figcaption class="wp-element-caption">%2$s</figcaption>',
 				esc_url( $medium->links['src'] ),
-				esc_attr( $medium->mime_type ),
-				sprintf(
-					/* translators: %s is the link to download the video */
-					esc_html__( 'Your browser does not take in charge this video format. Please %s to play it from your computer', 'bp-attachments' ),
-					sprintf(
-						'<a href="%1$s">%2$s</a>',
-						esc_url( bp_attachments_get_medium_download_url() ),
-						esc_html__( 'download it', 'bp-attachments' )
-					)
-				)
+				bp_attachments_get_medium_fallback_text( bp_attachments_get_medium_download_url() )
 			);
 			break;
 		case 'audio' === $medium->media_type && isset( $medium->links['src'] ):
 			$output = sprintf(
 				'<audio controls="controls" preload="metadata">
-					<source src="%1$s" type="%2$s">
-					<p>%3$s</p>
-				</audio>',
+					<source src="%1$s">
+				</audio>
+				<figcaption class="wp-element-caption">%2$s</figcaption>',
 				esc_url( $medium->links['src'] ),
-				esc_attr( $medium->mime_type ),
-				sprintf(
-					/* translators: %s is the link to download the audio */
-					esc_html__( 'Your browser does not take in charge this audio format. Please %s to play it from your computer', 'bp-attachments' ),
-					sprintf(
-						'<a href="%1$s">%2$s</a>',
-						esc_url( bp_attachments_get_medium_download_url() ),
-						esc_html__( 'download it', 'bp-attachments' )
-					)
-				)
+				bp_attachments_get_medium_fallback_text( bp_attachments_get_medium_download_url() )
 			);
 			break;
 		default:

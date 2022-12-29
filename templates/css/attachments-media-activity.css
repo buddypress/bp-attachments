@@ -95,4 +95,14 @@ body.activity.buddypress figure.aligncenter {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	flex-direction: column;
+}
+
+body.activity.buddypress figure figcaption {
+	font-size: small;
+	margin: 0.5em auto;
+}
+
+body.activity.buddypress figure figcaption a {
+	border-bottom: solid 1px;
 }

@@ -60,3 +60,12 @@ video {
 audio {
 	width: 100%;
 }
+
+figcaption {
+	font-size: smaller;
+	margin: 0.5em auto;
+}
+
+figcaption a {
+	border-bottom: solid 1px;
+}
