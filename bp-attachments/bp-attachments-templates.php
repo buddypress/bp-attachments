@@ -589,6 +589,14 @@ function bp_attachments_medium_classes() {
 	echo implode( ' ', array_map( 'sanitize_html_class', $classes ) );
 }
 
+/**
+ * Provide a fallback text including a download link in case the browser can't display the medium.
+ *
+ * @since 1.0.0
+ *
+ * @param string $download_url The Attachment medium download URL.
+ * @return string HTML Output.
+ */
 function bp_attachments_get_medium_fallback_text( $download_url = '' ) {
 	return sprintf(
 		/* translators: %s is the link to download the media */

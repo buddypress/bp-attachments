@@ -354,9 +354,10 @@ class BP_Attachments_Tracking_REST_Controller extends WP_REST_Controller {
 	 * @return array
 	 */
 	public function get_collection_params() {
-		$bp                           = buddypress();
-		$params                       = parent::get_collection_params();
-		$params['context']['default'] = 'view';
+		$bp                            = buddypress();
+		$params                        = parent::get_collection_params();
+		$params['context']['default']  = 'view';
+		$params['per_page']['default'] = 20;
 
 		$params['order'] = array(
 			'description'       => __( 'Order by attribute.', 'bp-attachments' ),

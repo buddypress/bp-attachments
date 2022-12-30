@@ -96,6 +96,8 @@ class bpAttachmentsDirectory {
 				renderedItem.style.display = 'none';
 			}
 		} );
+
+		this.loadMore();
 	}
 
 	/**
@@ -126,6 +128,29 @@ class bpAttachmentsDirectory {
 		for ( let i = 0; i < numSkeletons; i++ ) {
 			this.container.innerHTML += this.renderItem( skeleton, template );
 		}
+	}
+
+	loadMore() {
+		// Observe the last entry to perform an infinite scroll.
+		let observedElement = document.querySelector( '.bp-attachments-media-list > div:not(.bp-skeleton):last-child' );
+		let observer = new IntersectionObserver(
+			( entries ) => {
+				entries.forEach( ( entry ) => {
+					if ( entry.isIntersecting && ! this.isFetching && parseInt( this.queryArgs.page, 10 ) < this.totalPages ) {
+						this.queryArgs.page += 1;
+
+						// Load next page.
+						this.query();
+					}
+				} )
+			}, {
+				root: null,
+				rootMargin: '0px',
+				threshold: 1.0,
+			}
+		);
+
+		observer.observe( observedElement );
 	}
 
 	/**
