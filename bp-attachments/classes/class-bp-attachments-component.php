@@ -154,11 +154,17 @@ class BP_Attachments_Component extends BP_Component {
 	 * @param array $args See BP_Component::setup_globals() for a description.
 	 */
 	public function setup_globals( $args = array() ) {
-		$bp = buddypress();
+		$bp            = buddypress();
+		$root_slug     = 'bp-attachments';
+		$has_directory = bp_is_active( $this->id, 'tracking' );
+
+		if ( $has_directory && isset( $bp->pages->{ $this->id }->slug ) ) {
+			$root_slug = $bp->pages->{ $this->id }->slug;
+		}
 
 		// Rewrite args.
 		$rewrite_args = array(
-			'root_slug'   => 'bp-attachments',
+			'root_slug'   => $root_slug,
 			'rewrite_ids' => array(
 				'directory'                    => 'bp_attachments',
 				'directory_visibility'         => 'bp_attachments_visibility',
@@ -172,7 +178,7 @@ class BP_Attachments_Component extends BP_Component {
 		// Globals for BuddyPress components.
 		$args = array(
 			'slug'                  => $this->id,
-			'has_directory'         => false,
+			'has_directory'         => $has_directory,
 			'notification_callback' => 'bp_attachments_format_notifications',
 			'directory_title'       => __( 'Community Media', 'bp-attachments' ),
 		);
@@ -718,5 +724,24 @@ class BP_Attachments_Component extends BP_Component {
 		}
 
 		parent::blocks_init( $blocks_list );
+	}
+
+	/**
+	 * Add the Attachments directory state.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array   $states Optional. See BP_Component::admin_directory_states() for description.
+	 * @param WP_Post $post   Optional. See BP_Component::admin_directory_states() for description.
+	 * @return array          See BP_Component::admin_directory_states() for description.
+	 */
+	public function admin_directory_states( $states = array(), $post = null ) {
+		$bp = buddypress();
+
+		if ( isset( $bp->pages->{ $this->id }->id ) && (int) $bp->pages->{ $this->id }->id === (int) $post->ID ) {
+			$states['page_for_attachments_directory'] = _x( 'BP Attachments Page', 'page label', 'bp-attachments' );
+		}
+
+		return parent::admin_directory_states( $states, $post );
 	}
 }
