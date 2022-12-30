@@ -531,3 +531,45 @@ function bp_attachments_tracking_output_directory_nav() {
 	</nav><!-- #bp-attachments-nav -->
 	<?php
 }
+
+/**
+ * Delete rewrite rules once the BP Attachments directory page has been mapped by BuddyPress.
+ *
+ * Doing so makes sure these rules are regenerated during next front-end page load.
+ *
+ * @since 1.0.0
+ *
+ * @param array $old_value The previous list of directory page IDs keyed with corresponding components slug.
+ * @param array $value     The updated list of directory page IDs keyed with corresponding components slug.
+ */
+function bp_attachments_admin_bp_page_mapped_clean_rewrite_rules( $old_value, $value ) {
+	if ( isset( $value['attachments'] ) && ! isset( $old_value['attachments'] ) ) {
+		delete_option( 'rewrite_rules' );
+	}
+}
+add_action( 'update_option_bp-pages', 'bp_attachments_admin_bp_page_mapped_clean_rewrite_rules', 10, 2 );
+
+/**
+ * Delete rewrite rules in case the BP Attachments directory page's slug has been updated.
+ *
+ * Doing so makes sure these rules are regenerated during next front-end page load.
+ *
+ * @since 1.0.0
+ *
+ * @param integer $post_id     The post ID.
+ * @param WP_Post $post_after  The updated version of the post object.
+ * @param WP_Post $post_before The previous version of the post object.
+ */
+function bp_attachments_admin_bp_page_updated_clean_rewrite_rules( $post_id, $post_after, $post_before ) {
+	if ( ! isset( $post_after->post_name ) || ! isset( $post_before->post_name ) ) {
+		return;
+	}
+
+	$directory_page_id = bp_core_get_directory_page_id( 'attachments' );
+
+	// There's a directory page and the user changed its slug.
+	if ( $directory_page_id && (int) $directory_page_id === (int) $post_id && $post_after->post_name !== $post_before->post_name ) {
+		delete_option( 'rewrite_rules' );
+	}
+}
+add_action( 'post_updated', 'bp_attachments_admin_bp_page_updated_clean_rewrite_rules', 10, 3 );
