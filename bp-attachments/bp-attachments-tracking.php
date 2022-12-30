@@ -415,10 +415,11 @@ function bp_attachments_enqueue_tracking_assets() {
 	);
 
 	$settings = array(
-		'path'  => ltrim( $endpoint, '/' ),
-		'root'  => esc_url_raw( get_rest_url() ),
-		'nonce' => wp_create_nonce( 'wp_rest' ),
-		'items' => current( $preload_data ),
+		'path'        => ltrim( $endpoint, '/' ),
+		'root'        => esc_url_raw( get_rest_url() ),
+		'nonce'       => wp_create_nonce( 'wp_rest' ),
+		'placeholder' => esc_url_raw( wp_mime_type_icon( 'default' ) ),
+		'items'       => current( $preload_data ),
 	);
 
 	wp_enqueue_script( 'bp-attachments-directory' );

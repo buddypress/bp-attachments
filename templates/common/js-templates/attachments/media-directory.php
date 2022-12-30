@@ -28,3 +28,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 		{{{ data.content.rendered }}}
 	</div>
 </script>
+
+<script type="html/template" id="tmpl-bp-media-skeleton">
+	<div class="bp-media-item skeleton">
+		<div class="bp-media-item-author">
+			<div class="avatar profile-photo"></div>
+		</div>
+		<figure class="aligncenter wp-block-bp-file-attachment">
+			<img src="{{{data.placeholder}}}" alt="">
+		</figure>
+		<div class="bp-media-item-title">
+			<span class="title-placeholder"></span>
+		</div>
+	</div>
+</script>

@@ -21,9 +21,14 @@ class bpAttachmentsDirectory {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param {Object} preloadedData The preloaded data.
+	 * @param {Object} directorySettings The Attachments directory settings.
+	 * @param {string} directorySettings.path The BP REST API path.
+	 * @param {string} directorySettings.root The REST API root path.
+	 * @param {string} directorySettings.nonce The REST API nonce value.
+	 * @param {string} directorySettings.placeholder The URL of the WordPress default mime type image.
+	 * @param {Object} directorySettings.items The result of the preloaeded BP PREST API request.
 	 */
-	constructor( { path, root, nonce, items } ) {
+	constructor( { path, root, nonce, placeholder, items } ) {
 		const { body } = items;
 		this.items = body;
 		this.queryArgs = { ...getQueryArgs( path ), page: 1, per_page: 20 };
@@ -35,6 +40,7 @@ class bpAttachmentsDirectory {
 		this.totalItems = 0;
 		this.totalPages = 0;
 		this.template = 'bp-media-item';
+		this.filePlaceholder = placeholder;
 		this.container = document.querySelector( '#bp-media-directory' );
 
 		if ( 'headers' in items ) {
@@ -54,14 +60,19 @@ class bpAttachmentsDirectory {
 	 * @since 1.0.0
 	 *
 	 * @param {Object} props The medium properties.
+	 * @param {string} template The template to use.
 	 * @returns {string} HTML output.
 	 */
-	renderItem( props ) {
+	renderItem( props, template ) {
 		if ( props._embedded && props._embedded.owner ) {
 			props.owner = props._embedded.owner.at( 0 );
 		}
 
-		const Template = setTemplate( this.template );
+		if ( ! template ) {
+			template = this.template;
+		}
+
+		const Template = setTemplate( template );
 		return Template( props );
 	}
 
@@ -69,6 +80,8 @@ class bpAttachmentsDirectory {
 	 * Renders Media.
 	 *
 	 * @since 1.0.0
+	 *
+	 * @param {Array} items The list of Attachment objects to render.
 	 */
 	renderItems( items ) {
 		items.forEach( ( item ) => {
@@ -86,11 +99,43 @@ class bpAttachmentsDirectory {
 	}
 
 	/**
+	 * Renders a skeleton loader when changing scope and filters.
+	 *
+	 * @since 1.0.0
+	 */
+	doSkeletonLoading() {
+		const skeleton = {
+			id: 0,
+			placeholder: this.filePlaceholder,
+		};
+		const template = 'bp-media-skeleton';
+		let numSkeletons = parseInt( this.queryArgs.per_page, 10 );
+		const perPage = numSkeletons;
+		const currentPage = parseInt( this.queryArgs.page, 10 );
+
+		// Reset the container, it it's the first page.
+		if ( 1 === this.queryArgs.page ) {
+			this.container.innerHTML = '';
+		} else {
+			const maxNumDisplayed = currentPage * perPage;
+			if ( maxNumDisplayed > this.totalItems ) {
+				numSkeletons = this.totalItems - this.items.length;
+			}
+		}
+
+		for ( let i = 0; i < numSkeletons; i++ ) {
+			this.container.innerHTML += this.renderItem( skeleton, template );
+		}
+	}
+
+	/**
 	 * Fetch community media according to query arguments.
 	 *
 	 * @since 1.0.0
 	 */
 	query() {
+		this.doSkeletonLoading();
+
 		// Prevent multiple fetching.
 		this.isFetching = true;
 		const currentPage = parseInt( this.queryArgs.page, 10 );
@@ -138,6 +183,10 @@ class bpAttachmentsDirectory {
 					this.totalItems = 0;
 					this.totalPages = 1;
 				}
+			).finally(
+				() => {
+					this.container.querySelectorAll( '.bp-media-item.skeleton' ).forEach( ( skull ) => skull.remove() );
+				}
 			);
 		}, 500 );
 	}
@@ -156,7 +205,6 @@ class bpAttachmentsDirectory {
 
 				this.scope = mainNavItem.dataset.bpScope;
 				this.queryArgs.type = mainNavItem.dataset.bpScope;
-				this.container.innerHTML = '';
 
 				mainNavItem.closest( '.component-navigation' ).childNodes.forEach( ( child ) => {
 					if ( !! child.classList ) {
