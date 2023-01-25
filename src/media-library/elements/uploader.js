@@ -106,7 +106,12 @@ const MediaLibraryUploader = ( { settings } ) => {
 				</FormFileUpload>
 			</div>
 			<div className="upload-restrictions">
-				<p>{ sprintf( __( 'Maximum upload file size: %s.', 'bp-attachments' ), bytesToSize( maxUploadFileSize ) ) }</p>
+				<p>
+				{
+					/* translators: %s is the max size allowed for a media file */
+					sprintf( __( 'Maximum upload file size: %s.', 'bp-attachments' ), bytesToSize( maxUploadFileSize ) )
+				}
+				</p>
 			</div>
 		</div>
 	);

@@ -19,6 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<span class="bp-help-text">
 				<?php
 					printf(
+						/* translators: %s is the WP login link */
 						esc_html__( 'You need to %s to be able to download this media.', 'bp-attachments' ),
 						sprintf(
 							'<a href="%1$s">%2$s</a>',

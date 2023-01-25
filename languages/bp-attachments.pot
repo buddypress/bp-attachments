@@ -1,5 +1,5 @@
-# Copyright (C) 2021 The BuddyPress Community
-# This file is distributed under the same license as the BP Attachments plugin.
+# Copyright (C) 2023 The BuddyPress Community
+# This file is distributed under the GPL-2.0+.
 msgid ""
 msgstr ""
 "Project-Id-Version: BP Attachments 1.0.0-alpha\n"
@@ -9,13 +9,12 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-02-28T14:31:49+01:00\n"
+"POT-Creation-Date: 2023-01-25T20:09:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.4.0\n"
+"X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: bp-attachments\n"
 
 #. Plugin Name of the plugin
-#: bp-attachments/js/dist/block/index.js:5
 msgid "BP Attachments"
 msgstr ""
 
@@ -24,7 +23,7 @@ msgid "https://github.com/buddypress/bp-attachments"
 msgstr ""
 
 #. Description of the plugin
-msgid "BP Attachments is a BuddyPress component to manage user media."
+msgid "BP Attachments is a BuddyPress component to manage your community media."
 msgstr ""
 
 #. Author of the plugin
@@ -35,332 +34,1272 @@ msgstr ""
 msgid "http://buddypress.org/community/members/"
 msgstr ""
 
-#: bp-attachments/bp-attachments-admin.php:82
-#: bp-attachments/bp-attachments-admin.php:152
-msgid "BuddyPress Media Library"
+#: bp-attachments/bp-attachments-activity.php:87
+msgid "Attach Media"
 msgstr ""
 
-#: bp-attachments/bp-attachments-admin.php:83
-msgid "BuddyPress Library"
+#: bp-attachments/bp-attachments-admin.php:53
+msgid "Community Library"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:107
-msgctxt "public status slug"
+#: bp-attachments/bp-attachments-admin.php:55
+msgid "Community Libraries"
+msgstr ""
+
+#: bp-attachments/bp-attachments-blocks.php:49
+#: bp-attachments/classes/class-bp-attachments-component.php:183
+#: src/blocks/common/components/attachment-placeholder.js:120
+msgid "Community Media"
+msgstr ""
+
+#: bp-attachments/bp-attachments-blocks.php:280
+#: src/blocks/file-attachment/js/edit.js:80
+msgid "Download"
+msgstr ""
+
+#: bp-attachments/bp-attachments-functions.php:263
+#: bp-attachments/classes/class-bp-attachments-component.php:38
+msgid "Attachments"
+msgstr ""
+
+#: bp-attachments/bp-attachments-functions.php:264
+msgid "Empower your community with user generated media."
+msgstr ""
+
+#: bp-attachments/bp-attachments-functions.php:313
+msgid "The server’s document root is missing."
+msgstr ""
+
+#: bp-attachments/bp-attachments-functions.php:322
+msgid "The private root directory is missing."
+msgstr ""
+
+#: bp-attachments/bp-attachments-functions.php:330
+msgid "The private root directory is not writeable."
+msgstr ""
+
+#: bp-attachments/bp-attachments-functions.php:357
+msgid "The private root directory is not set the right way."
+msgstr ""
+
+#: bp-attachments/bp-attachments-functions.php:438
+msgctxt "public visibility slug"
 msgid "public"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:108
-msgctxt "private status slug"
+#: bp-attachments/bp-attachments-functions.php:439
+msgctxt "private visibility slug"
 msgid "private"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:121
+#: bp-attachments/bp-attachments-functions.php:461
 msgctxt "member object slug"
 msgid "members"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:122
-msgctxt "group object slug"
-msgid "groups"
-msgstr ""
-
-#: bp-attachments/bp-attachments-functions.php:135
+#: bp-attachments/bp-attachments-functions.php:475
 msgctxt "download action slug"
 msgid "download"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:136
+#: bp-attachments/bp-attachments-functions.php:476
 msgctxt "view action slug"
 msgid "view"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:396
-msgid "Private"
+#: bp-attachments/bp-attachments-functions.php:477
+msgctxt "embed action slug"
+msgid "embed"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:400
-msgid "This Private directory and its children are only visible to logged in users."
-msgstr ""
-
-#: bp-attachments/bp-attachments-functions.php:409
+#: bp-attachments/bp-attachments-functions.php:1016
 msgid "Public"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:413
+#: bp-attachments/bp-attachments-functions.php:1020
 msgid "This Public directory and its children are visible to everyone."
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:467
-msgid "This directory contains the media directories attached to this group"
+#: bp-attachments/bp-attachments-functions.php:1029
+msgid "This Private directory and its children are only visible to you. Files and folders within this private directory can be shared with the users you chose."
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:485
-msgid "My Groups"
+#. Translators: %s is the user's username
+#: bp-attachments/bp-attachments-functions.php:1033
+msgid "This Private directory and its children are only visible to %s. Files and folders within this private directory can be shared with the users they chose."
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:490
-msgid "This directory contains the media directories of the groups you are a member of."
+#: bp-attachments/bp-attachments-functions.php:1041
+msgid "Private"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:499
+#: bp-attachments/bp-attachments-functions.php:1113
+#: bp-attachments/classes/class-bp-attachments-component.php:329
 msgid "My Media"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:503
+#: bp-attachments/bp-attachments-functions.php:1117
 msgid "This directory contains all your personal media."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-component.php:28
-msgid "Attachments"
+#. Translators: %s is the username
+#: bp-attachments/bp-attachments-functions.php:1177
+msgid "%s’s Media"
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-component.php:127
-msgid "User Media"
+#. Translators: %s is the username
+#: bp-attachments/bp-attachments-functions.php:1185
+msgid "This directory contains all %s’s personal media."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-component.php:169
-#: bp-attachments/classes/class-bp-attachments-component.php:230
-msgid "Media"
+#: bp-attachments/bp-attachments-functions.php:1270
+msgid "Image"
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-component.php:192
-#: bp-attachments/classes/class-bp-attachments-component.php:242
-msgid "Personal"
+#: bp-attachments/bp-attachments-functions.php:1271
+msgid "Movie"
 msgstr ""
 
-#. translators: %s is the Displayed User full name
-#: bp-attachments/classes/class-bp-attachments-component.php:276
+#: bp-attachments/bp-attachments-functions.php:1272
+msgid "Sound"
+msgstr ""
+
+#: bp-attachments/bp-attachments-functions.php:1273
+msgid "Document"
+msgstr ""
+
+#: bp-attachments/bp-attachments-functions.php:1274
+msgid "Spreadsheet"
+msgstr ""
+
+#: bp-attachments/bp-attachments-functions.php:1275
+msgid "Presentation"
+msgstr ""
+
+#: bp-attachments/bp-attachments-functions.php:1276
+msgid "Text"
+msgstr ""
+
+#: bp-attachments/bp-attachments-functions.php:1277
+msgid "Archive"
+msgstr ""
+
+#. Translators: %s is the file size in kilobytes
+#: bp-attachments/bp-attachments-functions.php:1497
+msgid "%s KB"
+msgstr ""
+
+#. Translators: %s is the file size in gigabytes
+#: bp-attachments/bp-attachments-functions.php:1510
+msgid "%s GB"
+msgstr ""
+
+#. Translators: %s is the file size in megabytes
+#: bp-attachments/bp-attachments-functions.php:1514
+msgid "%s MB"
+msgstr ""
+
+#: bp-attachments/bp-attachments-groups.php:29
+msgctxt "group object slug"
+msgid "groups"
+msgstr ""
+
+#: bp-attachments/bp-attachments-groups.php:163
+msgid "This directory contains the media directories attached to this group"
+msgstr ""
+
+#: bp-attachments/bp-attachments-groups.php:184
+msgid "My Groups Media"
+msgstr ""
+
+#: bp-attachments/bp-attachments-groups.php:189
+msgid "This directory contains the media directories of the groups you are a member of."
+msgstr ""
+
+#: bp-attachments/bp-attachments-profile-images.php:404
+msgid "Member Types"
+msgstr ""
+
+#: bp-attachments/bp-attachments-profile-images.php:405
+msgid "Member Type"
+msgstr ""
+
+#. translators: 1. is The private root directory absolute path. 2. is the uploads relative path.
+#: bp-attachments/bp-attachments-settings.php:40
+msgid "The %1$s directory needs to share the same user group than the %2$s one."
+msgstr ""
+
+#. translators: 1. The private root directory absolute path. 2. The server's user group
+#: bp-attachments/bp-attachments-settings.php:50
+msgid "The %1$s directory needs to have \"%2$s\" as its user group."
+msgstr ""
+
+#. translators: 1. is The private root directory absolute path. 2. is the uploads relative path.
+#: bp-attachments/bp-attachments-settings.php:61
+msgid "The %s directory needs to be owned by the same user than the WordPress uploads one."
+msgstr ""
+
+#. translators: 1. The private root directory absolute path. 2. The server's user name
+#: bp-attachments/bp-attachments-settings.php:71
+msgid "The %1$s directory needs be owned by \"%2$s\"."
+msgstr ""
+
+#. translators: 1. The private root directory absolute path. 2. is the uploads relative path. 3. The WP uploads directory file permissions.
+#: bp-attachments/bp-attachments-settings.php:82
+msgid "The %1$s directory needs to share the same permissions than the WordPress %2$s one: %3$s."
+msgstr ""
+
+#. translators: %s is The private root directory absolute path
+#: bp-attachments/bp-attachments-settings.php:98
+msgid "Please make sure the %s exists and is writeable for the server’s user."
+msgstr ""
+
+#. Translators: %s is the category name of the listed mime types.
+#: bp-attachments/bp-attachments-settings.php:159
+msgid "Select/Unselect all %s mime types"
+msgstr ""
+
+#: bp-attachments/bp-attachments-settings.php:236
+msgid "BP Attachments settings to store the allowed media types."
+msgstr ""
+
+#: bp-attachments/bp-attachments-settings.php:248
+msgid "BP Attachments settings to let the admin enable private uploads."
+msgstr ""
+
+#: bp-attachments/bp-attachments-settings.php:264
+msgid "Allowed media types"
+msgstr ""
+
+#: bp-attachments/bp-attachments-settings.php:272
+msgid "Private media"
+msgstr ""
+
+#. translators: %s is the displayed User full name
+#: bp-attachments/bp-attachments-templates.php:227
+#: bp-attachments/classes/class-bp-attachments-component.php:342
 msgid "Profile picture of %s"
 msgstr ""
 
+#. translators: %s is the user link.
+#: bp-attachments/bp-attachments-templates.php:355
+msgid "%s shared a media."
+msgstr ""
+
+#. translators: %s is the link to download the media
+#: bp-attachments/bp-attachments-templates.php:603
+msgid "If your browser does not take in charge this media format. Please %s to play it from your computer."
+msgstr ""
+
+#: bp-attachments/bp-attachments-templates.php:607
+msgid "download it"
+msgstr ""
+
+#: bp-attachments/bp-attachments-tracking.php:485
+msgid "Images"
+msgstr ""
+
+#: bp-attachments/bp-attachments-tracking.php:486
+msgid "Movies"
+msgstr ""
+
+#: bp-attachments/bp-attachments-tracking.php:487
+msgid "Sounds"
+msgstr ""
+
+#: bp-attachments/bp-attachments-tracking.php:501
+msgid "Other files"
+msgstr ""
+
+#: bp-attachments/bp-attachments-tracking.php:522
+msgid "Attachments Directory menu"
+msgstr ""
+
+#: bp-attachments/bp-attachments-tracking.php:524
+msgid "All Media"
+msgstr ""
+
+#: bp-attachments/bp-attachments-users.php:27
+#: bp-attachments/bp-attachments-users.php:48
+msgid "Total space in bytes used by user’s files"
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-component.php:235
+#: bp-attachments/classes/class-bp-attachments-component.php:296
+msgid "Media"
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-component.php:258
+#: bp-attachments/classes/class-bp-attachments-component.php:308
+msgid "Personal"
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-component.php:742
+msgctxt "page label"
+msgid "BP Attachments Page"
+msgstr ""
+
 #. translators: %s is for the max upload file size.
-#: bp-attachments/classes/class-bp-attachments-media.php:49
+#: bp-attachments/classes/class-bp-attachments-media.php:45
 msgid "That media is too big. Please upload one smaller than %s"
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-media.php:52
-msgid "This file type is not allowed. Please use another one."
+#: bp-attachments/classes/class-bp-attachments-media.php:48
+msgid "This file type is not allowed into this directory. Please use another one."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-media.php:53
+#: bp-attachments/classes/class-bp-attachments-media.php:49
 msgid "A file with this name already exists but the revisions directory is missing."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-media.php:54
+#: bp-attachments/classes/class-bp-attachments-media.php:50
 msgid "A file with this name already exists but the data describing this existing file are missing."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-media.php:55
+#: bp-attachments/classes/class-bp-attachments-media.php:51
 msgid "Unexpected error, please contact the administrator of the site."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-media.php:56
+#: bp-attachments/classes/class-bp-attachments-media.php:52
 msgid "The destination directory is missing."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-media.php:57
-msgid "Unknown group. Please try again"
+#: bp-attachments/classes/class-bp-attachments-media.php:53
+msgid "Unknown user, item or destination directory. Please try again."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-media.php:58
-msgid "Unknown user. Please try again"
+#: bp-attachments/classes/class-bp-attachments-media.php:54
+msgid "Private uploads are disabled. Try uploading your file publicly instead."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-media.php:342
+#: bp-attachments/classes/class-bp-attachments-media.php:296
 msgid "The name of your directory or its type are missing or not supported."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-media.php:364
+#: bp-attachments/classes/class-bp-attachments-media.php:322
+msgid "Creating sub-directories into the current directory is not allowed."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-media.php:332
 msgid "There is already a directory with this name into the requested destination."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:54
-msgid "Whether to upload a media or create a directory."
+#: bp-attachments/classes/class-bp-attachments-oembed-extension.php:81
+msgid "Embedded Community Media"
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:74
+#. translators: 1. The medium title. 2. The user display name. 3. The user mention name between parenthesis. 4. The date.
+#: bp-attachments/classes/class-bp-attachments-oembed-extension.php:264
+msgid "%1$s is shared by %2$s%3$s since %4$s."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-profile-image-rest-controller.php:56
+msgid "The object the profile image is attached to."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-profile-image-rest-controller.php:66
+msgid "A unique numeric ID for the Object."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-profile-image-rest-controller.php:71
+msgid "The captured image area to use as the object’s profile image."
+msgstr ""
+
+#. translators: %s: transport method name
+#: bp-attachments/classes/class-bp-attachments-profile-image-rest-controller.php:94
+#: bp-attachments/classes/class-bp-attachments-profile-image-rest-controller.php:113
+msgid "'%s' Transport Method not implemented."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-profile-image-rest-controller.php:132
+msgid "Sorry, member avatar upload is disabled."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-profile-image-rest-controller.php:140
+msgid "Invalid member ID."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-profile-image-rest-controller.php:157
+msgid "Sorry, you are not allowed to change this member’s profile image."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-profile-image-rest-controller.php:198
+msgid "Sorry, you need an image file to upload."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-profile-image-rest-controller.php:220
+msgid "Sorry, we could not create your profile image."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-profile-image-rest-controller.php:289
+msgid "Full size of the image file."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-profile-image-rest-controller.php:296
+msgid "Thumb size of the image file."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:63
+msgid "Whether to upload a medium or create a directory."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:72
+msgid "The object the medium is uploaded for."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:81
+msgid "The object single item the medium is uploaded for."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:89
+msgid "The object type the medium is attached to."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:97
+msgid "The object id the medium is attached to."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:105
+msgid "The total bytes sent during an upload process."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:124
 msgid "An alphanumeric ID for the BP Medium object."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:78
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:128
 msgid "Relative path to the BP Medium object."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:113
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:133
+msgid "The total bytes to remove after a delete process."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:170
 msgid "Sorry, you are not allowed to request media."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:244
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:306
+msgid "The page number requested is larger than the number of pages available."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:371
 msgid "Sorry, you are not allowed to create media."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:284
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:320
-msgid "No data supplied."
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:415
+msgid "No files were provided."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:401
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:444
+msgid "You cannot upload files into the required destination"
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:499
+msgid "You cannot create directories into the required destination"
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:509
+msgid "Some information are missing to be able to create the directory."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:536
+msgid "This action is not supported by the BP Attachments plugin."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:636
+msgid "Sorry, you are not allowed to edit media."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:676
+msgid "Sorry, we were not able to edit the media."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:726
 msgid "Sorry, you are not allowed to delete media."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:471
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:759
 msgid "Sorry, we were not able to delete the media."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:615
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:954
 msgid "Relative path to the directory to only list its content."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:621
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:960
 msgid "Limit result set to items created by a specific user (ID)."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:637
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:976
 msgid "Limit result set to items attached to active BuddyPress component."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:672
-msgid "A unique alphanumeric ID for the media."
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:1011
+msgid "A unique alphanumeric ID for the medium."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:680
-msgid "The name of the media."
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:1019
+msgid "A unique numeric ID for the user owning the medium."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:687
-msgid "The pretty name of the media."
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:1027
+msgid "The name of the BuddyPress component the medium is attached to."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:694
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:701
-msgid "The description of the media."
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:1035
+msgid "The name of the medium."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:709
-msgid "Whether the media is a directory or a file."
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:1042
+msgid "The pretty name of the medium."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:718
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:726
-msgid "Timestamp of the last time the media was modified."
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:1049
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:1057
+msgid "The description of the medium."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:734
-msgid "Url of the image to use as a vignette."
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:1065
+msgid "Whether the medium is a directory or a file."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:743
-msgid "Orientation for the vignette."
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:1074
+msgid "Timestamp of the last time the medium was modified."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:752
-msgid "Extension of the file."
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:1082
+msgid "Size in kilobytes for the medium."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:760
-msgid "Human readable media type"
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:1090
+msgid "URL of the image to use as a vignette for the medium."
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-rest-controller.php:768
-msgid "The path to the media"
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:1099
+msgid "URL of the image to use as an icon for the medium."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:1108
+msgid "Orientation for the image medium."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:1117
+msgid "Extension of the medium file."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:1125
+msgid "Human readable medium type"
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:1133
+msgid "Whether the medium is private or public"
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:1142
+msgid "Whether the medium (directory) is readonly or not"
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:1151
+msgid "The medium links."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:1159
+msgid "The embed URL for the medium."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:1166
+msgid "The source URL to the public medium."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:1173
+msgid "The view permalink to the medium."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-rest-controller.php:1182
+msgid "List of objects the medium is attached to"
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-tracking-rest-controller.php:228
+msgid "A unique numeric ID for the tracked media."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-tracking-rest-controller.php:234
+msgid "The active BuddyPress component the tracked media relates to."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-tracking-rest-controller.php:243
+msgid "The ID for the author of the tracked media."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-tracking-rest-controller.php:249
+msgid "The permalink to the tracked media on the site."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-tracking-rest-controller.php:255
+msgid "The type of the tracked media."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-tracking-rest-controller.php:264
+msgid "Allowed HTML content for the tracked media."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-tracking-rest-controller.php:272
+msgid "Content for the tracked media, as it exists in the database."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-tracking-rest-controller.php:277
+msgid "HTML content for the tracked media, transformed for display."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-tracking-rest-controller.php:286
+msgid "The date the activity was published, in the site's timezone."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-tracking-rest-controller.php:293
+msgid "The date the activity was published, as GMT."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-tracking-rest-controller.php:300
+msgid "Whether the media is privately or publicly tracked."
+msgstr ""
+
+#. translators: 1: Full avatar width in pixels. 2: Full avatar height in pixels
+#: bp-attachments/classes/class-bp-attachments-tracking-rest-controller.php:313
+msgid "Avatar URL with full image size (%1$d x %2$d pixels)."
+msgstr ""
+
+#. translators: 1: Thumb avatar width in pixels. 2: Thumb avatar height in pixels
+#: bp-attachments/classes/class-bp-attachments-tracking-rest-controller.php:321
+msgid "Avatar URL with thumb image size (%1$d x %2$d pixels)."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-tracking-rest-controller.php:328
+msgid "Avatar URLs for the author of the activity."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-tracking-rest-controller.php:363
+msgid "Order by attribute."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-tracking-rest-controller.php:372
+msgid "Sort attribute: ascending or descending."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-tracking-rest-controller.php:381
+msgid "Limit result set to items with a specific active BuddyPress component."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-tracking-rest-controller.php:390
+msgid "Limit result set to items with a specific media type."
+msgstr ""
+
+#: bp-attachments/classes/class-bp-attachments-tracking-rest-controller.php:399
+msgid "Whether to fetch publicly or privately tracked media."
+msgstr ""
+
+#: class-bp-attachments.php:172
+msgctxt "BuddyPress WP plugin directory URL"
+msgid "https://wordpress.org/plugins/buddypress"
+msgstr ""
+
+#. translators: 1. is the link to the BuddyPress plugin on the WordPress.org plugin directory.
+#: class-bp-attachments.php:178
+msgid "BP Attachments requires the %1$s plugin to be active. Please deactivate BP Attachments, activate %1$s and only then, reactivate BP Attachments."
+msgstr ""
+
+#. translators: %s is the WP login link
+#: templates/attachments/single/download.php:23
+msgid "You need to %s to be able to download this media."
+msgstr ""
+
+#: templates/attachments/single/download.php:27
+#: templates/attachments/single/view.php:52
+msgid "log in"
+msgstr ""
+
+#: templates/attachments/single/download.php:36
+#: templates/attachments/single/view.php:61
+msgid "This media is private and its owner has not shared it with you."
+msgstr ""
+
+#: templates/attachments/single/parts/single-audio.php:19
+#: templates/attachments/single/parts/single-image.php:21
+#: templates/attachments/single/parts/single-video.php:19
+#: templates/attachments/single/parts/single.php:23
+msgid "Lastly edited on:"
+msgstr ""
+
+#: templates/attachments/single/parts/single-audio.php:21
+msgid "Audio type:"
+msgstr ""
+
+#: templates/attachments/single/parts/single-audio.php:23
+msgid "Audio size:"
+msgstr ""
+
+#: templates/attachments/single/parts/single-image.php:23
+msgid "Image type:"
+msgstr ""
+
+#: templates/attachments/single/parts/single-image.php:25
+msgid "Image size:"
+msgstr ""
+
+#: templates/attachments/single/parts/single-video.php:21
+msgid "Video type:"
+msgstr ""
+
+#: templates/attachments/single/parts/single-video.php:23
+msgid "Video size:"
+msgstr ""
+
+#: templates/attachments/single/parts/single.php:25
+#: templates/common/js-templates/attachments/media-preview.php:34
+msgid "File type:"
+msgstr ""
+
+#: templates/attachments/single/parts/single.php:27
+#: templates/common/js-templates/attachments/media-item.php:65
+#: templates/common/js-templates/attachments/media-preview.php:36
+msgid "File size:"
+msgstr ""
+
+#: templates/attachments/single/view.php:30
+msgid "Shared by: "
+msgstr ""
+
+#. translators: %s is the WP login link
+#: templates/attachments/single/view.php:48
+msgid "You need to %s to be able to view this media."
 msgstr ""
 
 #: templates/common/js-templates/attachments/media-item.php:33
+#: templates/common/js-templates/attachments/media-item.php:71
 msgid "Deselect"
 msgstr ""
 
-#: bp-attachments/js/dist/block/index.js:7
-msgid "BuddyPress Attachments Media."
+#: templates/common/js-templates/attachments/media-item.php:63
+msgid "Disk usage:"
 msgstr ""
 
-#: bp-attachments/js/dist/uploader/index.js:1479
-msgid "Upload new"
+#: templates/common/js-templates/attachments/media-preview.php:16
+#: templates/common/js-templates/attachments/media-preview.php:17
+msgid "Remove media"
 msgstr ""
 
-#: bp-attachments/js/dist/uploader/index.js:1483
-msgid "More actions"
+#: templates/common/js-templates/attachments/media-preview.php:32
+msgid "File name:"
 msgstr ""
 
-#: bp-attachments/js/dist/uploader/index.js:1489
-msgid "Add new directory"
+#: templates/members/single/profile/edit-avatar.php:15
+msgid "Change Profile Photo"
 msgstr ""
 
-#: bp-attachments/js/dist/uploader/index.js:1552
+#. Translators: %s is used to output the link to the Gravatar site
+#: templates/members/single/profile/edit-avatar.php:27
+msgid "Your profile photo will be used on your profile and throughout the site. If there is a %s associated with your account email we will use that, or you can upload an image from your computer."
+msgstr ""
+
+#. Translators: Url to the Gravatar site, you can use the one for your country eg: https://fr.gravatar.com for French translation
+#: templates/members/single/profile/edit-avatar.php:29
+#: templates/members/single/profile/edit-avatar.php:45
+msgid "https://gravatar.com"
+msgstr ""
+
+#. Translators: %s is used to output the link to the Gravatar site
+#: templates/members/single/profile/edit-avatar.php:43
+msgid "Your profile photo will be used on your profile and throughout the site. To change your profile photo, create an account with %s using the same email address as you used to register with this site."
+msgstr ""
+
+#: templates/members/single/profile/edit-cover-image.php:15
+msgid "Change Cover Image"
+msgstr ""
+
+#: templates/members/single/profile/edit-cover-image.php:21
+msgid "Your Cover Image will be used to customize the header of your profile."
+msgstr ""
+
+#: src/avatar-editor/elements/cropper.js:60
+msgid "Zoom"
+msgstr ""
+
+#: src/avatar-editor/elements/cropper.js:67
+msgid "Save profile photo"
+msgstr ""
+
+#: src/avatar-editor/elements/uploader.js:26
+msgid "Drop your image here."
+msgstr ""
+
+#: src/avatar-editor/elements/uploader.js:31
+msgid "Drop an image here"
+msgstr ""
+
+#: src/avatar-editor/elements/uploader.js:32
+#: src/media-library/elements/uploader.js:98
+#: bp-attachments/js/media-library/index.js:1647
+msgid "or"
+msgstr ""
+
+#: src/avatar-editor/elements/uploader.js:39
+msgid "Select an image"
+msgstr ""
+
+#: src/avatar-editor/index.js:126
+msgid "Profile image successfully saved."
+msgstr ""
+
+#: src/avatar-editor/index.js:132
+msgid "Unknow error. Please try again."
+msgstr ""
+
+#: src/blocks/audio-attachment/js/edit.js:36
+msgid "Community Audio"
+msgstr ""
+
+#: src/blocks/audio-attachment/js/edit.js:55
+#: src/blocks/video-attachment/js/edit.js:55
+msgid "If your browser does not take in charge this media format. Please download it to play it from your computer."
+msgstr ""
+
+#: src/blocks/common/components/attachment-placeholder.js:134
+msgid "Select a file"
+msgstr ""
+
+#: src/blocks/file-attachment/js/edit.js:47
+msgid "Community File"
+msgstr ""
+
+#: src/blocks/file-attachment/js/edit.js:72
+msgid "Write file name…"
+msgstr ""
+
+#: src/blocks/image-attachment/js/edit.js:36
+msgid "Community Image"
+msgstr ""
+
+#: src/blocks/video-attachment/js/edit.js:36
+msgid "Community Video"
+msgstr ""
+
+#: src/media-library/elements/directory-creator.js:65
+#: bp-attachments/js/media-library/index.js:1730
 msgid "Create a new directory"
 msgstr ""
 
-#: bp-attachments/js/dist/uploader/index.js:1554
+#: src/media-library/elements/directory-creator.js:66
+#: bp-attachments/js/media-library/index.js:1731
 msgid "Type a name for your directory"
 msgstr ""
 
-#: bp-attachments/js/dist/uploader/index.js:1559
-msgid "Select a type for your directory"
-msgstr ""
-
-#: bp-attachments/js/dist/uploader/index.js:1562
-msgid "File directory"
-msgstr ""
-
-#: bp-attachments/js/dist/uploader/index.js:1563
-msgid "Photo Album"
-msgstr ""
-
-#: bp-attachments/js/dist/uploader/index.js:1564
-msgid "Audio Playlist"
-msgstr ""
-
-#: bp-attachments/js/dist/uploader/index.js:1565
-msgid "Video Playlist"
-msgstr ""
-
-#: bp-attachments/js/dist/uploader/index.js:1570
+#: src/media-library/elements/directory-creator.js:67
+#: bp-attachments/js/media-library/index.js:1732
 msgid "Save directory"
 msgstr ""
 
-#: bp-attachments/js/dist/uploader/index.js:1638
+#: src/media-library/elements/directory-creator.js:70
+#: bp-attachments/js/media-library/index.js:1735
+msgid "Create a new photo album"
+msgstr ""
+
+#: src/media-library/elements/directory-creator.js:71
+#: bp-attachments/js/media-library/index.js:1736
+msgid "Type a name for your photo album"
+msgstr ""
+
+#: src/media-library/elements/directory-creator.js:72
+#: bp-attachments/js/media-library/index.js:1737
+msgid "Save photo album"
+msgstr ""
+
+#: src/media-library/elements/directory-creator.js:74
+#: bp-attachments/js/media-library/index.js:1739
+msgid "Create a new audio playlist"
+msgstr ""
+
+#: src/media-library/elements/directory-creator.js:75
+#: bp-attachments/js/media-library/index.js:1740
+msgid "Type a name for your audio playlist"
+msgstr ""
+
+#: src/media-library/elements/directory-creator.js:76
+#: bp-attachments/js/media-library/index.js:1741
+msgid "Save audio playlist"
+msgstr ""
+
+#: src/media-library/elements/directory-creator.js:78
+#: bp-attachments/js/media-library/index.js:1743
+msgid "Create a new video playlist"
+msgstr ""
+
+#: src/media-library/elements/directory-creator.js:79
+#: bp-attachments/js/media-library/index.js:1744
+msgid "Type a name for your video playlist"
+msgstr ""
+
+#: src/media-library/elements/directory-creator.js:80
+#: bp-attachments/js/media-library/index.js:1745
+msgid "Save video playlist"
+msgstr ""
+
+#: src/media-library/elements/directory-creator.js:86
+#: bp-attachments/js/media-library/index.js:1751
+msgid "Close the Create directory form"
+msgstr ""
+
+#: src/media-library/elements/edit-item.js:99
+#: bp-attachments/js/media-library/index.js:1866
+msgid "Open directory page"
+msgstr ""
+
+#: src/media-library/elements/edit-item.js:99
+#: bp-attachments/js/media-library/index.js:1866
+msgid "Open media page"
+msgstr ""
+
+#: src/media-library/elements/edit-item.js:101
+#: bp-attachments/js/media-library/index.js:1868
+msgid "Download media"
+msgstr ""
+
+#. translators: %s is the media name
+#: src/media-library/elements/edit-item.js:132
+#: bp-attachments/js/media-library/index.js:1896
+msgid "Edit %s"
+msgstr ""
+
+#: src/media-library/elements/edit-item.js:135
+#: bp-attachments/js/media-library/index.js:1897
+msgid "Use the below fields to edit media properties."
+msgstr ""
+
+#: src/media-library/elements/edit-item.js:137
+#: bp-attachments/js/media-library/index.js:1899
+msgid "Title"
+msgstr ""
+
+#: src/media-library/elements/edit-item.js:140
+#: bp-attachments/js/media-library/index.js:1902
+msgid "Change the title of your medium to something more descriptive then its file name."
+msgstr ""
+
+#: src/media-library/elements/edit-item.js:143
+#: bp-attachments/js/media-library/index.js:1905
+msgid "Description"
+msgstr ""
+
+#: src/media-library/elements/edit-item.js:146
+#: bp-attachments/js/media-library/index.js:1908
+msgid "Add or edit the description of your medium to tell your story about it."
+msgstr ""
+
+#. translators: 1: the list of libraries per-page. 2: the total number of libraries
+#: src/media-library/elements/footer.js:74
+#: bp-attachments/js/media-library/index.js:2555
+msgid "Showing %1$s of %2$s media libraries"
+msgstr ""
+
+#: src/media-library/elements/footer.js:77
+#: bp-attachments/js/media-library/index.js:2558
+msgid "Showing one media library"
+msgstr ""
+
+#: src/media-library/elements/footer.js:83
+#: bp-attachments/js/media-library/index.js:2564
+msgid "Load more"
+msgstr ""
+
+#: src/media-library/elements/header.js:51
+#: bp-attachments/js/media-library/index.js:1430
+msgid "Community Media Libraries"
+msgstr ""
+
+#: src/media-library/elements/header.js:51
+#: bp-attachments/js/media-library/index.js:1430
+msgid "Community Media Library"
+msgstr ""
+
+#: src/media-library/elements/header.js:83
+#: bp-attachments/js/media-library/index.js:1462
+msgid "Add new directory"
+msgstr ""
+
+#: src/media-library/elements/header.js:93
+#: bp-attachments/js/media-library/index.js:1472
+msgid "Add new photo album"
+msgstr ""
+
+#: src/media-library/elements/header.js:100
+#: bp-attachments/js/media-library/index.js:1479
+msgid "Add new audio playlist"
+msgstr ""
+
+#: src/media-library/elements/header.js:107
+#: bp-attachments/js/media-library/index.js:1486
+msgid "Add new video playlist"
+msgstr ""
+
+#: src/media-library/elements/header.js:135
+#: bp-attachments/js/media-library/index.js:1514
+msgid "Library"
+msgstr ""
+
+#: src/media-library/elements/header.js:143
+#: bp-attachments/js/media-library/index.js:1522
+msgid "Add new"
+msgstr ""
+
+#: src/media-library/elements/header.js:147
+#: bp-attachments/js/media-library/index.js:1526
+msgid "More actions"
+msgstr ""
+
+#: src/media-library/elements/header.js:153
+#: bp-attachments/js/media-library/index.js:1532
+msgid "Upload media"
+msgstr ""
+
+#: src/media-library/elements/item.js:84
+#: src/media-library/elements/toolbar.js:231
+#: bp-attachments/js/media-library/index.js:2155
+#: bp-attachments/js/media-library/index.js:2279
+msgid "Media details"
+msgstr ""
+
+#: src/media-library/elements/main.js:72
+#: bp-attachments/js/media-library/index.js:2474
+msgid "No community media items found."
+msgstr ""
+
+#. translators: 1: file name. 2: error message.
+#: src/media-library/elements/notices.js:61
+#: bp-attachments/js/media-library/index.js:2351
+msgid "« %1$s » wasn‘t added to the media library. %2$s"
+msgstr ""
+
+#: src/media-library/elements/notices.js:76
+#: bp-attachments/js/media-library/index.js:2366
+msgid "Uploading the media, please wait."
+msgstr ""
+
+#. translators: %d: number of media being uploaded.
+#: src/media-library/elements/notices.js:79
+#: bp-attachments/js/media-library/index.js:2369
+msgid "Uploading %d media, please wait."
+msgstr ""
+
+#: src/media-library/elements/toolbar.js:207
+#: bp-attachments/js/media-library/index.js:2131
 msgid "Display list"
 msgstr ""
 
-#: bp-attachments/js/dist/uploader/index.js:1641
+#: src/media-library/elements/toolbar.js:210
+#: bp-attachments/js/media-library/index.js:2134
 msgid "Display grid"
 msgstr ""
 
-#: bp-attachments/js/dist/uploader/index.js:1647
+#: src/media-library/elements/toolbar.js:216
+#: bp-attachments/js/media-library/index.js:2140
+msgid "Select"
+msgstr ""
+
+#: src/media-library/elements/toolbar.js:216
+#: bp-attachments/js/media-library/index.js:2140
+msgid "Cancel Selection"
+msgstr ""
+
+#: src/media-library/elements/toolbar.js:221
+#: bp-attachments/js/media-library/index.js:2145
+msgid "Edit"
+msgstr ""
+
+#: src/media-library/elements/toolbar.js:226
+#: bp-attachments/js/media-library/index.js:2150
 msgid "Delete selection"
 msgstr ""
 
-#: bp-attachments/js/dist/uploader/index.js:1651
-msgid "Bulk Select"
+#: src/media-library/elements/toolbar.js:241
+#: bp-attachments/js/media-library/index.js:2165
+msgid "All members"
 msgstr ""
 
-#: bp-attachments/js/dist/uploader/index.js:1651
-msgid "Cancel"
+#: src/media-library/elements/toolbar.js:241
+#: bp-attachments/js/media-library/index.js:2165
+msgid "Home"
 msgstr ""
 
-#: bp-attachments/js/dist/uploader/index.js:1766
-msgid "Details for: %s"
-msgstr ""
-
-#: bp-attachments/js/dist/uploader/index.js:1774
-msgid "@todo Fetch the Media properties."
-msgstr ""
-
-#: bp-attachments/js/dist/uploader/index.js:2003
-msgid "Uploaded!"
-msgstr ""
-
-#: bp-attachments/js/dist/uploader/index.js:2011
-msgid "Uploading..."
-msgstr ""
-
-#: bp-attachments/js/dist/uploader/index.js:2056
-msgid "Close the upload panel"
-msgstr ""
-
-#: bp-attachments/js/dist/uploader/index.js:2060
+#: src/media-library/elements/uploader.js:89
+#: bp-attachments/js/media-library/index.js:1638
 msgid "Drop your files here."
 msgstr ""
 
-#: bp-attachments/js/dist/uploader/index.js:2068
-msgid "Close the Create directory form"
+#: src/media-library/elements/uploader.js:94
+#: bp-attachments/js/media-library/index.js:1643
+msgid "Close the upload panel"
+msgstr ""
+
+#: src/media-library/elements/uploader.js:97
+#: bp-attachments/js/media-library/index.js:1646
+msgid "Drop files to upload"
+msgstr ""
+
+#: src/media-library/elements/uploader.js:105
+#: bp-attachments/js/media-library/index.js:1654
+msgid "Select Files"
+msgstr ""
+
+#. translators: %s is the max size allowed for a media file
+#: src/media-library/elements/uploader.js:112
+#: bp-attachments/js/media-library/index.js:1658
+msgid "Maximum upload file size: %s."
+msgstr ""
+
+#: src/media-library/utils/functions.js:28
+#: bp-attachments/js/front-end/activity.js:46
+#: bp-attachments/js/front-end/messages.js:46
+#: bp-attachments/js/media-library/index.js:35
+msgid "Bytes"
+msgstr ""
+
+#: src/media-library/utils/functions.js:29
+#: bp-attachments/js/front-end/activity.js:47
+#: bp-attachments/js/front-end/messages.js:47
+#: bp-attachments/js/media-library/index.js:36
+msgid "KB"
+msgstr ""
+
+#: src/media-library/utils/functions.js:30
+#: bp-attachments/js/front-end/activity.js:48
+#: bp-attachments/js/front-end/messages.js:48
+#: bp-attachments/js/media-library/index.js:37
+msgid "MB"
+msgstr ""
+
+#: src/media-library/utils/functions.js:31
+#: bp-attachments/js/front-end/activity.js:49
+#: bp-attachments/js/front-end/messages.js:49
+#: bp-attachments/js/media-library/index.js:38
+msgid "GB"
+msgstr ""
+
+#: src/media-library/utils/functions.js:32
+#: bp-attachments/js/front-end/activity.js:50
+#: bp-attachments/js/front-end/messages.js:50
+#: bp-attachments/js/media-library/index.js:39
+msgid "TB"
+msgstr ""
+
+#: src/blocks/audio-attachment/block.json
+msgctxt "block title"
+msgid "Sound"
+msgstr ""
+
+#: src/blocks/audio-attachment/block.json
+msgctxt "block description"
+msgid "Insert a sound from your personal media library."
+msgstr ""
+
+#: src/blocks/audio-attachment/block.json
+#: src/blocks/file-attachment/block.json
+#: src/blocks/image-attachment/block.json
+#: src/blocks/video-attachment/block.json
+msgctxt "block keyword"
+msgid "BuddyPress"
+msgstr ""
+
+#: src/blocks/audio-attachment/block.json
+#: src/blocks/file-attachment/block.json
+#: src/blocks/image-attachment/block.json
+#: src/blocks/video-attachment/block.json
+msgctxt "block keyword"
+msgid "community"
+msgstr ""
+
+#: src/blocks/audio-attachment/block.json
+msgctxt "block keyword"
+msgid "audio"
+msgstr ""
+
+#: src/blocks/audio-attachment/block.json
+msgctxt "block keyword"
+msgid "sound"
+msgstr ""
+
+#: src/blocks/audio-attachment/block.json
+msgctxt "block keyword"
+msgid "music"
+msgstr ""
+
+#: src/blocks/audio-attachment/block.json
+#: src/blocks/file-attachment/block.json
+#: src/blocks/image-attachment/block.json
+#: src/blocks/video-attachment/block.json
+msgctxt "block keyword"
+msgid "media"
+msgstr ""
+
+#: src/blocks/file-attachment/block.json
+msgctxt "block title"
+msgid "File"
+msgstr ""
+
+#: src/blocks/file-attachment/block.json
+msgctxt "block description"
+msgid "Insert a file from your personal media library."
+msgstr ""
+
+#: src/blocks/file-attachment/block.json
+msgctxt "block keyword"
+msgid "file"
+msgstr ""
+
+#: src/blocks/image-attachment/block.json
+msgctxt "block title"
+msgid "Picture"
+msgstr ""
+
+#: src/blocks/image-attachment/block.json
+msgctxt "block description"
+msgid "Insert a picture from your personal media library."
+msgstr ""
+
+#: src/blocks/image-attachment/block.json
+msgctxt "block keyword"
+msgid "image"
+msgstr ""
+
+#: src/blocks/image-attachment/block.json
+msgctxt "block keyword"
+msgid "img"
+msgstr ""
+
+#: src/blocks/image-attachment/block.json
+msgctxt "block keyword"
+msgid "picture"
+msgstr ""
+
+#: src/blocks/image-attachment/block.json
+msgctxt "block keyword"
+msgid "photo"
+msgstr ""
+
+#: src/blocks/video-attachment/block.json
+msgctxt "block title"
+msgid "Movie"
+msgstr ""
+
+#: src/blocks/video-attachment/block.json
+msgctxt "block description"
+msgid "Insert a movie from your personal media library."
+msgstr ""
+
+#: src/blocks/video-attachment/block.json
+msgctxt "block keyword"
+msgid "video"
+msgstr ""
+
+#: src/blocks/video-attachment/block.json
+msgctxt "block keyword"
+msgid "movie"
 msgstr ""

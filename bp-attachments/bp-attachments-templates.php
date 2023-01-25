@@ -223,7 +223,7 @@ function bp_attachments_medium_get_owner_avatar() {
 				'width'   => '45',
 				'height'  => '45',
 				'html'    => true,
-				/* translators: %s: member name */
+				/* translators: %s is the displayed User full name */
 				'alt'     => sprintf( __( 'Profile picture of %s', 'bp-attachments' ), bp_core_get_user_displayname( $medium->owner_id ) ),
 			)
 		);

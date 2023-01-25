@@ -70,6 +70,7 @@ const MediaLibraryFooter = ( { settings } ) => {
 			<p className="load-more-count">
 				{
 					1 !== totalUserLibraries ? sprintf(
+						/* translators: 1: the list of libraries per-page. 2: the total number of libraries */
 						__( 'Showing %1$s of %2$s media libraries', 'bp-attachments' ),
 						mediaCount,
 						totalUserLibraries

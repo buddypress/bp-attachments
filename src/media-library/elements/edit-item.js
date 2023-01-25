@@ -126,7 +126,12 @@ const EditMediaItem = ( { medium, errorCallback } ) => {
 				</div>
 			</div>
 			<div className="bp-attachment-edit-item__form">
-				<h3>{ sprintf( __( 'Edit %s', 'bp-attachments' ), name ) }</h3>
+				<h3>
+					{
+						/* translators: %s is the media name */
+						sprintf( __( 'Edit %s', 'bp-attachments' ), name )
+					}
+				</h3>
 				<p className="description">{ __( 'Use the below fields to edit media properties.', 'bp-attachments' ) }</p>
 				<TextControl
 					label={ __( 'Title', 'bp-attachments' ) }

@@ -338,7 +338,7 @@ class BP_Attachments_Component extends BP_Component {
 						'item_id' => bp_displayed_user_id(),
 						'type'    => 'thumb',
 						'alt'     => sprintf(
-							/* translators: %s is the Displayed User full name */
+							/* translators: %s is the displayed User full name */
 							__( 'Profile picture of %s', 'bp-attachments' ),
 							bp_get_displayed_user_fullname()
 						),
