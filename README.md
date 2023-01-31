@@ -9,7 +9,7 @@ Current Features
 
 + Front-end and back-end Media library for all your members.
 + Administrators can moderate Members media from the back-end Media library.
-+ Members can upload public or private media into their personal Media Library as well as organized them creating file directories, photo albums, movie or music playlists.
++ Members can upload public or private media into their personal Media Library as well as organize them creating file directories, photo albums, movie or music playlists.
 + User media blocks for all your site's content contributors.
 + Members can upload and attach public media to their activity updates (Needs the BP Activity component to be active).
 + Members can upload and attach private media to their private messages (Needs the BP Messages component to be active).
