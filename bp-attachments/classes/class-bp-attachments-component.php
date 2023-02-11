@@ -17,6 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
+#[AllowDynamicProperties]
 class BP_Attachments_Component extends BP_Component {
 	/**
 	 * Whether private uploads are enabled or not.

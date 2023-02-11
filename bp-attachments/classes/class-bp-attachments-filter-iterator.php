@@ -24,9 +24,12 @@ class BP_Attachments_Filter_Iterator extends FilterIterator {
 	 * These files are describing the Media.
 	 *
 	 * @since 1.0.0
+	 *
+	 * @return bool True if it's a JSON file. False otherwise.
 	 */
+	#[ReturnTypeWillChange]
 	public function accept() {
 		$spl_file_info = $this->getInnerIterator()->current();
-		return preg_match( '#\.json$#', $spl_file_info );
+		return 1 === preg_match( '#\.json$#', $spl_file_info );
 	}
 }

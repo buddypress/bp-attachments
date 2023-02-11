@@ -19,6 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
+#[AllowDynamicProperties]
 class BP_Attachments_Media extends BP_Attachment {
 	/**
 	 * The constuctor.
