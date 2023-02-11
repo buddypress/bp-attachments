@@ -672,13 +672,13 @@ function bp_attachments_get_medium_path( $url = '', $with_data = false ) {
  */
 function bp_attachments_create_media( $media = null ) {
 	if ( ! is_object( $media ) || ! isset( $media->path ) || ! $media->path ) {
-		return new WP_Error( 'bp_attachments_missing_media_path', __( 'The path to your media file is missing.', 'bp_attachments' ) );
+		return new WP_Error( 'bp_attachments_missing_media_path', __( 'The path to your media file is missing.', 'bp-attachments' ) );
 	}
 
 	$media_data = new SplFileInfo( $media->path );
 
 	if ( ! $media_data->isFile() && ! $media_data->isDir() ) {
-		return new WP_Error( 'bp_attachments_missing_media_path', __( 'The path to your media does not exist.', 'bp_attachments' ) );
+		return new WP_Error( 'bp_attachments_missing_media_path', __( 'The path to your media does not exist.', 'bp-attachments' ) );
 	}
 
 	$parent_dir = trailingslashit( dirname( $media->path ) );
@@ -782,7 +782,7 @@ function bp_attachments_create_media( $media = null ) {
  */
 function bp_attachments_update_medium( $medium ) {
 	if ( ! is_object( $medium ) || ! isset( $medium->abspath, $medium->json_file ) ) {
-		return new WP_Error( 'bp_attachments_missing_media_path', __( 'The path to your media file is missing.', 'bp_attachments' ) );
+		return new WP_Error( 'bp_attachments_missing_media_path', __( 'The path to your media file is missing.', 'bp-attachments' ) );
 	}
 
 	$json_file   = $medium->json_file;

@@ -103,7 +103,7 @@ function bp_attachments_enable_private_uploads_callback() {
 	} else {
 		?>
 		<input id="bp-attachments-can-upload-privately" name="_bp_attachments_can_upload_privately" type="checkbox" value="1" <?php checked( $option ); ?> />
-		<label for="bp-attachments-can-upload-privately"><?php esc_html_e( 'Allow users to upload and share attachments privately.', 'buddypress' ); ?></label>
+		<label for="bp-attachments-can-upload-privately"><?php esc_html_e( 'Allow users to upload and share attachments privately.', 'bp-attachments' ); ?></label>
 		<?php
 	}
 }

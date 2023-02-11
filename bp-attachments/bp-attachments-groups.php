@@ -232,7 +232,7 @@ function bp_attachments_groups_rest_directory_visibility( $properties = array(),
 	if ( ! isset( $group->status ) || ! groups_is_user_member( $user_id, $group->id ) ) {
 		return new WP_Error(
 			'rest_bp_attachments_missing_group',
-			__( 'The group does not exist or the user is not a member of this group.', 'bp_attachments' )
+			__( 'The group does not exist or the user is not a member of this group.', 'bp-attachments' )
 		);
 	}
 

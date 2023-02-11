@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<ruleset>
+	<description>PHP_CodeSniffer standard for the BuddyPress Attachments plugin.</description>
+
+	<!-- Load BuddyPress Coding standards -->
+	<rule ref="BuddyPress" />
+
+	<!-- BP Classic text domain. -->
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="bp-attachments" />
+			</property>
+		</properties>
+	</rule>
+
+	<!-- Whenever possible, cache the scan results and re-use those for unchanged files on the next scan. -->
+	<arg name="cache" value=".phpcs/cache.json" />
+</ruleset>
