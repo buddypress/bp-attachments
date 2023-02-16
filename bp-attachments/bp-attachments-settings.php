@@ -223,6 +223,15 @@ function bp_attachments_sanitize_allowed_media_types( $types = array() ) {
 }
 
 /**
+ * Adds an empty div containing an anchor before the settings content.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_settings_section_callback() {
+	echo '<div id="bp-attachments"></div>';
+}
+
+/**
  * Registers BP Attachments settings into BuddyPress Options page.
  *
  * @since 1.0.0
@@ -255,7 +264,7 @@ function bp_attachments_register_settings() {
 	add_settings_section(
 		'bp_attachments_settings_section',
 		'Attachments',
-		'__return_empty_string',
+		'bp_attachments_settings_section_callback',
 		'buddypress'
 	);
 
