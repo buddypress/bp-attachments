@@ -41,6 +41,7 @@ function bp_attachments_activity_register_front_end_assets() {
 			'wp-dom-ready',
 			'wp-i18n',
 			'lodash',
+			'bp-nouveau-activity-post-form',
 		),
 		$bp_attachments->version,
 		true
@@ -197,6 +198,24 @@ function bp_attachments_activity_loader() {
 	add_action( 'bp_after_activity_post_form', 'bp_attachments_activity_after_post_form' );
 }
 add_action( 'bp_screens', 'bp_attachments_activity_loader' );
+
+/**
+ * Bump BP Nouveau scripts registration at `bp_init` just like it's the case for block themes.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_activity_nouveau_register_scripts() {
+	if ( 'nouveau' !== bp_get_theme_compat_id() || ! bp_is_current_component( 'activity' ) ) {
+		return;
+	}
+
+	if ( ! current_theme_supports( 'block-templates' ) ) {
+		$nouveau = bp_nouveau();
+		remove_action( 'bp_enqueue_community_scripts', array( $nouveau, 'register_scripts' ), 2 );
+		add_action( 'bp_init', array( $nouveau, 'register_scripts' ), 20 );
+	}
+}
+add_action( 'bp_init', 'bp_attachments_activity_nouveau_register_scripts', 19 );
 
 /**
  * Looks inside a saved activity content to eventually attached its ID to found media.
