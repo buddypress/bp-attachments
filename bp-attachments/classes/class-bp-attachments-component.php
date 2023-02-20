@@ -27,6 +27,13 @@ class BP_Attachments_Component extends BP_Component {
 	public $private_uploads = false;
 
 	/**
+	 * The list of supported attachment block names.
+	 *
+	 * @var array
+	 */
+	public $block_names = array();
+
+	/**
 	 * Construct the BP Attachments component.
 	 *
 	 * @since 1.0.0
@@ -708,8 +715,9 @@ class BP_Attachments_Component extends BP_Component {
 
 		if ( ! is_null( $blocks_metadata ) ) {
 			foreach ( $blocks_metadata as $block_metadata ) {
-				$block_suffix = str_replace( 'bp/', '', $block_metadata['name'] );
-				$block_type   = str_replace( '-attachment', '', $block_suffix );
+				$this->block_names[] = $block_metadata['name'];
+				$block_suffix        = str_replace( 'bp/', '', $block_metadata['name'] );
+				$block_type          = str_replace( '-attachment', '', $block_suffix );
 
 				// Only register blocks if the corresponding attachment type is allowed.
 				if ( 'file' !== $block_type && ( ! isset( $allowed_types[ $block_type ] ) || ! $allowed_types[ $block_type ] ) ) {

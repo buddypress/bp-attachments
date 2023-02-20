@@ -234,31 +234,14 @@ function bp_attachments_set_media_blocks_attached_activity( $activity = null ) {
 		$blocks = parse_blocks( $activity->content );
 
 		foreach ( $blocks as $block ) {
-			// @todo replace with a function to get all BP Attachments block names.
-			if ( in_array( $block['blockName'], array( 'bp/image-attachment' ), true ) && isset( $block['attrs']['url'] ) ) {
-				$medium_id   = wp_basename( trim( $block['attrs']['url'], '/' ) );
+			if ( in_array( $block['blockName'], bp_attachments_block_get_supported_block_names(), true ) && isset( $block['attrs']['url'] ) ) {
 				$medium_path = bp_attachments_get_medium_path( $block['attrs']['url'] );
-				$medium_json = trailingslashit( $medium_path ) . $medium_id . '.json';
 
-				// Get data about the medium.
-				$medium_data = wp_json_file_decode( $medium_json );
-				$attributes  = array(
-					'object_type' => 'activity',
-					'object_id'   => $activity->id,
-				);
+				if ( $medium_path ) {
+					$medium_id   = wp_basename( trim( $block['attrs']['url'], '/' ) );
+					$medium_json = trailingslashit( $medium_path ) . $medium_id . '.json';
 
-				$is_existing = false;
-				if ( isset( $medium_data->attached_to ) ) {
-					$is_existing = ! empty( wp_list_filter( $medium_data->attached_to, $attributes ) );
-				} else {
-					$medium_data->attached_to = array();
-				}
-
-				if ( ! $is_existing ) {
-					$medium_data->attached_to[] = (object) $attributes;
-					$media                      = bp_attachments_sanitize_media( $medium_data );
-
-					file_put_contents( $medium_json, wp_json_encode( $media ) ); // phpcs:ignore
+					bp_attachments_update_medium_attached_items( $medium_json, 'activity', $activity->id );
 				}
 			}
 		}

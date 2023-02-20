@@ -13,6 +13,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Get the list of supported attachment block names.
+ *
+ * @since 1.0.0
+ *
+ * @return array The list of supported attachment block names.
+ */
+function bp_attachments_block_get_supported_block_names() {
+	return buddypress()->attachments->block_names;
+}
+
+/**
  * Include BP Attachments Blocks needed information to Block Editor Settings.
  *
  * @since 1.0.0
