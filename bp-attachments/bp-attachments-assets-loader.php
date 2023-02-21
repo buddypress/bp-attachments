@@ -108,21 +108,6 @@ function bp_attachments_register_admin_assets() {
 add_action( 'bp_admin_enqueue_scripts', 'bp_attachments_register_admin_assets', 2 );
 
 /**
- * Inline styles for the WP Admin BuddyPress settings page.
- *
- * @since 1.0.0
- */
-function bp_attachments_enqueue_admin_common_assets() {
-	wp_add_inline_style(
-		'bp-admin-common-css',
-		'.settings_page_bp-components tr.attachments td.plugin-title span:before {
-			content: "\f104";
-		}'
-	);
-}
-add_action( 'bp_admin_enqueue_scripts', 'bp_attachments_enqueue_admin_common_assets', 20 );
-
-/**
  * Enqueues the media library UI.
  *
  * @since 1.0.0
