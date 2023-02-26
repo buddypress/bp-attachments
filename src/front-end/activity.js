@@ -181,6 +181,18 @@ class bpAttachmentsActivity {
 				}
 			}
 		);
+
+		document.querySelector( '#whats-new' ).addEventListener(
+			'focus',
+			() => {
+				document.querySelectorAll( '[data-button="bpAttachments"]' ).forEach( ( btn ) => {
+					if ( ! btn.classList.contains( 'bp-tooltip' ) ) {
+						btn.classList.add( 'bp-tooltip' );
+						btn.setAttribute( 'data-bp-tooltip', btn.querySelector( '.bp-screen-reader-text' ).innerHTML );
+					}
+				} );
+			}
+		);
 	 }
 }
 
