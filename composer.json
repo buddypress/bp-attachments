@@ -1,6 +1,6 @@
 {
 	"name": "buddypress/bp-attachments",
-	"description": "BP Attachments is a BuddyPress component to manage user media.",
+	"description": "BP Attachments is a BuddyPress add-on to manage your community members media.",
 	"type": "buddypress-plugin",
 	"homepage": "https://buddypress.org",
 	"license": "GPL-2.0-or-later",

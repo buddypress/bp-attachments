@@ -1,4 +1,5 @@
-/.github export-ignore
+/.wordpress export-ignore
+/bin
 /bp-attachments/bp-attachments-groups.php export-ignore
 /bp-attachments/bp-attachments-friends.php export-ignore
 /src export-ignore
@@ -15,4 +16,5 @@
 /package.json export-ignore
 /package-lock.json export-ignore
 /phpunit.xml.dist export-ignore
+/phpcs.xml.dist export-ignore
 /README.md export-ignore

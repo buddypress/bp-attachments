@@ -1,8 +1,10 @@
 BP Attachments
 ==============
 
-BP Attachments is a "feature as a plugin" component to let community members share files the BuddyPress way.
+BP Attachments is an BuddyPress add-on to let community members share files the BuddyPress way.
 For the "once upon a time": see [ticket 5429](https://buddypress.trac.wordpress.org/ticket/5429).
+
+![Screenshot](./.wordpress/screenshot-1.png)
 
 Current Features
 ----------------

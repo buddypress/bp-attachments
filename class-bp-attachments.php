@@ -1,6 +1,6 @@
 <?php
 /**
- * BP Attachments is a BuddyPress component to manage your community media.
+ * BP Attachments is a BuddyPress add-on to manage your community members media.
  *
  * @package   BP Attachments
  * @author    The BuddyPress community
@@ -10,7 +10,7 @@
  * @buddypress-plugin
  * Plugin Name:       BP Attachments
  * Plugin URI:        https://github.com/buddypress/bp-attachments
- * Description:       BP Attachments is a BuddyPress component to manage your community media.
+ * Description:       BP Attachments is a BuddyPress add-on to manage your community members media.
  * Version:           1.0.0-beta1
  * Author:            The BuddyPress Community
  * Author URI:        http://buddypress.org/community/members/
