@@ -24,6 +24,13 @@ function bp_attachments_install() {
 	$public_uploads = wp_upload_dir();
 
 	remove_filter( 'upload_dir', 'bp_attachments_get_public_uploads_dir' );
+
+	/**
+	 * Perform complementary install tasks.
+	 *
+	 * @since 1.0.0
+	 */
+	do_action( 'bp_attachments_install' );
 }
 
 /**
@@ -42,7 +49,7 @@ function bp_attachments_version_updater() {
 		bp_update_option( '_bp_attachments_version', $version );
 	}
 }
-add_action( 'admin_init', 'bp_attachments_version_updater', 1001 );
+add_action( 'bp_admin_init', 'bp_attachments_version_updater', 1001 );
 
 /**
  * Add a Sub Menu to the WordPress Media menu.
