@@ -573,3 +573,49 @@ function bp_attachments_admin_bp_page_updated_clean_rewrite_rules( $post_id, $po
 	}
 }
 add_action( 'post_updated', 'bp_attachments_admin_bp_page_updated_clean_rewrite_rules', 10, 3 );
+
+/**
+ * Sets a default directory page title for the Community Media directory.
+ *
+ * @since 1.0.0
+ *
+ * @param array $titles The BP Components default directory page titles.
+ * @return array The BP Components default directory page titles.
+ */
+function bp_attachments_tracking_set_directory_page_default_title( $titles = array() ) {
+	return array_merge(
+		$titles,
+		array(
+			'attachments' => _x( 'Community Media', 'Page title for the Community Media directory.', 'bp-attachments' ),
+		)
+	);
+}
+add_filter( 'bp_core_get_directory_page_default_titles', 'bp_attachments_tracking_set_directory_page_default_title' );
+
+/**
+ * Creates the Community Media directory page on plugin install.
+ *
+ * @since 1.0.0
+ */
+function bp_attachments_tracking_install() {
+	bp_core_add_page_mappings(
+		array(
+			'attachments' => 1,
+		)
+	);
+
+	$directory_page_id = bp_core_get_directory_page_id( 'attachments' );
+
+	if ( $directory_page_id ) {
+		$bp = buddypress();
+
+		// At this stage the Attachments directory page is not added to the BP Global.
+		if ( ! isset( $bp->pages->attachments ) ) {
+			$bp->pages->attachments     = new stdClass();
+			$bp->pages->attachments->id = (int) $directory_page_id;
+		}
+
+		delete_option( 'rewrite_rules' );
+	}
+}
+add_action( 'bp_attachments_install', 'bp_attachments_tracking_install' );
