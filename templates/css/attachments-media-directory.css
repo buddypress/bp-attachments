@@ -30,6 +30,12 @@ body.buddypress.attachments.directory .bp-attachments-media-list .bp-media-item 
 	min-height: 90%;
 }
 
+body.buddypress.attachments.directory .bp-attachments-media-list .bp-media-item figure.wp-block-bp-image-attachment {
+	padding: 0;
+	min-width: 90%;
+	min-height: 90%;
+}
+
 body.buddypress.attachments.directory figure.aligncenter {
 	display: flex;
 	align-items: center;
@@ -42,9 +48,7 @@ body.buddypress.attachments.directory figure.wp-block-bp-video-attachment video 
 }
 
 body.buddypress.attachments.directory figure.wp-block-bp-image-attachment img {
-	max-width: none;
-	max-height: none;
-	width: 125vh;
+	padding-top: 5px;
 }
 
 body.buddypress.attachments.directory div.wp-block-bp-file-attachment {
