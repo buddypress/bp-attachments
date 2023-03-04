@@ -260,6 +260,7 @@ class bpAttachmentsDirectory {
 			return;
 		}
 
+		this.container.querySelector( '#bp-attachments-no-media' ).remove();
 		this.renderItems( this.items );
 	 }
 }
