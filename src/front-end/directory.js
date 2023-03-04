@@ -84,20 +84,24 @@ class bpAttachmentsDirectory {
 	 * @param {Array} items The list of Attachment objects to render.
 	 */
 	renderItems( items ) {
-		items.forEach( ( item ) => {
-			this.container.innerHTML += this.renderItem( item );
-		} );
+		if ( ! items.length && 'any' !== this.queryArgs.type ) {
+			this.container.innerHTML = this.renderItem( {}, 'bp-media-empty-results' );
+		} else {
+			items.forEach( ( item ) => {
+				this.container.innerHTML += this.renderItem( item );
+			} );
 
-		document.querySelectorAll( '.bp-media-item' ).forEach( ( renderedItem ) => {
-			// Only show existing media.
-			if ( !! renderedItem.innerHTML.trim() ) {
-				renderedItem.style.height = renderedItem.clientWidth + 'px';
-			} else {
-				renderedItem.style.display = 'none';
-			}
-		} );
+			document.querySelectorAll( '.bp-media-item' ).forEach( ( renderedItem ) => {
+				// Only show existing media.
+				if ( !! renderedItem.innerHTML.trim() ) {
+					renderedItem.style.height = renderedItem.clientWidth + 'px';
+				} else {
+					renderedItem.style.display = 'none';
+				}
+			} );
 
-		this.loadMore();
+			this.loadMore();
+		}
 	}
 
 	/**

@@ -42,3 +42,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 	</div>
 </script>
+
+<script type="html/template" id="tmpl-bp-media-empty-results">
+	<aside id="bp-attachments-no-results" class="bp-feedback info">
+		<span class="bp-icon" aria-hidden="true"></span>
+		<p class="description">
+			<?php esc_html_e( 'No media of the selected type were shared by the community so far.', 'bp-attachments' ); ?>
+		</p>
+	</aside>
+</script>
