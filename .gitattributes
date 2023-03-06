@@ -1,5 +1,5 @@
 /.wordpress export-ignore
-/bin
+/bin export-ignore
 /bp-attachments/bp-attachments-groups.php export-ignore
 /bp-attachments/bp-attachments-friends.php export-ignore
 /src export-ignore
