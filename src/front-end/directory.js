@@ -14,6 +14,7 @@ const {
  * Internal dependencies.
  */
 import setTemplate from '../media-library/utils/set-template';
+import crop from '../media-library/utils/cropper';
 
 class bpAttachmentsDirectory {
 	/**
@@ -94,7 +95,25 @@ class bpAttachmentsDirectory {
 			document.querySelectorAll( '.bp-media-item' ).forEach( ( renderedItem ) => {
 				// Only show existing media.
 				if ( !! renderedItem.innerHTML.trim() ) {
-					renderedItem.style.height = renderedItem.clientWidth + 'px';
+					const maxWidth = renderedItem.clientWidth;
+					const maxHeight = maxWidth;
+
+					const bpImage = renderedItem.querySelector( '.wp-block-bp-image-attachment img' );
+
+					if ( bpImage && bpImage.src ) {
+						crop( bpImage.src, 1, maxWidth, maxHeight ).then(
+							( cropped ) => {
+								bpImage.src = cropped.src;
+								bpImage.classList.add( cropped.className );
+
+								if ( 'bp-full-height' === cropped.className ) {
+									bpImage.style.maxHeight = maxHeight + 'px';
+								}
+							}
+						);
+					}
+
+					renderedItem.style.height = maxWidth + 'px';
 				} else {
 					renderedItem.style.display = 'none';
 				}
