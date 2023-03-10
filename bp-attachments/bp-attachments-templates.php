@@ -591,7 +591,7 @@ function bp_attachments_medium_classes() {
 		$classes[] = 'square';
 	}
 
-	echo implode( ' ', array_map( 'sanitize_html_class', $classes ) );
+	echo implode( ' ', array_map( 'esc_attr', $classes ) );
 }
 
 /**
