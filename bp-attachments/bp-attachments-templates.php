@@ -529,12 +529,13 @@ function bp_attachments_medium_has_description() {
  * @since 1.0.0
  */
 function bp_attachments_medium_description() {
-	$description = esc_html( bp_attachments_medium_get_description() );
+	$description = bp_attachments_medium_get_description();
 
 	if ( is_embed() ) {
-		echo $description; // phpcs:ignore WordPress.Security.EscapeOutput
+		echo esc_html( $description );
 	} else {
-		echo wpautop( str_replace( "\n", '<br><br>', $description ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+		$description = wpautop( str_replace( "\n", '<br><br>', $description ) );
+		echo wp_kses( $description, array( 'p' => true ) );
 	}
 }
 
