@@ -19,7 +19,7 @@
 		"build:admin": "parcel build src/admin/index.js --dist-dir bp-attachments/js/admin/",
 		"dev:front": "parcel src/front-end/*.js --dist-dir bp-attachments/js/front-end/",
 		"build:front": "parcel build src/front-end/*.js --dist-dir bp-attachments/js/front-end/",
-		"pot": "wp i18n make-pot . --exclude=\".cache,node_modules,tests,bp-attachments/js/*.js\" languages/bp-attachments.pot",
+		"pot": "wp i18n make-pot . --exclude=\".cache,node_modules,tests\" languages/bp-attachments.pot",
 		"concat-json": "php ./bin/concat-json.php"
 	},
 	"keywords": [
