@@ -238,14 +238,17 @@ class BP_Attachments_Component extends BP_Component {
 	 *                        description.
 	 */
 	public function setup_nav( $main_nav = array(), $sub_nav = array() ) {
+		$access = bp_is_my_profile();
+
 		// Main User navigation.
 		$main_nav = array(
-			'name'                => __( 'Media', 'bp-attachments' ),
-			'slug'                => $this->slug,
-			'position'            => 30,
-			'screen_function'     => 'bp_attachments_personal_screen',
-			'default_subnav_slug' => 'personal',
-			'item_css_id'         => $this->id,
+			'name'                    => __( 'Media', 'bp-attachments' ),
+			'slug'                    => $this->slug,
+			'position'                => 30,
+			'screen_function'         => 'bp_attachments_personal_screen',
+			'default_subnav_slug'     => 'personal',
+			'item_css_id'             => $this->id,
+			'show_for_displayed_user' => $access,
 		);
 
 		// Determine the user domain to use.
@@ -263,12 +266,13 @@ class BP_Attachments_Component extends BP_Component {
 		// Add the subnav items to the attachments nav item if we are using a theme that supports this.
 		$sub_nav['default'] = wp_parse_args(
 			array(
-				'name'        => __( 'Personal', 'bp-attachments' ),
-				'slug'        => 'personal',
-				'parent_url'  => $this->attachments_link,
-				'parent_slug' => $this->slug,
-				'position'    => 10,
-				'item_css_id' => 'personal-' . $this->id,
+				'name'            => __( 'Personal', 'bp-attachments' ),
+				'slug'            => 'personal',
+				'parent_url'      => $this->attachments_link,
+				'parent_slug'     => $this->slug,
+				'position'        => 10,
+				'item_css_id'     => 'personal-' . $this->id,
+				'user_has_access' => $access,
 			),
 			$main_nav
 		);
