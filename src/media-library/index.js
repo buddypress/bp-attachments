@@ -14,6 +14,10 @@ const {
 	data: {
 		useSelect,
 		useDispatch,
+		dispatch,
+	},
+	preferences: {
+		store: preferenceStore,
 	},
 } = wp;
 
@@ -56,5 +60,9 @@ const MediaLibrary = ( { settings } ) => {
 
 domReady( function() {
 	const settings = window.bpAttachmentsMediaLibrarySettings || {};
+	dispatch( preferenceStore ).setDefaults( 'bp/attachments', {
+		isGridLayout: true,
+	} );
+
 	render( <MediaLibrary settings={ settings }/>, document.querySelector( '#bp-media-library' ) );
 } );

@@ -6,6 +6,18 @@
 } = lodash;
 
 /**
+ * WordPress dependencies
+ */
+const {
+	data: {
+		select,
+	},
+	preferences: {
+		store: preferenceStore,
+	},
+} = wp;
+
+/**
  * Internal dependencies
  */
 import { TYPES as types } from './action-types';
@@ -25,7 +37,7 @@ const DEFAULT_STATE = {
 	uploading: false,
 	ended: false,
 	isSelectable: false,
-	isGrid: true,
+	isGrid: select( preferenceStore ).get( 'bp/attachments', 'isGridLayout' ),
 	settings: {},
 	formState: {},
 	pagination: {
