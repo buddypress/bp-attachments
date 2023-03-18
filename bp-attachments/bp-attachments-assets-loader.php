@@ -65,6 +65,7 @@ function bp_attachments_register_common_assets() {
 			'wp-url',
 			'lodash',
 			'wp-hooks',
+			'wp-preferences',
 		),
 		$bp_attachments->version,
 		true

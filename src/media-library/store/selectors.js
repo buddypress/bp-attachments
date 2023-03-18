@@ -50,6 +50,11 @@ export const getRequestsContext = ( state ) => {
  */
 export const isGridDisplayMode = ( state ) => {
 	const { isGrid } = state;
+
+	if ( undefined === isGrid ) {
+		return true;
+	}
+
 	return isGrid;
 }
 

@@ -56,5 +56,6 @@ const MediaLibrary = ( { settings } ) => {
 
 domReady( function() {
 	const settings = window.bpAttachmentsMediaLibrarySettings || {};
+
 	render( <MediaLibrary settings={ settings }/>, document.querySelector( '#bp-media-library' ) );
 } );

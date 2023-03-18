@@ -30,6 +30,9 @@ const {
 	i18n: {
 		__,
 	},
+	preferences: {
+		store: preferenceStore,
+	},
 } = wp;
 
 /**
@@ -51,6 +54,7 @@ const MediaLibraryToolbar = ( { gridDisplay } ) => {
 		deleteMedium,
 		setDisplayedUserId,
 	} = useDispatch( BP_ATTACHMENTS_STORE_KEY );
+	const { set: setPreference } = useDispatch( preferenceStore );
 	const {
 		user,
 		displayedUserId,
@@ -88,6 +92,7 @@ const MediaLibraryToolbar = ( { gridDisplay } ) => {
 
 	const switchMode = ( e, isGrid ) => {
 		e.preventDefault();
+		setPreference( 'bp/attachments', 'isGridLayout', isGrid );
 		switchDisplayMode( isGrid );
 	};
 
