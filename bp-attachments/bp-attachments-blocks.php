@@ -254,7 +254,7 @@ function bp_attachments_render_file_attachment( $attributes = array() ) {
 	$attributes['attachment_type'] = 'file';
 	$attachment_data               = bp_attachments_get_block_attachment_data( $attributes );
 
-	if ( ! isset( $attachment_data['medium'] ) || ! isset( $attachment_data['wrapper_attributes'] ) ) {
+	if ( ! isset( $attachment_data['medium']->links['download'] ) || ! isset( $attachment_data['wrapper_attributes'] ) ) {
 		return null;
 	}
 

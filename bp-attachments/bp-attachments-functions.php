@@ -227,6 +227,8 @@ function bp_attachments_get_allowed_media_mimes( $media_type = '' ) {
  */
 function bp_attachments_is_file_type_allowed( $file, $filename, $media_type = '' ) {
 	$allowed_types = bp_attachments_get_allowed_media_exts( $media_type );
+	$file          = strtolower( $file );
+	$filename      = strtolower( $filename );
 	$wp_filetype   = wp_check_filetype_and_ext( $file, $filename );
 
 	if ( ! isset( $wp_filetype['ext'] ) || ! $wp_filetype['ext'] ) {
