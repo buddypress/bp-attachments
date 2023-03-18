@@ -506,7 +506,7 @@ function bp_attachments_get_item_action_key( $action_slug = '' ) {
  */
 function bp_attachments_get_src( $filename = '', $path = '' ) {
 	$src       = '';
-	$uploads   = bp_upload_dir();
+	$uploads   = bp_attachments_uploads_dir_get();
 	$file_path = trailingslashit( $path ) . $filename;
 
 	if ( file_exists( $file_path ) && 0 === strpos( $file_path, WP_CONTENT_DIR ) ) {
