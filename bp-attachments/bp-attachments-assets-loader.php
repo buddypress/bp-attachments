@@ -139,7 +139,7 @@ function bp_attachments_enqueue_media_library() {
 		'bp_attachments_media_library_settings',
 		array(
 			'isAdminScreen'         => is_admin(),
-			'maxUploadFileSize'     => wp_max_upload_size(),
+			'maxUploadFileSize'     => bp_attachments_get_max_upload_file_size( 'media' ),
 			'allowedExtByMediaList' => bp_attachments_get_exts_by_medialist(),
 			'allowedExtTypes'       => bp_attachments_get_allowed_media_exts( '', true ),
 		)

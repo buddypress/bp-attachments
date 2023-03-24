@@ -28,7 +28,7 @@ class BP_Attachments_Media extends BP_Attachment {
 	 */
 	public function __construct() {
 		// Max upload size.
-		$max_upload_file_size = bp_attachments_get_max_upload_file_size();
+		$max_upload_file_size = bp_attachments_get_max_upload_file_size( 'media' );
 
 		parent::__construct(
 			array(
