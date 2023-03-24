@@ -20,7 +20,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 1.0.0
  */
 function bp_attachments_tracking_get_table() {
-	return bp_core_get_table_prefix() . 'bp_activity';
+	/**
+	 * Filter here to use another DB table.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $table The DB table name to use.
+	 */
+	return apply_filters( 'bp_attachments_tracking_get_table', bp_core_get_table_prefix() . 'bp_activity' );
 }
 
 /**
@@ -29,7 +36,14 @@ function bp_attachments_tracking_get_table() {
  * @since 1.0.0
  */
 function bp_attachments_tracking_get_meta_table() {
-	return bp_core_get_table_prefix() . 'bp_activity_meta';
+	/**
+	 * Filter here to use another DB meta table.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $table The DB meta table name to use.
+	 */
+	return apply_filters( 'bp_attachments_tracking_get_meta_table', bp_core_get_table_prefix() . 'bp_activity_meta' );
 }
 
 /**
