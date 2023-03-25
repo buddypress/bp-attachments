@@ -2,7 +2,7 @@
 /**
  * BP Attachments single view template for an image.
  *
- * @package \bp-attachments\templates\attachments\single-image
+ * @package \bp-attachments\templates\attachments\single\parts\single-image
  *
  * @since 1.0.0
  */
