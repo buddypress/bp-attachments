@@ -189,7 +189,7 @@ add_filter( 'bp_before_groups_post_update_parse_args', 'bp_attachments_activity_
  * @since 1.0.0
  */
 function bp_attachments_activity_loader() {
-	if ( 'nouveau' !== bp_get_theme_compat_id() || ( ! bp_is_current_component( 'activity' ) && ! bp_is_group_activity() ) ) {
+	if ( 'nouveau' !== bp_get_theme_compat_id() || ( ! bp_is_current_component( 'activity' ) && ! bp_is_group_activity() ) || bp_is_single_activity() ) {
 		return;
 	}
 
@@ -205,7 +205,7 @@ add_action( 'bp_screens', 'bp_attachments_activity_loader' );
  * @since 1.0.0
  */
 function bp_attachments_activity_nouveau_register_scripts() {
-	if ( 'nouveau' !== bp_get_theme_compat_id() || ! bp_is_current_component( 'activity' ) ) {
+	if ( 'nouveau' !== bp_get_theme_compat_id() || ( ! bp_is_current_component( 'activity' ) && ! bp_is_group_activity() ) || bp_is_single_activity() ) {
 		return;
 	}
 
