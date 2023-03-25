@@ -615,6 +615,21 @@ function bp_attachments_get_medium_fallback_text( $download_url = '' ) {
 }
 
 /**
+ * Output the fallback text.
+ *
+ * @since 1.0.0
+ *
+ * @param string $download_url The Attachment medium download URL.
+ */
+function bp_attachments_medium_fallback_text( $download_url = '' ) {
+	if ( ! $download_url ) {
+		$download_url = bp_attachments_get_medium_download_url();
+	}
+
+	echo wp_kses( bp_attachments_get_medium_fallback_text( $download_url ), array( 'a' => array( 'href' => true ) ) );
+}
+
+/**
  * Returns the BP Attachments queried medium output.
  *
  * @since 1.0.0
@@ -639,21 +654,17 @@ function bp_attachments_get_medium_output() {
 		case 'video' === $medium->media_type && isset( $medium->links['src'] ):
 			$output = sprintf(
 				'<video controls="controls" muted="true" preload="metadata">
-					<source src="%1$s">
-				</video>
-				<figcaption class="wp-element-caption">%2$s</figcaption>',
-				esc_url( $medium->links['src'] ),
-				bp_attachments_get_medium_fallback_text( bp_attachments_get_medium_download_url() )
+					<source src="%s">
+				</video>',
+				esc_url( $medium->links['src'] )
 			);
 			break;
 		case 'audio' === $medium->media_type && isset( $medium->links['src'] ):
 			$output = sprintf(
 				'<audio controls="controls" preload="metadata">
-					<source src="%1$s">
-				</audio>
-				<figcaption class="wp-element-caption">%2$s</figcaption>',
-				esc_url( $medium->links['src'] ),
-				bp_attachments_get_medium_fallback_text( bp_attachments_get_medium_download_url() )
+					<source src="%s">
+				</audio>',
+				esc_url( $medium->links['src'] )
 			);
 			break;
 		default:

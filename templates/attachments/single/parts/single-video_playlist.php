@@ -2,7 +2,7 @@
 /**
  * BP Attachments single view template for a video playlist.
  *
- * @package \bp-attachments\templates\attachments\single-video_playlist
+ * @package \bp-attachments\templates\attachments\single\parts\single-video_playlist
  *
  * @since 1.0.0
  */

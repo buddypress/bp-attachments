@@ -2,7 +2,7 @@
 /**
  * BP Attachments single view template for an audio playlist.
  *
- * @package \bp-attachments\templates\attachments\single-audio_playlist
+ * @package \bp-attachments\templates\attachments\single\parts\single-audio_playlist
  *
  * @since 1.0.0
  */

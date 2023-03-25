@@ -2,7 +2,7 @@
 /**
  * BP Attachments single view template for a Photos/images album.
  *
- * @package \bp-attachments\templates\attachments\single-album
+ * @package \bp-attachments\templates\attachments\single\parts\single-album
  *
  * @since 1.0.0
  */

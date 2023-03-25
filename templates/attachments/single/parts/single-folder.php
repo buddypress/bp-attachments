@@ -2,7 +2,7 @@
 /**
  * BP Attachments single view template for a folder.
  *
- * @package \bp-attachments\templates\attachments\single-folder
+ * @package \bp-attachments\templates\attachments\single\parts\single-folder
  *
  * @since 1.0.0
  */
