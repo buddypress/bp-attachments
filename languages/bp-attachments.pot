@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0+.
 msgid ""
 msgstr ""
-"Project-Id-Version: BP Attachments 1.0.0-beta2\n"
+"Project-Id-Version: BP Attachments 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bp-attachments\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-03-10T19:49:26+00:00\n"
+"POT-Creation-Date: 2023-03-25T19:06:41+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: bp-attachments\n"
@@ -61,145 +61,145 @@ msgstr ""
 msgid "Download"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:292
+#: bp-attachments/bp-attachments-functions.php:294
 msgid "The server’s document root is missing."
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:301
+#: bp-attachments/bp-attachments-functions.php:303
 msgid "The private root directory is missing."
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:309
+#: bp-attachments/bp-attachments-functions.php:311
 msgid "The private root directory is not writeable."
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:336
+#: bp-attachments/bp-attachments-functions.php:338
 msgid "The private root directory is not set the right way."
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:417
+#: bp-attachments/bp-attachments-functions.php:419
 msgctxt "public visibility slug"
 msgid "public"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:418
+#: bp-attachments/bp-attachments-functions.php:420
 msgctxt "private visibility slug"
 msgid "private"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:440
+#: bp-attachments/bp-attachments-functions.php:442
 msgctxt "member object slug"
 msgid "members"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:454
+#: bp-attachments/bp-attachments-functions.php:456
 msgctxt "download action slug"
 msgid "download"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:455
+#: bp-attachments/bp-attachments-functions.php:457
 msgctxt "view action slug"
 msgid "view"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:456
+#: bp-attachments/bp-attachments-functions.php:458
 msgctxt "embed action slug"
 msgid "embed"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:654
-#: bp-attachments/bp-attachments-functions.php:764
+#: bp-attachments/bp-attachments-functions.php:656
+#: bp-attachments/bp-attachments-functions.php:766
 msgid "The path to your media file is missing."
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:660
+#: bp-attachments/bp-attachments-functions.php:662
 msgid "The path to your media does not exist."
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:995
+#: bp-attachments/bp-attachments-functions.php:997
 msgid "Public"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:999
+#: bp-attachments/bp-attachments-functions.php:1001
 msgid "This Public directory and its children are visible to everyone."
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:1008
+#: bp-attachments/bp-attachments-functions.php:1010
 msgid "This Private directory and its children are only visible to you. Files and folders within this private directory can be shared with the users you chose."
 msgstr ""
 
 #. Translators: %s is the user's username
-#: bp-attachments/bp-attachments-functions.php:1012
+#: bp-attachments/bp-attachments-functions.php:1014
 msgid "This Private directory and its children are only visible to %s. Files and folders within this private directory can be shared with the users they chose."
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:1020
+#: bp-attachments/bp-attachments-functions.php:1022
 msgid "Private"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:1092
-#: bp-attachments/classes/class-bp-attachments-component.php:337
+#: bp-attachments/bp-attachments-functions.php:1094
+#: bp-attachments/classes/class-bp-attachments-component.php:341
 msgid "My Media"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:1096
+#: bp-attachments/bp-attachments-functions.php:1098
 msgid "This directory contains all your personal media."
 msgstr ""
 
 #. Translators: %s is the username
-#: bp-attachments/bp-attachments-functions.php:1156
+#: bp-attachments/bp-attachments-functions.php:1158
 msgid "%s’s Media"
 msgstr ""
 
 #. Translators: %s is the username
-#: bp-attachments/bp-attachments-functions.php:1164
+#: bp-attachments/bp-attachments-functions.php:1166
 msgid "This directory contains all %s’s personal media."
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:1249
+#: bp-attachments/bp-attachments-functions.php:1251
 msgid "Image"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:1250
+#: bp-attachments/bp-attachments-functions.php:1252
 msgid "Movie"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:1251
+#: bp-attachments/bp-attachments-functions.php:1253
 msgid "Sound"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:1252
+#: bp-attachments/bp-attachments-functions.php:1254
 msgid "Document"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:1253
+#: bp-attachments/bp-attachments-functions.php:1255
 msgid "Spreadsheet"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:1254
+#: bp-attachments/bp-attachments-functions.php:1256
 msgid "Presentation"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:1255
+#: bp-attachments/bp-attachments-functions.php:1257
 msgid "Text"
 msgstr ""
 
-#: bp-attachments/bp-attachments-functions.php:1256
+#: bp-attachments/bp-attachments-functions.php:1258
 msgid "Archive"
 msgstr ""
 
 #. Translators: %s is the file size in kilobytes
-#: bp-attachments/bp-attachments-functions.php:1476
+#: bp-attachments/bp-attachments-functions.php:1478
 msgid "%s KB"
 msgstr ""
 
 #. Translators: %s is the file size in gigabytes
-#: bp-attachments/bp-attachments-functions.php:1489
+#: bp-attachments/bp-attachments-functions.php:1491
 msgid "%s GB"
 msgstr ""
 
 #. Translators: %s is the file size in megabytes
-#: bp-attachments/bp-attachments-functions.php:1493
+#: bp-attachments/bp-attachments-functions.php:1495
 msgid "%s MB"
 msgstr ""
 
@@ -298,7 +298,7 @@ msgstr ""
 
 #. translators: %s is the displayed User full name
 #: bp-attachments/bp-attachments-templates.php:227
-#: bp-attachments/classes/class-bp-attachments-component.php:350
+#: bp-attachments/classes/class-bp-attachments-component.php:354
 msgid "Profile picture of %s"
 msgstr ""
 
@@ -316,31 +316,31 @@ msgstr ""
 msgid "download it"
 msgstr ""
 
-#: bp-attachments/bp-attachments-tracking.php:485
+#: bp-attachments/bp-attachments-tracking.php:499
 msgid "Images"
 msgstr ""
 
-#: bp-attachments/bp-attachments-tracking.php:486
+#: bp-attachments/bp-attachments-tracking.php:500
 msgid "Movies"
 msgstr ""
 
-#: bp-attachments/bp-attachments-tracking.php:487
+#: bp-attachments/bp-attachments-tracking.php:501
 msgid "Sounds"
 msgstr ""
 
-#: bp-attachments/bp-attachments-tracking.php:501
+#: bp-attachments/bp-attachments-tracking.php:515
 msgid "Other files"
 msgstr ""
 
-#: bp-attachments/bp-attachments-tracking.php:522
+#: bp-attachments/bp-attachments-tracking.php:536
 msgid "Attachments Directory menu"
 msgstr ""
 
-#: bp-attachments/bp-attachments-tracking.php:524
+#: bp-attachments/bp-attachments-tracking.php:538
 msgid "All Media"
 msgstr ""
 
-#: bp-attachments/bp-attachments-tracking.php:589
+#: bp-attachments/bp-attachments-tracking.php:603
 msgctxt "Page title for the Community Media directory."
 msgid "Community Media"
 msgstr ""
@@ -350,17 +350,17 @@ msgstr ""
 msgid "Total space in bytes used by user’s files"
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-component.php:243
-#: bp-attachments/classes/class-bp-attachments-component.php:304
+#: bp-attachments/classes/class-bp-attachments-component.php:245
+#: bp-attachments/classes/class-bp-attachments-component.php:308
 msgid "Media"
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-component.php:266
-#: bp-attachments/classes/class-bp-attachments-component.php:316
+#: bp-attachments/classes/class-bp-attachments-component.php:269
+#: bp-attachments/classes/class-bp-attachments-component.php:320
 msgid "Personal"
 msgstr ""
 
-#: bp-attachments/classes/class-bp-attachments-component.php:751
+#: bp-attachments/classes/class-bp-attachments-component.php:755
 msgctxt "page label"
 msgid "BP Attachments Page"
 msgstr ""
@@ -762,18 +762,18 @@ msgstr ""
 msgid "This media is private and its owner has not shared it with you."
 msgstr ""
 
-#: templates/attachments/single/parts/single-audio.php:19
+#: templates/attachments/single/parts/single-audio.php:20
 #: templates/attachments/single/parts/single-image.php:21
-#: templates/attachments/single/parts/single-video.php:19
+#: templates/attachments/single/parts/single-video.php:20
 #: templates/attachments/single/parts/single.php:23
 msgid "Lastly edited on:"
 msgstr ""
 
-#: templates/attachments/single/parts/single-audio.php:21
+#: templates/attachments/single/parts/single-audio.php:22
 msgid "Audio type:"
 msgstr ""
 
-#: templates/attachments/single/parts/single-audio.php:23
+#: templates/attachments/single/parts/single-audio.php:24
 msgid "Audio size:"
 msgstr ""
 
@@ -785,11 +785,11 @@ msgstr ""
 msgid "Image size:"
 msgstr ""
 
-#: templates/attachments/single/parts/single-video.php:21
+#: templates/attachments/single/parts/single-video.php:22
 msgid "Video type:"
 msgstr ""
 
-#: templates/attachments/single/parts/single-video.php:23
+#: templates/attachments/single/parts/single-video.php:24
 msgid "Video size:"
 msgstr ""
 
@@ -881,7 +881,7 @@ msgstr ""
 
 #: src/avatar-editor/elements/uploader.js:32
 #: src/media-library/elements/uploader.js:98
-#: bp-attachments/js/media-library/index.js:1647
+#: bp-attachments/js/media-library/index.js:1664
 msgid "or"
 msgstr ""
 
@@ -927,274 +927,274 @@ msgid "Community Video"
 msgstr ""
 
 #: src/media-library/elements/directory-creator.js:65
-#: bp-attachments/js/media-library/index.js:1735
+#: bp-attachments/js/media-library/index.js:1752
 msgid "Create a new directory"
 msgstr ""
 
 #: src/media-library/elements/directory-creator.js:66
-#: bp-attachments/js/media-library/index.js:1736
+#: bp-attachments/js/media-library/index.js:1753
 msgid "Type a name for your directory"
 msgstr ""
 
 #: src/media-library/elements/directory-creator.js:67
-#: bp-attachments/js/media-library/index.js:1737
+#: bp-attachments/js/media-library/index.js:1754
 msgid "Save directory"
 msgstr ""
 
 #: src/media-library/elements/directory-creator.js:70
-#: bp-attachments/js/media-library/index.js:1740
+#: bp-attachments/js/media-library/index.js:1757
 msgid "Create a new photo album"
 msgstr ""
 
 #: src/media-library/elements/directory-creator.js:71
-#: bp-attachments/js/media-library/index.js:1741
+#: bp-attachments/js/media-library/index.js:1758
 msgid "Type a name for your photo album"
 msgstr ""
 
 #: src/media-library/elements/directory-creator.js:72
-#: bp-attachments/js/media-library/index.js:1742
+#: bp-attachments/js/media-library/index.js:1759
 msgid "Save photo album"
 msgstr ""
 
 #: src/media-library/elements/directory-creator.js:74
-#: bp-attachments/js/media-library/index.js:1744
+#: bp-attachments/js/media-library/index.js:1761
 msgid "Create a new audio playlist"
 msgstr ""
 
 #: src/media-library/elements/directory-creator.js:75
-#: bp-attachments/js/media-library/index.js:1745
+#: bp-attachments/js/media-library/index.js:1762
 msgid "Type a name for your audio playlist"
 msgstr ""
 
 #: src/media-library/elements/directory-creator.js:76
-#: bp-attachments/js/media-library/index.js:1746
+#: bp-attachments/js/media-library/index.js:1763
 msgid "Save audio playlist"
 msgstr ""
 
 #: src/media-library/elements/directory-creator.js:78
-#: bp-attachments/js/media-library/index.js:1748
+#: bp-attachments/js/media-library/index.js:1765
 msgid "Create a new video playlist"
 msgstr ""
 
 #: src/media-library/elements/directory-creator.js:79
-#: bp-attachments/js/media-library/index.js:1749
+#: bp-attachments/js/media-library/index.js:1766
 msgid "Type a name for your video playlist"
 msgstr ""
 
 #: src/media-library/elements/directory-creator.js:80
-#: bp-attachments/js/media-library/index.js:1750
+#: bp-attachments/js/media-library/index.js:1767
 msgid "Save video playlist"
 msgstr ""
 
 #: src/media-library/elements/directory-creator.js:86
-#: bp-attachments/js/media-library/index.js:1756
+#: bp-attachments/js/media-library/index.js:1773
 msgid "Close the Create directory form"
 msgstr ""
 
 #: src/media-library/elements/edit-item.js:99
-#: bp-attachments/js/media-library/index.js:1871
+#: bp-attachments/js/media-library/index.js:1888
 msgid "Open directory page"
 msgstr ""
 
 #: src/media-library/elements/edit-item.js:99
-#: bp-attachments/js/media-library/index.js:1871
+#: bp-attachments/js/media-library/index.js:1888
 msgid "Open media page"
 msgstr ""
 
 #: src/media-library/elements/edit-item.js:101
-#: bp-attachments/js/media-library/index.js:1873
+#: bp-attachments/js/media-library/index.js:1890
 msgid "Download media"
 msgstr ""
 
 #. translators: %s is the media name
 #: src/media-library/elements/edit-item.js:132
-#: bp-attachments/js/media-library/index.js:1904
+#: bp-attachments/js/media-library/index.js:1921
 msgid "Edit %s"
 msgstr ""
 
 #: src/media-library/elements/edit-item.js:135
-#: bp-attachments/js/media-library/index.js:1907
+#: bp-attachments/js/media-library/index.js:1924
 msgid "Use the below fields to edit media properties."
 msgstr ""
 
 #: src/media-library/elements/edit-item.js:137
-#: bp-attachments/js/media-library/index.js:1909
+#: bp-attachments/js/media-library/index.js:1926
 msgid "Title"
 msgstr ""
 
 #: src/media-library/elements/edit-item.js:140
-#: bp-attachments/js/media-library/index.js:1912
+#: bp-attachments/js/media-library/index.js:1929
 msgid "Change the title of your medium to something more descriptive then its file name."
 msgstr ""
 
 #: src/media-library/elements/edit-item.js:143
-#: bp-attachments/js/media-library/index.js:1915
+#: bp-attachments/js/media-library/index.js:1932
 msgid "Description"
 msgstr ""
 
 #: src/media-library/elements/edit-item.js:146
-#: bp-attachments/js/media-library/index.js:1918
+#: bp-attachments/js/media-library/index.js:1935
 msgid "Add or edit the description of your medium to tell your story about it."
 msgstr ""
 
 #. translators: 1: the list of libraries per-page. 2: the total number of libraries
 #: src/media-library/elements/footer.js:74
-#: bp-attachments/js/media-library/index.js:2566
+#: bp-attachments/js/media-library/index.js:2588
 msgid "Showing %1$s of %2$s media libraries"
 msgstr ""
 
 #: src/media-library/elements/footer.js:77
-#: bp-attachments/js/media-library/index.js:2569
+#: bp-attachments/js/media-library/index.js:2591
 msgid "Showing one media library"
 msgstr ""
 
 #: src/media-library/elements/footer.js:83
-#: bp-attachments/js/media-library/index.js:2575
+#: bp-attachments/js/media-library/index.js:2597
 msgid "Load more"
 msgstr ""
 
 #: src/media-library/elements/header.js:51
-#: bp-attachments/js/media-library/index.js:1430
+#: bp-attachments/js/media-library/index.js:1447
 msgid "Community Media Libraries"
 msgstr ""
 
 #: src/media-library/elements/header.js:51
-#: bp-attachments/js/media-library/index.js:1430
+#: bp-attachments/js/media-library/index.js:1447
 msgid "Community Media Library"
 msgstr ""
 
 #: src/media-library/elements/header.js:83
-#: bp-attachments/js/media-library/index.js:1462
+#: bp-attachments/js/media-library/index.js:1479
 msgid "Add new directory"
 msgstr ""
 
 #: src/media-library/elements/header.js:93
-#: bp-attachments/js/media-library/index.js:1472
+#: bp-attachments/js/media-library/index.js:1489
 msgid "Add new photo album"
 msgstr ""
 
 #: src/media-library/elements/header.js:100
-#: bp-attachments/js/media-library/index.js:1479
+#: bp-attachments/js/media-library/index.js:1496
 msgid "Add new audio playlist"
 msgstr ""
 
 #: src/media-library/elements/header.js:107
-#: bp-attachments/js/media-library/index.js:1486
+#: bp-attachments/js/media-library/index.js:1503
 msgid "Add new video playlist"
 msgstr ""
 
 #: src/media-library/elements/header.js:135
-#: bp-attachments/js/media-library/index.js:1514
+#: bp-attachments/js/media-library/index.js:1531
 msgid "Library"
 msgstr ""
 
 #: src/media-library/elements/header.js:143
-#: bp-attachments/js/media-library/index.js:1522
+#: bp-attachments/js/media-library/index.js:1539
 msgid "Add new"
 msgstr ""
 
 #: src/media-library/elements/header.js:147
-#: bp-attachments/js/media-library/index.js:1526
+#: bp-attachments/js/media-library/index.js:1543
 msgid "More actions"
 msgstr ""
 
 #: src/media-library/elements/header.js:153
-#: bp-attachments/js/media-library/index.js:1532
+#: bp-attachments/js/media-library/index.js:1549
 msgid "Upload media"
 msgstr ""
 
 #: src/media-library/elements/item.js:84
-#: src/media-library/elements/toolbar.js:231
-#: bp-attachments/js/media-library/index.js:2165
-#: bp-attachments/js/media-library/index.js:2289
+#: src/media-library/elements/toolbar.js:236
+#: bp-attachments/js/media-library/index.js:2187
+#: bp-attachments/js/media-library/index.js:2311
 msgid "Media details"
 msgstr ""
 
 #: src/media-library/elements/main.js:72
-#: bp-attachments/js/media-library/index.js:2484
+#: bp-attachments/js/media-library/index.js:2506
 msgid "No community media items found."
 msgstr ""
 
 #. translators: 1: file name. 2: error message.
 #: src/media-library/elements/notices.js:61
-#: bp-attachments/js/media-library/index.js:2361
+#: bp-attachments/js/media-library/index.js:2383
 msgid "« %1$s » wasn‘t added to the media library. %2$s"
 msgstr ""
 
 #: src/media-library/elements/notices.js:76
-#: bp-attachments/js/media-library/index.js:2376
+#: bp-attachments/js/media-library/index.js:2398
 msgid "Uploading the media, please wait."
 msgstr ""
 
 #. translators: %d: number of media being uploaded.
 #: src/media-library/elements/notices.js:79
-#: bp-attachments/js/media-library/index.js:2379
+#: bp-attachments/js/media-library/index.js:2401
 msgid "Uploading %d media, please wait."
 msgstr ""
 
-#: src/media-library/elements/toolbar.js:207
-#: bp-attachments/js/media-library/index.js:2141
+#: src/media-library/elements/toolbar.js:212
+#: bp-attachments/js/media-library/index.js:2163
 msgid "Display list"
 msgstr ""
 
-#: src/media-library/elements/toolbar.js:210
-#: bp-attachments/js/media-library/index.js:2144
+#: src/media-library/elements/toolbar.js:215
+#: bp-attachments/js/media-library/index.js:2166
 msgid "Display grid"
 msgstr ""
 
-#: src/media-library/elements/toolbar.js:216
-#: bp-attachments/js/media-library/index.js:2150
+#: src/media-library/elements/toolbar.js:221
+#: bp-attachments/js/media-library/index.js:2172
 msgid "Select"
 msgstr ""
 
-#: src/media-library/elements/toolbar.js:216
-#: bp-attachments/js/media-library/index.js:2150
+#: src/media-library/elements/toolbar.js:221
+#: bp-attachments/js/media-library/index.js:2172
 msgid "Cancel Selection"
 msgstr ""
 
-#: src/media-library/elements/toolbar.js:221
-#: bp-attachments/js/media-library/index.js:2155
+#: src/media-library/elements/toolbar.js:226
+#: bp-attachments/js/media-library/index.js:2177
 msgid "Edit"
 msgstr ""
 
-#: src/media-library/elements/toolbar.js:226
-#: bp-attachments/js/media-library/index.js:2160
+#: src/media-library/elements/toolbar.js:231
+#: bp-attachments/js/media-library/index.js:2182
 msgid "Delete selection"
 msgstr ""
 
-#: src/media-library/elements/toolbar.js:241
-#: bp-attachments/js/media-library/index.js:2175
+#: src/media-library/elements/toolbar.js:246
+#: bp-attachments/js/media-library/index.js:2197
 msgid "All members"
 msgstr ""
 
-#: src/media-library/elements/toolbar.js:241
-#: bp-attachments/js/media-library/index.js:2175
+#: src/media-library/elements/toolbar.js:246
+#: bp-attachments/js/media-library/index.js:2197
 msgid "Home"
 msgstr ""
 
 #: src/media-library/elements/uploader.js:89
-#: bp-attachments/js/media-library/index.js:1638
+#: bp-attachments/js/media-library/index.js:1655
 msgid "Drop your files here."
 msgstr ""
 
 #: src/media-library/elements/uploader.js:94
-#: bp-attachments/js/media-library/index.js:1643
+#: bp-attachments/js/media-library/index.js:1660
 msgid "Close the upload panel"
 msgstr ""
 
 #: src/media-library/elements/uploader.js:97
-#: bp-attachments/js/media-library/index.js:1646
+#: bp-attachments/js/media-library/index.js:1663
 msgid "Drop files to upload"
 msgstr ""
 
 #: src/media-library/elements/uploader.js:105
-#: bp-attachments/js/media-library/index.js:1654
+#: bp-attachments/js/media-library/index.js:1671
 msgid "Select Files"
 msgstr ""
 
 #. translators: %s is the max size allowed for a media file
 #: src/media-library/elements/uploader.js:112
-#: bp-attachments/js/media-library/index.js:1661
+#: bp-attachments/js/media-library/index.js:1678
 msgid "Maximum upload file size: %s."
 msgstr ""
 
