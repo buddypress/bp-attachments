@@ -189,7 +189,7 @@ function bp_attachments_medium_get_owner_url() {
 	$medium = bp_attachments_get_queried_object();
 
 	if ( isset( $medium->owner_id ) && $medium->owner_id ) {
-		$url = bp_core_get_user_domain( $medium->owner_id );
+		$url = bp_attachments_get_user_url( $medium->owner_id );
 	}
 
 	return $url;
@@ -264,7 +264,7 @@ function bp_attachments_get_medium_owner_mentionname() {
 	$medium       = bp_attachments_get_queried_object();
 
 	if ( isset( $medium->owner_id ) && $medium->owner_id ) {
-		$mention_name = bp_core_get_username( $medium->owner_id );
+		$mention_name = bp_attachments_get_user_slug( $medium->owner_id );
 	}
 
 	return $mention_name;
@@ -355,7 +355,7 @@ function bp_attachments_medium_get_action() {
 			__( '%s shared a media.', 'bp-attachments' ),
 			sprintf(
 				'<a href="%1$s">%2$s</a>',
-				esc_url( bp_core_get_user_domain( $medium->owner_id ) ),
+				esc_url( bp_attachments_get_user_url( $medium->owner_id ) ),
 				esc_html( bp_core_get_user_displayname( $medium->owner_id ) )
 			)
 		);

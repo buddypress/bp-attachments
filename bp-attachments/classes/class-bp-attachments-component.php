@@ -81,6 +81,7 @@ class BP_Attachments_Component extends BP_Component {
 		// Files to include.
 		$includes = array(
 			'functions',
+			'compat',
 			'cache',
 			'users',
 			'template-loader',
@@ -251,24 +252,29 @@ class BP_Attachments_Component extends BP_Component {
 			'show_for_displayed_user' => $access,
 		);
 
-		// Determine the user domain to use.
-		if ( bp_displayed_user_domain() ) {
-			$user_domain = bp_displayed_user_domain();
-		} elseif ( bp_loggedin_user_domain() ) {
-			$user_domain = bp_loggedin_user_domain();
+		// Determine the user link to use.
+		if ( bp_attachments_displayed_user_url() ) {
+			$attachments_link = bp_attachments_displayed_user_url(
+				array(
+					'single_item_component' => $this->slug,
+				)
+			);
+		} elseif ( bp_attachments_loggedin_user_url() ) {
+			$attachments_link = bp_attachments_loggedin_user_url(
+				array(
+					'single_item_component' => $this->slug,
+				)
+			);
 		} else {
 			return;
 		}
-
-		// User link.
-		$this->attachments_link = trailingslashit( $user_domain . $this->slug );
 
 		// Add the subnav items to the attachments nav item if we are using a theme that supports this.
 		$sub_nav['default'] = wp_parse_args(
 			array(
 				'name'            => __( 'Personal', 'bp-attachments' ),
 				'slug'            => 'personal',
-				'parent_url'      => $this->attachments_link,
+				'parent_url'      => $attachments_link,
 				'parent_slug'     => $this->slug,
 				'position'        => 10,
 				'item_css_id'     => 'personal-' . $this->id,
