@@ -1012,7 +1012,7 @@ function bp_attachments_get_directory_types( $user_id = 0 ) {
 			$private_dir_description = sprintf(
 				/* Translators: %s is the user's username */
 				__( 'This Private directory and its children are only visible to %s. Files and folders within this private directory can be shared with the users they chose.', 'bp-attachments' ),
-				esc_html( bp_core_get_username( $user_id ) )
+				esc_html( bp_attachments_get_user_slug( $user_id ) )
 			);
 		}
 

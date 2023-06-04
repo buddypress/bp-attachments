@@ -232,7 +232,7 @@ class BP_Attachments_OEmbed_Extension extends BP_Core_oEmbed_Extension {
 			'content'      => $this->current_medium->description,
 			'title'        => $this->current_medium->title,
 			'author_name'  => bp_core_get_user_displayname( $this->current_medium->owner_id ),
-			'author_url'   => bp_core_get_user_domain( $this->current_medium->owner_id ),
+			'author_url'   => bp_attachments_get_user_url( $this->current_medium->owner_id ),
 			'x_buddypress' => 'attachments',
 		);
 	}
