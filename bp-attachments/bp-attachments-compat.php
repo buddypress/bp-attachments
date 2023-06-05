@@ -75,7 +75,7 @@ function bp_attachments_displayed_user_url( $path_chunks = array() ) {
 		$user_url = bp_displayed_user_domain();
 
 		if ( $path_chunks ) {
-			$user_url = trailingslahit( $user_url ) . trailingslashit( implode( '/', $path_chunks ) );
+			$user_url = trailingslashit( $user_url ) . trailingslashit( implode( '/', $path_chunks ) );
 		}
 	}
 
@@ -105,7 +105,7 @@ function bp_attachments_loggedin_user_url( $path_chunks = array() ) {
 		$user_url = bp_loggedin_user_domain();
 
 		if ( $path_chunks ) {
-			$user_url = trailingslahit( $user_url ) . trailingslashit( implode( '/', $path_chunks ) );
+			$user_url = trailingslashit( $user_url ) . trailingslashit( implode( '/', $path_chunks ) );
 		}
 	}
 
