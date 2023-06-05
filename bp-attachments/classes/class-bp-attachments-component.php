@@ -304,9 +304,12 @@ class BP_Attachments_Component extends BP_Component {
 		// Menus for logged in user.
 		if ( is_user_logged_in() ) {
 
-			// Setup the logged in user variables.
-			$user_domain      = bp_loggedin_user_domain();
-			$attachments_link = trailingslashit( $user_domain . $this->slug );
+			// Setup the logged in user attachments link.
+			$attachments_link = bp_attachments_loggedin_user_url(
+				array(
+					'single_item_component' => $this->slug,
+				)
+			);
 
 			$default_admin_nav = array(
 				'parent' => $bp->my_account_menu_id,
