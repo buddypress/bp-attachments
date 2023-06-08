@@ -227,6 +227,54 @@ class BP_Attachments_Component extends BP_Component {
 	}
 
 	/**
+	 * Register component navigation.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @see `BP_Component::register_nav()` for a description of arguments.
+	 *
+	 * @param array $main_nav Optional. See `BP_Component::register_nav()` for
+	 *                        description.
+	 * @param array $sub_nav  Optional. See `BP_Component::register_nav()` for
+	 *                        description.
+	 */
+	public function register_nav( $main_nav = array(), $sub_nav = array() ) {
+
+		// User main navigation.
+		$main_nav = array(
+			'name'                     => __( 'Media', 'bp-attachments' ),
+			'slug'                     => $this->slug,
+			'position'                 => 30,
+			'screen_function'          => 'bp_attachments_personal_screen',
+			'default_subnav_slug'      => 'personal',
+			'item_css_id'              => $this->id,
+			'user_has_access_callback' => 'bp_is_my_profile',
+		);
+
+		// User sub navigation.
+		$sub_nav[] = array(
+			'name'                     => __( 'Personal', 'bp-attachments' ),
+			'slug'                     => 'personal',
+			'parent_slug'              => $this->slug,
+			'position'                 => 10,
+			'screen_function'          => 'bp_attachments_personal_screen',
+			'item_css_id'              => 'personal-' . $this->id,
+			'user_has_access'          => false,
+			'user_has_access_callback' => 'bp_is_my_profile',
+		);
+
+		if ( method_exists( get_parent_class( $this ), 'register_nav' ) ) {
+			parent::register_nav( $main_nav, $sub_nav );
+
+		} else {
+			return array(
+				'main_nav' => $main_nav,
+				'sub_nav'  => $sub_nav,
+			);
+		}
+	}
+
+	/**
 	 * Set up component navigation.
 	 *
 	 * @since 1.0.0
@@ -239,51 +287,44 @@ class BP_Attachments_Component extends BP_Component {
 	 *                        description.
 	 */
 	public function setup_nav( $main_nav = array(), $sub_nav = array() ) {
-		$access = bp_is_my_profile();
+		if ( ! method_exists( get_parent_class( $this ), 'register_nav' ) ) {
+			$nav    = $this->register_nav();
+			$access = bp_is_my_profile();
 
-		// Main User navigation.
-		$main_nav = array(
-			'name'                    => __( 'Media', 'bp-attachments' ),
-			'slug'                    => $this->slug,
-			'position'                => 30,
-			'screen_function'         => 'bp_attachments_personal_screen',
-			'default_subnav_slug'     => 'personal',
-			'item_css_id'             => $this->id,
-			'show_for_displayed_user' => $access,
-		);
+			unset( $nav['main_nav']['user_has_access_callback'] );
 
-		// Determine the user link to use.
-		if ( bp_attachments_displayed_user_url() ) {
-			$attachments_link = bp_attachments_displayed_user_url(
-				array(
-					'single_item_component' => $this->slug,
-				)
-			);
-		} elseif ( bp_attachments_loggedin_user_url() ) {
-			$attachments_link = bp_attachments_loggedin_user_url(
-				array(
-					'single_item_component' => $this->slug,
-				)
-			);
-		} else {
-			return;
+			// Set main nav access.
+			$nav['main_nav']['show_for_displayed_user'] = $access;
+
+			// Determine the user link to use.
+			if ( bp_attachments_displayed_user_url() ) {
+				$attachments_link = bp_attachments_displayed_user_url(
+					array(
+						'single_item_component' => $this->slug,
+					)
+				);
+			} elseif ( bp_attachments_loggedin_user_url() ) {
+				$attachments_link = bp_attachments_loggedin_user_url(
+					array(
+						'single_item_component' => $this->slug,
+					)
+				);
+			}
+
+			if ( isset( $attachments_link ) ) {
+				foreach ( $nav['sub_nav'] as $sub_nav_key => $sub_nav_item ) {
+					if ( isset( $sub_nav_item['user_has_access_callback'] ) ) {
+						$nav['sub_nav'][ $sub_nav_key ]['user_has_access'] = call_user_func( $sub_nav_item['user_has_access_callback'] );
+						unset( $nav['sub_nav'][ $sub_nav_key ]['user_has_access_callback'] );
+					}
+
+					$nav['sub_nav'][ $sub_nav_key ]['parent_url'] = $attachments_link;
+				}
+
+				$main_nav = $nav['main_nav'];
+				$sub_nav  = $nav['sub_nav'];
+			}
 		}
-
-		// Add the subnav items to the attachments nav item if we are using a theme that supports this.
-		$sub_nav['default'] = wp_parse_args(
-			array(
-				'name'            => __( 'Personal', 'bp-attachments' ),
-				'slug'            => 'personal',
-				'parent_url'      => $attachments_link,
-				'parent_slug'     => $this->slug,
-				'position'        => 10,
-				'item_css_id'     => 'personal-' . $this->id,
-				'user_has_access' => $access,
-			),
-			$main_nav
-		);
-
-		unset( $sub_nav['default']['default_subnav_slug'] );
 
 		parent::setup_nav( $main_nav, $sub_nav );
 	}
