@@ -15,21 +15,21 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 	protected $bp_uploads;
 	protected $reset_request;
 
-	public function setUp() {
+	public function set_up() {
 		$this->current_user = wp_get_current_user();
 		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'administrator' ) ) );
 		$this->bp_uploads = bp_attachments_uploads_dir_get();
 		$this->reset_request = $_POST;
 
-		parent::setUp();
+		parent::set_up();
 	}
 
-	public function tearDown() {
+	public function tear_down() {
 		wp_set_current_user( $this->current_user->ID );
 		$this->bp_uploads = array();
 		$_POST = $this->reset_request;
 
-		parent::tearDown();
+		parent::tear_down();
 	}
 
 	public function test_bp_attachments_media_upload_dir_filter_member_public() {

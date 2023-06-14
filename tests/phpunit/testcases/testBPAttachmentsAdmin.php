@@ -10,7 +10,7 @@
 class BP_Attachments_Admin_UnitTestCase extends BP_UnitTestCase {
 	protected $current_user;
 
-	public function setUp() {
+	public function set_up() {
 		$this->current_user = wp_get_current_user();
 		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'administrator' ) ) );
 		set_current_screen( 'dashboard' );
@@ -18,14 +18,14 @@ class BP_Attachments_Admin_UnitTestCase extends BP_UnitTestCase {
 		// is_admin() is not yet set in BP_Attachments_Component::includes().
 		require_once buddypress()->attachments->path . 'bp-attachments-admin.php';
 
-		parent::setUp();
+		parent::set_up();
 	}
 
-	public function tearDown() {
+	public function tear_down() {
 		wp_set_current_user( $this->current_user->ID );
 		set_current_screen( 'front' );
 
-		parent::tearDown();
+		parent::tear_down();
 	}
 
 	public function filter_bp_attachments_uploads_dir( $uploads_dir = array() ) {

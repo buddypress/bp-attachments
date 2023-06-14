@@ -298,17 +298,9 @@ class BP_Attachments_Component extends BP_Component {
 
 			// Determine the user link to use.
 			if ( bp_attachments_displayed_user_url() ) {
-				$attachments_link = bp_attachments_displayed_user_url(
-					array(
-						'single_item_component' => $this->slug,
-					)
-				);
+				$attachments_link = bp_attachments_displayed_user_url( array( $this->slug ) );
 			} elseif ( bp_attachments_loggedin_user_url() ) {
-				$attachments_link = bp_attachments_loggedin_user_url(
-					array(
-						'single_item_component' => $this->slug,
-					)
-				);
+				$attachments_link = bp_attachments_loggedin_user_url( array( $this->slug ) );
 			}
 
 			if ( isset( $attachments_link ) ) {

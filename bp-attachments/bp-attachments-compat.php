@@ -70,11 +70,17 @@ function bp_attachments_displayed_user_url( $path_chunks = array() ) {
 	$user_url = '';
 
 	if ( function_exists( 'bp_core_get_query_parser' ) ) {
-		$user_url = bp_displayed_user_url( $path_chunks );
+		$user_url = bp_displayed_user_url( bp_members_get_path_chunks( $path_chunks ) );
 	} else {
 		$user_url = bp_displayed_user_domain();
 
 		if ( $path_chunks ) {
+			$action_variables = end( $path_chunks );
+			if ( is_array( $action_variables ) ) {
+				array_pop( $path_chunks );
+				$path_chunks = array_merge( $path_chunks, $action_variables );
+			}
+
 			$user_url = trailingslashit( $user_url ) . trailingslashit( implode( '/', $path_chunks ) );
 		}
 	}
@@ -100,11 +106,17 @@ function bp_attachments_loggedin_user_url( $path_chunks = array() ) {
 	$user_url = '';
 
 	if ( function_exists( 'bp_core_get_query_parser' ) ) {
-		$user_url = bp_loggedin_user_url( $path_chunks );
+		$user_url = bp_loggedin_user_url( bp_members_get_path_chunks( $path_chunks ) );
 	} else {
 		$user_url = bp_loggedin_user_domain();
 
 		if ( $path_chunks ) {
+			$action_variables = end( $path_chunks );
+			if ( is_array( $action_variables ) ) {
+				array_pop( $path_chunks );
+				$path_chunks = array_merge( $path_chunks, $action_variables );
+			}
+
 			$user_url = trailingslashit( $user_url ) . trailingslashit( implode( '/', $path_chunks ) );
 		}
 	}
