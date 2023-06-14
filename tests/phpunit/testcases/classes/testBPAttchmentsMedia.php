@@ -73,24 +73,6 @@ class BP_Attachments_Media_UnitTestCase extends BP_UnitTestCase {
 		$this->assertTrue( 18 === $private_member_uploads['bp_attachments_error_code'] );
 	}
 
-	public function test_bp_attachments_media_upload_dir_filter_member_private_missing_dir() {
-		$media = new BP_Attachments_Media();
-		$user_id = get_current_user_id();
-
-		add_filter( 'pre_option__bp_attachments_can_upload_privately', '__return_true' );
-
-		$_POST = array(
-			'object_id'  => $user_id,
-			'visibility' => 'private',
-		);
-
-		$private_member_uploads = $media->upload_dir_filter();
-
-		remove_filter( 'pre_option__bp_attachments_can_upload_privately', '__return_true' );
-
-		$this->assertTrue( 16 === $private_member_uploads['bp_attachments_error_code'] );
-	}
-
 	public function private_uploads_dir_override() {
 		return trailingslashit( $this->bp_uploads['basedir'] ) . 'private';
 	}

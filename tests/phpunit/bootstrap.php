@@ -63,6 +63,24 @@ if ( ! defined( 'BP_ATTACHMENTS_TESTS_DIR' ) ) {
 }
 
 /**
+ * Forces the Attachment component to be active.
+ *
+ * @since 2.0.0
+ *
+ * @param bool   $retval    Whether or not a given component has been activated by the admin.
+ * @param string $component Current component being checked.
+ * @return bool Whether or not a given component has been activated by the admin.
+ */
+function _bp_attachments_is_active( $retval = false, $component = '' ) {
+	if ( 'attachments' === $component ) {
+		$retval = true;
+	}
+
+	return $retval;
+}
+tests_add_filter( 'bp_is_active', '__return_true' );
+
+/**
  * Load the BP Attachments plugin.
  *
  * @since 1.0.0
