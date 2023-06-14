@@ -18,8 +18,8 @@ class BP_attachments_REST_controller_UnitTestCase extends WP_Test_REST_Controlle
 	public $server;
 	protected $bp_testcase;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		$this->bp_testcase  = new BP_UnitTestCase();
 		$this->endpoint     = new BP_Attachments_REST_Controller();
@@ -41,8 +41,8 @@ class BP_attachments_REST_controller_UnitTestCase extends WP_Test_REST_Controlle
 		$this->clean_test_directory();
 	}
 
-	public function tearDown() {
-		parent::tearDown();
+	public function tear_down() {
+		parent::tear_down();
 		$this->bp_testcase->set_current_user( $this->current_user );
 
 		remove_filter( 'upload_dir', array( $this, 'filter_bp_attachments_uploads_dir' ), 100, 1 );

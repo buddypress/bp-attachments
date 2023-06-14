@@ -13,3 +13,4 @@ npm-debug.log
 vendor
 .parcel-cache
 .phpcs
+.phpunit.result.cache

@@ -20,7 +20,7 @@ class BP_Attachments_Functions_UnitTestCase extends BP_UnitTestCase {
 	}
 
 	/**
-	 * @group imath
+	 * @group bp_attachments_list_media_in_directory
 	 */
 	public function test_bp_attachments_list_media_in_directory() {
 		$dir = BP_ATTACHMENTS_TESTS_DIR . '/assets/public/members/1';

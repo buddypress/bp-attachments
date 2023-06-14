@@ -13,15 +13,15 @@
 class BP_Attachments_Component_UnitTestCase extends BP_UnitTestCase {
 	protected $current_user_id;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		$this->set_permalink_structure( '/%postname%/' );
 		$this->current_user_id = get_current_user_id();
 	}
 
-	public function tearDown() {
-		parent::tearDown();
+	public function tear_down() {
+		parent::tear_down();
 
 		wp_set_current_user( $this->current_user_id );
 	}
