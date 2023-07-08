@@ -13,7 +13,7 @@ BP Attachments is a BuddyPress Add-on to manage your community members media.
 
 == Description ==
 
-The BP Attachments is being developed and maintained by the official BuddyPress development team. Thanks to it your community members can finally share media the BuddyPress way!
+The BP Attachments Add-on is being developed and maintained by the official BuddyPress development team. Thanks to it your community members can finally share media the BuddyPress way!
 
 = Current features =
 
@@ -51,7 +51,7 @@ Growing the BuddyPress community means better software for everyone!
 = Automatic installation =
 
 Using the automatic installation let WordPress handles everything itself. To do an automatic install of BP Attachments, log in to your WordPress dashboard, navigate to the Plugins menu. Click on the Add New link, then activate the "BuddyPress Add-ons" tab to quickly find the BP Attachments plugin's card.
-Once you've found the BP Attachments, you can view details about the latest release, such as community reviews, ratings, and description. Install the BP Attachments Add-on by simply pressing "Install Now".
+Once you've found BP Attachments, you can view details about the latest release, such as community reviews, ratings, and description. Install the BP Attachments Add-on by simply pressing "Install Now".
 
 == Frequently Asked Questions ==
 
@@ -65,9 +65,9 @@ Report bugs or suggest ideas at [https://github.com/buddypress/bp-attachments/is
 
 = Who builds the BP Attachments Add-on? =
 
-The BP Attachments is a BuddyPress Add-on and is free software, built by an international community of volunteers. Some contributors to BuddyPress are employed by companies that use BuddyPress, while others are consultants who offer BuddyPress-related services for hire. No one is paid by the BuddyPress project for his or her contributions.
+BP Attachments is a BuddyPress Add-on and is free software, built by an international community of volunteers. Some contributors to BuddyPress are employed by companies that use BuddyPress, while others are consultants who offer BuddyPress-related services for hire. No one is paid by the BuddyPress project for his or her contributions.
 
-If you would like to provide monetary support to the BP Attachments or BuddyPress plugins, please consider a donation to the [WordPress Foundation](https://wordpressfoundation.org), or ask your favorite contributor how they prefer to have their efforts rewarded.
+If you would like to provide monetary support to the BP Attachments Add-on or the BuddyPress plugin, please consider a donation to the [WordPress Foundation](https://wordpressfoundation.org), or ask your favorite contributor how they prefer to have their efforts rewarded.
 
 == Screenshots ==
 
