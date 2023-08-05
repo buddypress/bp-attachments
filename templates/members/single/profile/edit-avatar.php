@@ -32,6 +32,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</span>
 	</p>
 
+	<?php if ( bp_get_user_has_avatar() ) : ?>
+		<p><?php esc_html_e( 'If you’d like to delete your current profile photo but not upload a new one, please use the delete profile photo button.', 'bp-attachments' ); ?></p>
+		<p><a class="button edit" href="<?php echo esc_url( bp_get_avatar_delete_link() ); ?>"><?php esc_html_e( 'Delete My Profile Photo', 'bp-attachments' ); ?></a></p>
+	<?php endif; ?>
+
 	<div id="bp-attachments-avatar-editor"></div>
 
 <?php else : ?>
