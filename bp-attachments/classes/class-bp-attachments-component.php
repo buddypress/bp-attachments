@@ -66,6 +66,8 @@ class BP_Attachments_Component extends BP_Component {
 		}
 
 		add_action( 'bp_' . $this->id . '_parse_query', array( $this, 'very_late_includes' ), 10, 0 );
+
+		add_filter( 'bp_classic_admin_display_directory_states', array( $this, 'admin_directory_states' ), 10, 2 );
 	}
 
 	/**
@@ -795,6 +797,10 @@ class BP_Attachments_Component extends BP_Component {
 
 		if ( isset( $bp->pages->{ $this->id }->id ) && (int) $bp->pages->{ $this->id }->id === (int) $post->ID ) {
 			$states['page_for_attachments_directory'] = _x( 'BP Attachments Page', 'page label', 'bp-attachments' );
+		}
+
+		if ( 'bp_classic_admin_display_directory_states' === current_filter() ) {
+			return $states;
 		}
 
 		return parent::admin_directory_states( $states, $post );
