@@ -174,7 +174,22 @@ function bp_attachments_activity_attach_media( $args = array() ) {
 		}
 
 		if ( $medium_block ) {
-			$args['content'] = $content . "\n" . $medium_block;
+			$text_block = $content;
+
+			// By default the Medium block is appended to the Activity text block.
+			$content .= "\n" . $medium_block;
+
+			/**
+			 * Filter here to edit how the attached media is added to the activity content.
+			 *
+			 * @since 1.1.0
+			 *
+			 * @param string $content      The Activity text block with the appended Medium block.
+			 * @param string $text_block   The serialized Activity text block.
+			 * @param string $medium_block The serialized Medium block.
+			 * @param array  $args         The arguments used to post an activity update.
+			 */
+			$args['content'] = apply_filters( 'bp_attachments_activity_attach_media', $content, $text_block, $medium_block, $args );
 		}
 	}
 
