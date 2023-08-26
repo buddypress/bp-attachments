@@ -13,6 +13,47 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Checks whether it's fine to use experimental features or not.
+ *
+ * @since 1.1.0
+ *
+ * @return boolean True to use experimental features. False otherwise.
+ */
+function bp_attachments_use_experimental_features() {
+	$bp_is_src = defined( 'BP_SOURCE_SUBDIRECTORY' ) && BP_SOURCE_SUBDIRECTORY === 'src';
+
+	/**
+	 * Filter here to allow/disallow experimental features.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @param boolean $bp_is_src Whether the BuddyPress development version is in used or not.
+	 */
+	return (bool) apply_filters( 'bp_attachments_use_experimental_features', $bp_is_src );
+}
+
+/**
+ * Get Add-on's optional features.
+ *
+ * @since 1.1.0
+ *
+ * @return array The list of supported optional features.
+ */
+function bp_attachments_get_features() {
+	$features = array( 'tracking' );
+
+	if ( bp_attachments_use_experimental_features() ) {
+
+		// New Avatar UI needs Cover Images for now.
+		if ( ! bp_disable_cover_image_uploads() ) {
+			$features[] = 'profile-images';
+		}
+	}
+
+	return $features;
+}
+
+/**
  * Set up the BP Attachments component.
  *
  * @since 1.0.0

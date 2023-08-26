@@ -47,7 +47,7 @@ class BP_Attachments_Component extends BP_Component {
 			plugin_dir_path( dirname( __FILE__ ) ),
 			array(
 				'adminbar_myaccount_order' => 30,
-				'features'                 => array( 'tracking', 'profile-images' ),
+				'features'                 => bp_attachments_get_features(),
 			)
 		);
 	}
