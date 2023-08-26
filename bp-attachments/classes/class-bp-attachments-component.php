@@ -711,6 +711,15 @@ class BP_Attachments_Component extends BP_Component {
 			return;
 		}
 
+		/*
+		 * Set the BuddyPress queried object when BP is >= 12.0.
+		 * This allows to benefit from the community visibility feature.
+		 */
+		if ( function_exists( 'bp_core_get_query_parser' ) && 'rewrites' === bp_core_get_query_parser() && isset( $bp->pages->attachments->id ) ) {
+			$query->queried_object    = get_post( $bp->pages->attachments->id );
+			$query->queried_object_id = $query->queried_object->ID;
+		}
+
 		parent::parse_query( $query );
 	}
 
