@@ -612,6 +612,10 @@ add_filter( 'bp_core_get_directory_page_default_titles', 'bp_attachments_trackin
  * @since 1.0.0
  */
 function bp_attachments_tracking_install() {
+	if ( function_exists( 'bp_core_get_query_parser' ) ) {
+		return;
+	}
+
 	bp_core_add_page_mappings(
 		array(
 			'attachments' => 1,
