@@ -706,7 +706,7 @@ class BP_Attachments_Component extends BP_Component {
 				bp_do_404();
 				return;
 			}
-		} elseif ( ( $visibility || $object ) & ! $item_id ) {
+		} elseif ( ( $visibility || $object ) && ! $item_id ) {
 			bp_do_404();
 			return;
 		}
@@ -715,9 +715,17 @@ class BP_Attachments_Component extends BP_Component {
 		 * Set the BuddyPress queried object when BP is >= 12.0.
 		 * This allows to benefit from the community visibility feature.
 		 */
-		if ( function_exists( 'bp_core_get_query_parser' ) && 'rewrites' === bp_core_get_query_parser() && isset( $bp->pages->attachments->id ) ) {
-			$query->queried_object    = get_post( $bp->pages->attachments->id );
-			$query->queried_object_id = $query->queried_object->ID;
+		if ( function_exists( 'bp_core_get_query_parser' ) && 'rewrites' === bp_core_get_query_parser() ) {
+			// Directory.
+			if ( ( isset( $bp->pages->attachments->id ) && $is_attachments_component && ! $action ) ) {
+				$query->queried_object    = get_post( $bp->pages->attachments->id );
+				$query->queried_object_id = $query->queried_object->ID;
+
+				// In case of single item, use the object it is attached to.
+			} elseif ( $this->queried_object_id && $object && isset( $bp->pages->{$object}->id ) ) {
+				$query->queried_object    = get_post( $bp->pages->{$object}->id );
+				$query->queried_object_id = $query->queried_object->ID;
+			}
 		}
 
 		parent::parse_query( $query );
