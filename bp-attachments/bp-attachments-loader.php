@@ -75,7 +75,11 @@ add_action( 'bp_setup_components', 'bp_attachments_component', 6 );
  * @param array $components The list of available BuddyPress components.
  * @return array            The list of available BuddyPress components, including the Attachments one.
  */
-function bp_attachments_get_component_info( $components = array() ) {
+function bp_attachments_get_component_info( $components = array(), $type = '' ) {
+	if ( 'optional' !== $type ) {
+		return $components;
+	}
+
 	return array_merge(
 		$components,
 		array(
@@ -86,7 +90,7 @@ function bp_attachments_get_component_info( $components = array() ) {
 		)
 	);
 }
-add_filter( 'bp_core_get_components', 'bp_attachments_get_component_info' );
+add_filter( 'bp_core_get_components', 'bp_attachments_get_component_info', 10, 2 );
 
 /**
  * Inline styles for the WP Admin BuddyPress settings page.
