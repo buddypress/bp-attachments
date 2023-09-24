@@ -72,8 +72,9 @@ add_action( 'bp_setup_components', 'bp_attachments_component', 6 );
  *
  * @since 1.0.0
  *
- * @param array $components The list of available BuddyPress components.
- * @return array            The list of available BuddyPress components, including the Attachments one.
+ * @param array  $components The list of available BuddyPress components.
+ * @param string $type       The component's type (optional, required, retired..).
+ * @return array             The list of available BuddyPress components, including the Attachments one.
  */
 function bp_attachments_get_component_info( $components = array(), $type = '' ) {
 	if ( 'optional' !== $type ) {
