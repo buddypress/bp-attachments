@@ -7,7 +7,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 6.1
 Requires PHP: 5.6
 Tested up to: 6.3
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 
 BP Attachments is a BuddyPress Add-on to manage your community members media.
 
@@ -77,11 +77,31 @@ If you would like to provide monetary support to the BP Attachments Add-on or th
 
 == Upgrade Notice ==
 
+= 1.2.0 =
+
+No specific upgrade tasks to perform.
+
+= 1.1.0 =
+
+No specific upgrade tasks to perform.
+
 = 1.0.0 =
 
 Initial version of the plugin, no upgrade needed.
 
 == Changelog ==
+
+= 1.2.0 =
+
+- Make sure to only override the WP queried object if it is an Attachment one.
+- Only list the BP Attachments Add-on in optional components into the BP Components Administration screen.
+
+= 1.1.0 =
+
+- Make the Add-on BuddyPress 12.0 ready.
+- Disable the experimental avatar UI by default.
+- Add a filter to prepend the Medium block to the Activity text block.
+- Add a delete avatar link into the change avatar screen.
 
 = 1.0.0 =
 

@@ -9,6 +9,28 @@ _Tested up to BuddyPress 12.0_
 
 ### Description
 
+1.1.0 is a maintenance release of the the BP Attachments Add-on. Thanks to it your community members can finally share media the BuddyPress way!
+
+### Changes
+
+- Make sure to only override the WP queried object if it is an Attachment one.
+- Only list the BP Attachments Add-on in optional components into the BP Components Administration screen.
+
+## Props
+
+@imath.
+
+---
+
+## 1.1.0
+
+_Requires WordPress 6.1_
+_Tested up to WordPress 6.3_
+_Requires BuddyPress 11.0_
+_Tested up to BuddyPress 12.0_
+
+### Description
+
 This is the first maintenance release of the the BP Attachments Add-on. Thanks to it your community members can finally share media the BuddyPress way!
 
 ### Changes
