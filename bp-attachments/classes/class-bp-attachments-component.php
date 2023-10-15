@@ -201,7 +201,7 @@ class BP_Attachments_Component extends BP_Component {
 		 */
 
 		// Current version.
-		$this->version = '1.2.0';
+		$this->version = '1.3.0-alpha';
 
 		// Paths.
 		$this->templates_dir = trailingslashit( plugin_dir_path( $this->path ) ) . 'templates';

@@ -11,7 +11,7 @@
  * Plugin Name:       BP Attachments
  * Plugin URI:        https://github.com/buddypress/bp-attachments
  * Description:       BP Attachments is a BuddyPress add-on to manage your community members media.
- * Version:           1.2.0
+ * Version:           1.3.0-alpha
  * Author:            The BuddyPress Community
  * Author URI:        http://buddypress.org/community/members/
  * Text Domain:       bp-attachments
