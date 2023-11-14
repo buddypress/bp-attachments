@@ -71,13 +71,13 @@ class BP_Attachments {
 	 * @since 1.0.0
 	 */
 	public static function start() {
-		// This plugin is only usable with the genuine BuddyPress.
-		if ( ! self::is_buddypress_active() && ! defined( 'BP_ATTACHMENTS_TESTS_DIR' ) ) {
-			return false;
-		}
-
 		// If the single instance hasn't been set, set it now.
 		if ( null === self::$instance ) {
+			// This plugin is only usable with the genuine BuddyPress.
+			if ( ! self::is_buddypress_active() && ! defined( 'BP_ATTACHMENTS_TESTS_DIR' ) ) {
+				return false;
+			}
+
 			self::$instance = new self();
 		}
 
