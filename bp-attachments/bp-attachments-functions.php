@@ -904,7 +904,7 @@ function bp_attachments_get_medium_visibility( $parent_dir = '' ) {
 	if ( bp_attachments_can_do_private_uploads() ) {
 		$private_basedir = bp_attachments_get_private_root_dir();
 
-		if ( 0 === strpos( $parent_dir, $private_basedir ) ) {
+		if ( ! is_wp_error( $private_basedir ) && 0 === strpos( $parent_dir, $private_basedir ) ) {
 			$visibility = 'private';
 		}
 	}

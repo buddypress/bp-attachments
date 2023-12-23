@@ -177,4 +177,69 @@ class BP_Attachments_Functions_UnitTestCase extends BP_UnitTestCase {
 		rmdir( $object_dir );
 		rmdir( $directory['path'] );
 	}
+
+	public function return_wp_error() {
+		return new WP_Error(
+			'missing_document_root_information',
+			__( 'The server’s document root is missing.', 'bp-attachments' )
+		);
+	}
+
+	public function return_private_base_dir() {
+		return BP_ATTACHMENTS_TESTS_DIR . '/assets/private';
+	}
+
+	/**
+	 * @group bp_attachments_get_medium_visibility
+	 */
+	public function test_bp_attachments_get_medium_visibility_with_error() {
+		$bp        = buddypress();
+		$reset_can = $bp->attachments->private_uploads;
+
+		// Force private uploads availability.
+		$bp->attachments->private_uploads = true;
+
+		// Make sure an error will be returned.
+		add_filter( 'bp_attachments_pre_get_private_root_dir', array( $this, 'return_wp_error' ) );
+
+		$is_public = bp_attachments_get_medium_visibility( BP_ATTACHMENTS_TESTS_DIR . '/assets/public/members' );
+		$this->assertSame( 'public', $is_public );
+
+		// Reset everything.
+		remove_filter( 'bp_attachments_pre_get_private_root_dir', array( $this, 'return_wp_error' ) );
+
+		$bp->attachments->private_uploads = $reset_can;
+	}
+
+	/**
+	 * @group bp_attachments_get_medium_visibility
+	 */
+	public function test_bp_attachments_get_medium_visibility_public() {
+		$bp = buddypress();
+
+		$is_public = bp_attachments_get_medium_visibility();
+		$this->assertSame( 'public', $is_public );
+	}
+
+	/**
+	 * @group bp_attachments_get_medium_visibility
+	 */
+	public function test_bp_attachments_get_medium_visibility_private() {
+		$bp        = buddypress();
+		$reset_can = $bp->attachments->private_uploads;
+
+		// Force private uploads availability.
+		$bp->attachments->private_uploads = true;
+
+		// Make sure an error will be returned.
+		add_filter( 'bp_attachments_pre_get_private_root_dir', array( $this, 'return_private_base_dir' ) );
+
+		$is_private = bp_attachments_get_medium_visibility( BP_ATTACHMENTS_TESTS_DIR . '/assets/private/members/1' );
+		$this->assertSame( 'private', $is_private );
+
+		// Reset everything.
+		remove_filter( 'bp_attachments_pre_get_private_root_dir', array( $this, 'return_private_base_dir' ) );
+
+		$bp->attachments->private_uploads = $reset_can;
+	}
 }
