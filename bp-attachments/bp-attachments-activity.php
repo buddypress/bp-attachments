@@ -76,7 +76,8 @@ function bp_attachments_activity_register_front_end_assets() {
  */
 function bp_attachments_activity_button( $buttons = array() ) {
 	// Only add the button for logged in users.
-	if ( ! is_user_logged_in() ) {
+	if ( ! is_user_logged_in() || bp_is_single_activity() ) {
+		wp_enqueue_style( 'bp-attachments-activity' );
 		return $buttons;
 	}
 
@@ -204,7 +205,7 @@ add_filter( 'bp_before_groups_post_update_parse_args', 'bp_attachments_activity_
  * @since 1.0.0
  */
 function bp_attachments_activity_loader() {
-	if ( 'nouveau' !== bp_get_theme_compat_id() || ( ! bp_is_current_component( 'activity' ) && ! bp_is_group_activity() ) || bp_is_single_activity() ) {
+	if ( 'nouveau' !== bp_get_theme_compat_id() || ( ! bp_is_current_component( 'activity' ) && ! bp_is_group_activity() ) ) {
 		return;
 	}
 
