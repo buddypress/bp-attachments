@@ -67,6 +67,17 @@ function bp_attachments_activity_register_front_end_assets() {
 }
 
 /**
+ * Make sure to load styles when the user is not logged in.
+ *
+ * @since 1.3.0
+ */
+function bp_attachments_activity_enqueue_front_end_assets() {
+	if ( ! is_user_logged_in() ) {
+		wp_enqueue_style( 'bp-attachments-activity' );
+	}
+}
+
+/**
  * Registers the Nouveau Activity Action button.
  *
  * @since 1.0.0
@@ -211,6 +222,7 @@ function bp_attachments_activity_loader() {
 
 	add_filter( 'bp_nouveau_activity_buttons', 'bp_attachments_activity_button' );
 	add_action( 'bp_attachments_register_front_end_assets', 'bp_attachments_activity_register_front_end_assets', 3 );
+	add_action( 'bp_attachments_enqueue_front_end_assets', 'bp_attachments_activity_enqueue_front_end_assets' );
 	add_action( 'bp_after_activity_post_form', 'bp_attachments_activity_after_post_form' );
 }
 add_action( 'bp_screens', 'bp_attachments_activity_loader' );
