@@ -120,8 +120,8 @@ function bp_attachments_enqueue_media_library() {
 	// Preload the current user's data & attachments one.
 	$preloaded_data = array_reduce(
 		array(
-			'/buddypress/v1/members/me?context=edit',
-			sprintf( '/buddypress/v1/attachments?context=%s', is_admin() ? 'edit' : 'view' ),
+			'/buddypress/v2/members/me?context=edit',
+			sprintf( '/buddypress/v2/attachments?context=%s', is_admin() ? 'edit' : 'view' ),
 		),
 		'rest_preload_api_request',
 		array()

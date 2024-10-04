@@ -347,7 +347,7 @@ export function * createMedium( file, totalBytes ) {
 
 	uploading = false;
 	try {
-		upload = yield createFromAPI( '/buddypress/v1/attachments', formData );
+		upload = yield createFromAPI( '/buddypress/v2/attachments', formData );
 		yield { type: 'UPLOAD_END', uploading, file };
 
 		return addMedium( upload );
@@ -413,7 +413,7 @@ export function * createDirectory( directory ) {
 
 	uploading = false;
 	try {
-		upload = yield createFromAPI( '/buddypress/v1/attachments', formData );
+		upload = yield createFromAPI( '/buddypress/v2/attachments', formData );
 		yield { type: 'UPLOAD_END', uploading, file };
 		upload.uploaded = true;
 
@@ -451,7 +451,7 @@ export function * updateMedium( medium ) {
 
 	try {
 		update = yield updateFromAPI(
-			'/buddypress/v1/attachments/' + medium.id + '/',
+			'/buddypress/v2/attachments/' + medium.id + '/',
 			{
 				'relative_path':  relativePath,
 				title: medium.title,
@@ -514,7 +514,7 @@ export const parseResponseMedia = async ( response, relativePath, parent = '', p
  * @returns {void}
  */
 export function * requestMedia( args = {} ) {
-	const path = '/buddypress/v1/attachments';
+	const path = '/buddypress/v2/attachments';
 	const displayedUserId = select( STORE_KEY ).getDisplayedUserId();
 	let querying = true;
 	let relativePathHeader = '';
@@ -597,7 +597,7 @@ export function * deleteMedium( file, totalBytes ) {
 	let deleted;
 
 	try {
-		deleted = yield deleteFromAPI( '/buddypress/v1/attachments/' + file.id + '/', relativePath, totalBytes );
+		deleted = yield deleteFromAPI( '/buddypress/v2/attachments/' + file.id + '/', relativePath, totalBytes );
 
 		if ( 'inode/directory' === deleted.previous.mime_type ) {
 			yield removeItemTree( deleted.previous.id );

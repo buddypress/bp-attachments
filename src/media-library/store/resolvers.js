@@ -32,7 +32,7 @@ const _requestContext = () => {
  * Resolver for retrieving current user.
  */
 export function* getLoggedInUser() {
-	const path = '/buddypress/v1/members/me?context=edit';
+	const path = '/buddypress/v2/members/me?context=edit';
 	const user = yield fetchFromAPI( path, true );
 	yield getLoggedInUserAction( user );
 };
@@ -41,7 +41,7 @@ export function* getLoggedInUser() {
  * Resolver for retrieving the current user media library or all user media libraries.
  */
 export function* getMedia() {
-	const path = '/buddypress/v1/attachments?context=' + _requestContext();
+	const path = '/buddypress/v2/attachments?context=' + _requestContext();
 	const response = yield fetchFromAPI( path, false );
 	const files = yield getFromAPI( response );
 	let pagination = {

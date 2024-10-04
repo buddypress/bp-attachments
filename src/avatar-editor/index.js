@@ -109,7 +109,7 @@ const AvatarEditor = ( { settings } ) => {
 		profileImageData.append( 'file',  base64Image );
 
 		apiFetch( {
-			path: 'buddypress/v1/attachments-profile-image',
+			path: 'buddypress/v2/attachments-profile-image',
 			method: 'POST',
 			data: {
 				user_id: settings.displayedUserId,
