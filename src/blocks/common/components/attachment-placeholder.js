@@ -69,7 +69,7 @@ const AttachmentPlaceholder = ( { type, icon, label, onSetAttributes } ) => {
 		setErrorMessage( '' );
 
 		apiFetch( {
-			path: 'buddypress/v1/attachments',
+			path: 'buddypress/v2/attachments',
 			method: 'POST',
 			body: formData,
 		} ).then( ( response ) => {
