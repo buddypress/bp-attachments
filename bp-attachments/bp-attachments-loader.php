@@ -77,19 +77,14 @@ add_action( 'bp_setup_components', 'bp_attachments_component', 6 );
  * @return array             The list of available BuddyPress components, including the Attachments one.
  */
 function bp_attachments_get_component_info( $components = array(), $type = '' ) {
-	if ( 'optional' !== $type ) {
-		return $components;
+	if ( 'optional' === $type || 'all' === $type ) {
+		$components['attachments'] = array(
+			'title'       => __( 'Attachments', 'bp-attachments' ),
+			'description' => __( 'Empower your community with user generated media.', 'bp-attachments' ),
+		);
 	}
 
-	return array_merge(
-		$components,
-		array(
-			'attachments' => array(
-				'title'       => __( 'Attachments', 'bp-attachments' ),
-				'description' => __( 'Empower your community with user generated media.', 'bp-attachments' ),
-			),
-		)
-	);
+	return $components;
 }
 add_filter( 'bp_core_get_components', 'bp_attachments_get_component_info', 10, 2 );
 
